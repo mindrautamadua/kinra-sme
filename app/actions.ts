@@ -1,12 +1,15 @@
 'use server'
 
+import { randomUUID } from 'node:crypto'
 import { revalidatePath } from 'next/cache'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import type { Aksi } from '@/lib/akses'
+import { ambilBerkas } from '@/lib/data'
 import { cekAkses } from '@/lib/sesi'
 import { COOKIE_SESI, db } from '@/lib/supabase'
-import type { StatusAksi, StatusDokumen, StatusKegiatan } from '@/lib/types'
+import { BUCKET_BUKTI, UKURAN_MAKS_BUKTI } from '@/lib/status'
+import type { BerkasTampil, StatusAksi, StatusDokumen, StatusKegiatan } from '@/lib/types'
 
 type Hasil = { ok: true } | { ok: false; pesan: string }
 
@@ -54,7 +57,6 @@ export async function simpanDokumen(id: string | null, f: FormData): Promise<Has
     status: teks(f, 'status') ?? 'belum',
     tenggat: teks(f, 'tenggat'),
     tanggal_terima: teks(f, 'tanggal_terima'),
-    link_eksternal: teks(f, 'link_eksternal'),
     keterangan: teks(f, 'keterangan'),
   }
   if (!data.kode || !data.nama || !data.klausul_kode || !data.kelompok) return { ok: false, pesan: 'Kode, nama, klausul, dan kelompok wajib diisi.' }
@@ -68,7 +70,60 @@ export async function simpanDokumen(id: string | null, f: FormData): Promise<Has
 
 export async function hapusDokumen(id: string): Promise<Hasil> {
   const t = await tolak('dokumen.hapus'); if (t) return t
-  const { error } = await (await db()).from('dokumen_audit').delete().eq('id', id)
+  const s = await db()
+  const { data: berkas } = await s.from('berkas').select('path').eq('dokumen_id', id)
+  const { error } = await s.from('dokumen_audit').delete().eq('id', id)
+  // Berkas evidence ikut dibersihkan agar tidak jadi objek yatim di bucket
+  if (!error && berkas?.length) {
+    const paths = berkas.map((b) => b.path)
+    await s.storage.from(BUCKET_BUKTI).remove(paths)
+    await s.from('berkas').delete().in('path', paths)
+  }
+  revalidatePath('/', 'layout')
+  return gagal(error)
+}
+
+// ---------- Berkas evidence (Supabase Storage) ----------
+
+/** Nama aman untuk key objek Storage: tanpa spasi/aksen, tetap terbaca. */
+const namaAman = (n: string) => n.normalize('NFKD').replace(/[^\w.-]+/g, '_').replace(/_+/g, '_').slice(-120) || 'berkas'
+
+/** Berkas + signed URL untuk penampil di tabel kesiapan (semua peran yang login boleh melihat; RLS menjaga). */
+export async function lihatBerkas(dokumenId: string): Promise<Hasil & { berkas?: BerkasTampil[] }> {
+  try {
+    const { berkas } = await ambilBerkas(dokumenId)
+    return { ok: true, berkas }
+  } catch (e) {
+    return { ok: false, pesan: e instanceof Error ? e.message : 'Gagal memuat berkas.' }
+  }
+}
+
+/** Langkah 1 unggah: server membuat signed upload URL; browser lalu mengunggah langsung ke Storage (tidak lewat server Next). */
+export async function siapkanUnggah(dokumenId: string, nama: string, ukuran: number): Promise<Hasil & { path?: string; token?: string }> {
+  const t = await tolak('dokumen.ubah'); if (t) return t
+  if (ukuran > UKURAN_MAKS_BUKTI) return { ok: false, pesan: `${nama} melebihi batas ${UKURAN_MAKS_BUKTI / 1024 / 1024} MB.` }
+  const path = `${dokumenId}/${randomUUID()}-${namaAman(nama)}`
+  const { data, error } = await (await db()).storage.from(BUCKET_BUKTI).createSignedUploadUrl(path)
+  return error ? gagal(error) : { ok: true, path: data.path, token: data.token }
+}
+
+/** Langkah 2 unggah: catat metadata setelah berkas masuk ke Storage. */
+export async function catatBerkas(dokumenId: string, b: { path: string; nama_file: string; mime: string; ukuran: number }): Promise<Hasil> {
+  const t = await tolak('dokumen.ubah'); if (t) return t
+  if (!b.path.startsWith(`${dokumenId}/`)) return { ok: false, pesan: 'Path berkas tidak sesuai dokumen.' }
+  const { error } = await (await db()).from('berkas').insert({ dokumen_id: dokumenId, path: b.path, nama_file: b.nama_file, mime: b.mime || null, ukuran: b.ukuran, folder: 'Evidence' })
+  revalidatePath('/', 'layout')
+  return gagal(error)
+}
+
+export async function hapusBerkas(id: string): Promise<Hasil> {
+  const t = await tolak('dokumen.ubah'); if (t) return t
+  const s = await db()
+  const { data: b, error: e1 } = await s.from('berkas').select('path').eq('id', id).maybeSingle()
+  if (e1 || !b) return { ok: false, pesan: e1?.message ?? 'Berkas tidak ditemukan.' }
+  const { error: e2 } = await s.storage.from(BUCKET_BUKTI).remove([b.path])
+  if (e2) return gagal(e2)
+  const { error } = await s.from('berkas').delete().eq('id', id)
   revalidatePath('/', 'layout')
   return gagal(error)
 }

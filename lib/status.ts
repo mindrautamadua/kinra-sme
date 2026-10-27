@@ -30,10 +30,13 @@ export const INDUK_KLAUSUL: Record<string, string> = {
   '10': 'Peningkatan',
 }
 
-/** Kesiapan berbobot 0–100: belum 0, draft 25, review 50, disetujui 85, final 100. */
-export function kesiapan(dokumen: Pick<Dokumen, 'status'>[]): number {
+/** Nilai satu dokumen dalam skor kesiapan: bobot status, tetapi 0 selama belum ada berkas evidence (auditor memeriksa bukti). */
+export const nilaiKesiapan = (d: Pick<Dokumen, 'status' | 'jumlah_berkas'>) => (adaBukti(d) ? STATUS[d.status].bobot : 0)
+
+/** Kesiapan berbobot 0–100: belum 0, draft 25, review 50, disetujui 85, final 100; dokumen tanpa berkas evidence bernilai 0. */
+export function kesiapan(dokumen: Pick<Dokumen, 'status' | 'jumlah_berkas'>[]): number {
   if (!dokumen.length) return 0
-  return (dokumen.reduce((s, d) => s + STATUS[d.status].bobot, 0) / dokumen.length) * 100
+  return (dokumen.reduce((s, d) => s + nilaiKesiapan(d), 0) / dokumen.length) * 100
 }
 
 /** Tanggal WIB (YYYY-MM-DD) dari timestamp. */
@@ -52,13 +55,14 @@ export function trenKesiapan(dokumen: Dokumen[], riwayat: RiwayatStatus[], hari:
     per.set(r.dokumen_id, l)
   }
   return hari.map((h) => {
-    const st: Pick<Dokumen, 'status'>[] = []
+    // Keberadaan berkas memakai kondisi saat ini (riwayat unggah tidak direkam per hari)
+    const st: Pick<Dokumen, 'status' | 'jumlah_berkas'>[] = []
     for (const d of dokumen) {
       const l = per.get(d.id)
-      if (!l?.length) { st.push({ status: d.status }); continue }
+      if (!l?.length) { st.push(d); continue }
       let s = l[0].dari
       for (const e of l) { if (e.h > h) break; s = e.ke }
-      if (s) st.push({ status: s })
+      if (s) st.push({ status: s, jumlah_berkas: d.jumlah_berkas })
     }
     return kesiapan(st)
   })
@@ -104,5 +108,9 @@ export const TONGGAK = [
   { kode: 's2', nama: 'TÜV Stage 2', tanggal: '2026-12-10' },
 ]
 
-/** Folder induk seluruh evidence SMEn (OneDrive). */
-export const FOLDER_BUKTI = 'https://1drv.ms/f/c/0b4f3d49ee2d73a3/IgCR3a7n5EGZQZzBbGtsTiCnAX7VCb1zZ0Kmq82xuJbNhjY?e=GzK8c4'
+/** Dokumen dianggap sudah punya evidence bila ada berkas terunggah. */
+export const adaBukti = (d: Pick<Dokumen, 'jumlah_berkas'>) => (d.jumlah_berkas ?? 0) > 0
+
+/** Bucket Storage privat untuk berkas evidence (migrasi 0010). */
+export const BUCKET_BUKTI = 'smen-evidence'
+export const UKURAN_MAKS_BUKTI = 50 * 1024 * 1024

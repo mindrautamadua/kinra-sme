@@ -49,7 +49,6 @@ export function FormDokumen({ dokumen, klausul }: { dokumen: Dokumen | null; kla
         <label className="field"><span>PIC</span><input name="pic" defaultValue={d?.pic ?? ''} /></label>
         <label className="field"><span>Tenggat</span><input type="date" name="tenggat" defaultValue={d?.tenggat ?? ''} /></label>
         <label className="field"><span>Tanggal diterima</span><input type="date" name="tanggal_terima" defaultValue={d?.tanggal_terima ?? ''} /></label>
-        <label className="field full"><span>Tautan evidence (OneDrive)</span><input type="url" name="link_eksternal" defaultValue={d?.link_eksternal ?? ''} placeholder="Tempel tautan berbagi OneDrive, mis. https://1drv.ms/…" /></label>
         <label className="field full"><span>Keterangan</span><textarea name="keterangan" defaultValue={d?.keterangan ?? ''} /></label>
       </div>
       </fieldset>
@@ -60,7 +59,7 @@ export function FormDokumen({ dokumen, klausul }: { dokumen: Dokumen | null; kla
         <span style={{ flex: 1 }} />
         {d && bisa('dokumen.hapus') && (
           <button type="button" className="btn bahaya" disabled={menunggu} onClick={() => {
-            if (!confirm(`Hapus dokumen ${d.kode}? Berkas di OneDrive tidak ikut terhapus.`)) return
+            if (!confirm(`Hapus dokumen ${d.kode}? Semua berkas evidence-nya ikut terhapus.`)) return
             mulai(async () => {
               const h = await hapusDokumen(d.id)
               if (h.ok) router.replace('/kesiapan')

@@ -1,11 +1,11 @@
-import { FolderOpen, Plus } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import Link from 'next/link'
 import { SectionHead } from '@/components/SectionHead'
 import { boleh } from '@/lib/akses'
 import { ambilDokumen, ambilKlausul } from '@/lib/data'
 import { penggunaSaya } from '@/lib/sesi'
 import { hariIni, persen } from '@/lib/format'
-import { FOLDER_BUKTI, kesiapan, terlambat } from '@/lib/status'
+import { adaBukti, kesiapan, terlambat } from '@/lib/status'
 import { TabelKesiapan } from './TabelKesiapan'
 
 export const dynamic = 'force-dynamic'
@@ -14,7 +14,7 @@ export default async function Kesiapan({ searchParams }: { searchParams: Promise
   const sp = await searchParams
   const [dokumen, klausul, saya] = await Promise.all([ambilDokumen(), ambilKlausul(), penggunaSaya()])
   const kini = hariIni()
-  const tanpaBukti = dokumen.filter((d) => !d.link_eksternal).length
+  const tanpaBukti = dokumen.filter((d) => !adaBukti(d)).length
 
   return (
     <section>
@@ -27,7 +27,6 @@ export default async function Kesiapan({ searchParams }: { searchParams: Promise
           </p>
         </SectionHead>
         <div className="toolbar">
-          <a className="btn" href={FOLDER_BUKTI} target="_blank" rel="noreferrer"><FolderOpen aria-hidden="true" /><span className="teks">Folder evidence OneDrive</span></a>
           {boleh(saya?.peran, 'dokumen.tambah') && <Link className="btn utama" href="/dokumen/baru"><Plus aria-hidden="true" /><span className="teks">Tambah dokumen</span></Link>}
         </div>
       </div>

@@ -83,7 +83,10 @@ a { color: inherit; }
 .brand { background: var(--tosca); color: #fff; padding: 22px 22px 20px; display: flex; flex-direction: column; gap: 6px; position: relative; overflow: hidden; }
 .brand .motif { position: absolute; right: -18px; top: -18px; width: 92px; height: 92px; }
 .brand b { font-size: 22px; letter-spacing: 0.04em; font-weight: 700; }
-.brand span { font-family: var(--font-mono), monospace; font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; opacity: 0.9; }
+.brand .brand-logo { position: relative; align-self: flex-start; background: #fff; padding: 8px 12px; border-radius: 12px; box-shadow: 0 10px 24px -12px rgba(0, 0, 0, .45); margin-bottom: 6px; }
+.brand .brand-logo img { display: block; width: 132px; height: auto; }
+.shell:not([data-ciut]) .brand b { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.brand .brand-sub { font-family: var(--font-mono), monospace; font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; opacity: 0.9; }
 .nav { padding: 14px 10px; display: flex; flex-direction: column; gap: 2px; overflow-y: auto; }
 .nav a { display: flex; align-items: center; gap: 12px; padding: 9px 12px; border-radius: 10px; text-decoration: none; color: var(--ink-2); position: relative; transition: background .15s, color .15s; }
 .nav a:hover { background: rgba(var(--fg-rgb), 0.04); color: var(--ink); }
@@ -105,7 +108,8 @@ a { color: inherit; }
 .shell[data-ciut] .brand .brand-sub,
 .shell[data-ciut] .side-card,
 .shell[data-ciut] .nav a .no { display: none; }
-.shell[data-ciut] .brand .motif { display: none; }
+.shell[data-ciut] .brand .motif,
+.shell[data-ciut] .brand .brand-logo { display: none; }
 .shell[data-ciut] .nav { padding: 14px 8px; }
 .shell[data-ciut] .nav a { justify-content: center; padding: 11px 0; }
 .shell[data-ciut] .nav a svg { width: 18px; height: 18px; }
@@ -359,6 +363,33 @@ dialog.panel { border: 0; padding: 0; background: transparent; color: var(--ink)
 dialog.panel::backdrop { background: rgba(0, 0, 0, .45); backdrop-filter: blur(6px); }
 dialog.panel .card { animation: pop .2s var(--ease); }
 @keyframes pop { from { opacity: 0; transform: translateY(-8px) scale(.98); } }
+
+/* Evidence: daftar berkas, zona unggah, penampil */
+.btn-ikon.kecil { width: 30px; }
+.berkas-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+.berkas-item { display: flex; align-items: center; gap: 6px; padding: 4px 6px 4px 4px; border-radius: var(--radius-sm); border: 1px solid var(--line); background: var(--surface-2); }
+.berkas-buka { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; padding: 6px; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; border-radius: 8px; }
+.berkas-buka:hover b { color: var(--tosca); text-decoration: underline; }
+.berkas-buka .grow, .penampil-kepala .grow { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+.berkas-buka b, .potong { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.berkas-ikon { flex: none; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 9px; color: var(--tosca); background: color-mix(in srgb, var(--tosca) 12%, transparent); }
+.berkas-ikon svg { width: 17px; height: 17px; }
+.unggah-zona { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 18px 14px; text-align: center; font-size: 13px; cursor: pointer;
+  border: 1.5px dashed var(--line-2); border-radius: var(--radius-sm); transition: border-color .15s, background .15s; }
+.unggah-zona svg { width: 20px; height: 20px; color: var(--tosca); }
+.unggah-zona:hover, .unggah-zona.seret, .unggah-zona:focus-within { border-color: var(--tosca); background: color-mix(in srgb, var(--tosca) 6%, transparent); }
+.unggah-zona.sibuk { cursor: progress; opacity: .8; }
+dialog.penampil { border: 0; padding: 0; background: transparent; color: var(--ink); width: min(1100px, calc(100vw - 32px)); max-width: none; height: calc(100dvh - 48px); max-height: none; }
+dialog.penampil::backdrop { background: rgba(0, 0, 0, .6); backdrop-filter: blur(6px); }
+.penampil-isi { display: flex; flex-direction: column; height: 100%; border-radius: var(--radius); overflow: hidden; background: var(--surface); border: 1px solid var(--line-2); animation: pop .2s var(--ease); }
+.penampil-kepala { display: flex; align-items: center; gap: 6px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+.penampil-badan { flex: 1; min-height: 0; display: grid; place-items: center; background: var(--surface-2); overflow: auto; }
+.penampil-badan iframe { width: 100%; height: 100%; border: 0; background: #fff; }
+.penampil-badan img, .penampil-badan video { max-width: 100%; max-height: 100%; object-fit: contain; }
+.penampil-badan pre { align-self: stretch; justify-self: stretch; margin: 0; padding: 16px; font-size: 12.5px; white-space: pre-wrap; overflow: auto; }
+.penampil-kosong { display: flex; flex-direction: column; align-items: center; gap: 12px; color: var(--muted); }
+.penampil-kosong > svg { width: 28px; height: 28px; }
+@media (max-width: 640px) { dialog.penampil { width: 100vw; height: 100dvh; } .penampil-isi { border-radius: 0; } }
 
 /* ---------- Halaman kesiapan ---------- */
 .ks-kepala { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; margin-bottom: 22px; }

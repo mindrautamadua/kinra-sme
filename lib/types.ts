@@ -14,10 +14,25 @@ export type Dokumen = {
   status: StatusDokumen
   tenggat: string | null
   tanggal_terima: string | null
-  link_eksternal: string | null
   keterangan: string | null
   diubah_at: string
+  /** Jumlah berkas evidence di Storage; tidak ada bila migrasi 0010 belum dijalankan */
+  jumlah_berkas?: number
 }
+
+export type Berkas = {
+  id: string
+  dokumen_id: string | null
+  path: string
+  nama_file: string
+  mime: string | null
+  ukuran: number | null
+  diunggah_oleh: string | null
+  diunggah_at: string
+}
+
+/** Berkas dengan signed URL (berlaku 1 jam) untuk ditampilkan */
+export type BerkasTampil = Berkas & { url: string | null }
 
 export type RiwayatStatus = { dokumen_id: string; dari: StatusDokumen | null; ke: StatusDokumen; at: string; oleh: string | null }
 

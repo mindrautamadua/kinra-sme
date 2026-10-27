@@ -1,14 +1,15 @@
 'use client'
 
-import { Download, ExternalLink, Search, X } from 'lucide-react'
+import { Download, Eye, Search, X } from 'lucide-react'
 import Link from 'next/link'
 import { useMemo, useState, useTransition } from 'react'
-import { ubahStatusDokumen } from '@/app/actions'
+import { lihatBerkas, ubahStatusDokumen } from '@/app/actions'
 import { Chip } from '@/components/Chip'
+import { PenampilBerkas } from '@/components/PenampilBerkas'
 import { useBoleh } from '@/components/Peran'
 import { selisihHari, tanggal } from '@/lib/format'
-import { KELOMPOK, kesiapan, STATUS, terlambat, URUTAN_STATUS } from '@/lib/status'
-import type { Dokumen, KelompokDokumen, Klausul, StatusDokumen } from '@/lib/types'
+import { adaBukti, KELOMPOK, kesiapan, STATUS, terlambat, URUTAN_STATUS } from '@/lib/status'
+import type { BerkasTampil, Dokumen, KelompokDokumen, Klausul, StatusDokumen } from '@/lib/types'
 import { PanelKesiapan } from './PanelKesiapan'
 
 export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal, statusAwal }: {
@@ -22,6 +23,19 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal, statusAwal 
   const [hanyaLewat, setHanyaLewat] = useState(false)
   const [tanpaBukti, setTanpaBukti] = useState(false)
   const [galat, setGalat] = useState<string | null>(null)
+  const [lihat, setLihat] = useState<{ judul: string; berkas: BerkasTampil[] } | null>(null)
+  const [indeks, setIndeks] = useState<number | null>(null)
+  const [memuat, setMemuat] = useState<string | null>(null)
+
+  async function bukaBerkas(d: Dokumen) {
+    setMemuat(d.id)
+    const h = await lihatBerkas(d.id)
+    setMemuat(null)
+    if (!h.ok) return setGalat(`Berkas ${d.kode} gagal dimuat: ${h.pesan}`)
+    if (!h.berkas?.length) return setGalat(`Berkas ${d.kode} tidak ditemukan.`)
+    setLihat({ judul: `${d.kode} · ${d.nama}`, berkas: h.berkas })
+    setIndeks(0)
+  }
   const [, mulai] = useTransition()
   const bisa = useBoleh()
 
@@ -32,7 +46,7 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal, statusAwal 
     return rows
       .filter((d) => (!kelompok || d.kelompok === kelompok) && (!status || d.status === status) && (!kl || d.klausul_kode === kl))
       .filter((d) => !hanyaLewat || terlambat(d, kini))
-      .filter((d) => !tanpaBukti || !d.link_eksternal)
+      .filter((d) => !tanpaBukti || !adaBukti(d))
       .filter((d) => !q || `${d.kode} ${d.nama} ${d.pic ?? ''} ${d.nomor_dokumen ?? ''} ${d.keterangan ?? ''}`.toLowerCase().includes(q))
       .sort((a, b) => (judulKlausul[a.klausul_kode]?.urutan ?? 0) - (judulKlausul[b.klausul_kode]?.urutan ?? 0) || a.kode.localeCompare(b.kode))
   }, [rows, kelompok, status, kl, cari, hanyaLewat, tanpaBukti, kini, judulKlausul])
@@ -56,9 +70,9 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal, statusAwal 
   }
 
   function unduhCsv() {
-    const kolom = ['Kode', 'Klausul', 'Kelompok', 'Nama', 'Nomor dokumen', 'PIC', 'Status', 'Tenggat', 'Evidence OneDrive', 'Keterangan']
+    const kolom = ['Kode', 'Klausul', 'Kelompok', 'Nama', 'Nomor dokumen', 'PIC', 'Status', 'Tenggat', 'Berkas evidence', 'Keterangan']
     const esc = (v: unknown) => `"${String(v ?? '').replace(/"/g, '""')}"`
-    const isi = tersaring.map((d) => [d.kode, d.klausul_kode, KELOMPOK[d.kelompok], d.nama, d.nomor_dokumen, d.pic, STATUS[d.status].label, d.tenggat, d.link_eksternal, d.keterangan].map(esc).join(','))
+    const isi = tersaring.map((d) => [d.kode, d.klausul_kode, KELOMPOK[d.kelompok], d.nama, d.nomor_dokumen, d.pic, STATUS[d.status].label, d.tenggat, d.jumlah_berkas ?? 0, d.keterangan].map(esc).join(','))
     const blob = new Blob(['﻿' + [kolom.map(esc).join(','), ...isi].join('\n')], { type: 'text/csv;charset=utf-8' })
     const a = document.createElement('a')
     a.href = URL.createObjectURL(blob)
@@ -178,9 +192,11 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal, statusAwal 
                       )}
                     </td>
                     <td className="num">
-                      {d.link_eksternal
-                        ? <a href={d.link_eksternal} target="_blank" rel="noreferrer" className="small" aria-label={`Buka evidence ${d.kode} di OneDrive`}>OneDrive <ExternalLink size={11} aria-hidden="true" /></a>
-                        : <Link href={`/dokumen/${d.id}`} className="txt-bad small">belum</Link>}
+                      {(d.jumlah_berkas ?? 0) > 0
+                        ? <button type="button" className="btn kecil" disabled={memuat === d.id} onClick={() => bukaBerkas(d)} aria-label={`Lihat ${d.jumlah_berkas} berkas evidence ${d.kode}`}>
+                            <Eye aria-hidden="true" /> {memuat === d.id ? 'Memuat…' : `Lihat${d.jumlah_berkas! > 1 ? ` (${d.jumlah_berkas})` : ''}`}
+                          </button>
+                        : <span className="txt-bad small">belum ada</span>}
                     </td>
                   </tr>,
                 ]
@@ -192,6 +208,7 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal, statusAwal 
           </table>
         </div>
       </div>
+      {lihat && <PenampilBerkas berkas={lihat.berkas} judul={lihat.judul} indeks={indeks} setIndeks={setIndeks} />}
     </>
   )
 }

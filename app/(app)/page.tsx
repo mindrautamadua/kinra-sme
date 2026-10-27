@@ -7,7 +7,7 @@ import { SectionHead } from '@/components/SectionHead'
 import { ambilDokumen, ambilKegiatan, ambilKinerja, ambilKlausul, ambilRiwayat, ambilTemuan, rekapEnergi } from '@/lib/data'
 import { LABEL_METODE, ringkas } from '@/lib/enpi'
 import { angka, BULAN, delta, hariIni, persen, selisihHari, tanggal, waktu } from '@/lib/format'
-import { hariWib, INDUK_KLAUSUL, kesiapan, KELOMPOK, STATUS, terlambat, trenKesiapan, TONGGAK, URUTAN_STATUS } from '@/lib/status'
+import { adaBukti, hariWib, INDUK_KLAUSUL, kesiapan, KELOMPOK, STATUS, terlambat, trenKesiapan, TONGGAK, URUTAN_STATUS } from '@/lib/status'
 
 export const dynamic = 'force-dynamic'
 
@@ -85,9 +85,9 @@ export default async function Ringkasan() {
   const akhir = hariLalu.length - 1
 
   // Insight
-  const nReview = dokumen.filter((d) => d.status === 'review').length
+  const nReview = dokumen.filter((d) => d.status === 'review' && adaBukti(d)).length
   const naikReview = dokumen.length ? (nReview * (STATUS.disetujui.bobot - STATUS.review.bobot) / dokumen.length) * 100 : 0
-  const tanpaBukti = dokumen.filter((d) => !d.link_eksternal).length
+  const tanpaBukti = dokumen.filter((d) => !adaBukti(d)).length
   const mayor = temuanBuka.filter((t) => t.kategori === 'Mayor').length
   const perPic = Object.values(dokumen.reduce<Record<string, { pic: string; ds: typeof dokumen }>>((a, d) => {
     const k = d.pic?.trim() || 'PIC belum ditetapkan'
@@ -115,7 +115,7 @@ export default async function Ringkasan() {
         <div className="ks-kepala">
           <SectionHead hero eyebrow="Kesiapan audit ISO 50001:2018" judul={<>Kesiapan dokumen <span className="ks-sorot">{persen(skor)}</span>: {siap} dari {dokumen.length} dokumen siap diaudit</>}>
             <p className="muted">
-              Skor berbobot dari status setiap dokumen dan rekaman (Belum 0 · Draft 25 · Review 50 · Disetujui 85 · Final 100).
+              Skor berbobot dari status setiap dokumen dan rekaman (Belum 0 · Draft 25 · Review 50 · Disetujui 85 · Final 100). Dokumen tanpa berkas evidence dihitung 0.
               {berikut && <> {berikut.nama} dijadwalkan {tanggal(berikut.tanggal, 'panjang')}, {hBerikut} hari lagi.</>}
             </p>
           </SectionHead>
@@ -238,8 +238,8 @@ export default async function Ringkasan() {
           <Link href="/kesiapan" className={`insight ${tanpaBukti ? 'perhatian' : 'positif'}`}>
             <span className="area"><Link2Off aria-hidden="true" />Evidence</span>
             <div className="angka tnum">{tanpaBukti} <small className="muted" style={{ fontSize: 14 }}>dokumen</small></div>
-            <h3>{tanpaBukti ? 'Belum bertaut OneDrive' : 'Semua sudah bertaut'}</h3>
-            <p>{tanpaBukti ? `Auditor meminta bukti; ${persen((tanpaBukti / Math.max(1, dokumen.length)) * 100, 0)} dokumen belum punya link evidence.` : 'Setiap dokumen sudah punya link evidence.'}</p>
+            <h3>{tanpaBukti ? 'Belum ada evidence' : 'Evidence lengkap'}</h3>
+            <p>{tanpaBukti ? `Auditor meminta bukti; ${persen((tanpaBukti / Math.max(1, dokumen.length)) * 100, 0)} dokumen belum punya berkas evidence.` : 'Setiap dokumen sudah punya evidence.'}</p>
           </Link>
           <Link href="/temuan" className={`insight ${mayor ? 'kritis' : temuanBuka.length ? 'perhatian' : 'positif'}`}>
             <span className="area"><SearchCheck aria-hidden="true" />Temuan audit</span>

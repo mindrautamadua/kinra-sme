@@ -1,7 +1,8 @@
 import 'server-only'
 import { hitungEnpi } from './enpi'
+import { BUCKET_BUKTI } from './status'
 import { db } from './supabase'
-import type { Dokumen, EnergiBulanan, Enpi, Isu, Kegiatan, Klausul, Peluang, RencanaAksi, RiwayatStatus, Sasaran, SumberEnergi, Temuan, VariabelBulanan, VariabelRelevan } from './types'
+import type { Berkas, BerkasTampil, Dokumen, EnergiBulanan, Enpi, Isu, Kegiatan, Klausul, Peluang, RencanaAksi, RiwayatStatus, Sasaran, SumberEnergi, Temuan, VariabelBulanan, VariabelRelevan } from './types'
 
 /** Tabel belum ada (PGRST205) dianggap kosong; layout menampilkan panduan migrasi. Galat lain dilempar. */
 function cek<T>(r: { data: T | null; error: { message: string; code?: string } | null }, tabel: string): T {
@@ -15,7 +16,21 @@ export async function ambilKlausul(): Promise<Klausul[]> {
 }
 
 export async function ambilDokumen(): Promise<Dokumen[]> {
-  return cek(await (await db()).from('dokumen_audit').select('*').order('kode'), 'dokumen_audit')
+  const s = await db()
+  const r = await s.from('dokumen_audit').select('*, berkas(count)').order('kode')
+  // Relasi berkas belum ada (migrasi 0010 belum dijalankan): baca tanpa jumlah berkas
+  if (r.error?.code === 'PGRST200') return cek(await s.from('dokumen_audit').select('*').order('kode'), 'dokumen_audit')
+  return cek(r, 'dokumen_audit').map(({ berkas, ...d }: Dokumen & { berkas?: { count: number }[] }) => ({ ...d, jumlah_berkas: berkas?.[0]?.count ?? 0 }))
+}
+
+/** Berkas evidence satu dokumen beserta signed URL (bucket privat, berlaku 1 jam). `migrasi` true bila tabel berkas belum ada. */
+export async function ambilBerkas(dokumenId: string): Promise<{ berkas: BerkasTampil[]; migrasi: boolean }> {
+  const s = await db()
+  const r = await s.from('berkas').select('*').eq('dokumen_id', dokumenId).order('diunggah_at').returns<Berkas[]>()
+  if (r.error?.code === 'PGRST205') return { berkas: [], migrasi: true }
+  const daftar = cek(r, 'berkas')
+  const { data: tanda } = daftar.length ? await s.storage.from(BUCKET_BUKTI).createSignedUrls(daftar.map((b) => b.path), 3600) : { data: [] }
+  return { berkas: daftar.map((b) => ({ ...b, url: tanda?.find((t) => t.path === b.path)?.signedUrl ?? null })), migrasi: false }
 }
 
 /** Riwayat perubahan status semua dokumen, terlama dulu (bahan tren kesiapan). */

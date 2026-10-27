@@ -3,7 +3,7 @@
 import { CircleCheck, CircleDot, CircleX, FileWarning, Info, Link2Off, TimerReset, TrendingDown, TriangleAlert } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { selisihHari, tanggal } from '@/lib/format'
-import { kesiapan, STATUS, terlambat, URUTAN_STATUS } from '@/lib/status'
+import { adaBukti, kesiapan, STATUS, terlambat, URUTAN_STATUS } from '@/lib/status'
 import type { Dokumen, Klausul, StatusDokumen } from '@/lib/types'
 
 const IKON = { good: CircleCheck, warn: TriangleAlert, serious: TrendingDown, crit: CircleX, na: CircleDot, info: Info }
@@ -56,7 +56,7 @@ export function PanelKesiapan({ rows, klausul, kini, status, setStatus, kl, setK
   const skor = kesiapan(rows)
   const siap = rows.filter((d) => d.status === 'final' || d.status === 'disetujui').length
   const lewat = rows.filter((d) => terlambat(d, kini)).length
-  const kosongBukti = rows.filter((d) => !d.link_eksternal).length
+  const kosongBukti = rows.filter((d) => !adaBukti(d)).length
   const pekanIni = rows.filter((d) => d.tenggat && d.status !== 'final' && d.status !== 'disetujui' && d.tenggat >= kini && selisihHari(d.tenggat, hari) <= 7).length
 
   const perStatus = URUTAN_STATUS.map((s) => ({ s, n: rows.filter((d) => d.status === s).length }))
@@ -104,7 +104,7 @@ export function PanelKesiapan({ rows, klausul, kini, status, setStatus, kl, setK
         <button type="button" className={`insight ks-alert ${kosongBukti ? 'perhatian' : 'positif'}`} aria-pressed={tanpaBukti} onClick={() => setTanpaBukti(!tanpaBukti)}>
           <span className="area"><Link2Off aria-hidden="true" />Tanpa evidence</span>
           <span className="angka tnum"><Angka nilai={kosongBukti} /><small> dokumen</small></span>
-          <span className="ket">{kosongBukti ? 'Belum ada link OneDrive — klik untuk menyaring' : 'Semua dokumen sudah bertaut evidence'}</span>
+          <span className="ket">{kosongBukti ? 'Belum ada berkas atau link — klik untuk menyaring' : 'Semua dokumen sudah punya evidence'}</span>
         </button>
         <div className="insight ks-alert info">
           <span className="area"><TimerReset aria-hidden="true" />Jatuh tempo 7 hari</span>

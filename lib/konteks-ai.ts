@@ -2,7 +2,7 @@ import 'server-only'
 import { ambilDokumen, ambilIsu, ambilKegiatan, ambilKinerja, ambilKlausul, ambilPeluang, ambilSasaran, ambilTemuan, rekapEnergi } from './data'
 import { LABEL_METODE, ringkas } from './enpi'
 import { angka, hariIni, persen, tanggal } from './format'
-import { kesiapan, STATUS, terlambat, tingkatRisiko, TONGGAK } from './status'
+import { adaBukti, kesiapan, STATUS, terlambat, tingkatRisiko, TONGGAK } from './status'
 
 /** Ringkasan data dashboard dalam teks ringkas untuk instruksi sistem chatbot. Dibaca dengan sesi pengguna (RLS berlaku). */
 export async function konteksDashboard(): Promise<string> {
@@ -16,14 +16,14 @@ export async function konteksDashboard(): Promise<string> {
   for (const t of TONGGAK) b.push(`- ${t.nama}: ${tanggal(t.tanggal, 'panjang')}`)
 
   const siap = dokumen.filter((d) => d.status === 'final' || d.status === 'disetujui').length
-  b.push(`\n## Kesiapan dokumen\nSkor berbobot ${persen(kesiapan(dokumen))}; ${siap} dari ${dokumen.length} dokumen final/disetujui.`)
+  b.push(`\n## Kesiapan dokumen\nSkor berbobot ${persen(kesiapan(dokumen))} (dokumen tanpa berkas evidence dihitung 0); ${siap} dari ${dokumen.length} dokumen final/disetujui.`)
   for (const k of klausul) {
     const ds = dokumen.filter((d) => d.klausul_kode === k.kode)
     if (ds.length) b.push(`- Klausul ${k.kode} ${k.judul}: ${persen(kesiapan(ds))} (${ds.length} dokumen)`)
   }
   b.push('\nDokumen belum final/disetujui (kode | nama | status | PIC | tenggat | evidence):')
   for (const d of dokumen.filter((d) => d.status !== 'final' && d.status !== 'disetujui')) {
-    b.push(`- ${d.kode} | ${d.nama} | ${STATUS[d.status].label}${terlambat(d, kini) ? ' (TERLAMBAT)' : ''} | ${d.pic ?? '–'} | ${tanggal(d.tenggat)} | ${d.link_eksternal ? 'ada' : 'belum'}`)
+    b.push(`- ${d.kode} | ${d.nama} | ${STATUS[d.status].label}${terlambat(d, kini) ? ' (TERLAMBAT)' : ''} | ${d.pic ?? '–'} | ${tanggal(d.tenggat)} | ${adaBukti(d) ? 'ada' : 'belum'}`)
   }
 
   const { tahun, tj } = rekapEnergi(kinerja.sumber, kinerja.energi)

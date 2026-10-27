@@ -1,5 +1,6 @@
 import { KeyRound, LogOut } from 'lucide-react'
 import { cookies } from 'next/headers'
+import Image from 'next/image'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import type { ReactNode } from 'react'
@@ -39,6 +40,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
               <circle cx="40" cy="52" r="22" fill="#f15a22" opacity=".85" />
               <circle cx="66" cy="62" r="16" fill="#32a3dc" opacity=".9" />
             </svg>
+            <span className="brand-logo"><Image src="/logo-kinra.png" alt="KINRA Sei Mangkei" width={900} height={325} priority /></span>
             <b>KINRA</b>
             <span className="brand-sub">Sistem Manajemen Energi</span>
           </div>

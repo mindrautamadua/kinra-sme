@@ -1,15 +1,16 @@
-import { ArrowLeft, ExternalLink, FolderOpen } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Chip } from '@/components/Chip'
 import { SectionHead } from '@/components/SectionHead'
 import { boleh } from '@/lib/akses'
-import { ambilKlausul } from '@/lib/data'
+import { ambilBerkas, ambilKlausul } from '@/lib/data'
 import { penggunaSaya } from '@/lib/sesi'
 import { waktu } from '@/lib/format'
-import { FOLDER_BUKTI, KATEGORI_TEMUAN_CHIP, KELOMPOK, STATUS, TEMUAN_STATUS_CHIP } from '@/lib/status'
+import { KATEGORI_TEMUAN_CHIP, KELOMPOK, STATUS, TEMUAN_STATUS_CHIP } from '@/lib/status'
 import { db } from '@/lib/supabase'
 import type { Dokumen, StatusDokumen, Temuan } from '@/lib/types'
+import { EvidenceBerkas } from './EvidenceBerkas'
 import { FormDokumen } from './FormDokumen'
 
 export const dynamic = 'force-dynamic'
@@ -31,10 +32,11 @@ export default async function HalamanDokumen({ params }: { params: Promise<{ id:
 
   if (!/^[0-9a-f-]{36}$/.test(id)) notFound()
   const s = await db()
-  const [{ data: dok }, { data: riwayat }, { data: temuan }] = await Promise.all([
+  const [{ data: dok }, { data: riwayat }, { data: temuan }, { berkas, migrasi }] = await Promise.all([
     s.from('dokumen_audit').select('*').eq('id', id).maybeSingle<Dokumen>(),
     s.from('riwayat_status').select('*').eq('dokumen_id', id).order('at', { ascending: false }).limit(20),
     s.from('temuan').select('*').eq('dokumen_id', id),
+    ambilBerkas(id),
   ])
   if (!dok) notFound()
   const k = klausul.find((x) => x.kode === dok.klausul_kode)
@@ -51,21 +53,12 @@ export default async function HalamanDokumen({ params }: { params: Promise<{ id:
 
       <div className="grid-2">
         <div className="stack">
-          <div className="card">
+          <div className="card" id="evidence">
             <div className="row">
-              <div><h3>Evidence</h3><p className="muted small">Semua berkas bukti disimpan di OneDrive</p></div>
-              <Chip kode={dok.link_eksternal ? 'good' : 'crit'} label={dok.link_eksternal ? 'Tautan tersedia' : 'Belum ada tautan'} />
+              <div><h3>Evidence</h3><p className="muted small">Klik berkas untuk melihatnya langsung di aplikasi</p></div>
+              <Chip kode={berkas.length ? 'good' : 'crit'} label={berkas.length ? `${berkas.length} berkas` : 'Belum ada evidence'} />
             </div>
-            {dok.link_eksternal ? (
-              <a className="btn utama" href={dok.link_eksternal} target="_blank" rel="noreferrer"><ExternalLink aria-hidden="true" /> Buka evidence di OneDrive</a>
-            ) : (
-              <ol className="ink-2 small" style={{ paddingLeft: 18, margin: 0, lineHeight: 1.8 }}>
-                <li>Unggah berkas ke folder evidence OneDrive (subfolder klausul {dok.klausul_kode === 'P' ? 'persiapan awal' : dok.klausul_kode}).</li>
-                <li>Di OneDrive, pilih berkas/subfolder → Bagikan → Salin tautan.</li>
-                <li>Tempel tautan di kolom <b style={{ display: 'inline' }}>Tautan evidence (OneDrive)</b>, lalu Simpan.</li>
-              </ol>
-            )}
-            <a className="btn kecil" href={FOLDER_BUKTI} target="_blank" rel="noreferrer" style={{ marginTop: 14 }}><FolderOpen aria-hidden="true" /> Buka folder induk evidence</a>
+            <EvidenceBerkas dokumenId={dok.id} berkas={berkas} migrasi={migrasi} />
           </div>
           <div className="card">
             <h3 style={{ marginBottom: 10 }}>Riwayat status</h3>

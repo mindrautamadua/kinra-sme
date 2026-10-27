@@ -1,4 +1,4 @@
-import { Activity, BookOpen, Bot, CalendarRange, CircleCheck, ClipboardCheck, FolderOpen, Gauge, KeyRound, LayoutDashboard, Minus, SearchCheck, ShieldAlert, Target, Users } from 'lucide-react'
+import { Activity, BookOpen, Bot, CalendarRange, CircleCheck, ClipboardCheck, Gauge, KeyRound, LayoutDashboard, Minus, SearchCheck, ShieldAlert, Target, Users } from 'lucide-react'
 import Link from 'next/link'
 import { Chip } from '@/components/Chip'
 import { SectionHead } from '@/components/SectionHead'
@@ -6,7 +6,7 @@ import { AKSES, type Aksi, boleh, DAFTAR_PERAN, LABEL_AKSI, LABEL_PERAN, type Pe
 import { tanggal } from '@/lib/format'
 import { penggunaSaya } from '@/lib/sesi'
 import { GLOSARIUM } from '@/lib/glosarium'
-import { FOLDER_BUKTI, STATUS, TONGGAK, URUTAN_STATUS } from '@/lib/status'
+import { STATUS, TONGGAK, URUTAN_STATUS } from '@/lib/status'
 
 const BAB = [
   { id: 'apa', h: 'What', judul: 'Apa', ket: 'isi aplikasi' },
@@ -19,7 +19,7 @@ const BAB = [
 
 const MODUL = [
   { href: '/', ikon: LayoutDashboard, nama: 'Ringkasan', klausul: 'Gambaran besar', isi: 'Skor kesiapan, tren & proyeksi menuju audit, insight prioritas, beban PIC, aktivitas terbaru, dan cuplikan kinerja energi.' },
-  { href: '/kesiapan', ikon: ClipboardCheck, nama: 'Kesiapan Audit', klausul: 'Klausul 4–10', isi: 'Lembar monitoring semua dokumen dan rekaman yang akan diperiksa auditor: status, PIC, tenggat, tautan evidence, unduh CSV.' },
+  { href: '/kesiapan', ikon: ClipboardCheck, nama: 'Kesiapan Audit', klausul: 'Klausul 4–10', isi: 'Lembar monitoring semua dokumen dan rekaman yang akan diperiksa auditor: status, PIC, tenggat, lihat berkas evidence, unduh CSV.' },
   { href: '/energi', ikon: Gauge, nama: 'Data Energi', klausul: 'Klausul 6.3', isi: 'Input konsumsi bulanan per sumber (PLN, PLTBG, PLTS, BBM), aliran energi, peta panas, dan tren antar tahun dalam Terajoule.' },
   { href: '/kinerja', ikon: Activity, nama: 'Kinerja Energi', klausul: 'Klausul 6.4 & 6.5', isi: 'EnPI dan baseline energi (EnB): aktual vs harapan, CUSUM, uji kelayakan model, input variabel relevan bulanan.' },
   { href: '/sasaran', ikon: Target, nama: 'Sasaran & Aksi', klausul: 'Klausul 6.2', isi: 'Sasaran dan target energi yang terhubung ke EnPI, rencana aksi beserta PIC, tenggat, dan penghematan terverifikasi.' },
@@ -100,7 +100,7 @@ export default async function Panduan() {
         <SectionHead no="W2" eyebrow="Why · Mengapa" judul="Agar siap audit sertifikasi dan penghematan energi bisa dibuktikan" />
         <div className="insights">
           <div className="insight positif"><span className="area">Satu sumber kebenaran</span><h3>Tidak ada lagi versi file berbeda</h3><p>Semua tim melihat status dan angka yang sama secara langsung. Setiap perubahan status tercatat siapa dan kapan.</p></div>
-          <div className="insight"><span className="area">Siap diperiksa auditor</span><h3>Bukti tersusun per klausul</h3><p>Setiap dokumen terhubung ke klausul ISO 50001 dan tautan evidence OneDrive, sehingga mudah ditunjukkan saat audit.</p></div>
+          <div className="insight"><span className="area">Siap diperiksa auditor</span><h3>Bukti tersusun per klausul</h3><p>Setiap dokumen terhubung ke klausul ISO 50001 dan berkas evidence yang bisa dibuka langsung di aplikasi, sehingga mudah ditunjukkan saat audit.</p></div>
           <div className="insight perhatian"><span className="area">Prioritas jelas</span><h3>Tahu apa yang harus dikerjakan</h3><p>Skor kesiapan, dokumen terlambat, klausul terlemah, dan proyeksi menunjukkan di mana tenaga paling dibutuhkan.</p></div>
           <div className="insight positif"><span className="area">Kinerja ternormalisasi</span><h3>Penghematan yang sah</h3><p>EnPI dibandingkan dengan baseline pada kondisi operasi yang sama, sehingga kenaikan beban tidak terbaca sebagai pemborosan.</p></div>
           <div className="insight"><span className="area">Perbaikan berkelanjutan</span><h3>Siklus PDCA tertutup</h3><p>Isu dan peluang menjadi sasaran, sasaran menjadi rencana aksi, temuan audit ditindaklanjuti sampai tertutup.</p></div>
@@ -159,7 +159,7 @@ export default async function Panduan() {
             <p className="muted small">Frekuensi yang disarankan agar data tetap mutakhir</p>
             <div className="tl" style={{ marginTop: 18 }}>
               {[
-                { t: 'Setiap hari kerja', isi: 'Perbarui status dokumen yang sedang dikerjakan dan tempel tautan evidence begitu berkas diunggah ke OneDrive.' },
+                { t: 'Setiap hari kerja', isi: 'Perbarui status dokumen yang sedang dikerjakan dan unggah berkas evidence begitu siap.' },
                 { t: 'Setiap minggu', isi: 'Cek halaman Ringkasan: dokumen terlambat, klausul terlemah, beban PIC. Tandai kegiatan timeline yang selesai.' },
                 { t: 'Awal bulan (maks. tgl 10)', isi: 'Input konsumsi energi bulan lalu dari tagihan/meter dan data variabel relevan, lalu cek EnPI di halaman Kinerja.' },
                 { t: 'Setiap triwulan', isi: 'Tinjau register isu & peluang, progres sasaran dan rencana aksi.' },
@@ -191,17 +191,15 @@ export default async function Panduan() {
       </section>
 
       <section id="dimana" className="pd-bagian">
-        <SectionHead no="W5" eyebrow="Where · Di mana" judul="Data di aplikasi, berkas bukti di OneDrive" />
+        <SectionHead no="W5" eyebrow="Where · Di mana" judul="Data dan berkas bukti tersimpan di aplikasi" />
         <div className="grid-2">
           <div className="card">
             <div className="row"><div><h3>Aplikasi (database SMEn)</h3><p className="muted small">Bisa dibuka dari browser laptop maupun ponsel</p></div></div>
-            <p className="ink-2 small">Menyimpan status dokumen, data energi, variabel, EnPI, sasaran, register, temuan, dan riwayat perubahan. Akses wajib login; sesi berlaku 12 jam.</p>
+            <p className="ink-2 small">Menyimpan status dokumen, berkas evidence (maks. 50 MB per berkas, bisa dilihat langsung), data energi, variabel, EnPI, sasaran, register, temuan, dan riwayat perubahan. Akses wajib login; sesi berlaku 12 jam.</p>
           </div>
           <div className="card">
-            <div className="row"><div><h3>OneDrive (berkas evidence)</h3><p className="muted small">Satu-satunya tempat menyimpan file bukti</p></div>
-              <a className="btn kecil" href={FOLDER_BUKTI} target="_blank" rel="noreferrer"><FolderOpen aria-hidden="true" />Folder evidence</a>
-            </div>
-            <p className="ink-2 small">Aplikasi tidak menyimpan file, hanya tautan. Unggah berkas ke folder SMEn di OneDrive, lalu tempel tautannya pada halaman dokumen.</p>
+            <div className="row"><div><h3>Berkas evidence</h3><p className="muted small">Diunggah per dokumen, bisa banyak sekaligus</p></div></div>
+            <p className="ink-2 small">Buka halaman dokumen, lalu seret beberapa berkas sekaligus ke kotak unggah. Berkas tersimpan privat dan hanya bisa dibuka pengguna yang login. Berkas di atas 50 MB perlu dikompres atau dipecah dulu.</p>
           </div>
         </div>
         <div className="card" style={{ marginTop: 16 }}>
@@ -212,7 +210,7 @@ export default async function Panduan() {
               <tbody>
                 {[
                   ['Melihat seberapa siap kita untuk audit', '/', 'Ringkasan'],
-                  ['Mengubah status dokumen atau mengisi tautan evidence', '/kesiapan', 'Kesiapan Audit → klik nama dokumen'],
+                  ['Mengubah status dokumen atau mengunggah evidence', '/kesiapan', 'Kesiapan Audit → klik nama dokumen'],
                   ['Mengisi konsumsi listrik/BBM bulanan', '/energi', 'Data Energi → tabel input'],
                   ['Mengisi data variabel relevan, mengubah EnPI atau baseline', '/kinerja', 'Kinerja Energi'],
                   ['Memperbarui progres rencana aksi', '/sasaran', 'Sasaran & Aksi'],
@@ -235,7 +233,7 @@ export default async function Panduan() {
 
         <div className="card pd-alur" style={{ marginBottom: 16 }}>
           <h3>Alur status dokumen</h3>
-          <p className="muted small">Bobot tiap status membentuk skor kesiapan berbobot</p>
+          <p className="muted small">Bobot tiap status membentuk skor kesiapan berbobot; dokumen tanpa berkas evidence dihitung 0</p>
           <div className="pd-alur-baris">
             {URUTAN_STATUS.map((s, i) => (
               <div key={s} className={`pd-alur-item st-${STATUS[s].chip}`} style={{ '--i': i } as React.CSSProperties}>
@@ -257,8 +255,8 @@ export default async function Panduan() {
           <Langkah judul="Memperbarui status & evidence dokumen" peran="Tim KINRA, konsultan, admin" href="/kesiapan" langkah={[
             'Buka Kesiapan Audit. Saring dengan tahap status, kartu peringatan, klausul, atau kotak cari.',
             'Ubah status langsung dari dropdown di tabel; skor ikut berubah dan riwayatnya tercatat.',
-            'Unggah berkas ke folder OneDrive, pilih Bagikan → Salin tautan.',
-            'Klik nama dokumen, tempel tautan di kolom “Tautan evidence (OneDrive)”, lalu simpan.',
+            'Klik nama dokumen, lalu seret berkas ke kotak unggah di kartu Evidence (atau klik untuk memilih berkas).',
+            'Klik nama berkas untuk melihatnya langsung: PDF, gambar, video, dan Word/Excel/PowerPoint tampil di aplikasi.',
           ]} />
           <Langkah judul="Input data energi bulanan" peran="Tim KINRA, admin" href="/energi" langkah={[
             'Buka Data Energi, pilih tahun di kanan atas.',
