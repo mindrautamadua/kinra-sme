@@ -378,7 +378,43 @@ dialog.panel .card { animation: pop .2s var(--ease); }
   border: 1.5px dashed var(--line-2); border-radius: var(--radius-sm); transition: border-color .15s, background .15s; }
 .unggah-zona svg { width: 20px; height: 20px; color: var(--tosca); }
 .unggah-zona:hover, .unggah-zona.seret, .unggah-zona:focus-within { border-color: var(--tosca); background: color-mix(in srgb, var(--tosca) 6%, transparent); }
-.unggah-zona.sibuk { cursor: progress; opacity: .8; }
+.unggah-zona.sibuk { border-style: solid; border-color: color-mix(in srgb, var(--tosca) 60%, transparent); animation: denyut 1.6s ease-in-out infinite; }
+.unggah-zona.sibuk > svg { animation: naik 1.2s ease-in-out infinite; }
+@keyframes denyut { 50% { background: color-mix(in srgb, var(--tosca) 9%, transparent); } }
+@keyframes naik { 50% { transform: translateY(-4px); } }
+
+/* Antrean unggah: progres per berkas, hasil sukses/gagal */
+.antrean { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
+.antrean-ringkas { margin: 0 0 2px; font-weight: 600; }
+.antrean-item { display: flex; align-items: center; gap: 10px; padding: 10px 10px 10px 12px; border-radius: var(--radius-sm); border: 1px solid var(--line); background: var(--surface-2);
+  animation: masuk .25s var(--ease); transition: border-color .2s, background .2s; }
+.antrean-item .grow { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px; }
+.antrean-baris { display: flex; justify-content: space-between; gap: 10px; }
+.antrean-ikon { flex: none; display: grid; place-items: center; width: 26px; height: 26px; color: var(--tosca); }
+.antrean-ikon svg { width: 20px; height: 20px; }
+.antrean-item.t-antre .antrean-ikon { color: var(--muted); }
+.antrean-item.t-antre { opacity: .7; }
+.antrean-bar { position: relative; height: 5px; border-radius: 99px; overflow: hidden; background: var(--surface-3); }
+.antrean-bar i { position: absolute; inset: 0 auto 0 0; border-radius: inherit; background: var(--tosca); transition: width .3s var(--ease), background .2s; overflow: hidden; }
+.t-siapkan .antrean-bar i, .t-unggah .antrean-bar i, .t-simpan .antrean-bar i {
+  background: linear-gradient(90deg, var(--tosca) 0%, #3cc8c8 50%, var(--tosca) 100%); background-size: 200% 100%; animation: kilau 1.1s linear infinite; }
+.antrean-tahap { color: var(--muted); }
+.t-sukses { border-color: color-mix(in srgb, var(--good) 45%, transparent); background: color-mix(in srgb, var(--good) 8%, var(--surface-2)); animation: memudar .5s ease-in 3.4s forwards; }
+.t-sukses .antrean-ikon, .t-sukses .antrean-tahap { color: var(--txt-good); }
+.t-sukses .antrean-ikon svg { animation: letup .4s var(--ease); }
+.t-sukses .antrean-bar i { background: var(--good); }
+.t-gagal { border-color: color-mix(in srgb, var(--crit) 50%, transparent); background: color-mix(in srgb, var(--crit) 8%, var(--surface-2)); animation: goyang .4s ease-in-out; }
+.t-gagal .antrean-ikon, .t-gagal .antrean-tahap { color: var(--txt-bad); }
+.t-gagal .antrean-bar i { background: var(--crit); }
+.berkas-item.baru { animation: sorot 1.6s var(--ease); }
+.putar { animation: putar .9s linear infinite; }
+@keyframes putar { to { transform: rotate(360deg); } }
+@keyframes kilau { to { background-position: -200% 0; } }
+@keyframes masuk { from { opacity: 0; transform: translateY(6px); } }
+@keyframes letup { 0% { transform: scale(.4); opacity: 0; } 70% { transform: scale(1.2); } }
+@keyframes goyang { 20%, 60% { transform: translateX(-4px); } 40%, 80% { transform: translateX(4px); } }
+@keyframes memudar { to { opacity: 0; transform: translateY(-4px); } }
+@keyframes sorot { from { border-color: var(--good); background: color-mix(in srgb, var(--good) 16%, var(--surface-2)); } }
 dialog.penampil { border: 0; padding: 0; background: transparent; color: var(--ink); width: min(1100px, calc(100vw - 32px)); max-width: none; height: calc(100dvh - 48px); max-height: none; }
 dialog.penampil::backdrop { background: rgba(0, 0, 0, .6); backdrop-filter: blur(6px); }
 .penampil-isi { display: flex; flex-direction: column; height: 100%; border-radius: var(--radius); overflow: hidden; background: var(--surface); border: 1px solid var(--line-2); animation: pop .2s var(--ease); }
