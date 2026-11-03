@@ -7,13 +7,13 @@ import { boleh } from '@/lib/akses'
 import { ambilBerkas, ambilKlausul } from '@/lib/data'
 import { penggunaSaya } from '@/lib/sesi'
 import { waktu } from '@/lib/format'
-import { KATEGORI_TEMUAN_CHIP, KELOMPOK, STATUS, TEMUAN_STATUS_CHIP } from '@/lib/status'
+import { KATEGORI_TEMUAN_CHIP, KELOMPOK, TEMUAN_STATUS_CHIP } from '@/lib/status'
 import { ambilTemplat } from '@/lib/formulir/data'
 import { STATUS_FORMULIR } from '@/lib/formulir/isi'
 import { templatUntukDokumen } from '@/lib/formulir/tautan'
 import type { StatusFormulir } from '@/lib/formulir/tipe'
 import { db } from '@/lib/supabase'
-import type { Dokumen, StatusDokumen, Temuan } from '@/lib/types'
+import type { Dokumen, Temuan } from '@/lib/types'
 import { EvidenceBerkas } from './EvidenceBerkas'
 import { FormDokumen } from './FormDokumen'
 
@@ -36,9 +36,8 @@ export default async function HalamanDokumen({ params }: { params: Promise<{ id:
 
   if (!/^[0-9a-f-]{36}$/.test(id)) notFound()
   const s = await db()
-  const [{ data: dok }, { data: riwayat }, { data: temuan }, { berkas, migrasi }] = await Promise.all([
+  const [{ data: dok }, { data: temuan }, { berkas, migrasi }] = await Promise.all([
     s.from('dokumen_audit').select('*').eq('id', id).maybeSingle<Dokumen>(),
-    s.from('riwayat_status').select('*').eq('dokumen_id', id).order('at', { ascending: false }).limit(20),
     s.from('temuan').select('*').eq('dokumen_id', id),
     ambilBerkas(id),
   ])
@@ -56,7 +55,7 @@ export default async function HalamanDokumen({ params }: { params: Promise<{ id:
       <Link href={`/kesiapan?klausul=${encodeURIComponent(dok.klausul_kode)}`} className="btn kecil" style={{ marginBottom: 16 }}><ArrowLeft aria-hidden="true" /> Kesiapan audit</Link>
       <SectionHead eyebrow={`${dok.kode} · ${dok.klausul_kode === 'P' ? 'Persiapan awal' : `Klausul ${dok.klausul_kode} ${k?.judul ?? ''}`}`} judul={dok.nama}>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-          <Chip kode={STATUS[dok.status].chip} label={STATUS[dok.status].label} />
+          <Chip kode={berkas.length + disetujui ? 'good' : 'crit'} label={berkas.length + disetujui ? 'Ada evidence' : 'Belum ada evidence'} />
           <Chip kode="na" label={KELOMPOK[dok.kelompok]} />
         </div>
       </SectionHead>
@@ -73,7 +72,7 @@ export default async function HalamanDokumen({ params }: { params: Promise<{ id:
           {templat.length > 0 && (
             <div className="card" id="formulir">
               <div className="row">
-                <div><h3>Formulir di aplikasi</h3><p className="muted small">Isian yang diajukan menaikkan status dokumen ini ke Review; isian yang disetujui menaikkannya ke Disetujui dan dihitung sebagai evidence.</p></div>
+                <div><h3>Formulir di aplikasi</h3><p className="muted small">Isian yang disetujui dihitung sebagai evidence dokumen ini.</p></div>
                 <Chip kode={disetujui ? 'good' : daftarIsian.length ? 'warn' : 'na'} label={disetujui ? `${disetujui} disetujui` : daftarIsian.length ? 'Belum disetujui' : 'Belum diisi'} />
               </div>
               <div className="list">
@@ -93,17 +92,6 @@ export default async function HalamanDokumen({ params }: { params: Promise<{ id:
               </div>
             </div>
           )}
-          <div className="card">
-            <h3 style={{ marginBottom: 10 }}>Riwayat status</h3>
-            <div className="list">
-              {(riwayat ?? []).map((r: { id: number; dari: StatusDokumen | null; ke: StatusDokumen; at: string; oleh?: string | null }) => (
-                <div key={r.id}>
-                  <span className="mono small muted" style={{ width: 130 }}>{waktu(r.at)}</span>
-                  <span className="grow small">{r.dari ? `${STATUS[r.dari].label} → ` : 'Dibuat sebagai '}<b style={{ display: 'inline' }}>{STATUS[r.ke].label}</b>{r.oleh && <span className="muted"> · {r.oleh}</span>}</span>
-                </div>
-              ))}
-            </div>
-          </div>
           {(temuan?.length ?? 0) > 0 && (
             <div className="card">
               <h3 style={{ marginBottom: 10 }}>Temuan audit terkait</h3>

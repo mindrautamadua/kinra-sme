@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useState, useTransition } from 'react'
 import { hapusDokumen, simpanDokumen } from '@/app/actions'
 import { useBoleh } from '@/components/Peran'
-import { KELOMPOK, STATUS, URUTAN_STATUS } from '@/lib/status'
+import { KELOMPOK } from '@/lib/status'
 import type { Dokumen, Klausul } from '@/lib/types'
 
 export function FormDokumen({ dokumen, klausul }: { dokumen: Dokumen | null; klausul: Klausul[] }) {
@@ -38,11 +38,6 @@ export function FormDokumen({ dokumen, klausul }: { dokumen: Dokumen | null; kla
         <label className="field"><span>Kelompok</span>
           <select name="kelompok" defaultValue={d?.kelompok ?? 'rekaman'}>
             {Object.entries(KELOMPOK).map(([k, l]) => <option key={k} value={k}>{l}</option>)}
-          </select>
-        </label>
-        <label className="field"><span>Status</span>
-          <select name="status" defaultValue={d?.status ?? 'belum'}>
-            {URUTAN_STATUS.map((s) => <option key={s} value={s} disabled={(s === 'disetujui' || s === 'final') && !bisa('dokumen.setujui')}>{STATUS[s].label}</option>)}
           </select>
         </label>
         <label className="field"><span>Nomor dokumen</span><input name="nomor_dokumen" defaultValue={d?.nomor_dokumen ?? ''} placeholder="mis. 001/SOP-003/KINRA/SMEn/X/2026" /></label>

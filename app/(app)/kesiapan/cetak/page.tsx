@@ -7,7 +7,7 @@ import { AMBANG, LABEL_METODE } from '@/lib/enpi'
 import { angka, hariIni, persen, selisihHari, tanggal, waktu } from '@/lib/format'
 import { AMBANG_RAG, KLAUSUL_KRITIS, LABEL_RAG, type Rag, susunLaporan } from '@/lib/laporan'
 import { penggunaSaya } from '@/lib/sesi'
-import { adaBukti, INDUK_KLAUSUL, STATUS, terlambat } from '@/lib/status'
+import { adaBukti, INDUK_KLAUSUL, terlambat } from '@/lib/status'
 
 export const dynamic = 'force-dynamic'
 export const metadata = { title: 'Laporan Kesiapan Audit ISO 50001' }
@@ -114,8 +114,8 @@ export default async function CetakKesiapan() {
         {/* ── 1. Ringkasan eksekutif ─────────────────────────────── */}
         <Bagian no="1" judul="Ringkasan eksekutif" baru>
           <p className="lp-lead">
-            Per {tanggal(kini, 'panjang')}, skor kesiapan berbobot sistem manajemen energi KINRA adalah <b>{persen(L.skor)}</b>{' '}
-            ({LABEL_RAG[L.ragSkor].toLowerCase()}), dengan {L.nFinal} dari {L.jumlah} dokumen berstatus final dan cakupan evidence {persen(L.cakupanBukti, 0)}.{' '}
+            Per {tanggal(kini, 'panjang')}, skor kesiapan sistem manajemen energi KINRA adalah <b>{persen(L.skor)}</b>{' '}
+            ({LABEL_RAG[L.ragSkor].toLowerCase()}), dengan {L.nBukti} dari {L.jumlah} dokumen sudah memiliki evidence.{' '}
             {lulus} dari {L.gerbang.length} gerbang kesiapan terpenuhi.{' '}
             {hariS1 > 0 ? <>{L.stage1.nama} dijadwalkan {hariS1} hari lagi.</> : hariS1 === 0 ? <>{L.stage1.nama} berlangsung hari ini.</> : <>{L.stage1.nama} telah lewat {-hariS1} hari.</>}{' '}
             Opini kesiapan: <b>{L.putusan.label.toLowerCase()}</b>.
@@ -123,21 +123,21 @@ export default async function CetakKesiapan() {
 
           <div className="lp-kpi">
             <div><span>Skor kesiapan</span><b>{persen(L.skor)}</b><small>target ≥ {AMBANG_RAG.hijau}%</small></div>
-            <div><span>Dokumen final</span><b>{L.nFinal}<em>/{L.jumlah}</em></b><small>{L.nSiap} disetujui atau final</small></div>
-            <div><span>Cakupan evidence</span><b>{persen(L.cakupanBukti, 0)}</b><small>{L.nBukti} dokumen berberkas</small></div>
-            <div><span>Lewat tenggat</span><b className={L.nLewat ? 'buruk' : undefined}>{L.nLewat}</b><small>dokumen belum disetujui</small></div>
+            <div><span>Dokumen ber-evidence</span><b>{L.nBukti}<em>/{L.jumlah}</em></b><small>berkas atau isian disetujui</small></div>
+            <div><span>Tanpa evidence</span><b className={L.jumlah - L.nBukti ? 'buruk' : undefined}>{L.jumlah - L.nBukti}</b><small>dokumen perlu dilengkapi</small></div>
+            <div><span>Lewat tenggat</span><b className={L.nLewat ? 'buruk' : undefined}>{L.nLewat}</b><small>dokumen tanpa evidence</small></div>
             <div><span>NC mayor terbuka</span><b className={L.temuan.mayorTerbuka.length ? 'buruk' : undefined}>{L.temuan.mayorTerbuka.length}</b><small>{L.temuan.minorTerbuka.length} minor terbuka</small></div>
             <div><span>EnPI valid</span><b>{L.enpi.valid.length}<em>/{L.enpi.aktif.length}</em></b><small>R² ≥ {AMBANG.r2} · CV ≤ {AMBANG.cvrmse}%</small></div>
           </div>
 
           <div className="lp-dua">
             <div>
-              <h3 className="lp-h3">Sebaran status dokumen</h3>
-              <div className="lp-tumpuk" role="img" aria-label={L.sebaranStatus.map((x) => `${STATUS[x.s].label} ${x.n}`).join(', ')}>
-                {L.sebaranStatus.filter((x) => x.n).map((x) => <i key={x.s} className={`st-${x.s}`} style={{ flexGrow: x.n }} />)}
+              <h3 className="lp-h3">Sebaran evidence dokumen</h3>
+              <div className="lp-tumpuk" role="img" aria-label={L.sebaranBukti.map((x) => `${x.label} ${x.n}`).join(', ')}>
+                {L.sebaranBukti.filter((x) => x.n).map((x) => <i key={x.s} className={`st-${x.s}`} style={{ flexGrow: x.n }} />)}
               </div>
               <ul className="lp-legenda">
-                {L.sebaranStatus.map((x) => <li key={x.s}><i className={`st-${x.s}`} />{STATUS[x.s].label}<b>{x.n}</b></li>)}
+                {L.sebaranBukti.map((x) => <li key={x.s}><i className={`st-${x.s}`} />{x.label}<b>{x.n}</b></li>)}
               </ul>
               <h3 className="lp-h3">Kesiapan per bab standar</h3>
               <table className="lp-mini">
@@ -188,7 +188,7 @@ export default async function CetakKesiapan() {
             <thead>
               <tr>
                 <th scope="col" style={{ width: '7%' }}>Klausul</th><th scope="col">Persyaratan</th>
-                <th scope="col" className="angka" style={{ width: '7%' }}>Dok.</th><th scope="col" className="angka" style={{ width: '7%' }}>Final</th>
+                <th scope="col" className="angka" style={{ width: '7%' }}>Dok.</th>
                 <th scope="col" className="angka" style={{ width: '9%' }}>Evidence</th><th scope="col" className="angka" style={{ width: '7%' }}>Lewat</th>
                 <th scope="col" style={{ width: '20%' }}>Skor</th><th scope="col" style={{ width: '13%' }}>Penilaian</th>
               </tr>
@@ -348,14 +348,13 @@ export default async function CetakKesiapan() {
         {/* ── Lampiran A ─────────────────────────────────────────── */}
         <Bagian no="A" judul="Lampiran A · Register dokumen audit" acuan={`${dokumen.length} dokumen`} baru>
           <table className="lp-tbl lp-rapat">
-            <thead><tr><th scope="col" style={{ width: '6%' }}>Kl.</th><th scope="col" style={{ width: '9%' }}>Kode</th><th scope="col">Dokumen</th><th scope="col" style={{ width: '13%' }}>No. dokumen</th><th scope="col" style={{ width: '12%' }}>PIC</th><th scope="col" style={{ width: '10%' }}>Status</th><th scope="col" className="angka" style={{ width: '8%' }}>Evidence</th><th scope="col" style={{ width: '10%' }}>Tenggat</th></tr></thead>
+            <thead><tr><th scope="col" style={{ width: '6%' }}>Kl.</th><th scope="col" style={{ width: '9%' }}>Kode</th><th scope="col">Dokumen</th><th scope="col" style={{ width: '13%' }}>No. dokumen</th><th scope="col" style={{ width: '12%' }}>PIC</th><th scope="col" className="angka" style={{ width: '12%' }}>Evidence</th><th scope="col" style={{ width: '10%' }}>Tenggat</th></tr></thead>
             <tbody>
               {[...dokumen].sort((a, b) => (klausul.find((k) => k.kode === a.klausul_kode)?.urutan ?? 0) - (klausul.find((k) => k.kode === b.klausul_kode)?.urutan ?? 0) || a.kode.localeCompare(b.kode)).map((d) => (
                 <tr key={d.id}>
                   <td title={judulKlausul[d.klausul_kode]}>{d.klausul_kode}</td><td className="mono">{d.kode}</td><td>{d.nama}</td>
                   <td className="mono">{d.nomor_dokumen ?? '–'}</td><td>{d.pic ?? '–'}</td>
-                  <td><Tanda rag={d.status === 'final' ? 'hijau' : d.status === 'disetujui' || d.status === 'review' ? 'kuning' : 'merah'}>{STATUS[d.status].label}</Tanda></td>
-                  <td className={`angka${adaBukti(d) ? '' : ' buruk'}`}>{adaBukti(d) ? `${d.jumlah_berkas} berkas` : 'Tidak ada'}</td>
+                  <td className={`angka${adaBukti(d) ? '' : ' buruk'}`}>{adaBukti(d) ? [d.jumlah_berkas ? `${d.jumlah_berkas} berkas` : '', d.jumlah_isian ? `${d.jumlah_isian} isian` : ''].filter(Boolean).join(' · ') : 'Tidak ada'}</td>
                   <td className={terlambat(d, kini) ? 'buruk' : undefined}>{tanggal(d.tenggat)}</td>
                 </tr>
               ))}
@@ -367,9 +366,9 @@ export default async function CetakKesiapan() {
         <Bagian no="B" judul="Lampiran B · Metodologi, definisi, dan batasan" baru>
           <h3 className="lp-h3">Metode penilaian</h3>
           <p className="lp-p">
-            Skor kesiapan adalah rata-rata nilai setiap dokumen dan rekaman yang akan diperiksa auditor. Nilai mengikuti tahap status:
-            {' '}{Object.values(STATUS).map((s) => `${s.label} ${Math.round(s.bobot * 100)}`).join(', ')}.
-            Dokumen tanpa berkas evidence bernilai 0 apa pun statusnya, karena auditor menilai bukti objektif yang dapat diperiksa.
+            Skor kesiapan adalah persentase dokumen dan rekaman yang akan diperiksa auditor yang sudah memiliki evidence:
+            berkas terunggah di aplikasi atau isian formulir yang sudah disetujui. Dokumen tanpa evidence bernilai 0,
+            karena auditor menilai bukti objektif yang dapat diperiksa.
             Skor klausul dan bab dihitung dengan cara yang sama atas dokumen yang dipetakan ke klausul tersebut.
           </p>
           <table className="lp-tbl">
@@ -411,12 +410,12 @@ export default async function CetakKesiapan() {
 function Baris({ induk, nama, rows }: { induk: string; nama: string; rows: ReturnType<typeof susunLaporan>['perKlausul'] }) {
   return (
     <>
-      <tr className="lp-sub"><th colSpan={8} scope="rowgroup">{induk}. {nama}</th></tr>
+      <tr className="lp-sub"><th colSpan={7} scope="rowgroup">{induk}. {nama}</th></tr>
       {rows.map((k) => (
         <tr key={k.kode}>
           <td>{k.kode}{k.kritis && <span className="lp-bintang" title="Informasi terdokumentasi wajib"> ★</span>}</td>
           <td>{k.judul}</td>
-          <td className="angka">{k.jumlah}</td><td className="angka">{k.final}</td>
+          <td className="angka">{k.jumlah}</td>
           <td className={`angka${k.jumlah && k.bukti < k.jumlah ? ' buruk' : ''}`}>{k.jumlah ? `${k.bukti}/${k.jumlah}` : '–'}</td>
           <td className={`angka${k.lewat ? ' buruk' : ''}`}>{k.lewat}</td>
           <td><span className="lp-skor"><Batang p={k.skor} rag={k.rag} /><b>{k.jumlah ? `${Math.round(k.skor)}%` : '–'}</b></span></td>

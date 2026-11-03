@@ -8,12 +8,12 @@ import type { Aksi } from '@/lib/akses'
 import { ambilBerkas } from '@/lib/data'
 import { cekAkses } from '@/lib/sesi'
 import { COOKIE_SESI, db } from '@/lib/supabase'
-import { BUCKET_BUKTI, STATUS, UKURAN_MAKS_BUKTI } from '@/lib/status'
-import type { BerkasTampil, StatusAksi, StatusDokumen, StatusKegiatan } from '@/lib/types'
+import { BUCKET_BUKTI, UKURAN_MAKS_BUKTI } from '@/lib/status'
+import type { BerkasTampil, StatusAksi, StatusKegiatan } from '@/lib/types'
 import { ambilIsian, ambilTemplat } from '@/lib/formulir/data'
 import { isiAwal, selaraskan } from '@/lib/formulir/isi'
 import { tabelDariData } from '@/lib/formulir/sumber-data'
-import { DOKUMEN_TEMPLAT, TABEL_TERTAUT } from '@/lib/formulir/tautan'
+import { TABEL_TERTAUT } from '@/lib/formulir/tautan'
 import type { IsiFormulir, StatusFormulir } from '@/lib/formulir/tipe'
 
 type Hasil = { ok: true } | { ok: false; pesan: string }
@@ -42,14 +42,6 @@ const bil = (f: FormData, k: string) => {
 
 // ---------- Dokumen audit ----------
 
-export async function ubahStatusDokumen(id: string, status: StatusDokumen): Promise<Hasil> {
-  const t = await tolak(status === 'disetujui' || status === 'final' ? 'dokumen.setujui' : 'dokumen.ubah'); if (t) return t
-  const { data, error } = await (await db()).from('dokumen_audit').update({ status }).eq('id', id).select('id')
-  revalidatePath('/', 'layout')
-  if (!error && !data?.length) return { ok: false, pesan: 'Perubahan tidak tersimpan: tidak punya akses atau data tidak ditemukan.' }
-  return gagal(error)
-}
-
 export async function simpanDokumen(id: string | null, f: FormData): Promise<Hasil & { id?: string }> {
   const t = await tolak(id ? 'dokumen.ubah' : 'dokumen.tambah'); if (t) return t
   const data = {
@@ -59,7 +51,6 @@ export async function simpanDokumen(id: string | null, f: FormData): Promise<Has
     nama: teks(f, 'nama'),
     nomor_dokumen: teks(f, 'nomor_dokumen'),
     pic: teks(f, 'pic'),
-    status: teks(f, 'status') ?? 'belum',
     tenggat: teks(f, 'tenggat'),
     tanggal_terima: teks(f, 'tanggal_terima'),
     keterangan: teks(f, 'keterangan'),
@@ -438,25 +429,8 @@ export async function ubahStatusIsian(id: string, status: StatusFormulir): Promi
   revalidatePath('/formulir', 'layout')
   if (!error && !data?.length) return { ok: false, pesan: 'Status tidak berubah: tidak punya akses.' }
   if (error) return gagal(error)
-  const catatan = await naikkanDokumenTertaut(lama.templat_kode, status)
   revalidatePath('/', 'layout')
-  return catatan ? { ok: true, catatan } : { ok: true }
-}
-
-/**
- * Selaraskan lembar Kesiapan Audit: isian diajukan → dokumen tertaut minimal Review,
- * isian disetujui → minimal Disetujui. Status dokumen tidak pernah diturunkan otomatis.
- * Mengembalikan pesan bila dokumen gagal diperbarui.
- */
-async function naikkanDokumenTertaut(templatKode: string, ke: StatusFormulir): Promise<string | null> {
-  const kode = DOKUMEN_TEMPLAT[templatKode]
-  const target: StatusDokumen | null = ke === 'disetujui' ? 'disetujui' : ke === 'diajukan' ? 'review' : null
-  if (!kode || !target) return null
-  const s = await db()
-  const { data: d } = await s.from('dokumen_audit').select('id, status').eq('kode', kode).maybeSingle<{ id: string; status: StatusDokumen }>()
-  if (!d || STATUS[d.status].bobot >= STATUS[target].bobot) return null
-  const { error } = await s.from('dokumen_audit').update({ status: target }).eq('id', d.id)
-  return error ? `Status isian sudah berubah, tetapi dokumen ${kode} di Kesiapan Audit gagal diperbarui: ${error.message}` : null
+  return { ok: true }
 }
 
 /** Muat ulang tabel tertaut isian dari data aplikasi terkini. Hanya untuk isian yang belum disetujui. */

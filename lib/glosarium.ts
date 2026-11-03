@@ -126,7 +126,7 @@ export const GLOSARIUM: Istilah[] = [
   { istilah: 'Evidence', asli: 'Bukti objektif', kategori: 'aplikasi',
     arti: 'Dokumen, foto, notulen, atau rekaman yang diunggah ke tiap dokumen di aplikasi dan bisa dilihat langsung.', href: '/kesiapan' },
   { istilah: 'Skor kesiapan', asli: 'Readiness score', kategori: 'aplikasi',
-    arti: 'Persentase berbobot status semua dokumen audit: Belum ada 0, Draft 25, Review 50, Disetujui 85, Final 100. Dokumen tanpa berkas evidence dihitung 0.', href: '/' },
+    arti: 'Persentase dokumen audit yang sudah punya evidence: berkas terunggah atau isian formulir yang disetujui.', href: '/' },
   { istilah: 'Matriks risiko 5×5', asli: 'Risk matrix', kategori: 'aplikasi',
     arti: 'Skor kemungkinan (1–5) × dampak (1–5). Skor ≥ 15 tinggi, 8–14 sedang, di bawah 8 rendah.', href: '/register' },
 ]

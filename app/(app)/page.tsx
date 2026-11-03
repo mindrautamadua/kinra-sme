@@ -1,29 +1,32 @@
-import { ArrowDownRight, ArrowUpRight, ClipboardCheck, Link2Off, SearchCheck, Target, TrendingUp, UserRound, Zap } from 'lucide-react'
+import { ClipboardCheck, FileCheck2, FileUp, Link2Off, SearchCheck, Target, TrendingUp, UserRound, Zap } from 'lucide-react'
 import Link from 'next/link'
 import { AngkaNaik } from '@/components/AngkaNaik'
 import { Grafik } from '@/components/charts/Grafik'
 import { Chip } from '@/components/Chip'
 import { SectionHead } from '@/components/SectionHead'
-import { ambilDokumen, ambilKegiatan, ambilKinerja, ambilKlausul, ambilRiwayat, ambilTemuan, rekapEnergi } from '@/lib/data'
+import { ambilDokumen, ambilJejakBukti, ambilKegiatan, ambilKinerja, ambilKlausul, ambilTemuan, isianDiajukanPerDokumen, rekapEnergi } from '@/lib/data'
 import { LABEL_METODE, ringkas } from '@/lib/enpi'
 import { angka, BULAN, delta, hariIni, persen, selisihHari, tanggal, waktu } from '@/lib/format'
-import { adaBukti, hariWib, kesiapan, kesiapanPerKlausul, KELOMPOK, STATUS, terlambat, tonggakDari, trenKesiapan, URUTAN_STATUS } from '@/lib/status'
+import { adaBukti, hariWib, kesiapan, kesiapanPerKlausul, KELOMPOK, terlambat, tonggakDari, trenKesiapan } from '@/lib/status'
 
 export const dynamic = 'force-dynamic'
 
 export default async function Ringkasan() {
-  const [dokumen, klausul, temuan, kegiatan, kinerja, riwayat] = await Promise.all([ambilDokumen(), ambilKlausul(), ambilTemuan(), ambilKegiatan(), ambilKinerja(), ambilRiwayat()])
+  const [dokumen, klausul, temuan, kegiatan, kinerja, jejak, diajukan] = await Promise.all([ambilDokumen(), ambilKlausul(), ambilTemuan(), ambilKegiatan(), ambilKinerja(), ambilJejakBukti(), isianDiajukanPerDokumen()])
   const energi = { sumber: kinerja.sumber, data: kinerja.energi }
   const kini = hariIni()
 
   const skor = kesiapan(dokumen)
-  const siap = dokumen.filter((d) => d.status === 'final' || d.status === 'disetujui').length
+  const siap = dokumen.filter(adaBukti).length
   const lewat = dokumen.filter((d) => terlambat(d, kini))
   const temuanBuka = temuan.filter((t) => t.status !== 'Tertutup')
   const tonggak = tonggakDari(kegiatan).filter((t) => t.tanggal >= kini)
   const berikut = tonggak[0]
 
-  const perStatus = URUTAN_STATUS.map((s) => ({ s, n: dokumen.filter((d) => d.status === s).length }))
+  const perStatus = [
+    { s: 'ada', label: 'Ada evidence', chip: 'good', n: siap },
+    { s: 'belum', label: 'Belum ada evidence', chip: 'crit', n: dokumen.length - siap },
+  ]
   let kumulatif = 0
   const busur = perStatus.map((x) => {
     const lebar = dokumen.length ? (x.n / dokumen.length) * 100 : 0
@@ -35,7 +38,7 @@ export default async function Ringkasan() {
   const terlemah = [...perKlausul].sort((a, b) => a.p - b.p).slice(0, 3)
 
   const tenggatDekat = dokumen
-    .filter((d) => d.tenggat && d.status !== 'final' && d.status !== 'disetujui' && selisihHari(d.tenggat) <= 10)
+    .filter((d) => d.tenggat && !adaBukti(d) && selisihHari(d.tenggat) <= 10)
     .sort((a, b) => (a.tenggat ?? '').localeCompare(b.tenggat ?? ''))
     .slice(0, 8)
 
@@ -59,15 +62,15 @@ export default async function Ringkasan() {
   const ru = enpiUtama && ringkas(enpiUtama.laporan)
   const pangsaEbt = tjKini ? (tj((d) => d.tahun === thnAkhir && d.bulan <= blnAkhir && terbarukan.includes(d.sumber_kode)) / tjKini) * 100 : 0
 
-  // Tren & proyeksi dari riwayat_status
+  // Tren & proyeksi dari jejak evidence
   const tambahHari = (iso: string, n: number) => { const d = new Date(`${iso}T00:00:00Z`); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10) }
   const labelHari = (h: string) => `${Number(h.slice(8))} ${BULAN[Number(h.slice(5, 7)) - 1]}`
-  const awalRiwayat = riwayat[0] ? hariWib(riwayat[0].at) : kini
+  const awalRiwayat = jejak[0] ? hariWib(jejak[0].at) : kini
   let mulai = tambahHari(kini, -29)
   if (awalRiwayat > mulai) mulai = awalRiwayat > kini ? kini : awalRiwayat
   const hariLalu: string[] = []
   for (let h = mulai; h <= kini; h = tambahHari(h, 1)) hariLalu.push(h)
-  const tren = trenKesiapan(dokumen, riwayat, hariLalu)
+  const tren = trenKesiapan(dokumen, jejak, hariLalu)
   tren[tren.length - 1] = skor
   const jendela = Math.min(14, hariLalu.length - 1)
   const laju = jendela > 0 ? (skor - tren[tren.length - 1 - jendela]) / jendela : null
@@ -82,9 +85,10 @@ export default async function Ringkasan() {
   const akhir = hariLalu.length - 1
 
   // Insight
-  const nReview = dokumen.filter((d) => d.status === 'review' && adaBukti(d)).length
-  const naikReview = dokumen.length ? (nReview * (STATUS.disetujui.bobot - STATUS.review.bobot) / dokumen.length) * 100 : 0
-  const tanpaBukti = dokumen.filter((d) => !adaBukti(d)).length
+  // Quick win: dokumen tanpa evidence yang isian formulirnya sudah diajukan, tinggal disetujui
+  const nAjuan = dokumen.filter((d) => !adaBukti(d) && (diajukan.get(d.kode) ?? 0) > 0).length
+  const naikAjuan = dokumen.length ? (nAjuan / dokumen.length) * 100 : 0
+  const tanpaBukti = dokumen.length - siap
   const mayor = temuanBuka.filter((t) => t.kategori === 'Mayor').length
   const perPic = Object.values(dokumen.reduce<Record<string, { pic: string; ds: typeof dokumen }>>((a, d) => {
     const k = d.pic?.trim() || 'PIC belum ditetapkan'
@@ -92,19 +96,18 @@ export default async function Ringkasan() {
     return a
   }, {})).map((x) => ({
     pic: x.pic, n: x.ds.length,
-    sisa: x.ds.filter((d) => d.status !== 'final' && d.status !== 'disetujui').length,
+    sisa: x.ds.filter((d) => !adaBukti(d)).length,
     lewat: x.ds.filter((d) => terlambat(d, kini)).length,
-    per: URUTAN_STATUS.map((s) => ({ s, n: x.ds.filter((d) => d.status === s).length })),
   })).sort((a, b) => b.lewat - a.lewat || b.sisa - a.sisa).slice(0, 8)
   const maksPic = Math.max(1, ...perPic.map((p) => p.n))
   const picBerat = perPic[0]
 
   // Aktivitas terbaru
   const namaDok = Object.fromEntries(dokumen.map((d) => [d.id, d]))
-  const aktivitas = riwayat.filter((r) => r.dari && namaDok[r.dokumen_id]).slice(-7).reverse()
+  const aktivitas = jejak.filter((r) => namaDok[r.dokumen_id]).slice(-7).reverse()
   const pekanLalu = tambahHari(kini, -6)
-  const gerakPekan = riwayat.filter((r) => r.dari && hariWib(r.at) >= pekanLalu)
-  const naikPekan = gerakPekan.filter((r) => STATUS[r.ke].bobot > STATUS[r.dari!].bobot).length
+  const gerakPekan = jejak.filter((r) => hariWib(r.at) >= pekanLalu)
+  const dokPekan = new Set(gerakPekan.map((r) => r.dokumen_id)).size
 
   return (
     <>
@@ -112,7 +115,7 @@ export default async function Ringkasan() {
         <div className="ks-kepala">
           <SectionHead hero eyebrow="Kesiapan audit ISO 50001:2018" judul={<>Kesiapan dokumen <span className="ks-sorot">{persen(skor)}</span>: {siap} dari {dokumen.length} dokumen siap diaudit</>}>
             <p className="muted">
-              Skor berbobot dari status setiap dokumen dan rekaman (Belum 0 · Draft 25 · Review 50 · Disetujui 85 · Final 100). Dokumen tanpa evidence (berkas atau isian formulir yang disetujui) dihitung 0.
+              Persentase dokumen dan rekaman yang sudah punya evidence: berkas terunggah atau isian formulir yang disetujui.
               {berikut && <> {berikut.nama} dijadwalkan {tanggal(berikut.tanggal, 'panjang')}, {hBerikut} hari lagi.</>}
             </p>
           </SectionHead>
@@ -121,7 +124,7 @@ export default async function Ringkasan() {
 
         <div className="ks-hero">
           <div className="card ks-skor">
-            <div className="ks-cincin" role="img" aria-label={`Kesiapan berbobot ${persen(skor)}. ${perStatus.map((x) => `${STATUS[x.s].label} ${x.n}`).join(', ')}`}>
+            <div className="ks-cincin" role="img" aria-label={`Kesiapan ${persen(skor)}. ${perStatus.map((x) => `${x.label} ${x.n}`).join(', ')}`}>
               <svg viewBox="0 0 220 220" aria-hidden="true">
                 <defs>
                   <linearGradient id="ks-grad" x1="0" y1="0" x2="1" y2="1">
@@ -130,7 +133,7 @@ export default async function Ringkasan() {
                   </linearGradient>
                 </defs>
                 {busur.map((b) => b.lebar > 0 && (
-                  <circle key={b.s} cx="110" cy="110" r="102" pathLength={100} className={`ks-seg st-${STATUS[b.s].chip}`}
+                  <circle key={b.s} cx="110" cy="110" r="102" pathLength={100} className={`ks-seg st-${b.chip}`}
                     style={{ strokeDasharray: `${Math.max(0, b.lebar - 0.6)} ${100 - b.lebar + 0.6}`, strokeDashoffset: -b.mulai }} />
                 ))}
                 <circle cx="110" cy="110" r="84" pathLength={100} className="ks-trk" />
@@ -139,11 +142,11 @@ export default async function Ringkasan() {
               <div className="ks-tengah">
                 <span className="eyebrow">Kesiapan</span>
                 <b className="tnum"><AngkaNaik nilai={skor} desimal={1} /><small>%</small></b>
-                <span className="muted small">{siap} dari {dokumen.length} siap audit</span>
+                <span className="muted small">{siap} dari {dokumen.length} ada evidence</span>
               </div>
             </div>
             <div className="ks-legenda">
-              {perStatus.map((x) => <span key={x.s}><i className={`bg-${STATUS[x.s].chip}`} />{STATUS[x.s].label} <b className="tnum">{x.n}</b></span>)}
+              {perStatus.map((x) => <span key={x.s}><i className={`bg-${x.chip}`} />{x.label} <b className="tnum">{x.n}</b></span>)}
             </div>
             <div className="mini-stats hm-kelompok">
               {Object.entries(KELOMPOK).map(([k, l]) => (
@@ -183,7 +186,7 @@ export default async function Ringkasan() {
 
             <div className="card hm-proyeksi">
               <div className="row">
-                <div><h3>Tren & proyeksi kesiapan</h3><p className="muted small">Direkonstruksi dari riwayat perubahan status · {hariLalu.length} hari terakhir{berikut && ` sampai ${berikut.nama}`}</p></div>
+                <div><h3>Tren & proyeksi kesiapan</h3><p className="muted small">Direkonstruksi dari tanggal evidence pertama tiap dokumen · {hariLalu.length} hari terakhir{berikut && ` sampai ${berikut.nama}`}</p></div>
                 <div className="mini-stats">
                   <div><span>Laju {jendela} hari</span><b className={`tnum ${laju !== null && laju > 0 ? 'txt-good' : ''}`}>{laju === null ? '–' : `${laju >= 0 ? '+' : '−'}${angka(Math.abs(laju), 2)}`}<small className="muted"> poin/hari</small></b></div>
                   <div><span>Proyeksi 100%</span><b className={`tnum ${tgl100 === null ? 'txt-bad' : keburu ? 'txt-good' : 'txt-bad'}`}>{tgl100 ? tanggal(tgl100) : 'Tidak bergerak'}</b></div>
@@ -198,7 +201,7 @@ export default async function Ringkasan() {
                     { nama: `Jalur ideal ke ${berikut?.nama ?? 'audit'}`, warna: 'jingga', putus: true, data: [...hariLalu.map((_, i) => (i === akhir ? r1(skor) : null)), ...hariDepan.map((_, i) => r1(skor + ((100 - skor) * (i + 1)) / hariDepan.length))] },
                   ],
                 }} />
-              <p className="sumber">{gerakPekan.length} perubahan status dalam 7 hari terakhir, {naikPekan} di antaranya naik tahap.</p>
+              <p className="sumber">{gerakPekan.length} evidence masuk dalam 7 hari terakhir, untuk {dokPekan} dokumen.</p>
             </div>
           </div>
         </div>
@@ -208,13 +211,13 @@ export default async function Ringkasan() {
             <span className="area"><TrendingUp aria-hidden="true" />Proyeksi</span>
             <div className="angka tnum">{skor >= 100 ? 'Tuntas' : tgl100 ? tanggal(tgl100) : 'Mandek'}</div>
             <h3>{skor >= 100 ? 'Semua dokumen siap' : tgl100 === null ? 'Skor tidak naik 14 hari terakhir' : keburu ? `Tuntas sebelum ${berikut?.nama}` : `${berikut ? selisihHari(tgl100) - hBerikut : 0} hari setelah ${berikut?.nama ?? 'audit'}`}</h3>
-            <p>{lajuPerlu !== null && skor < 100 ? `Butuh +${angka(lajuPerlu, 1)} poin/hari; laju sekarang ${laju === null ? '–' : `${angka(laju, 2)}`} poin/hari.` : 'Pertahankan status dan lengkapi evidence.'}</p>
+            <p>{lajuPerlu !== null && skor < 100 ? `Butuh +${angka(lajuPerlu, 1)} poin/hari; laju sekarang ${laju === null ? '–' : `${angka(laju, 2)}`} poin/hari.` : 'Jaga evidence tetap lengkap dan mutakhir.'}</p>
           </Link>
-          <Link href="/kesiapan?status=review" className="insight positif">
+          <Link href="/formulir" className="insight positif">
             <span className="area"><Zap aria-hidden="true" />Quick win</span>
-            <div className="angka tnum">+{angka(naikReview, 1)} poin</div>
-            <h3>{nReview} dokumen tinggal disetujui</h3>
-            <p>Menyetujui semua dokumen berstatus Review menaikkan skor ke {persen(Math.min(100, skor + naikReview))}.</p>
+            <div className="angka tnum">+{angka(naikAjuan, 1)} poin</div>
+            <h3>{nAjuan} dokumen tinggal disetujui isiannya</h3>
+            <p>{nAjuan ? `Menyetujui isian formulir yang sudah diajukan menaikkan skor ke ${persen(Math.min(100, skor + naikAjuan))}.` : 'Belum ada isian formulir yang menunggu persetujuan.'}</p>
           </Link>
           {terlemah[0] && (
             <Link href={`/kesiapan?klausul=${encodeURIComponent(terlemah[0].kode)}`} className="insight kritis">
@@ -227,7 +230,7 @@ export default async function Ringkasan() {
           {picBerat && (
             <Link href="/kesiapan" className={`insight ${picBerat.lewat ? 'kritis' : 'perhatian'}`}>
               <span className="area"><UserRound aria-hidden="true" />Beban PIC terberat</span>
-              <div className="angka tnum">{picBerat.sisa} <small className="muted" style={{ fontSize: 14 }}>belum siap</small></div>
+              <div className="angka tnum">{picBerat.sisa} <small className="muted" style={{ fontSize: 14 }}>tanpa evidence</small></div>
               <h3>{picBerat.pic}</h3>
               <p>{picBerat.lewat ? `${picBerat.lewat} dokumen lewat tenggat. ` : ''}Pertimbangkan bagi beban atau pendampingan khusus.</p>
             </Link>
@@ -248,14 +251,15 @@ export default async function Ringkasan() {
 
         <div className="grid-2" style={{ marginTop: 16 }}>
           <div className="card">
-            <div className="row"><div><h3>Beban per PIC</h3><p className="muted small">Urut terlambat lalu sisa dokumen · panjang bar = jumlah dokumen</p></div></div>
+            <div className="row"><div><h3>Beban per PIC</h3><p className="muted small">Urut terlambat lalu dokumen tanpa evidence · panjang bar = jumlah dokumen</p></div></div>
             <div className="hm-pic">
               {perPic.map((p, i) => (
                 <div key={p.pic} className="hm-pic-baris" style={{ '--i': i } as React.CSSProperties}>
                   <span className="hm-pic-nama" title={p.pic}>{p.pic}</span>
-                  <span className="hm-pic-bar" role="img" aria-label={`${p.pic}: ${p.per.filter((x) => x.n).map((x) => `${STATUS[x.s].label} ${x.n}`).join(', ')}`}>
+                  <span className="hm-pic-bar" role="img" aria-label={`${p.pic}: ${p.n - p.sisa} ada evidence, ${p.sisa} belum`}>
                     <span className="stackbar" style={{ width: `${(p.n / maksPic) * 100}%` }}>
-                      {p.per.map((x) => x.n > 0 && <span key={x.s} className={`bg-${STATUS[x.s].chip}`} style={{ width: `${(x.n / p.n) * 100}%` }} />)}
+                      {p.n > p.sisa && <span className="bg-good" style={{ width: `${((p.n - p.sisa) / p.n) * 100}%` }} />}
+                      {p.sisa > 0 && <span className="bg-crit" style={{ width: `${(p.sisa / p.n) * 100}%` }} />}
                     </span>
                   </span>
                   <span className="hm-pic-ket small tnum">{p.sisa}/{p.n}{p.lewat > 0 && <b className="txt-bad"> · {p.lewat} lewat</b>}</span>
@@ -263,25 +267,22 @@ export default async function Ringkasan() {
               ))}
             </div>
             <div className="legend">
-              {URUTAN_STATUS.map((s) => <span key={s}><i className={`bg-${STATUS[s].chip}`} />{STATUS[s].label}</span>)}
+              {perStatus.map((x) => <span key={x.s}><i className={`bg-${x.chip}`} />{x.label}</span>)}
             </div>
           </div>
           <div className="card">
-            <div className="row"><div><h3>Aktivitas terbaru</h3><p className="muted small">Perubahan status dari riwayat dokumen</p></div><Link className="btn kecil" href="/kesiapan">Lembar kesiapan</Link></div>
+            <div className="row"><div><h3>Aktivitas terbaru</h3><p className="muted small">Evidence terbaru: berkas diunggah dan isian formulir disetujui</p></div><Link className="btn kecil" href="/kesiapan">Lembar kesiapan</Link></div>
             <div className="list">
-              {aktivitas.length === 0 && <p className="muted">Belum ada perubahan status tercatat.</p>}
+              {aktivitas.length === 0 && <p className="muted">Belum ada evidence tercatat.</p>}
               {aktivitas.map((r, i) => {
                 const d = namaDok[r.dokumen_id]
-                const naik = STATUS[r.ke].bobot > STATUS[r.dari!].bobot
-                const Ikon = naik ? ArrowUpRight : ArrowDownRight
+                const Ikon = r.jenis === 'berkas' ? FileUp : FileCheck2
                 return (
                   <Link key={`${r.dokumen_id}-${r.at}-${i}`} href={`/dokumen/${d.id}`} className="list-item hm-akt">
-                    <span className={`hm-akt-ikon ${naik ? 'naik' : 'turun'}`}><Ikon aria-label={naik ? 'naik' : 'turun'} /></span>
-                    <span className="grow"><b>{d.nama}</b><span className="muted small">{d.kode} · {r.oleh ?? 'sistem'} · {waktu(r.at)}</span></span>
+                    <span className="hm-akt-ikon naik"><Ikon aria-label={r.jenis === 'berkas' ? 'berkas diunggah' : 'isian disetujui'} /></span>
+                    <span className="grow"><b>{d.nama}</b><span className="muted small">{d.kode} · {r.label} · {r.oleh ?? 'sistem'} · {waktu(r.at)}</span></span>
                     <span className="hm-akt-status">
-                      <Chip kode={STATUS[r.dari!].chip} label={STATUS[r.dari!].label} />
-                      <span className="muted" aria-hidden="true">→</span>
-                      <Chip kode={STATUS[r.ke].chip} label={STATUS[r.ke].label} />
+                      <Chip kode={r.jenis === 'berkas' ? 'info' : 'good'} label={r.jenis === 'berkas' ? 'Berkas' : 'Isian disetujui'} />
                     </span>
                   </Link>
                 )
@@ -295,7 +296,7 @@ export default async function Ringkasan() {
         <SectionHead no="01" eyebrow="Agenda" judul={`${tenggatDekat.length} dokumen jatuh tempo dalam 10 hari`} />
         <div className="grid-2">
           <div className="card">
-            <div className="row"><div><h3>Tenggat terdekat</h3><p className="muted small">Belum final/disetujui, urut tenggat</p></div><Link className="btn kecil" href="/kesiapan">Semua dokumen</Link></div>
+            <div className="row"><div><h3>Tenggat terdekat</h3><p className="muted small">Belum ada evidence, urut tenggat</p></div><Link className="btn kecil" href="/kesiapan">Semua dokumen</Link></div>
             <div className="list">
               {tenggatDekat.length === 0 && <p className="muted">Tidak ada tenggat dalam 10 hari ke depan.</p>}
               {tenggatDekat.map((d) => {
@@ -305,7 +306,7 @@ export default async function Ringkasan() {
                     <span className="kode mono small muted" style={{ width: 70 }}>{d.kode}</span>
                     <span className="grow"><b>{d.nama}</b><span className="muted small">{d.pic ?? 'PIC belum ditetapkan'}</span></span>
                     <span className="small tnum" style={{ textAlign: 'right' }}>
-                      <Chip kode={STATUS[d.status].chip} label={STATUS[d.status].label} /><br />
+                      <Chip kode="crit" label="Belum ada evidence" /><br />
                       <span className={h < 0 ? 'txt-bad' : 'muted'}>{h < 0 ? `lewat ${-h} hari` : h === 0 ? 'hari ini' : `${h} hari lagi`}</span>
                     </span>
                   </Link>

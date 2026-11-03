@@ -1,15 +1,14 @@
 'use client'
 
-import { CircleCheck, CircleDot, CircleX, FileWarning, Info, Link2Off, TimerReset, TrendingDown, TriangleAlert } from 'lucide-react'
+import { FileWarning, Link2Off, TimerReset } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { selisihHari, tanggal } from '@/lib/format'
-import { adaBukti, kesiapan, kesiapanPerKlausul, STATUS, terlambat, URUTAN_STATUS } from '@/lib/status'
-import type { Dokumen, Klausul, StatusDokumen } from '@/lib/types'
+import { adaBukti, kesiapan, kesiapanPerKlausul, terlambat } from '@/lib/status'
+import type { Dokumen, Klausul } from '@/lib/types'
 
-const IKON = { good: CircleCheck, warn: TriangleAlert, serious: TrendingDown, crit: CircleX, na: CircleDot, info: Info }
 const fmt = (v: number, d = 0) => new Intl.NumberFormat('id-ID', { minimumFractionDigits: d, maximumFractionDigits: d }).format(v)
 
-// Angka bergerak halus ke nilai baru: dari 0 saat pertama tampil, lalu dari nilai lama saat status diubah.
+// Angka bergerak halus ke nilai baru: dari 0 saat pertama tampil, lalu dari nilai lama saat saringan berubah.
 // Server merender nilai akhir; dengan reduced motion angka langsung lompat.
 function useTween(target: number, durasi = 900) {
   const [v, setV] = useState(target)
@@ -45,21 +44,18 @@ function CincinMini({ p }: { p: number }) {
   )
 }
 
-export function PanelKesiapan({ rows, klausul, kini, status, setStatus, kl, setKl, hanyaLewat, setHanyaLewat, tanpaBukti, setTanpaBukti }: {
+export function PanelKesiapan({ rows, klausul, kini, kl, setKl, hanyaLewat, setHanyaLewat, tanpaBukti, setTanpaBukti }: {
   rows: Dokumen[]; klausul: Klausul[]; kini: string
-  status: StatusDokumen | ''; setStatus: (s: StatusDokumen | '') => void
   kl: string; setKl: (k: string) => void
   hanyaLewat: boolean; setHanyaLewat: (v: boolean) => void
   tanpaBukti: boolean; setTanpaBukti: (v: boolean) => void
 }) {
   const hari = new Date(`${kini}T00:00:00`)
   const skor = kesiapan(rows)
-  const siap = rows.filter((d) => d.status === 'final' || d.status === 'disetujui').length
   const lewat = rows.filter((d) => terlambat(d, kini)).length
   const kosongBukti = rows.filter((d) => !adaBukti(d)).length
-  const pekanIni = rows.filter((d) => d.tenggat && d.status !== 'final' && d.status !== 'disetujui' && d.tenggat >= kini && selisihHari(d.tenggat, hari) <= 7).length
-
-  const perStatus = URUTAN_STATUS.map((s) => ({ s, n: rows.filter((d) => d.status === s).length }))
+  const adaEvidence = rows.length - kosongBukti
+  const pekanIni = rows.filter((d) => d.tenggat && !adaBukti(d) && d.tenggat >= kini && selisihHari(d.tenggat, hari) <= 7).length
 
   const perKlausul = kesiapanPerKlausul(rows, klausul, kini)
 
@@ -67,28 +63,15 @@ export function PanelKesiapan({ rows, klausul, kini, status, setStatus, kl, setK
     <div className="ks">
       <div className="card ks-ringkas">
         <div className="ks-ringkas-skor">
-          <span className="eyebrow">Kesiapan berbobot</span>
+          <span className="eyebrow">Kesiapan</span>
           <b className="tnum"><Angka nilai={skor} desimal={1} /><small>%</small></b>
-          <span className="muted small">{siap} dari {rows.length} dokumen Disetujui/Final</span>
+          <span className="muted small">{adaEvidence} dari {rows.length} dokumen sudah ada evidence</span>
         </div>
         <div className="ks-ringkas-kanan">
-          <div className="stackbar ks-ringkas-bar" role="img" aria-label={perStatus.map((x) => `${STATUS[x.s].label} ${x.n}`).join(', ')}>
-            {perStatus.map((x) => x.n > 0 && <span key={x.s} className={`bg-${STATUS[x.s].chip}`} style={{ width: `${(x.n / rows.length) * 100}%` }} />)}
+          <div className="stackbar ks-ringkas-bar" role="img" aria-label={`Kesiapan ${fmt(skor, 1)}%`}>
+            <span className="bg-good" style={{ width: `${Math.min(100, skor)}%` }} />
           </div>
-          <div className="ks-pipa" role="group" aria-label="Saring menurut status">
-            {perStatus.map((x, i) => {
-              const Ikon = IKON[STATUS[x.s].chip]
-              const pangsa = rows.length ? (x.n / rows.length) * 100 : 0
-              return (
-                <button key={x.s} type="button" className={`ks-tahap st-${STATUS[x.s].chip}`} aria-pressed={status === x.s}
-                  onClick={() => setStatus(status === x.s ? '' : x.s)} style={{ '--i': i } as React.CSSProperties}>
-                  <span className="ks-tahap-head"><Ikon aria-hidden="true" />{STATUS[x.s].label}</span>
-                  <b className="tnum"><Angka nilai={x.n} /></b>
-                  <span className="muted small tnum">{fmt(pangsa, 0)}% dokumen</span>
-                </button>
-              )
-            })}
-          </div>
+          <span className="muted small">Dokumen dihitung siap bila berkas evidence sudah diunggah atau isian formulirnya sudah disetujui.</span>
         </div>
       </div>
 
@@ -106,7 +89,7 @@ export function PanelKesiapan({ rows, klausul, kini, status, setStatus, kl, setK
         <div className="insight ks-alert info">
           <span className="area"><TimerReset aria-hidden="true" />Jatuh tempo 7 hari</span>
           <span className="angka tnum"><Angka nilai={pekanIni} /><small> dokumen</small></span>
-          <span className="ket">Belum Disetujui/Final dengan tenggat sampai {tanggal(new Date(hari.getTime() + 7 * 86_400_000))}</span>
+          <span className="ket">Belum ada evidence dengan tenggat sampai {tanggal(new Date(hari.getTime() + 7 * 86_400_000))}</span>
         </div>
       </div>
 

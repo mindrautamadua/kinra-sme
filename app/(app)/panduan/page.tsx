@@ -7,7 +7,7 @@ import { tanggal } from '@/lib/format'
 import { penggunaSaya } from '@/lib/sesi'
 import { GLOSARIUM } from '@/lib/glosarium'
 import { ambilKegiatan } from '@/lib/data'
-import { STATUS, tonggakDari, URUTAN_STATUS } from '@/lib/status'
+import { tonggakDari } from '@/lib/status'
 
 const BAB = [
   { id: 'apa', h: 'What', judul: 'Apa', ket: 'isi aplikasi' },
@@ -20,7 +20,7 @@ const BAB = [
 
 const MODUL = [
   { href: '/', ikon: LayoutDashboard, nama: 'Ringkasan', klausul: 'Gambaran besar', isi: 'Skor kesiapan, tren & proyeksi menuju audit, insight prioritas, beban PIC, aktivitas terbaru, dan cuplikan kinerja energi.' },
-  { href: '/kesiapan', ikon: ClipboardCheck, nama: 'Kesiapan Audit', klausul: 'Klausul 4–10', isi: 'Lembar monitoring semua dokumen dan rekaman yang akan diperiksa auditor: status, PIC, tenggat, lihat berkas evidence, unduh CSV.' },
+  { href: '/kesiapan', ikon: ClipboardCheck, nama: 'Kesiapan Audit', klausul: 'Klausul 4–10', isi: 'Lembar monitoring semua dokumen dan rekaman yang akan diperiksa auditor: PIC, tenggat, lihat berkas evidence, unduh CSV.' },
   { href: '/formulir', ikon: FileText, nama: 'Formulir', klausul: 'Klausul 4–10', isi: 'Semua formulir SMEn diisi langsung di aplikasi: buat isian, isi tabel, ajukan, setujui, lalu cetak atau simpan sebagai PDF.' },
   { href: '/energi', ikon: Gauge, nama: 'Data Energi', klausul: 'Klausul 6.3', isi: 'Input konsumsi bulanan per sumber (PLN, PLTBG, PLTS, BBM), aliran energi, peta panas, dan tren antar tahun dalam Terajoule.' },
   { href: '/kinerja', ikon: Activity, nama: 'Kinerja Energi', klausul: 'Klausul 6.4 & 6.5', isi: 'EnPI dan baseline energi (EnB): aktual vs harapan, CUSUM, uji kelayakan model, input variabel relevan bulanan.' },
@@ -102,7 +102,7 @@ export default async function Panduan() {
       <section id="mengapa" className="pd-bagian">
         <SectionHead no="W2" eyebrow="Why · Mengapa" judul="Agar siap audit sertifikasi dan penghematan energi bisa dibuktikan" />
         <div className="insights">
-          <div className="insight positif"><span className="area">Satu sumber kebenaran</span><h3>Tidak ada lagi versi file berbeda</h3><p>Semua tim melihat status dan angka yang sama secara langsung. Setiap perubahan status tercatat siapa dan kapan.</p></div>
+          <div className="insight positif"><span className="area">Satu sumber kebenaran</span><h3>Tidak ada lagi versi file berbeda</h3><p>Semua tim melihat evidence dan angka yang sama secara langsung. Setiap unggahan tercatat siapa dan kapan.</p></div>
           <div className="insight"><span className="area">Siap diperiksa auditor</span><h3>Bukti tersusun per klausul</h3><p>Setiap dokumen terhubung ke klausul ISO 50001 dan berkas evidence yang bisa dibuka langsung di aplikasi, sehingga mudah ditunjukkan saat audit.</p></div>
           <div className="insight perhatian"><span className="area">Prioritas jelas</span><h3>Tahu apa yang harus dikerjakan</h3><p>Skor kesiapan, dokumen terlambat, klausul terlemah, dan proyeksi menunjukkan di mana tenaga paling dibutuhkan.</p></div>
           <div className="insight positif"><span className="area">Kinerja ternormalisasi</span><h3>Penghematan yang sah</h3><p>EnPI dibandingkan dengan baseline pada kondisi operasi yang sama, sehingga kenaikan beban tidak terbaca sebagai pemborosan.</p></div>
@@ -162,7 +162,7 @@ export default async function Panduan() {
             <p className="muted small">Frekuensi yang disarankan agar data tetap mutakhir</p>
             <div className="tl" style={{ marginTop: 18 }}>
               {[
-                { t: 'Setiap hari kerja', isi: 'Perbarui status dokumen yang sedang dikerjakan dan unggah berkas evidence begitu siap.' },
+                { t: 'Setiap hari kerja', isi: 'Unggah berkas evidence begitu dokumen siap, atau ajukan isian formulirnya untuk disetujui.' },
                 { t: 'Setiap minggu', isi: 'Cek halaman Ringkasan: dokumen terlambat, klausul terlemah, beban PIC. Tandai kegiatan timeline yang selesai.' },
                 { t: 'Awal bulan (maks. tgl 10)', isi: 'Input konsumsi energi bulan lalu dari tagihan/meter dan data variabel relevan, lalu cek EnPI di halaman Kinerja.' },
                 { t: 'Setiap triwulan', isi: 'Tinjau register isu & peluang, progres sasaran dan rencana aksi.' },
@@ -187,7 +187,7 @@ export default async function Panduan() {
                 </div>
               ))}
             </div>
-            <p className="muted small" style={{ marginTop: 12 }}>Target: semua dokumen berstatus Disetujui atau Final dan bertaut evidence sebelum Internal Audit. Hitung mundur selalu tampil di bilah atas.</p>
+            <p className="muted small" style={{ marginTop: 12 }}>Target: semua dokumen sudah punya evidence sebelum Internal Audit. Hitung mundur selalu tampil di bilah atas.</p>
             <Link className="btn kecil" href="/timeline" style={{ marginTop: 12 }}>Lihat timeline lengkap</Link>
           </div>
         </div>
@@ -213,7 +213,7 @@ export default async function Panduan() {
               <tbody>
                 {[
                   ['Melihat seberapa siap kita untuk audit', '/', 'Ringkasan'],
-                  ['Mengubah status dokumen atau mengunggah evidence', '/kesiapan', 'Kesiapan Audit → klik nama dokumen'],
+                  ['Mengunggah evidence dokumen', '/kesiapan', 'Kesiapan Audit → klik nama dokumen'],
                   ['Mengisi formulir SMEn (isu, SEU, kompetensi, notulen RTM, dll.)', '/formulir', 'Formulir → pilih formulir → Buat isian'],
                   ['Mengisi konsumsi listrik/BBM bulanan', '/energi', 'Data Energi → tabel input'],
                   ['Mengisi data variabel relevan, mengubah EnPI atau baseline', '/kinerja', 'Kinerja Energi'],
@@ -235,32 +235,17 @@ export default async function Panduan() {
       <section id="bagaimana" className="pd-bagian">
         <SectionHead no="H" eyebrow="How · Bagaimana" judul="Langkah kerja yang paling sering dilakukan" />
 
-        <div className="card pd-alur" style={{ marginBottom: 16 }}>
-          <h3>Alur status dokumen</h3>
-          <p className="muted small">Bobot tiap status membentuk skor kesiapan berbobot; dokumen tanpa berkas evidence dihitung 0</p>
-          <div className="pd-alur-baris">
-            {URUTAN_STATUS.map((s, i) => (
-              <div key={s} className={`pd-alur-item st-${STATUS[s].chip}`} style={{ '--i': i } as React.CSSProperties}>
-                <Chip kode={STATUS[s].chip} label={STATUS[s].label} />
-                <b className="tnum">{Math.round(STATUS[s].bobot * 100)}</b>
-                <span className="muted small">{s === 'belum' ? 'Belum disusun' : s === 'draft' ? 'Sedang disusun' : s === 'review' ? 'Diperiksa konsultan' : s === 'disetujui' ? 'Disahkan, siap diaudit' : 'Final dan diterapkan'}</span>
-              </div>
-            ))}
-          </div>
-          <p className="sumber">Disetujui dan Final hanya dapat dipilih oleh admin atau konsultan.</p>
-        </div>
-
         <div className="pd-cara-grid">
           <Langkah judul="Masuk pertama kali" peran="Semua peran" href="/ganti-sandi?dari=menu" langkah={[
             'Buka alamat aplikasi, masukkan email dan sandi sementara dari admin.',
             'Aplikasi meminta sandi baru; buat sandi yang hanya Anda ketahui.',
             'Sesi berakhir otomatis setelah 12 jam. Keluar lewat ikon pintu di bilah atas bila memakai komputer bersama.',
           ]} />
-          <Langkah judul="Memperbarui status & evidence dokumen" peran="Tim KINRA, konsultan, admin" href="/kesiapan" langkah={[
-            'Buka Kesiapan Audit. Saring dengan tahap status, kartu peringatan, klausul, atau kotak cari.',
-            'Ubah status langsung dari dropdown di tabel; skor ikut berubah dan riwayatnya tercatat.',
+          <Langkah judul="Melengkapi evidence dokumen" peran="Tim KINRA, konsultan, admin" href="/kesiapan" langkah={[
+            'Buka Kesiapan Audit. Saring dengan kartu peringatan (mis. Tanpa evidence), klausul, atau kotak cari.',
             'Klik nama dokumen, lalu seret berkas ke kotak unggah di kartu Evidence (atau klik untuk memilih berkas).',
             'Klik nama berkas untuk melihatnya langsung: PDF, gambar, video, dan Word/Excel/PowerPoint tampil di aplikasi.',
+            'Skor kesiapan naik begitu dokumen punya berkas atau isian formulir yang disetujui.',
           ]} />
           <Langkah judul="Input data energi bulanan" peran="Tim KINRA, admin" href="/energi" langkah={[
             'Buka Data Energi, pilih tahun di kanan atas.',

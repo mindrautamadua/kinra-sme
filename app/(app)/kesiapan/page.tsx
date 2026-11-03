@@ -10,7 +10,7 @@ import { TabelKesiapan } from './TabelKesiapan'
 
 export const dynamic = 'force-dynamic'
 
-export default async function Kesiapan({ searchParams }: { searchParams: Promise<{ klausul?: string; status?: string }> }) {
+export default async function Kesiapan({ searchParams }: { searchParams: Promise<{ klausul?: string }> }) {
   const sp = await searchParams
   const [dokumen, klausul, saya] = await Promise.all([ambilDokumen(), ambilKlausul(), penggunaSaya()])
   const kini = hariIni()
@@ -20,10 +20,9 @@ export default async function Kesiapan({ searchParams }: { searchParams: Promise
     <section>
       <div className="ks-kepala">
         <SectionHead hero eyebrow="Kesiapan audit ISO 50001:2018"
-          judul={<>Kesiapan {persen(kesiapan(dokumen))}: <span className="ks-sorot">{dokumen.filter((d) => d.status === 'final').length} final</span>, {dokumen.filter((d) => terlambat(d, kini)).length} terlambat, {tanpaBukti} belum ada evidence</>}>
+          judul={<>Kesiapan {persen(kesiapan(dokumen))}: <span className="ks-sorot">{dokumen.length - tanpaBukti} ada evidence</span>, {dokumen.filter((d) => terlambat(d, kini)).length} terlambat, {tanpaBukti} belum ada evidence</>}>
           <p className="muted">
-            Satu baris per dokumen atau rekaman yang akan diperiksa auditor. Klik tahap status, kartu peringatan, atau klausul untuk menyaring tabel;
-            riwayat perubahan status tersimpan otomatis.
+            Satu baris per dokumen atau rekaman yang akan diperiksa auditor. Klik kartu peringatan atau klausul untuk menyaring tabel.
           </p>
         </SectionHead>
         <div className="toolbar">
@@ -31,7 +30,7 @@ export default async function Kesiapan({ searchParams }: { searchParams: Promise
           {boleh(saya?.peran, 'dokumen.tambah') && <Link className="btn utama" href="/dokumen/baru"><Plus aria-hidden="true" /><span className="teks">Tambah dokumen</span></Link>}
         </div>
       </div>
-      <TabelKesiapan dokumen={dokumen} klausul={klausul} kini={kini} klausulAwal={sp.klausul ?? ''} statusAwal={sp.status ?? ''} />
+      <TabelKesiapan dokumen={dokumen} klausul={klausul} kini={kini} klausulAwal={sp.klausul ?? ''} />
     </section>
   )
 }

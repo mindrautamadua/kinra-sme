@@ -5,7 +5,7 @@
 import { AMBANG, type HasilEnpi } from './enpi'
 import { keadaan } from './kegiatan'
 import { adaBukti, INDUK_KLAUSUL, kesiapan, nilaiKesiapan, terlambat, tonggakDari } from './status'
-import type { Dokumen, Isu, Kegiatan, Klausul, RencanaAksi, Sasaran, StatusDokumen, Temuan } from './types'
+import type { Dokumen, Isu, Kegiatan, Klausul, RencanaAksi, Sasaran, Temuan } from './types'
 
 export type Rag = 'hijau' | 'kuning' | 'merah'
 export const LABEL_RAG: Record<Rag, string> = { hijau: 'Memadai', kuning: 'Sebagian', merah: 'Belum memadai' }
@@ -37,7 +37,7 @@ export type Putusan = { kode: 'siap' | 'bersyarat' | 'belum'; label: string; rin
 
 export type BarisKlausul = {
   kode: string; judul: string; induk: string
-  jumlah: number; final: number; bukti: number; lewat: number
+  jumlah: number; bukti: number; lewat: number
   skor: number; rag: Rag | null; kritis: boolean
 }
 
@@ -50,7 +50,6 @@ export type Rekomendasi = { prioritas: 'P1' | 'P2' | 'P3'; tindakan: string; acu
 export type BebanPic = { pic: string; total: number; belumSiap: number; lewat: number; tanpaBukti: number }
 
 const URUT_TINGKAT = { Kritis: 0, Tinggi: 1, Sedang: 2 }
-const siapStatus = (s: StatusDokumen) => s === 'final' || s === 'disetujui'
 
 /** Kurangi n hari dari tanggal ISO (YYYY-MM-DD). */
 function mundur(iso: string, n: number): string {
@@ -67,10 +66,11 @@ export function susunLaporan(m: {
   const skor = kesiapan(dokumen)
   const nBukti = dokumen.filter(adaBukti).length
   const cakupanBukti = dokumen.length ? (nBukti / dokumen.length) * 100 : 0
-  const nFinal = dokumen.filter((d) => d.status === 'final').length
-  const nSiap = dokumen.filter((d) => siapStatus(d.status)).length
   const nLewat = dokumen.filter((d) => terlambat(d, kini)).length
-  const sebaranStatus = (['final', 'disetujui', 'review', 'draft', 'belum'] as StatusDokumen[]).map((s) => ({ s, n: dokumen.filter((d) => d.status === s).length }))
+  const sebaranBukti = [
+    { s: 'final', label: 'Ada evidence', n: nBukti },
+    { s: 'belum', label: 'Belum ada evidence', n: dokumen.length - nBukti },
+  ]
 
   // Per klausul
   const perKlausul: BarisKlausul[] = klausul.filter((k) => k.kode !== 'P').map((k) => {
@@ -78,7 +78,7 @@ export function susunLaporan(m: {
     const s = kesiapan(ds)
     return {
       kode: k.kode, judul: k.judul, induk: INDUK_KLAUSUL[k.induk] ?? k.induk,
-      jumlah: ds.length, final: ds.filter((d) => d.status === 'final').length, bukti: ds.filter(adaBukti).length,
+      jumlah: ds.length, bukti: ds.filter(adaBukti).length,
       lewat: ds.filter((d) => terlambat(d, kini)).length,
       skor: s, rag: ds.length ? rag(s) : null, kritis: k.kode in KLAUSUL_KRITIS,
     }
@@ -110,7 +110,7 @@ export function susunLaporan(m: {
     return {
       kriteria: nama, acuan: `Kl. ${kode}`,
       hasil: b.skor >= AMBANG_RAG.hijau ? 'lulus' : b.skor >= 50 ? 'parsial' : 'gagal',
-      bukti: `${b.final}/${b.jumlah} final · ${b.bukti}/${b.jumlah} ber-evidence · skor ${Math.round(b.skor)}%`,
+      bukti: `${b.bukti}/${b.jumlah} ber-evidence · skor ${Math.round(b.skor)}%`,
     }
   })
   gerbang.push(
@@ -138,17 +138,12 @@ export function susunLaporan(m: {
         : { kode: 'belum', label: 'Belum siap', ringkas: `Kesenjangan material masih ada${mayorTerbuka.length ? `, termasuk ${mayorTerbuka.length} ketidaksesuaian mayor terbuka` : ''}. Pertimbangkan percepatan tindakan atau penjadwalan ulang Stage 1 bila kesenjangan kritis tidak dapat ditutup tepat waktu.` }
 
   // Register kesenjangan
-  const gap: Gap[] = dokumen.filter((d) => d.status !== 'final' || !adaBukti(d)).map((d) => {
-    const alasan: string[] = []
-    if (d.status === 'belum') alasan.push('Dokumen belum ada')
-    else if (!siapStatus(d.status)) alasan.push(`Status masih ${d.status}`)
-    else if (d.status === 'disetujui') alasan.push('Belum final')
-    if (!adaBukti(d)) alasan.push('Tanpa evidence')
+  const gap: Gap[] = dokumen.filter((d) => !adaBukti(d)).map((d) => {
+    const alasan: string[] = ['Tanpa evidence']
     if (terlambat(d, kini)) alasan.push('Lewat tenggat')
     const kritis = d.klausul_kode in KLAUSUL_KRITIS
-    const tingkat: Gap['tingkat'] =
-      d.status === 'belum' || (kritis && (!adaBukti(d) || terlambat(d, kini))) ? 'Kritis'
-        : !adaBukti(d) || terlambat(d, kini) || d.status === 'draft' ? 'Tinggi' : 'Sedang'
+    if (kritis) alasan.push('Informasi terdokumentasi wajib')
+    const tingkat: Gap['tingkat'] = kritis ? 'Kritis' : terlambat(d, kini) ? 'Tinggi' : 'Sedang'
     return { d, tingkat, alasan }
   }).sort((a, b) => URUT_TINGKAT[a.tingkat] - URUT_TINGKAT[b.tingkat] || (a.d.tenggat ?? '9999').localeCompare(b.d.tenggat ?? '9999') || a.d.kode.localeCompare(b.d.kode))
 
@@ -193,7 +188,7 @@ export function susunLaporan(m: {
   if (nLewat) rek.push({ prioritas: 'P2', tindakan: `Eskalasi ${nLewat} dokumen lewat tenggat ke PIC: ${bebanPic.filter((b) => b.lewat).slice(0, 4).map((b) => `${b.pic} (${b.lewat})`).join(', ')}.`, acuan: 'Kl. 5.3', pemilik: 'Wakil manajemen', batas: batasP1 })
   if (enpiAktif.length > enpiValid.length) rek.push({ prioritas: 'P2', tindakan: `Perbaiki ${enpiAktif.length - enpiValid.length} model EnPI yang belum memenuhi ambang validitas (tambah variabel relevan, perpanjang periode baseline, atau ganti metode).`, acuan: 'Kl. 6.4–6.5', pemilik: 'Tim energi', batas: batasP2 })
   for (const k of terlemah.filter((x) => x.skor < AMBANG_RAG.hijau && !(x.kritis && gerbang.find((g) => g.acuan === `Kl. ${x.kode}`)?.hasil === 'gagal'))) {
-    rek.push({ prioritas: 'P2', tindakan: `Naikkan kesiapan klausul ${k.kode} ${k.judul.toLowerCase()} dari ${Math.round(k.skor)}%: ${k.jumlah - k.final} dokumen belum final.`, acuan: `Kl. ${k.kode}`, pemilik: 'PIC klausul', batas: batasP2 })
+    rek.push({ prioritas: 'P2', tindakan: `Naikkan kesiapan klausul ${k.kode} ${k.judul.toLowerCase()} dari ${Math.round(k.skor)}%: ${k.jumlah - k.bukti} dokumen belum ada evidence.`, acuan: `Kl. ${k.kode}`, pemilik: 'PIC klausul', batas: batasP2 })
   }
   if (temuanLewat.length) rek.push({ prioritas: 'P2', tindakan: `Tindak lanjuti ${temuanLewat.length} temuan yang melewati tenggat koreksi.`, acuan: 'Kl. 10.1', pemilik: 'PIC temuan', batas: batasP1 })
   if (minorTerbuka.length) rek.push({ prioritas: 'P3', tindakan: `Selesaikan ${minorTerbuka.length} ketidaksesuaian minor dan siapkan bukti verifikasi untuk auditor.`, acuan: 'Kl. 10.1', pemilik: 'PIC temuan', batas: stage2.tanggal })
@@ -202,7 +197,7 @@ export function susunLaporan(m: {
 
   return {
     skor, ragSkor: rag(skor), putusan,
-    jumlah: dokumen.length, nFinal, nSiap, nBukti, cakupanBukti, nLewat, sebaranStatus,
+    jumlah: dokumen.length, nBukti, cakupanBukti, nLewat, sebaranBukti,
     perKlausul, perInduk, terlemah, tanpaDokumen,
     temuan: { total: temuan.length, terbuka, mayorTerbuka, minorTerbuka, temuanLewat, matriks: matriksTemuan },
     enpi: { aktif: enpiAktif, valid: enpiValid },

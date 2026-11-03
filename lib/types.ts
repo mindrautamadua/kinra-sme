@@ -38,6 +38,9 @@ export type BerkasTampil = Berkas & { url: string | null }
 
 export type RiwayatStatus = { dokumen_id: string; dari: StatusDokumen | null; ke: StatusDokumen; at: string; oleh: string | null }
 
+/** Satu peristiwa evidence: berkas diunggah atau isian formulir tertaut disetujui. */
+export type JejakBukti = { dokumen_id: string; at: string; oleh: string | null; jenis: 'berkas' | 'isian'; label: string }
+
 export type SumberEnergi = {
   kode: string
   nama: string

@@ -69,7 +69,9 @@ Admin awal dibuat oleh migrasi 0006: `admin@kinra.co.id` dengan sandi sementara 
 
 ## Asisten AI
 
-Tombol bulat di kanan bawah membuka chat Gemini. Route `app/api/chat/route.ts` memeriksa sesi, lalu `lib/konteks-ai.ts` menyusun ringkasan data dashboard (kesiapan, energi, EnPI, sasaran, temuan, isu, peluang, kegiatan) yang dibaca dengan token sesi pengguna sehingga RLS tetap berlaku. Ringkasan itu dikirim ke Gemini sebagai instruksi sistem setiap pertanyaan. Asisten hanya membaca; tidak bisa mengubah data. Percakapan tidak disimpan dan hilang saat halaman dimuat ulang.
+Tombol "Tanya KIRA" di kanan bawah membuka KIRA (KINRA Intelligent Relationship Assistant), asisten chat Gemini. Route `app/api/chat/route.ts` memeriksa sesi, lalu `lib/konteks-ai.ts` menyusun ringkasan data dashboard (kesiapan, energi, EnPI, sasaran, temuan, isu, peluang, kegiatan) yang dibaca dengan token sesi pengguna sehingga RLS tetap berlaku. Ringkasan itu dikirim ke Gemini sebagai instruksi sistem setiap pertanyaan. Asisten hanya membaca; tidak bisa mengubah data. Percakapan tidak disimpan dan hilang saat halaman dimuat ulang.
+
+Mode suara KIRA (tombol "Bicara langsung dengan KIRA") memakai Gemini Live API untuk percakapan suara dua arah yang bisa dipotong. Browser meminta token sementara ke `app/api/kira/token/route.ts`; route itu memeriksa sesi, menyusun data dashboard yang sama, lalu menerbitkan token sekali pakai (berlaku 30 menit, harus dipakai dalam 1 menit) yang mengunci model, suara, dan instruksi sistem. API key tidak pernah sampai ke browser. Audio mikrofon dikirim sebagai PCM 16 kHz dan balasan diputar dari PCM 24 kHz (`components/kira/sesiSuara.ts`). Satu sesi suara dibatasi 15 menit oleh Gemini. Model dan suara bisa diganti lewat `GEMINI_LIVE_MODEL` (bawaan `gemini-3.8-live`) dan `KIRA_SUARA` (bawaan `Aoede`). Maskot diambil dari `public/kira.png` bila ada; tanpa berkas itu tampil simbol KIRA.
 
 ## Asumsi data
 

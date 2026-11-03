@@ -1,15 +1,6 @@
-import type { Dokumen, Kegiatan, KelompokDokumen, Klausul, RiwayatStatus, StatusDokumen } from './types'
+import type { Dokumen, JejakBukti, Kegiatan, KelompokDokumen, Klausul } from './types'
 
 export type KodeChip = 'good' | 'warn' | 'serious' | 'crit' | 'na' | 'info'
-
-export const STATUS: Record<StatusDokumen, { label: string; chip: KodeChip; bobot: number }> = {
-  belum: { label: 'Belum ada', chip: 'crit', bobot: 0 },
-  draft: { label: 'Draft', chip: 'serious', bobot: 0.25 },
-  review: { label: 'Review', chip: 'warn', bobot: 0.5 },
-  disetujui: { label: 'Disetujui', chip: 'info', bobot: 0.85 },
-  final: { label: 'Final', chip: 'good', bobot: 1 },
-}
-export const URUTAN_STATUS: StatusDokumen[] = ['belum', 'draft', 'review', 'disetujui', 'final']
 
 export const KELOMPOK: Record<KelompokDokumen, string> = {
   persiapan: 'Persiapan awal',
@@ -30,48 +21,42 @@ export const INDUK_KLAUSUL: Record<string, string> = {
   '10': 'Peningkatan',
 }
 
-/** Nilai satu dokumen dalam skor kesiapan: bobot status, tetapi 0 selama belum ada berkas evidence (auditor memeriksa bukti). */
-type DokBukti = Pick<Dokumen, 'status' | 'jumlah_berkas' | 'jumlah_isian'>
+type DokBukti = Pick<Dokumen, 'jumlah_berkas' | 'jumlah_isian'>
 
-export const nilaiKesiapan = (d: DokBukti) => (adaBukti(d) ? STATUS[d.status].bobot : 0)
+/** Nilai satu dokumen dalam skor kesiapan: 1 bila sudah ada evidence, 0 bila belum. */
+export const nilaiKesiapan = (d: DokBukti) => (adaBukti(d) ? 1 : 0)
 
-/** Kesiapan berbobot 0–100: belum 0, draft 25, review 50, disetujui 85, final 100; dokumen tanpa berkas evidence bernilai 0. */
+/** Kesiapan 0–100: persentase dokumen yang sudah punya evidence (berkas terunggah atau isian formulir disetujui). */
 export function kesiapan(dokumen: DokBukti[]): number {
   if (!dokumen.length) return 0
-  return (dokumen.reduce((s, d) => s + nilaiKesiapan(d), 0) / dokumen.length) * 100
+  return (dokumen.filter(adaBukti).length / dokumen.length) * 100
 }
 
 /** Tanggal WIB (YYYY-MM-DD) dari timestamp. */
 export const hariWib = (iso: string) => new Date(new Date(iso).getTime() + 7 * 3_600_000).toISOString().slice(0, 10)
 
 /**
- * Rekonstruksi skor kesiapan pada akhir tiap tanggal dari riwayat_status.
- * Dokumen tanpa riwayat dianggap berstatus sekarang sepanjang waktu; dokumen yang
- * riwayat pertamanya INSERT (dari = null) belum dihitung sebelum tanggal dibuat.
+ * Rekonstruksi skor kesiapan pada akhir tiap tanggal dari jejak evidence (unggah berkas dan persetujuan isian).
+ * Dokumen dihitung siap sejak evidence pertamanya. Dokumen yang kini ber-evidence tetapi tanpa jejak bertanggal
+ * dianggap siap sepanjang waktu; berkas yang sudah dihapus tidak direkonstruksi.
  */
-export function trenKesiapan(dokumen: Dokumen[], riwayat: RiwayatStatus[], hari: string[]): number[] {
-  const per = new Map<string, { h: string; dari: StatusDokumen | null; ke: StatusDokumen }[]>()
-  for (const r of riwayat) {
-    const l = per.get(r.dokumen_id) ?? []
-    l.push({ h: hariWib(r.at), dari: r.dari, ke: r.ke })
-    per.set(r.dokumen_id, l)
+export function trenKesiapan(dokumen: Dokumen[], jejak: JejakBukti[], hari: string[]): number[] {
+  const pertama = new Map<string, string>()
+  for (const j of jejak) {
+    const h = hariWib(j.at)
+    const lama = pertama.get(j.dokumen_id)
+    if (!lama || h < lama) pertama.set(j.dokumen_id, h)
   }
+  if (!dokumen.length) return hari.map(() => 0)
   return hari.map((h) => {
-    // Keberadaan berkas memakai kondisi saat ini (riwayat unggah tidak direkam per hari)
-    const st: DokBukti[] = []
-    for (const d of dokumen) {
-      const l = per.get(d.id)
-      if (!l?.length) { st.push(d); continue }
-      let s = l[0].dari
-      for (const e of l) { if (e.h > h) break; s = e.ke }
-      if (s) st.push({ status: s, jumlah_berkas: d.jumlah_berkas, jumlah_isian: d.jumlah_isian })
-    }
-    return kesiapan(st)
+    const n = dokumen.filter((d) => adaBukti(d) && (!pertama.has(d.id) || pertama.get(d.id)! <= h)).length
+    return (n / dokumen.length) * 100
   })
 }
 
-export function terlambat(d: Pick<Dokumen, 'status' | 'tenggat'>, hariIni: string): boolean {
-  return !!d.tenggat && d.tenggat < hariIni && d.status !== 'final' && d.status !== 'disetujui'
+/** Lewat tenggat: tenggat sudah lewat dan dokumen belum punya evidence. */
+export function terlambat(d: Pick<Dokumen, 'tenggat' | 'jumlah_berkas' | 'jumlah_isian'>, hariIni: string): boolean {
+  return !!d.tenggat && d.tenggat < hariIni && !adaBukti(d)
 }
 
 /** Chip berdasarkan capaian persen, sesuai panduan (≥100 tercapai, 90–99 waspada, 75–89 di bawah, <75 kritis). */

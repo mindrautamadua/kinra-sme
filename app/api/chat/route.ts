@@ -1,3 +1,4 @@
+import { instruksiKira } from '@/lib/kira'
 import { konteksDashboard } from '@/lib/konteks-ai'
 import { penggunaSaya } from '@/lib/sesi'
 
@@ -10,10 +11,6 @@ const MAKS_KARAKTER = 4000
 
 type Pesan = { peran: 'user' | 'model'; teks: string }
 
-const INSTRUKSI = `Anda asisten SMEn PT Kawasan Industri Nusantara (KINRA), KEK Sei Mangkei, yang membantu persiapan sertifikasi ISO 50001:2018.
-Jawab dalam bahasa Indonesia, ringkas dan langsung. Gunakan teks biasa tanpa Markdown (tanpa **, #, atau tabel); untuk daftar pakai baris berawalan "- ".
-Untuk pertanyaan tentang data SMEn, jawab hanya dari DATA DASHBOARD di bawah. Bila data tidak tersedia, katakan tidak ada di dashboard; jangan mengarang angka.
-Untuk pertanyaan umum ISO 50001/50006 boleh memakai pengetahuan umum; sebutkan klausul bila relevan.`
 
 export async function POST(req: Request) {
   const saya = await penggunaSaya()
@@ -37,7 +34,7 @@ export async function POST(req: Request) {
     method: 'POST',
     headers: { 'content-type': 'application/json', 'x-goog-api-key': KEY },
     body: JSON.stringify({
-      systemInstruction: { parts: [{ text: `${INSTRUKSI}\n\nPengguna: ${saya.nama} (${saya.peran}).\n\n# DATA DASHBOARD\n${data}` }] },
+      systemInstruction: { parts: [{ text: instruksiKira('teks', saya, data) }] },
       contents: riwayat.map((p) => ({ role: p.peran, parts: [{ text: p.teks.slice(0, MAKS_KARAKTER) }] })),
       generationConfig: { temperature: 0.3, maxOutputTokens: 2048 },
     }),

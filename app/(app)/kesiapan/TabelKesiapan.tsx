@@ -6,16 +6,15 @@ import { useMemo, useState } from 'react'
 import { lihatBerkas } from '@/app/actions'
 import { PenampilBerkas } from '@/components/PenampilBerkas'
 import { selisihHari, tanggal } from '@/lib/format'
-import { adaBukti, KELOMPOK, kesiapan, STATUS, terlambat, URUTAN_STATUS } from '@/lib/status'
-import type { BerkasTampil, Dokumen, KelompokDokumen, Klausul, StatusDokumen } from '@/lib/types'
+import { adaBukti, KELOMPOK, kesiapan, terlambat } from '@/lib/status'
+import type { BerkasTampil, Dokumen, KelompokDokumen, Klausul } from '@/lib/types'
 import { PanelKesiapan } from './PanelKesiapan'
 
-export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal, statusAwal }: {
-  dokumen: Dokumen[]; klausul: Klausul[]; kini: string; klausulAwal: string; statusAwal: string
+export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal }: {
+  dokumen: Dokumen[]; klausul: Klausul[]; kini: string; klausulAwal: string
 }) {
   const rows = dokumen
   const [kelompok, setKelompok] = useState<KelompokDokumen | ''>('')
-  const [status, setStatus] = useState<StatusDokumen | ''>((URUTAN_STATUS as string[]).includes(statusAwal) ? (statusAwal as StatusDokumen) : '')
   const [kl, setKl] = useState(klausulAwal)
   const [cari, setCari] = useState('')
   const [hanyaLewat, setHanyaLewat] = useState(false)
@@ -40,22 +39,22 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal, statusAwal 
   const tersaring = useMemo(() => {
     const q = cari.trim().toLowerCase()
     return rows
-      .filter((d) => (!kelompok || d.kelompok === kelompok) && (!status || d.status === status) && (!kl || d.klausul_kode === kl))
+      .filter((d) => (!kelompok || d.kelompok === kelompok) && (!kl || d.klausul_kode === kl))
       .filter((d) => !hanyaLewat || terlambat(d, kini))
       .filter((d) => !tanpaBukti || !adaBukti(d))
       .filter((d) => !q || `${d.kode} ${d.nama} ${d.pic ?? ''} ${d.nomor_dokumen ?? ''} ${d.keterangan ?? ''}`.toLowerCase().includes(q))
       .sort((a, b) => (judulKlausul[a.klausul_kode]?.urutan ?? 0) - (judulKlausul[b.klausul_kode]?.urutan ?? 0) || a.kode.localeCompare(b.kode))
-  }, [rows, kelompok, status, kl, cari, hanyaLewat, tanpaBukti, kini, judulKlausul])
+  }, [rows, kelompok, kl, cari, hanyaLewat, tanpaBukti, kini, judulKlausul])
 
-  const adaSaring = !!(kelompok || status || kl || cari || hanyaLewat || tanpaBukti)
+  const adaSaring = !!(kelompok || kl || cari || hanyaLewat || tanpaBukti)
   function reset() {
-    setKelompok(''); setStatus(''); setKl(''); setCari(''); setHanyaLewat(false); setTanpaBukti(false)
+    setKelompok(''); setKl(''); setCari(''); setHanyaLewat(false); setTanpaBukti(false)
   }
 
   function unduhCsv() {
-    const kolom = ['Kode', 'Klausul', 'Kelompok', 'Nama', 'Nomor dokumen', 'PIC', 'Status', 'Tenggat', 'Berkas evidence', 'Isian formulir disetujui', 'Keterangan']
+    const kolom = ['Kode', 'Klausul', 'Kelompok', 'Nama', 'Nomor dokumen', 'PIC', 'Tenggat', 'Berkas evidence', 'Isian formulir disetujui', 'Keterangan']
     const esc = (v: unknown) => `"${String(v ?? '').replace(/"/g, '""')}"`
-    const isi = tersaring.map((d) => [d.kode, d.klausul_kode, KELOMPOK[d.kelompok], d.nama, d.nomor_dokumen, d.pic, STATUS[d.status].label, d.tenggat, d.jumlah_berkas ?? 0, d.jumlah_isian ?? 0, d.keterangan].map(esc).join(','))
+    const isi = tersaring.map((d) => [d.kode, d.klausul_kode, KELOMPOK[d.kelompok], d.nama, d.nomor_dokumen, d.pic, d.tenggat, d.jumlah_berkas ?? 0, d.jumlah_isian ?? 0, d.keterangan].map(esc).join(','))
     const blob = new Blob(['﻿' + [kolom.map(esc).join(','), ...isi].join('\n')], { type: 'text/csv;charset=utf-8' })
     const a = document.createElement('a')
     a.href = URL.createObjectURL(blob)
@@ -68,11 +67,11 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal, statusAwal 
 
   return (
     <>
-      <PanelKesiapan rows={rows} klausul={klausul} kini={kini} status={status} setStatus={setStatus} kl={kl} setKl={setKl}
+      <PanelKesiapan rows={rows} klausul={klausul} kini={kini} kl={kl} setKl={setKl}
         hanyaLewat={hanyaLewat} setHanyaLewat={setHanyaLewat} tanpaBukti={tanpaBukti} setTanpaBukti={setTanpaBukti} />
       <div className="card ks-tabel" id="tabel-kesiapan">
         <div className="row">
-          <div><h3>Lembar monitoring</h3><p className="muted small">Status dokumen diubah di halaman detail; klik nama dokumen</p></div>
+          <div><h3>Lembar monitoring</h3><p className="muted small">Klik nama dokumen untuk membuka detail dan mengunggah evidence</p></div>
           {adaSaring && <button type="button" className="btn kecil" onClick={reset}><X aria-hidden="true" />Hapus semua saringan</button>}
         </div>
         <div className="toolbar">
@@ -149,7 +148,7 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal, statusAwal 
                     <td className="small">{d.pic ?? <span className="muted">–</span>}</td>
                     <td className="small tnum" style={{ whiteSpace: 'nowrap' }}>
                       {tanggal(d.tenggat)}
-                      {h !== null && d.status !== 'final' && d.status !== 'disetujui' && (
+                      {h !== null && !adaBukti(d) && (
                         <span className={`upd ${lewat ? 'txt-bad' : ''}`}>{h < 0 ? `lewat ${-h} hari` : h === 0 ? 'hari ini' : `${h} hari lagi`}</span>
                       )}
                     </td>
