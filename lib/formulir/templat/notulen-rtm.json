@@ -1,0 +1,123 @@
+{
+ "kode": "notulen-rtm",
+ "klausul": [
+  "9.3"
+ ],
+ "judul": "Notulen Rapat Tinjauan Manajemen",
+ "subjudul": "Sistem Manajemen Energi – PT Kawasan Industri Nusantara (KINRA)",
+ "kepala": [
+  {
+   "label": "No. Form",
+   "nilai": "001/FRM-SOP-023/ KINRA/SMEn/X/2026"
+  },
+  {
+   "label": "Revisi",
+   "nilai": "00"
+  },
+  {
+   "label": "Tanggal",
+   "nilai": "22 Oktober 2026"
+  }
+ ],
+ "blok": [
+  {
+   "jenis": "isian",
+   "id": "aktivitas",
+   "label": "Aktivitas",
+   "teks": "Rapat Tinjauan Manajemen SMEn"
+  },
+  {
+   "jenis": "isian",
+   "id": "agenda",
+   "label": "Agenda",
+   "teks": "status tindakan dari tinjauan manajemen sebelumnya\nperubahan isu eksternal dan internal serta risiko dan peluang terkait yang relevan dengan SMEn\nketidaksesuaian dan tindakan korektif\nhasil pemantauan dan pengukuran\nhasil audit\nhasil evaluasi pemenuhan persyaratan legaldan persyaratan lainnya\ninformasi tentang kinerja EnMS, termasuk kecenderungan pada:\npeluang untuk peningkatan berkelanjutan, termasuk kompetensi\nkebijakan energi.",
+   "panjang": true
+  },
+  {
+   "jenis": "isian",
+   "id": "tanggal",
+   "label": "Tanggal rapat",
+   "teks": "24 Nov’ 2026"
+  },
+  {
+   "jenis": "isian",
+   "id": "tempat",
+   "label": "Tempat",
+   "teks": "Kantor Pusat PT Kawasan Industri Nusantara (KINRA)"
+  },
+  {
+   "jenis": "isian",
+   "id": "waktu",
+   "label": "Waktu",
+   "teks": "16.00 - Selesai"
+  },
+  {
+   "jenis": "isian",
+   "id": "hadir",
+   "label": "Dihadiri oleh",
+   "teks": "(Lihat daftar hadir)"
+  },
+  {
+   "jenis": "isian",
+   "id": "distribusi",
+   "label": "Distribusi ke",
+   "teks": "Direktur, Kepala Bagian, Kepala Sub Bagian"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t1",
+   "kolom": [
+    {
+     "label": "No."
+    },
+    {
+     "label": "Uraian"
+    },
+    {
+     "label": "PIC"
+    },
+    {
+     "label": "Keterangan"
+    }
+   ],
+   "baris": [
+    [
+     "1",
+     "Status tindak lanjut tinjauan sebelumnya; perubahan isu internal/eksternal, kebutuhan pihak berkepentingan, serta risiko dan peluang SMEn.",
+     "Koordinator/Tim SMEn; seluruh Kepala Bagian terkait",
+     "Tinjau tindakan terdahulu dan perubahan yang memengaruhi SMEn. Catat status, bukti, risiko/peluang, PIC, serta tenggat tindak lanjut."
+    ],
+    [
+     "2",
+     "Kinerja energi dan pencapaian tujuan/target, termasuk konsumsi energi, EnPI, EnB, SEU, serta hasil pemantauan dan pengukuran.",
+     "Koordinator/Tim SMEn; Bagian Mekanikal & Elektrikal, Fasilitas dan Pengamanan; Bagian Produksi Kawasan; Akuntansi & Keuangan",
+     "Bandingkan data aktual dengan baseline dan target yang disahkan. Periksa kelengkapan dan keandalan data meter/tagihan serta tetapkan tindak lanjut jika data belum tersedia atau belum tervalidasi."
+    ],
+    [
+     "3",
+     "Hasil audit internal, ketidaksesuaian dan tindakan korektif, serta evaluasi pemenuhan persyaratan hukum dan persyaratan lainnya.",
+     "Koordinator SMEn; SPI; Bagian Sekretariat Perusahaan, Hukum & TJSP; Kepala Bagian terkait",
+     "Tinjau temuan, akar penyebab, status tindakan korektif, bukti efektivitas, dan status pemenuhan kewajiban. Tetapkan PIC dan tenggat untuk hal yang belum selesai."
+    ],
+    [
+     "4",
+     "Kecukupan sumber daya, kompetensi, anggaran, kesesuaian Kebijakan Energi, serta peluang peningkatan berkelanjutan dan keputusan manajemen.",
+     "Direksi/Manajemen Puncak; SEVP terkait; Akuntansi & Keuangan; SDM, Umum & Pengadaan; Koordinator/Tim SMEn",
+     "Putuskan kebutuhan sumber daya, pelatihan, prioritas peningkatan, perubahan SMEn, serta tindakan untuk mencapai sasaran. Dokumentasikan keputusan, PIC, tenggat, dan metode pemantauan."
+    ]
+   ]
+  }
+ ],
+ "ttd": [
+  {
+   "peran": "Dibuat oleh",
+   "jabatan": "Koordinator SMEn"
+  },
+  {
+   "peran": "Disetujui oleh",
+   "jabatan": "Management Representative"
+  }
+ ],
+ "sumber": "9.3 Tinjauan Manajemen/Notulen RTM - KINRA (2026).docx",
+ "nomor": "001/FRM-SOP-023/ KINRA/SMEn/X/2026"
+}

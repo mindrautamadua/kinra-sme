@@ -1,4 +1,4 @@
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, FileText } from 'lucide-react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Chip } from '@/components/Chip'
@@ -8,6 +8,10 @@ import { ambilBerkas, ambilKlausul } from '@/lib/data'
 import { penggunaSaya } from '@/lib/sesi'
 import { waktu } from '@/lib/format'
 import { KATEGORI_TEMUAN_CHIP, KELOMPOK, STATUS, TEMUAN_STATUS_CHIP } from '@/lib/status'
+import { ambilTemplat } from '@/lib/formulir/data'
+import { STATUS_FORMULIR } from '@/lib/formulir/isi'
+import { templatUntukDokumen } from '@/lib/formulir/tautan'
+import type { StatusFormulir } from '@/lib/formulir/tipe'
 import { db } from '@/lib/supabase'
 import type { Dokumen, StatusDokumen, Temuan } from '@/lib/types'
 import { EvidenceBerkas } from './EvidenceBerkas'
@@ -40,6 +44,12 @@ export default async function HalamanDokumen({ params }: { params: Promise<{ id:
   ])
   if (!dok) notFound()
   const k = klausul.find((x) => x.kode === dok.klausul_kode)
+  const templat = templatUntukDokumen(dok.kode).map((kode) => ambilTemplat(kode)).filter((x) => x !== null)
+  const { data: isian } = templat.length
+    ? await s.from('formulir_isian').select('id, templat_kode, judul, status, diubah_at').in('templat_kode', templat.map((x) => x.kode)).order('diubah_at', { ascending: false })
+    : { data: [] }
+  const daftarIsian = (isian ?? []) as { id: string; templat_kode: string; judul: string; status: StatusFormulir; diubah_at: string }[]
+  const disetujui = daftarIsian.filter((x) => x.status === 'disetujui').length
 
   return (
     <section>
@@ -60,6 +70,29 @@ export default async function HalamanDokumen({ params }: { params: Promise<{ id:
             </div>
             <EvidenceBerkas dokumenId={dok.id} berkas={berkas} migrasi={migrasi} />
           </div>
+          {templat.length > 0 && (
+            <div className="card" id="formulir">
+              <div className="row">
+                <div><h3>Formulir di aplikasi</h3><p className="muted small">Isian yang diajukan menaikkan status dokumen ini ke Review; isian yang disetujui menaikkannya ke Disetujui dan dihitung sebagai evidence.</p></div>
+                <Chip kode={disetujui ? 'good' : daftarIsian.length ? 'warn' : 'na'} label={disetujui ? `${disetujui} disetujui` : daftarIsian.length ? 'Belum disetujui' : 'Belum diisi'} />
+              </div>
+              <div className="list">
+                {templat.map((tp) => (
+                  <Link key={tp.kode} href={`/formulir/${tp.kode}`} className="list-item">
+                    <FileText aria-hidden="true" style={{ width: 16, height: 16, flex: 'none' }} />
+                    <span className="grow"><b>{tp.judul}</b><span className="muted small">Klausul {tp.klausul.join(', ')} · buat atau buka isian</span></span>
+                  </Link>
+                ))}
+                {daftarIsian.map((x) => (
+                  <Link key={x.id} href={`/formulir/isian/${x.id}`} className="list-item">
+                    <span className="mono small muted" style={{ width: 130 }}>{waktu(x.diubah_at)}</span>
+                    <span className="grow small">{x.judul}</span>
+                    <Chip kode={STATUS_FORMULIR[x.status].chip} label={STATUS_FORMULIR[x.status].label} />
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
           <div className="card">
             <h3 style={{ marginBottom: 10 }}>Riwayat status</h3>
             <div className="list">

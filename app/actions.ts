@@ -8,8 +8,13 @@ import type { Aksi } from '@/lib/akses'
 import { ambilBerkas } from '@/lib/data'
 import { cekAkses } from '@/lib/sesi'
 import { COOKIE_SESI, db } from '@/lib/supabase'
-import { BUCKET_BUKTI, UKURAN_MAKS_BUKTI } from '@/lib/status'
+import { BUCKET_BUKTI, STATUS, UKURAN_MAKS_BUKTI } from '@/lib/status'
 import type { BerkasTampil, StatusAksi, StatusDokumen, StatusKegiatan } from '@/lib/types'
+import { ambilIsian, ambilTemplat } from '@/lib/formulir/data'
+import { isiAwal, selaraskan } from '@/lib/formulir/isi'
+import { tabelDariData } from '@/lib/formulir/sumber-data'
+import { DOKUMEN_TEMPLAT, TABEL_TERTAUT } from '@/lib/formulir/tautan'
+import type { IsiFormulir, StatusFormulir } from '@/lib/formulir/tipe'
 
 type Hasil = { ok: true } | { ok: false; pesan: string }
 
@@ -351,6 +356,130 @@ export async function hapusTemuan(id: string): Promise<Hasil> {
   const t = await tolak('temuan.hapus'); if (t) return t
   const { error } = await (await db()).from('temuan').delete().eq('id', id)
   revalidatePath('/temuan')
+  return gagal(error)
+}
+
+// ---------- Formulir ----------
+
+const BATAS_ISI = 1_500_000 // karakter JSON per isian
+
+/** Pastikan isian hanya berisi string dengan bentuk sesuai templat. */
+function rapikanIsi(kode: string, isi: IsiFormulir): IsiFormulir | null {
+  const t = ambilTemplat(kode)
+  if (!t) return null
+  const str = (v: unknown) => (typeof v === 'string' ? v.slice(0, 20_000) : '')
+  const s = selaraskan(t, isi)
+  return {
+    kepala: Object.fromEntries(Object.entries(s.kepala).map(([k, v]) => [k, str(v)])),
+    teks: Object.fromEntries(Object.entries(s.teks).map(([k, v]) => [k, str(v)])),
+    tabel: Object.fromEntries(Object.entries(s.tabel).map(([k, rows]) => [k, rows.slice(0, 500).map((r) => r.map(str))])),
+    ttd: s.ttd.map((x) => ({ nama: str(x?.nama), tanggal: str(x?.tanggal) })),
+  }
+}
+
+export async function buatIsian(kode: string, f: FormData): Promise<Hasil & { id?: string }> {
+  const t0 = await tolak('formulir.isi'); if (t0) return t0
+  const t = ambilTemplat(kode)
+  if (!t) return { ok: false, pesan: 'Templat formulir tidak ditemukan.' }
+  const varian = teks(f, 'varian')
+  if (t.varian?.length && (!varian || !t.varian.some((v) => v.nama === varian))) return { ok: false, pesan: 'Pilih bagian terlebih dahulu.' }
+  const periode = teks(f, 'periode')
+  const salin = teks(f, 'salin')
+  let isi = isiAwal(t, varian)
+  if (salin) {
+    const lama = await ambilIsian(salin)
+    if (!lama || lama.isian.templat_kode !== kode) return { ok: false, pesan: 'Isian sumber tidak ditemukan.' }
+    isi = selaraskan(t, lama.isian.isi)
+    isi.ttd = t.ttd.map(() => ({ nama: '', tanggal: '' }))
+  }
+  // Tabel tertaut selalu diambil dari data terkini, juga saat menyalin isian lama
+  Object.assign(isi.tabel, await tabelDariData(kode))
+  if (periode) {
+    const k = t.kepala.find((x) => /^periode$/i.test(x.label))
+    if (k) isi.kepala[k.label] = periode
+  }
+  const judul = teks(f, 'judul') ?? [t.judul, varian, periode].filter(Boolean).join(' · ')
+  const { data, error } = await (await db()).from('formulir_isian')
+    .insert({ templat_kode: kode, judul, varian, periode, isi }).select('id').single()
+  revalidatePath('/formulir', 'layout')
+  return error ? gagal(error) : { ok: true, id: data.id }
+}
+
+/** Simpan isian. `versi` = diubah_at saat isian dimuat; bila berbeda, ada orang lain yang menyimpan lebih dulu. */
+export async function simpanIsian(id: string, kode: string, versi: string, data: { judul: string; periode: string | null; isi: IsiFormulir }): Promise<Hasil & { versi?: string; bentrok?: boolean }> {
+  const t0 = await tolak('formulir.isi'); if (t0) return t0
+  const isi = rapikanIsi(kode, data.isi)
+  if (!isi) return { ok: false, pesan: 'Templat formulir tidak ditemukan.' }
+  if (JSON.stringify(isi).length > BATAS_ISI) return { ok: false, pesan: 'Isian terlalu besar untuk disimpan. Pecah menjadi beberapa isian.' }
+  const judul = data.judul.trim()
+  if (!judul) return { ok: false, pesan: 'Judul isian wajib diisi.' }
+  const s = await db()
+  const { data: row, error } = await s.from('formulir_isian')
+    .update({ judul, periode: data.periode?.trim() || null, isi }).eq('id', id).eq('templat_kode', kode).eq('diubah_at', versi)
+    .select('diubah_at').maybeSingle<{ diubah_at: string }>()
+  if (error) return gagal(error)
+  if (!row) {
+    const { data: kini } = await s.from('formulir_isian').select('diubah_at, diubah_oleh').eq('id', id).maybeSingle<{ diubah_at: string; diubah_oleh: string | null }>()
+    if (kini && kini.diubah_at !== versi) {
+      return { ok: false, bentrok: true, pesan: `Isian ini baru saja disimpan oleh ${kini.diubah_oleh ?? 'pengguna lain'}. Salin perubahan Anda, lalu muat ulang halaman.` }
+    }
+    return { ok: false, pesan: 'Perubahan tidak tersimpan: tidak punya akses atau isian tidak ditemukan.' }
+  }
+  revalidatePath(`/formulir/${kode}`)
+  return { ok: true, versi: row.diubah_at }
+}
+
+export async function ubahStatusIsian(id: string, status: StatusFormulir): Promise<Hasil & { catatan?: string }> {
+  const s0 = await db()
+  const { data: lama } = await s0.from('formulir_isian').select('status, templat_kode').eq('id', id).maybeSingle<{ status: StatusFormulir; templat_kode: string }>()
+  if (!lama) return { ok: false, pesan: 'Isian tidak ditemukan.' }
+  const t = await tolak(status === 'disetujui' || lama.status === 'disetujui' ? 'formulir.setujui' : 'formulir.isi'); if (t) return t
+  const { data, error } = await s0.from('formulir_isian').update({ status }).eq('id', id).select('id')
+  revalidatePath('/formulir', 'layout')
+  if (!error && !data?.length) return { ok: false, pesan: 'Status tidak berubah: tidak punya akses.' }
+  if (error) return gagal(error)
+  const catatan = await naikkanDokumenTertaut(lama.templat_kode, status)
+  revalidatePath('/', 'layout')
+  return catatan ? { ok: true, catatan } : { ok: true }
+}
+
+/**
+ * Selaraskan lembar Kesiapan Audit: isian diajukan → dokumen tertaut minimal Review,
+ * isian disetujui → minimal Disetujui. Status dokumen tidak pernah diturunkan otomatis.
+ * Mengembalikan pesan bila dokumen gagal diperbarui.
+ */
+async function naikkanDokumenTertaut(templatKode: string, ke: StatusFormulir): Promise<string | null> {
+  const kode = DOKUMEN_TEMPLAT[templatKode]
+  const target: StatusDokumen | null = ke === 'disetujui' ? 'disetujui' : ke === 'diajukan' ? 'review' : null
+  if (!kode || !target) return null
+  const s = await db()
+  const { data: d } = await s.from('dokumen_audit').select('id, status').eq('kode', kode).maybeSingle<{ id: string; status: StatusDokumen }>()
+  if (!d || STATUS[d.status].bobot >= STATUS[target].bobot) return null
+  const { error } = await s.from('dokumen_audit').update({ status: target }).eq('id', d.id)
+  return error ? `Status isian sudah berubah, tetapi dokumen ${kode} di Kesiapan Audit gagal diperbarui: ${error.message}` : null
+}
+
+/** Muat ulang tabel tertaut isian dari data aplikasi terkini. Hanya untuk isian yang belum disetujui. */
+export async function segarkanDataIsian(id: string): Promise<Hasil & { versi?: string }> {
+  const t0 = await tolak('formulir.isi'); if (t0) return t0
+  const r = await ambilIsian(id)
+  if (!r) return { ok: false, pesan: 'Isian tidak ditemukan.' }
+  if (r.isian.status === 'disetujui') return { ok: false, pesan: 'Isian sudah disetujui. Kembalikan ke draf untuk memuat ulang data.' }
+  if (!TABEL_TERTAUT[r.isian.templat_kode]) return { ok: false, pesan: 'Formulir ini tidak punya tabel yang diambil dari data aplikasi.' }
+  const isi = rapikanIsi(r.isian.templat_kode, { ...r.isian.isi, tabel: { ...r.isian.isi.tabel, ...(await tabelDariData(r.isian.templat_kode)) } })
+  if (!isi) return { ok: false, pesan: 'Templat formulir tidak ditemukan.' }
+  const { data, error } = await (await db()).from('formulir_isian').update({ isi }).eq('id', id).select('diubah_at').maybeSingle<{ diubah_at: string }>()
+  if (error) return gagal(error)
+  if (!data) return { ok: false, pesan: 'Data tidak dimuat ulang: tidak punya akses.' }
+  revalidatePath(`/formulir/isian/${id}`)
+  return { ok: true, versi: data.diubah_at }
+}
+
+export async function hapusIsian(id: string): Promise<Hasil> {
+  const t = await tolak('formulir.hapus'); if (t) return t
+  const { data, error } = await (await db()).from('formulir_isian').delete().eq('id', id).select('id')
+  revalidatePath('/formulir', 'layout')
+  if (!error && !data?.length) return { ok: false, pesan: 'Isian tidak terhapus: tidak punya akses.' }
   return gagal(error)
 }
 

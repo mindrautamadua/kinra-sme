@@ -1,4 +1,4 @@
-import { Activity, BookOpen, Bot, CalendarRange, CircleCheck, ClipboardCheck, Gauge, KeyRound, LayoutDashboard, Minus, SearchCheck, ShieldAlert, Target, Users } from 'lucide-react'
+import { Activity, BookOpen, Bot, CalendarRange, CircleCheck, ClipboardCheck, FileText, Gauge, KeyRound, LayoutDashboard, Minus, SearchCheck, ShieldAlert, Target, Users } from 'lucide-react'
 import Link from 'next/link'
 import { Chip } from '@/components/Chip'
 import { SectionHead } from '@/components/SectionHead'
@@ -6,7 +6,8 @@ import { AKSES, type Aksi, boleh, DAFTAR_PERAN, LABEL_AKSI, LABEL_PERAN, type Pe
 import { tanggal } from '@/lib/format'
 import { penggunaSaya } from '@/lib/sesi'
 import { GLOSARIUM } from '@/lib/glosarium'
-import { STATUS, TONGGAK, URUTAN_STATUS } from '@/lib/status'
+import { ambilKegiatan } from '@/lib/data'
+import { STATUS, tonggakDari, URUTAN_STATUS } from '@/lib/status'
 
 const BAB = [
   { id: 'apa', h: 'What', judul: 'Apa', ket: 'isi aplikasi' },
@@ -20,6 +21,7 @@ const BAB = [
 const MODUL = [
   { href: '/', ikon: LayoutDashboard, nama: 'Ringkasan', klausul: 'Gambaran besar', isi: 'Skor kesiapan, tren & proyeksi menuju audit, insight prioritas, beban PIC, aktivitas terbaru, dan cuplikan kinerja energi.' },
   { href: '/kesiapan', ikon: ClipboardCheck, nama: 'Kesiapan Audit', klausul: 'Klausul 4–10', isi: 'Lembar monitoring semua dokumen dan rekaman yang akan diperiksa auditor: status, PIC, tenggat, lihat berkas evidence, unduh CSV.' },
+  { href: '/formulir', ikon: FileText, nama: 'Formulir', klausul: 'Klausul 4–10', isi: 'Semua formulir SMEn diisi langsung di aplikasi: buat isian, isi tabel, ajukan, setujui, lalu cetak atau simpan sebagai PDF.' },
   { href: '/energi', ikon: Gauge, nama: 'Data Energi', klausul: 'Klausul 6.3', isi: 'Input konsumsi bulanan per sumber (PLN, PLTBG, PLTS, BBM), aliran energi, peta panas, dan tren antar tahun dalam Terajoule.' },
   { href: '/kinerja', ikon: Activity, nama: 'Kinerja Energi', klausul: 'Klausul 6.4 & 6.5', isi: 'EnPI dan baseline energi (EnB): aktual vs harapan, CUSUM, uji kelayakan model, input variabel relevan bulanan.' },
   { href: '/sasaran', ikon: Target, nama: 'Sasaran & Aksi', klausul: 'Klausul 6.2', isi: 'Sasaran dan target energi yang terhubung ke EnPI, rencana aksi beserta PIC, tenggat, dan penghematan terverifikasi.' },
@@ -43,7 +45,8 @@ function Langkah({ judul, peran, langkah, href }: { judul: string; peran: string
 }
 
 export default async function Panduan() {
-  const saya = await penggunaSaya()
+  const [saya, kegiatan] = await Promise.all([penggunaSaya(), ambilKegiatan()])
+  const tonggak = tonggakDari(kegiatan)
   const peran = saya?.peran as Peran | undefined
   const bisa = (Object.keys(AKSES) as Aksi[]).filter((a) => boleh(peran, a))
 
@@ -175,9 +178,9 @@ export default async function Panduan() {
           </div>
           <div className="card">
             <h3>Tonggak sertifikasi</h3>
-            <p className="muted small">Timeline Pendampingan SMEn Rev.3</p>
+            <p className="muted small">Diambil dari jadwal di halaman Timeline</p>
             <div className="list" style={{ marginTop: 10 }}>
-              {[...TONGGAK].sort((a, b) => a.tanggal.localeCompare(b.tanggal)).map((t) => (
+              {tonggak.map((t) => (
                 <div key={t.kode}>
                   <span className="mono small" style={{ width: 104 }}>{tanggal(t.tanggal)}</span>
                   <span className="grow"><b>{t.nama}</b></span>
@@ -211,6 +214,7 @@ export default async function Panduan() {
                 {[
                   ['Melihat seberapa siap kita untuk audit', '/', 'Ringkasan'],
                   ['Mengubah status dokumen atau mengunggah evidence', '/kesiapan', 'Kesiapan Audit → klik nama dokumen'],
+                  ['Mengisi formulir SMEn (isu, SEU, kompetensi, notulen RTM, dll.)', '/formulir', 'Formulir → pilih formulir → Buat isian'],
                   ['Mengisi konsumsi listrik/BBM bulanan', '/energi', 'Data Energi → tabel input'],
                   ['Mengisi data variabel relevan, mengubah EnPI atau baseline', '/kinerja', 'Kinerja Energi'],
                   ['Memperbarui progres rencana aksi', '/sasaran', 'Sasaran & Aksi'],

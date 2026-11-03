@@ -1,0 +1,143 @@
+{
+ "kode": "pengendalian-operasional",
+ "klausul": [
+  "8.1"
+ ],
+ "judul": "Pengendalian Operasional",
+ "subjudul": "Sistem Manajemen Energi ISO 50001:2018 — PT Kawasan Industri Nusantara (KINRA)",
+ "kepala": [
+  {
+   "label": "Nomor Dokumen",
+   "nilai": "001/SOP-017/KINRA/SMEn/X/2026"
+  },
+  {
+   "label": "Revisi",
+   "nilai": "0"
+  },
+  {
+   "label": "Tanggal Berlaku",
+   "nilai": "22 Oktober 2026"
+  },
+  {
+   "label": "Bagian",
+   "nilai": "Mekanikal & Elektrikal, Fasilitas dan Pengamanan"
+  },
+  {
+   "label": "Sub Bagian",
+   "nilai": "Mekanikal & Elektrikal dan Sub bagian Fasilitas"
+  },
+  {
+   "label": "Lokasi Penyimpanan",
+   "nilai": "Mekanikal & Elektrikal, Fasilitas dan Pengamanan"
+  }
+ ],
+ "blok": [
+  {
+   "jenis": "judul",
+   "teks": "1. Matriks pengendalian operasional dan pemeliharaan untuk SEU"
+  },
+  {
+   "jenis": "teks",
+   "id": "p1",
+   "teks": "Matriks berikut merupakan rancangan awal. Tetapkan kriteria numerik, setelan, toleransi, dan frekuensi final berdasarkan tinjauan energi, spesifikasi pabrikan, desain fasilitas, kondisi operasi, serta data aktual KINRA. Jangan menetapkan nilai teknis tanpa verifikasi."
+  },
+  {
+   "jenis": "tabel",
+   "id": "t1",
+   "kolom": [
+    {
+     "label": "SEU/area"
+    },
+    {
+     "label": "Kriteria operasi"
+    },
+    {
+     "label": "Kriteria pemeliharaan"
+    },
+    {
+     "label": "Pengendalian/rekaman"
+    },
+    {
+     "label": "Frekuensi pemeliharaan"
+    },
+    {
+     "label": "Penanggung jawab"
+    }
+   ],
+   "baris": [
+    [
+     "Sistem tata udara/HVAC gedung",
+     "Setelan suhu dan jadwal operasi mengikuti kebutuhan ruang, jam kerja, beban, dan SOP; hindari operasi tanpa kebutuhan. Setelan final: _____.",
+     "Pembersihan filter/coil, pemeriksaan refrigeran dan kebocoran, kipas, motor, drain, sensor, dan kondisi unit sesuai rekomendasi pabrikan.",
+     "SOP HVAC, log suhu/setelan, jadwal operasi, inspeksi, work order, data energi.",
+     "Berdasarkan pabrikan dan kondisi; jadwal: _____.",
+     "Manajer fasilitas/petugas HVAC"
+    ],
+    [
+     "Pencahayaan gedung dan area kawasan",
+     "Penerangan diaktifkan sesuai jam operasi, kebutuhan keselamatan dan tingkat pencahayaan yang ditetapkan; matikan area tidak digunakan bila aman.",
+     "Pemeriksaan lampu, sensor, timer, kontrol otomatis, panel dan instalasi.",
+     "SOP pencahayaan, daftar area, jadwal, inspeksi dan catatan penggantian.",
+     "Jadwal: _____.",
+     "Petugas fasilitas/elektrikal"
+    ],
+    [
+     "Pompa air dan sistem pemompaan",
+     "Operasi sesuai kebutuhan debit/tekanan, jadwal, dan rentang operasi aman; hindari pompa berjalan tanpa kebutuhan.",
+     "Pemeriksaan kebocoran, seal, bearing, alignment, motor, filter/strainer, dan kontrol.",
+     "Log operasi, pembacaan meter, inspeksi, work order dan catatan gangguan.",
+     "Jadwal: _____.",
+     "Tim utilitas/pemeliharaan"
+    ],
+    [
+     "Distribusi listrik dan panel",
+     "Operasi mengikuti desain, kapasitas, prosedur keselamatan, dan batas yang ditetapkan; pantau anomali penggunaan energi.",
+     "Pemeriksaan panel, sambungan, proteksi, termografi bila relevan, kebersihan dan kalibrasi alat ukur.",
+     "Diagram satu garis, SOP listrik, log meter, inspeksi, hasil pengujian dan work order.",
+     "Sesuai risiko/pabrikan; jadwal: _____.",
+     "Petugas elektrikal"
+    ],
+    [
+     "Peralatan kantor dan fasilitas pendukung",
+     "Penggunaan sesuai kebutuhan; aktifkan mode hemat energi atau matikan saat tidak digunakan sesuai SOP.",
+     "Pemeriksaan kondisi, pengaturan daya, dan penggantian peralatan berdasarkan kriteria efisiensi yang disetujui.",
+     "Daftar aset, instruksi penggunaan, inventaris dan catatan penggantian.",
+     "Jadwal: _____.",
+     "Unit pengguna/GA/IT"
+    ],
+    [
+     "Penerangan jalan dan area luar",
+     "Pengoperasian mengikuti jadwal, kebutuhan keamanan, sensor cahaya atau timer yang disetujui.",
+     "Pemeriksaan luminer, panel kontrol, timer/sensor dan kabel sesuai prosedur.",
+     "Jadwal penerangan, inspeksi area, catatan gangguan dan penggantian.",
+     "Jadwal: _____.",
+     "Tim fasilitas kawasan"
+    ],
+    [
+     "Peralatan utilitas/fasilitas lain",
+     "Kriteria ditetapkan berdasarkan hasil tinjauan energi dan SEU aktual KINRA.",
+     "Pemeliharaan berdasarkan spesifikasi, risiko, dan kondisi aktual.",
+     "SOP, instruksi kerja, log operasi dan rekaman pemeliharaan.",
+     "Jadwal: _____.",
+     "Pemilik proses terkait"
+    ]
+   ]
+  }
+ ],
+ "ttd": [
+  {
+   "peran": "Disiapkan oleh",
+   "jabatan": "Dokumen Kontrol"
+  },
+  {
+   "peran": "Ditinjau oleh",
+   "jabatan": "Management Representative"
+  },
+  {
+   "peran": "Disetujui oleh",
+   "jabatan": "Direktur"
+  }
+ ],
+ "sumber": "8.1 Perencanaan & Pengendalian Operasi/001_Formulir Pengendalian Operasional.docx",
+ "nomor": "001/SOP-017/KINRA/SMEn/X/2026"
+}

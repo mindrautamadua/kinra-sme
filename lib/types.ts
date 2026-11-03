@@ -18,6 +18,8 @@ export type Dokumen = {
   diubah_at: string
   /** Jumlah berkas evidence di Storage; tidak ada bila migrasi 0010 belum dijalankan */
   jumlah_berkas?: number
+  /** Jumlah isian formulir tertaut yang sudah disetujui (dihitung sebagai evidence) */
+  jumlah_isian?: number
 }
 
 export type Berkas = {
@@ -58,6 +60,8 @@ export type Kegiatan = {
   /** Tidak ada bila migrasi 0005 belum dijalankan */
   status?: StatusKegiatan
   selesai_at?: string | null
+  /** Kode tonggak audit ('ia', 'tm', 's1', 's2'); tidak ada bila migrasi 0012 belum dijalankan */
+  tonggak?: string | null
 }
 
 export type StatusKegiatan = 'belum' | 'berjalan' | 'selesai'

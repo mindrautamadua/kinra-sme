@@ -1,0 +1,619 @@
+{
+ "kode": "rencana-tindakan",
+ "klausul": [
+  "6.2"
+ ],
+ "judul": "Rencana Tindakan Peningkatan Berkelanjutan",
+ "subjudul": "Sistem Manajemen Energi ISO 50001:2018 — PT Kawasan Industri Nusantara (KINRA)",
+ "kepala": [
+  {
+   "label": "Nomor Dokumen",
+   "nilai": "003/SOP-008/KINRA/SMEn/X/2026"
+  },
+  {
+   "label": "Revisi",
+   "nilai": "0"
+  },
+  {
+   "label": "Tanggal Berlaku",
+   "nilai": "22 Oktober 2026"
+  },
+  {
+   "label": "Bagian",
+   "nilai": "Mekanikal & Elektrikal, Fasilitas, dan Pengamanan"
+  },
+  {
+   "label": "Sub Bagian",
+   "nilai": "Mekanikal & Elektrikal"
+  },
+  {
+   "label": "Lokasi Penyimpanan",
+   "nilai": "Bagian Mekanikal & Elektrikal, Fasilitas, dan Pengamanan"
+  }
+ ],
+ "blok": [
+  {
+   "jenis": "judul",
+   "teks": "Pemilihan proyek berdasarkan peluang peningkatan prioritas"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t1",
+   "kolom": [
+    {
+     "label": "Pemeriksaan"
+    },
+    {
+     "label": "Penerapan untuk KINRA"
+    }
+   ],
+   "baris": [
+    [
+     "Peluang peningkatan",
+     "Daftar peluang peningkatan yang diprioritaskan dari hasil tinjauan energi/ untuk memilih proyek yang layak dilaksanakan."
+    ],
+    [
+     "Kriteria pemilihan",
+     "Dokumentasi kriteria yang relevan, misalnya potensi penghematan energi, dampak terhadap SEU/EnPI, biaya siklus hidup, risiko, keselamatan, keandalan layanan, kemudahan pelaksanaan, dan ketersediaan sumber daya."
+    ],
+    [
+     "Persetujuan proyek",
+     "Proyek memperoleh persetujuan sesuai kewenangan KINRA sebelum pelaksanaan."
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "Kriteria justifikasi dan persetujuan proyek"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t2",
+   "kolom": [
+    {
+     "label": "Pemeriksaan"
+    },
+    {
+     "label": "Persyaratan dan bukti yang harus disiapkan"
+    }
+   ],
+   "baris": [
+    [
+     "Justifikasi proyek",
+     "Tunjukkan hubungan proyek dengan tujuan/target energi, SEU, peluang prioritas, data baseline, perkiraan manfaat energi/biaya, risiko, dan kendala operasional."
+    ],
+    [
+     "Persetujuan implementasi",
+     "Catat keputusan, pihak yang menyetujui, anggaran, sumber daya, dan syarat pelaksanaan."
+    ],
+    [
+     "Kesesuaian dengan EnMS",
+     "Pastikan rencana proyek mendukung tujuan/target dan tidak mengganggu layanan atau fungsi fasilitas yang penting."
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "Pengembangan rencana tindakan untuk mencapai tujuan dan target energi"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t3",
+   "kolom": [
+    {
+     "label": "Elemen rencana"
+    },
+    {
+     "label": "Persyaratan minimum untuk setiap proyek"
+    },
+    {
+     "label": "Status/bukti"
+    }
+   ],
+   "baris": [
+    [
+     "Pemimpin proyek",
+     "Tetapkan satu pemimpin proyek untuk setiap proyek; Tim Energi mengoordinasikan dan memantau tanggung jawab kepemimpinan.",
+     "Nama: __________"
+    ],
+    [
+     "Tim proyek",
+     "Pemimpin proyek membentuk tim, menetapkan peran, dan menyampaikan harapan serta tanggung jawab kepada anggota.",
+     "Daftar tim: __________"
+    ],
+    [
+     "Aktivitas",
+     "Rincikan aktivitas yang dibutuhkan untuk melaksanakan proyek dan mencapai target energi.",
+     "Rencana kerja: __________"
+    ],
+    [
+     "Sumber daya",
+     "Identifikasi personel, kompetensi, peralatan, jasa, anggaran, waktu, akses lokasi, dan dukungan lain yang diperlukan.",
+     "Kebutuhan: __________"
+    ],
+    [
+     "Jadwal",
+     "Tetapkan urutan aktivitas, tenggat waktu, tonggak, serta tanggal penyelesaian yang direncanakan dan aktual.",
+     "Jadwal: __________"
+    ],
+    [
+     "Verifikasi hasil proyek",
+     "Jelaskan metode untuk memeriksa bahwa keluaran proyek sesuai rencana.",
+     "Metode: __________"
+    ],
+    [
+     "Verifikasi peningkatan kinerja energi",
+     "Jelaskan cara membuktikan peningkatan kinerja energi dibanding baseline dengan mempertimbangkan data dan variabel relevan.",
+     "Metode: __________"
+    ],
+    [
+     "Perubahan proses/prosedur",
+     "Identifikasi prosedur, instruksi kerja, standar operasi, atau pengendalian yang perlu diubah akibat proyek.",
+     "Dokumen: __________"
+    ],
+    [
+     "Pelatihan",
+     "Rencanakan pelatihan pekerja/kontraktor atas perubahan yang diterapkan, sesuai kebutuhan.",
+     "Rekaman: __________"
+    ],
+    [
+     "Pemantauan berkelanjutan",
+     "Tetapkan pemantauan dan pengukuran parameter proyek agar peningkatan kinerja energi tetap terjaga.",
+     "EnPI/frekuensi: __________"
+    ],
+    [
+     "Komunikasi manfaat",
+     "Komunikasikan hasil dan manfaat proyek kepada pihak berkepentingan yang relevan.",
+     "Sasaran/media: __________"
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "Komunikasi harapan dan peninjauan kemajuan"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t4",
+   "kolom": [
+    {
+     "label": "Pemeriksaan"
+    },
+    {
+     "label": "Penerapan untuk KINRA"
+    },
+    {
+     "label": "Bukti/rekaman"
+    }
+   ],
+   "baris": [
+    [
+     "Pemahaman peran",
+     "Setiap pihak yang terlibat memahami peran, tanggung jawab, keluaran, tenggat, dan jalur eskalasi.",
+     "Notulen/daftar peran: __________"
+    ],
+    [
+     "Rapat awal proyek",
+     "Laksanakan rapat awal (kick-off) untuk setiap proyek dan catat keputusan serta komitmen.",
+     "Tanggal/notulen: __________"
+    ],
+    [
+     "Tinjauan berkala",
+     "Adakan rapat berkala untuk menilai kemajuan, penyimpangan, risiko, kebutuhan perubahan, dan tindakan koreksi.",
+     "Frekuensi: ________"
+    ],
+    [
+     "Persetujuan manajemen puncak",
+     "Catat nama/jabatan penyetuju, tanggal persetujuan, serta komentar atau arahan.",
+     "Nama: ________ Tanggal: ________"
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "Lembar Rencana Tindakan Manajemen Energi — Formulir Proyek"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t5",
+   "kolom": [
+    {
+     "label": "Komponen"
+    },
+    {
+     "label": "Isian proyek KINRA"
+    }
+   ],
+   "baris": [
+    [
+     "ID dokumen/proyek",
+     "Nomor: __________ Revisi: __________"
+    ],
+    [
+     "Tujuan/target proyek",
+     ""
+    ],
+    [
+     "Tanggal penyelesaian yang direncanakan",
+     ""
+    ],
+    [
+     "Tanggal penyelesaian aktual",
+     "____________________ / ☐ Belum selesai"
+    ],
+    [
+     "Deskripsi proyek",
+     "Uraikan kondisi awal, tindakan/perubahan yang direncanakan, SEU terkait, batasan lingkup, dan hasil yang diharapkan: ______________________________"
+    ],
+    [
+     "Anggaran proyek",
+     "Rp ____________________"
+    ],
+    [
+     "Pemimpin proyek",
+     "Nama/jabatan: ____________________"
+    ],
+    [
+     "Biaya aktual",
+     "Rp ____________________ / ☐ Belum ditetapkan"
+    ],
+    [
+     "Tanggal tinjauan manajemen",
+     ""
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "Perencanaan aktivitas proyek"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t6",
+   "kolom": [
+    {
+     "label": "Aktivitas/tindakan"
+    },
+    {
+     "label": "Jabatan penanggung jawab"
+    },
+    {
+     "label": "Tenggat waktu"
+    },
+    {
+     "label": "Sumber daya/keterangan yang diperlukan"
+    },
+    {
+     "label": "Status"
+    }
+   ],
+   "baris": [
+    [
+     "Inventarisasi dan pencatatan peralatan/SEU yang menjadi sasaran proyek",
+     "",
+     "",
+     "Data aset, catatan operasi, personel terkait",
+     ""
+    ],
+    [
+     "Analisis teknis dan identifikasi alternatif peningkatan",
+     "",
+     "",
+     "Tenaga ahli, data energi, spesifikasi teknis",
+     ""
+    ],
+    [
+     "Penyusunan spesifikasi/lingkup dan daftar pemasok bila diperlukan",
+     "",
+     "",
+     "Tim teknik, pengadaan, pengguna fasilitas",
+     ""
+    ],
+    [
+     "Penyusunan dokumen permintaan penawaran/pengadaan bila diperlukan",
+     "",
+     "",
+     "Persyaratan teknis dan kontrak",
+     ""
+    ],
+    [
+     "Evaluasi dan pemilihan penyedia bila diperlukan",
+     "",
+     "",
+     "Tim pengadaan dan masukan teknis",
+     ""
+    ],
+    [
+     "Penyusunan rencana implementasi dan pengaturan akses/operasi",
+     "",
+     "",
+     "Tim operasi, teknik, keselamatan, jadwal layanan",
+     ""
+    ],
+    [
+     "Pelaksanaan pemasangan/perubahan dan uji fungsi",
+     "",
+     "",
+     "Penyedia, personel KINRA, izin kerja bila relevan",
+     ""
+    ],
+    [
+     "Pemeriksaan manfaat/insentif utilitas atau peluang pendanaan bila relevan",
+     "",
+     "",
+     "Keuangan/pengadaan/penyedia energi",
+     ""
+    ],
+    [
+     "Aktivitas tambahan sesuai kebutuhan",
+     "",
+     "",
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "Verifikasi hasil proyek dan peningkatan kinerja energi"
+  },
+  {
+   "jenis": "teks",
+   "id": "p1",
+   "teks": "Jelaskan metode verifikasi hasil rencana tindakan dan peningkatan kinerja energi yang dicapai. Gunakan metode pengukuran/perhitungan yang terdokumentasi, data yang dapat ditelusuri, periode pembanding yang sebanding, serta penyesuaian terhadap variabel relevan jika diperlukan."
+  },
+  {
+   "jenis": "tabel",
+   "id": "t7",
+   "kolom": [
+    {
+     "label": "Satuan/indikator pengukuran"
+    },
+    {
+     "label": "Nilai sebelum proyek"
+    },
+    {
+     "label": "Nilai setelah proyek"
+    },
+    {
+     "label": "Perubahan bersih"
+    },
+    {
+     "label": "Sumber data pengukuran"
+    },
+    {
+     "label": "Penanggung jawab"
+    }
+   ],
+   "baris": [
+    [
+     "Konsumsi energi tahunan (kWh/periode)",
+     "",
+     "",
+     "",
+     "Meter/tagihan/submeter/log energi",
+     ""
+    ],
+    [
+     "Biaya energi (Rp/periode)",
+     "",
+     "",
+     "",
+     "Tagihan dan catatan keuangan",
+     ""
+    ],
+    [
+     "EnPI yang relevan (misalnya kWh/m² atau kWh/unit layanan)",
+     "",
+     "",
+     "",
+     "Data operasi dan energi",
+     ""
+    ],
+    [
+     "Indikator tambahan sesuai proyek",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "Evaluasi hasil"
+  },
+  {
+   "jenis": "teks",
+   "id": "p2",
+   "teks": "Catat hasil sementara sesuai periode pemantauan yang ditetapkan, analisis penyimpangan, tindakan perbaikan, dan waktu tersedianya hasil akhir proyek."
+  },
+  {
+   "jenis": "tabel",
+   "id": "t8",
+   "kolom": [
+    {
+     "label": "Periode evaluasi"
+    },
+    {
+     "label": "Hasil yang tersedia"
+    },
+    {
+     "label": "Penyimpangan/tindakan lanjut"
+    },
+    {
+     "label": "Pihak yang meninjau"
+    }
+   ],
+   "baris": [
+    [
+     "Evaluasi akhir",
+     "",
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "Rencana komunikasi dan pelatihan"
+  },
+  {
+   "jenis": "teks",
+   "id": "p3",
+   "teks": "Tandai fungsi yang terdampak atau terlibat pada implementasi proyek (kolom pertama) dan fungsi yang terlibat atau terdampak dalam mempertahankan peningkatan (kolom kedua). Sesuaikan dengan struktur KINRA dan proyek yang dipilih."
+  },
+  {
+   "jenis": "tabel",
+   "id": "t9",
+   "kolom": [
+    {
+     "label": "Fungsi/unit"
+    },
+    {
+     "label": "Terlibat dalam implementasi",
+     "jenis": "cek"
+    },
+    {
+     "label": "Menjaga peningkatan",
+     "jenis": "cek"
+    },
+    {
+     "label": "Kebutuhan komunikasi/pelatihan"
+    }
+   ],
+   "baris": [
+    [
+     "Seluruh unit terkait",
+     "",
+     "",
+     "Sosialisasi tujuan, target, perubahan, dan manfaat"
+    ],
+    [
+     "Operasional kawasan/gedung",
+     "",
+     "",
+     "Perubahan jadwal/setelan operasi dan pemantauan"
+    ],
+    [
+     "Pemeliharaan/fasilitas",
+     "",
+     "",
+     "Pemeliharaan, pemeriksaan, dan penanganan gangguan"
+    ],
+    [
+     "Teknik/engineering",
+     "",
+     "",
+     "Spesifikasi, uji fungsi, analisis kinerja energi"
+    ],
+    [
+     "Pengadaan",
+     "",
+     "",
+     "Spesifikasi efisiensi energi dan evaluasi pemasok"
+    ],
+    [
+     "Keuangan/akuntansi",
+     "",
+     "",
+     "Anggaran, biaya energi, dan verifikasi penghematan"
+    ],
+    [
+     "SDM/pelatihan",
+     "",
+     "",
+     "Koordinasi kompetensi dan rekaman pelatihan"
+    ],
+    [
+     "Kontraktor/pemasok relevan",
+     "",
+     "",
+     "Induksi, persyaratan kerja, operasi/pemeliharaan"
+    ],
+    [
+     "Unit lain: __________",
+     "",
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "Mempertahankan peningkatan proyek"
+  },
+  {
+   "jenis": "teks",
+   "id": "p4",
+   "teks": "Dokumentasikan tanggung jawab yang diperlukan agar penghematan energi yang dicapai tetap terjaga setelah proyek selesai."
+  },
+  {
+   "jenis": "tabel",
+   "id": "t10",
+   "kolom": [
+    {
+     "label": "Fungsi"
+    },
+    {
+     "label": "Tugas/penugasan untuk fungsi tersebut"
+    }
+   ],
+   "baris": [
+    [
+     "Peran dan tanggung jawab",
+     "Tetapkan unit pemilik peralatan/proses, pemilik target, dan penanggung jawab pemeliharaan kinerja energi."
+    ],
+    [
+     "Sumber daya",
+     "Pastikan ketersediaan anggaran, suku cadang, dukungan pemasok, personel, dan sumber daya untuk operasi berkelanjutan."
+    ],
+    [
+     "Komunikasi",
+     "Ingatkan pekerja/kontraktor tentang perubahan operasi dan perilaku yang dibutuhkan untuk menjaga penghematan."
+    ],
+    [
+     "Pelatihan",
+     "Berikan pelatihan tambahan terkait teknologi, pengoperasian, pemeliharaan, atau pengukuran yang baru."
+    ],
+    [
+     "Pengendalian",
+     "Pastikan setelan hemat energi, prosedur operasi, jadwal pemeliharaan, dan pengendalian terkait diterapkan."
+    ],
+    [
+     "Pemantauan dan pengukuran",
+     "Tetapkan pemantauan EnPI dan konsumsi energi; tinjau tren serta tindak lanjuti penyimpangan."
+    ],
+    [
+     "Tindakan tambahan",
+     ""
+    ],
+    [
+     "Tindakan tambahan",
+     ""
+    ]
+   ]
+  }
+ ],
+ "ttd": [
+  {
+   "peran": "Disiapkan oleh",
+   "jabatan": "Dokumen Kontrol"
+  },
+  {
+   "peran": "Ditinjau oleh",
+   "jabatan": "Management Representative"
+  },
+  {
+   "peran": "Disetujui oleh",
+   "jabatan": "Direktur"
+  }
+ ],
+ "sumber": "6.2 Tujuan, Target energi, & Perencanaan Untuk Mencapainya/003_ Formulir Rencana Tindakan Peningkatan Berkelanjutan.docx",
+ "nomor": "003/SOP-008/KINRA/SMEn/X/2026",
+ "tautan": {
+  "href": "/sasaran",
+  "label": "Sasaran & Aksi"
+ }
+}

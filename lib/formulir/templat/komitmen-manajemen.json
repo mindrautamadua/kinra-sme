@@ -1,0 +1,181 @@
+{
+ "kode": "komitmen-manajemen",
+ "klausul": [
+  "5.1"
+ ],
+ "judul": "Komitmen Manajemen",
+ "subjudul": "Sistem Manajemen Energi ISO 50001:2018 – PT KINRA",
+ "kepala": [
+  {
+   "label": "Nomor Dokumen",
+   "nilai": "001/SOP-004/KINRA/SMEn/X/2026"
+  },
+  {
+   "label": "Revisi",
+   "nilai": "0"
+  },
+  {
+   "label": "Tanggal Berlaku",
+   "nilai": "22 Oktober 2026"
+  },
+  {
+   "label": "Bagian",
+   "nilai": "Manajemen Risiko & TI"
+  },
+  {
+   "label": "Sub Bagian",
+   "nilai": "Manajemen Risiko"
+  },
+  {
+   "label": "Lokasi Penyimpanan",
+   "nilai": "Bagian Manajemen Risiko & TI"
+  }
+ ],
+ "blok": [
+  {
+   "jenis": "judul",
+   "teks": "Identifikasi pihak yang berpengaruh terhadap energi"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t1",
+   "kolom": [
+    {
+     "label": "Jabatan/fungsi"
+    },
+    {
+     "label": "Jenis energi"
+    },
+    {
+     "label": "Penggunaan energi"
+    },
+    {
+     "label": "Kebutuhan energi/peran"
+    },
+    {
+     "label": "Frekuensi penggunaan/keterlibatan"
+    },
+    {
+     "label": "Hasil/konsekuensi potensial"
+    }
+   ],
+   "baris": [
+    [
+     "Manajemen puncak",
+     "Listrik dan energi lain",
+     "Seluruh fasilitas dalam lingkup EnMS",
+     "Menetapkan kebijakan, sasaran, prioritas, dan sumber daya",
+     "Sesuai agenda manajemen; tinjauan berkala",
+     "Peningkatan kinerja energi, biaya terkendali, keputusan dan sumber daya yang tepat"
+    ],
+    [
+     "Pengelola gedung/fasilitas",
+     "Listrik",
+     "Pencahayaan, HVAC, peralatan gedung",
+     "Memenuhi kebutuhan layanan dengan operasi yang efisien",
+     "Harian/selama jam operasi",
+     "Pengurangan pemborosan dan kenyamanan/keandalan fasilitas"
+    ],
+    [
+     "Tim operasi dan pemeliharaan utilitas",
+     "Listrik dan energi lain yang relevan",
+     "Pompa, panel, sistem utilitas, fasilitas pendukung",
+     "Menjaga fungsi, efisiensi, dan kesiapan peralatan",
+     "Harian dan sesuai jadwal pemeliharaan",
+     "Gangguan berkurang, operasi efisien, pemakaian energi terpantau"
+    ],
+    [
+     "Pengadaan dan perencana proyek",
+     "Listrik dan energi lain yang relevan",
+     "Pembelian, desain, renovasi, penggantian peralatan",
+     "Mempertimbangkan kinerja energi dan biaya siklus hidup",
+     "Setiap proses pengadaan/proyek",
+     "Peralatan lebih efisien dan keputusan investasi berbasis data"
+    ],
+    [
+     "Administrasi/keuangan",
+     "Listrik dan energi lain yang ditagihkan",
+     "Kantor, data tagihan, pencatatan biaya",
+     "Menyediakan data biaya dan konsumsi yang akurat",
+     "Bulanan atau sesuai tagihan",
+     "Analisis biaya energi akurat dan penyimpangan terdeteksi"
+    ],
+    [
+     "Tenant dan kontraktor (dalam batas pengaruh KINRA)",
+     "Sesuai aktivitas/fasilitas terkait",
+     "Fasilitas bersama atau penggunaan energi yang dapat dipengaruhi",
+     "Koordinasi, kepatuhan kontrak, pertukaran informasi yang disepakati",
+     "Sesuai kontrak dan kebutuhan koordinasi",
+     "Peluang efisiensi bersama dan pembagian tanggung jawab lebih jelas"
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "Komitmen manajemen puncak"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t2",
+   "kolom": [
+    {
+     "label": "Pernyataan komitmen"
+    }
+   ],
+   "baris": [
+    [
+     "Menyetujui ruang lingkup dan batasan EnMS"
+    ],
+    [
+     "Menerapkan Kebijakan Energi dan memperbaruinya jika diperlukan"
+    ],
+    [
+     "Mempertimbangkan kinerja energi dalam desain, pengadaan, dan perubahan fasilitas"
+    ],
+    [
+     "Memberdayakan tim energi dan menetapkan tanggung jawab serta kewenangannya"
+    ],
+    [
+     "Mempertimbangkan kinerja energi dalam perencanaan strategis organisasi"
+    ],
+    [
+     "Menyediakan sumber daya untuk membangun, menjalankan, memelihara, dan meningkatkan EnMS"
+    ],
+    [
+     "Mencapai sasaran energi dengan menggunakan EnPI yang sesuai"
+    ],
+    [
+     "Mencapai target energi serta mengukur dan melaporkan hasil pada interval yang ditetapkan"
+    ],
+    [
+     "Mengomunikasikan Kebijakan Energi, tim energi, sasaran, target, dan pentingnya pengelolaan energi ke seluruh organisasi"
+    ],
+    [
+     "Memelihara playbook, dokumen, dan rekaman EnMS sebagai informasi terdokumentasi"
+    ],
+    [
+     "Menyelesaikan audit internal EnMS secara terencana sekurang-kurangnya sesuai program yang ditetapkan"
+    ],
+    [
+     "Melaksanakan tinjauan manajemen terhadap EnMS"
+    ]
+   ]
+  }
+ ],
+ "ttd": [
+  {
+   "peran": "Disiapkan oleh",
+   "jabatan": "Dokumen Kontrol"
+  },
+  {
+   "peran": "Ditinjau oleh",
+   "jabatan": "Management Representative"
+  },
+  {
+   "peran": "Disetujui oleh",
+   "jabatan": "Direktur"
+  }
+ ],
+ "sumber": "5.1 Kepemimpinan & Komitmen/001_ Formulir Komitmen Manajemen.docx",
+ "nomor": "001/SOP-004/KINRA/SMEn/X/2026"
+}

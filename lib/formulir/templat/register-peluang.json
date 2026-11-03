@@ -1,0 +1,442 @@
+{
+ "kode": "register-peluang",
+ "klausul": [
+  "6.2"
+ ],
+ "judul": "Register Peluang Peningkatan Kinerja (Estimasi & Realisasi)",
+ "subjudul": "Register peluang dengan perkiraan dan realisasi penghematan",
+ "kepala": [
+  {
+   "label": "Nomor Dokumen",
+   "nilai": "005/SOP-008/KINRA/SMEn/X/2026"
+  },
+  {
+   "label": "Revisi",
+   "nilai": "0"
+  },
+  {
+   "label": "Tanggal Berlaku",
+   "nilai": "22 Oktober 2026"
+  },
+  {
+   "label": "Bagian",
+   "nilai": "Manajemen Risiko & TI"
+  },
+  {
+   "label": "Sub Bagian",
+   "nilai": "Manajemen Risiko"
+  },
+  {
+   "label": "Lokasi Penyimpanan",
+   "nilai": "Bagian Manajemen Risiko & TI"
+  }
+ ],
+ "blok": [
+  {
+   "jenis": "teks",
+   "id": "p1",
+   "teks": "Skor peluang = jumlah skor kriteria 1–4 (masing-masing 1–10). Tetapkan kriteria (mis. potensi penghematan, ROI, kemudahan, risiko) sebelum menilai."
+  },
+  {
+   "jenis": "tabel",
+   "id": "t1",
+   "kolom": [
+    {
+     "label": "No"
+    },
+    {
+     "label": "Nama peluang peningkatan kinerja energi"
+    },
+    {
+     "label": "Deskripsi peluang"
+    },
+    {
+     "label": "Terkait SEU"
+    },
+    {
+     "label": "Bagian dari sasaran energi"
+    },
+    {
+     "label": "Penanggung jawab"
+    },
+    {
+     "label": "Tanggal identifikasi"
+    },
+    {
+     "label": "Perkiraan penghematan listrik (kWh/tahun)",
+     "jenis": "angka"
+    },
+    {
+     "label": "Perkiraan penghematan energi lain (sebutkan)"
+    },
+    {
+     "label": "Perkiraan pengurangan emisi (ton CO₂)",
+     "jenis": "angka"
+    },
+    {
+     "label": "Kriteria 1 (1–10)",
+     "jenis": "angka"
+    },
+    {
+     "label": "Kriteria 2 (1–10)",
+     "jenis": "angka"
+    },
+    {
+     "label": "Kriteria 3 (1–10)",
+     "jenis": "angka"
+    },
+    {
+     "label": "Kriteria 4 (1–10)",
+     "jenis": "angka"
+    },
+    {
+     "label": "Skor peluang",
+     "jenis": "rumus",
+     "rumus": {
+      "op": "jumlah",
+      "kolom": [
+       10,
+       11,
+       12,
+       13
+      ]
+     }
+    },
+    {
+     "label": "Perkiraan biaya implementasi (Rp)",
+     "jenis": "angka"
+    },
+    {
+     "label": "Tingkat prioritas"
+    },
+    {
+     "label": "Status implementasi"
+    },
+    {
+     "label": "Tanggal selesai implementasi"
+    },
+    {
+     "label": "Penghematan aktual listrik (kWh/tahun)",
+     "jenis": "angka"
+    },
+    {
+     "label": "Manfaat non-energi aktual"
+    },
+    {
+     "label": "Biaya implementasi aktual (Rp)",
+     "jenis": "angka"
+    }
+   ],
+   "baris": [
+    [
+     "1",
+     "Optimasi sistem tata udara (HVAC) gedung",
+     "Evaluasi set point suhu, jadwal operasi, kebersihan filter, keseimbangan aliran udara, dan kinerja chiller/AC pada gedung yang dikendalikan KINRA.",
+     "Sistem tata udara (HVAC)",
+     "Penurunan konsumsi listrik sistem tata udara berdasarkan baseline energi yang tervalidasi",
+     "Manajer/Koordinator Operasional Gedung",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "0",
+     "",
+     "Belum diusulkan",
+     "Belum dimulai",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "2",
+     "Penggantian lampu menjadi LED efisiensi tinggi",
+     "Ganti lampu konvensional pada kantor, gedung, jalan kawasan, dan fasilitas pendukung dengan LED sesuai kebutuhan pencahayaan dan keselamatan.",
+     "Pencahayaan gedung dan kawasan",
+     "Penurunan konsumsi listrik pencahayaan berdasarkan baseline energi yang tervalidasi",
+     "Manajer/Koordinator Fasilitas",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "0",
+     "",
+     "Belum diusulkan",
+     "Belum dimulai",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "3",
+     "Pengaturan jadwal dan zonasi pencahayaan",
+     "Atur jadwal nyala-mati dan zonasi pencahayaan berdasarkan jam operasional, tingkat okupansi, kebutuhan keamanan, serta standar penerangan.",
+     "Pencahayaan gedung dan kawasan",
+     "Pengurangan jam operasi pencahayaan yang tidak diperlukan",
+     "Manajer/Koordinator Fasilitas",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "0",
+     "",
+     "Belum diusulkan",
+     "Belum dimulai",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "4",
+     "Optimasi pompa air dan sistem utilitas",
+     "Periksa efisiensi pompa, kebocoran, ukuran pompa, pengaturan tekanan/debit, serta penggunaan inverter/VSD jika layak secara teknis.",
+     "Pompa dan sistem utilitas",
+     "Penurunan konsumsi listrik pompa dan utilitas berdasarkan baseline",
+     "Manajer/Koordinator Utilitas",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "0",
+     "",
+     "Belum diusulkan",
+     "Belum dimulai",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "5",
+     "Program pemeliharaan preventif peralatan energi",
+     "Terapkan pemeliharaan terjadwal pada AC, pompa, motor listrik, panel, kompresor, dan peralatan lain yang memengaruhi konsumsi energi.",
+     "Peralatan dan utilitas",
+     "Peningkatan efisiensi dan pengurangan kehilangan energi",
+     "Manajer/Koordinator Pemeliharaan",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "0",
+     "",
+     "Belum diusulkan",
+     "Belum dimulai",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "6",
+     "Pemasangan submeter dan pemantauan energi",
+     "Pasang atau optimalkan submeter pada gedung, fasilitas, dan beban utama agar konsumsi dapat dipantau per area/peralatan dan anomali cepat diketahui.",
+     "Sistem pengukuran dan pemantauan energi",
+     "Peningkatan akurasi data dan identifikasi peluang penghematan",
+     "Manajer/Koordinator EnMS",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "0",
+     "",
+     "Belum diusulkan",
+     "Belum dimulai",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "7",
+     "Optimasi operasi genset dan konsumsi bahan bakar",
+     "Evaluasi jam operasi, beban, jadwal uji, perawatan, dan efisiensi genset; catat pemakaian bahan bakar serta hindari operasi tanpa kebutuhan.",
+     "Genset dan bahan bakar",
+     "Pengurangan konsumsi bahan bakar genset",
+     "Manajer/Koordinator Utilitas",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "0",
+     "",
+     "Belum diusulkan",
+     "Belum dimulai",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "8",
+     "Kajian dan penerapan energi surya fotovoltaik",
+     "Lakukan kajian kelayakan teknis, keselamatan, interkoneksi, biaya siklus hidup, dan potensi pemasangan panel surya pada atap/area yang sesuai.",
+     "Energi terbarukan",
+     "Pengurangan pembelian listrik jaringan jika layak dan terukur",
+     "Manajer Teknik/EnMS",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "0",
+     "",
+     "Belum diusulkan",
+     "Belum dimulai",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "9",
+     "Efisiensi energi peralatan kantor",
+     "Aktifkan pengaturan hemat energi pada komputer, printer, perangkat jaringan, dan peralatan kantor; matikan peralatan saat tidak digunakan.",
+     "Peralatan administrasi",
+     "Penurunan konsumsi listrik peralatan kantor",
+     "Koordinator Administrasi/Umum",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "0",
+     "",
+     "Belum diusulkan",
+     "Belum dimulai",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "10",
+     "Pengendalian beban puncak dan faktor daya",
+     "Analisis profil beban, faktor daya, harmonisa, dan waktu beban puncak; terapkan tindakan korektif yang sesuai hasil pengukuran.",
+     "Sistem kelistrikan",
+     "Pengurangan rugi-rugi dan/atau biaya energi sesuai skema tarif",
+     "Manajer/Koordinator Kelistrikan",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "0",
+     "",
+     "Belum diusulkan",
+     "Belum dimulai",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "11",
+     "Efisiensi energi penerangan jalan dan fasilitas luar ruang",
+     "Evaluasi jenis lampu, daya, waktu operasi, sensor/fotocell, dan kebutuhan penerangan dengan tetap memenuhi keselamatan kawasan.",
+     "Penerangan jalan dan area luar",
+     "Pengurangan konsumsi listrik penerangan luar ruang",
+     "Manajer/Koordinator Infrastruktur",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "0",
+     "",
+     "Belum diusulkan",
+     "Belum dimulai",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "12",
+     "Pelatihan dan kampanye perilaku hemat energi",
+     "Laksanakan sosialisasi, instruksi kerja, inspeksi rutin, dan pelaporan pemborosan energi untuk personel KINRA serta pihak terkait dalam kendali operasional.",
+     "Lintas fasilitas dan proses operasional",
+     "Peningkatan kesadaran dan konsistensi praktik hemat energi",
+     "Koordinator EnMS/SDM",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "0",
+     "",
+     "Belum diusulkan",
+     "Belum dimulai",
+     "",
+     "",
+     "",
+     ""
+    ]
+   ]
+  }
+ ],
+ "sumber": "6.2 Tujuan, Target energi, & Perencanaan Untuk Mencapainya/005_Formulir Peluang Peningkatan Kinerja (261026).xlsx",
+ "ttd": [
+  {
+   "peran": "Disiapkan oleh",
+   "jabatan": "Dokumen Kontrol"
+  },
+  {
+   "peran": "Ditinjau oleh",
+   "jabatan": "Management Representative"
+  },
+  {
+   "peran": "Disetujui oleh",
+   "jabatan": "Direktur"
+  }
+ ],
+ "nomor": "005/SOP-008/KINRA/SMEn/X/2026",
+ "tautan": {
+  "href": "/register",
+  "label": "Register Isu & Peluang"
+ }
+}

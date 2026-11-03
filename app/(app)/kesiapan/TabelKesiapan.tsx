@@ -2,11 +2,9 @@
 
 import { Download, Eye, Search, X } from 'lucide-react'
 import Link from 'next/link'
-import { useMemo, useState, useTransition } from 'react'
-import { lihatBerkas, ubahStatusDokumen } from '@/app/actions'
-import { Chip } from '@/components/Chip'
+import { useMemo, useState } from 'react'
+import { lihatBerkas } from '@/app/actions'
 import { PenampilBerkas } from '@/components/PenampilBerkas'
-import { useBoleh } from '@/components/Peran'
 import { selisihHari, tanggal } from '@/lib/format'
 import { adaBukti, KELOMPOK, kesiapan, STATUS, terlambat, URUTAN_STATUS } from '@/lib/status'
 import type { BerkasTampil, Dokumen, KelompokDokumen, Klausul, StatusDokumen } from '@/lib/types'
@@ -15,7 +13,7 @@ import { PanelKesiapan } from './PanelKesiapan'
 export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal, statusAwal }: {
   dokumen: Dokumen[]; klausul: Klausul[]; kini: string; klausulAwal: string; statusAwal: string
 }) {
-  const [rows, setRows] = useState(dokumen)
+  const rows = dokumen
   const [kelompok, setKelompok] = useState<KelompokDokumen | ''>('')
   const [status, setStatus] = useState<StatusDokumen | ''>((URUTAN_STATUS as string[]).includes(statusAwal) ? (statusAwal as StatusDokumen) : '')
   const [kl, setKl] = useState(klausulAwal)
@@ -36,8 +34,6 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal, statusAwal 
     setLihat({ judul: `${d.kode} · ${d.nama}`, berkas: h.berkas })
     setIndeks(0)
   }
-  const [, mulai] = useTransition()
-  const bisa = useBoleh()
 
   const judulKlausul = useMemo(() => Object.fromEntries(klausul.map((k) => [k.kode, k])), [klausul])
 
@@ -56,23 +52,10 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal, statusAwal 
     setKelompok(''); setStatus(''); setKl(''); setCari(''); setHanyaLewat(false); setTanpaBukti(false)
   }
 
-  function ganti(d: Dokumen, s: StatusDokumen) {
-    const lama = d.status
-    setRows((r) => r.map((x) => (x.id === d.id ? { ...x, status: s } : x)))
-    setGalat(null)
-    mulai(async () => {
-      const h = await ubahStatusDokumen(d.id, s)
-      if (!h.ok) {
-        setRows((r) => r.map((x) => (x.id === d.id ? { ...x, status: lama } : x)))
-        setGalat(`Status ${d.kode} gagal disimpan: ${h.pesan}`)
-      }
-    })
-  }
-
   function unduhCsv() {
-    const kolom = ['Kode', 'Klausul', 'Kelompok', 'Nama', 'Nomor dokumen', 'PIC', 'Status', 'Tenggat', 'Berkas evidence', 'Keterangan']
+    const kolom = ['Kode', 'Klausul', 'Kelompok', 'Nama', 'Nomor dokumen', 'PIC', 'Status', 'Tenggat', 'Berkas evidence', 'Isian formulir disetujui', 'Keterangan']
     const esc = (v: unknown) => `"${String(v ?? '').replace(/"/g, '""')}"`
-    const isi = tersaring.map((d) => [d.kode, d.klausul_kode, KELOMPOK[d.kelompok], d.nama, d.nomor_dokumen, d.pic, STATUS[d.status].label, d.tenggat, d.jumlah_berkas ?? 0, d.keterangan].map(esc).join(','))
+    const isi = tersaring.map((d) => [d.kode, d.klausul_kode, KELOMPOK[d.kelompok], d.nama, d.nomor_dokumen, d.pic, STATUS[d.status].label, d.tenggat, d.jumlah_berkas ?? 0, d.jumlah_isian ?? 0, d.keterangan].map(esc).join(','))
     const blob = new Blob(['﻿' + [kolom.map(esc).join(','), ...isi].join('\n')], { type: 'text/csv;charset=utf-8' })
     const a = document.createElement('a')
     a.href = URL.createObjectURL(blob)
@@ -89,7 +72,7 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal, statusAwal 
         hanyaLewat={hanyaLewat} setHanyaLewat={setHanyaLewat} tanpaBukti={tanpaBukti} setTanpaBukti={setTanpaBukti} />
       <div className="card ks-tabel" id="tabel-kesiapan">
         <div className="row">
-          <div><h3>Lembar monitoring</h3><p className="muted small">Skor, cincin, dan pipeline di atas ikut bergerak saat status berubah</p></div>
+          <div><h3>Lembar monitoring</h3><p className="muted small">Status dokumen diubah di halaman detail; klik nama dokumen</p></div>
           {adaSaring && <button type="button" className="btn kecil" onClick={reset}><X aria-hidden="true" />Hapus semua saringan</button>}
         </div>
         <div className="toolbar">
@@ -115,13 +98,6 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal, statusAwal 
               {klausul.map((k) => <option key={k.kode} value={k.kode}>{k.kode === 'P' ? 'Persiapan' : k.kode} · {k.judul}</option>)}
             </select>
           </label>
-          <label>
-            <span className="sr-only">Status</span>
-            <select value={status} onChange={(e) => setStatus(e.target.value as StatusDokumen | '')}>
-              <option value="">Semua status</option>
-              {URUTAN_STATUS.map((s) => <option key={s} value={s}>{STATUS[s].label}</option>)}
-            </select>
-          </label>
           <button type="button" className="btn" aria-pressed={hanyaLewat} onClick={() => setHanyaLewat(!hanyaLewat)}
             style={hanyaLewat ? { borderColor: 'var(--crit)' } : undefined}>
             Hanya terlambat
@@ -140,11 +116,11 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal, statusAwal 
           <table className="tbl">
             <thead>
               <tr>
-                <th>Kode</th><th>Dokumen / rekaman</th><th>PIC</th><th>Status</th><th>Tenggat</th><th className="num">Evidence</th>
+                <th>Kode</th><th>Dokumen / rekaman</th><th>PIC</th><th>Tenggat</th><th className="num">Evidence</th>
               </tr>
             </thead>
             <tbody>
-              {tersaring.length === 0 && <tr className="kosong"><td colSpan={6}>Tidak ada dokumen yang cocok.</td></tr>}
+              {tersaring.length === 0 && <tr className="kosong"><td colSpan={5}>Tidak ada dokumen yang cocok.</td></tr>}
               {tersaring.map((d) => {
                 const grup = d.klausul_kode !== klausulTerakhir
                 klausulTerakhir = d.klausul_kode
@@ -152,11 +128,10 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal, statusAwal 
                 const lewat = terlambat(d, kini)
                 const h = d.tenggat ? selisihHari(d.tenggat) : null
                 const pk = grup ? kesiapan(rows.filter((x) => x.klausul_kode === d.klausul_kode)) : 0
-                const tahap = URUTAN_STATUS.indexOf(d.status)
                 return [
                   grup && (
                     <tr key={`g-${d.klausul_kode}`} className="grup">
-                      <td colSpan={6}>
+                      <td colSpan={5}>
                         <span className="ks-grup">
                           <span>{d.klausul_kode === 'P' ? 'Persiapan awal' : `Klausul ${d.klausul_kode}`} · {k?.judul}</span>
                           <span className="ks-grup-bar" aria-hidden="true"><i style={{ width: `${pk}%` }} /></span>
@@ -172,19 +147,6 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal, statusAwal 
                       <span className="upd">{KELOMPOK[d.kelompok]}{d.nomor_dokumen && ` · ${d.nomor_dokumen}`}{d.keterangan && ` · ${d.keterangan}`}</span>
                     </td>
                     <td className="small">{d.pic ?? <span className="muted">–</span>}</td>
-                    <td>
-                      {bisa('dokumen.ubah') ? (
-                        <label>
-                          <span className="sr-only">Status {d.kode}</span>
-                          <select className={`inline status-sel ${STATUS[d.status].chip}`} value={d.status} onChange={(e) => ganti(d, e.target.value as StatusDokumen)}>
-                            {URUTAN_STATUS.map((s) => <option key={s} value={s} disabled={(s === 'disetujui' || s === 'final') && !bisa('dokumen.setujui')}>{STATUS[s].label}</option>)}
-                          </select>
-                        </label>
-                      ) : <Chip kode={STATUS[d.status].chip} label={STATUS[d.status].label} />}
-                      <span className={`ks-step st-${STATUS[d.status].chip}`} aria-hidden="true">
-                        {URUTAN_STATUS.slice(1).map((s, i) => <i key={s} className={i < tahap ? 'on' : undefined} />)}
-                      </span>
-                    </td>
                     <td className="small tnum" style={{ whiteSpace: 'nowrap' }}>
                       {tanggal(d.tenggat)}
                       {h !== null && d.status !== 'final' && d.status !== 'disetujui' && (
@@ -196,14 +158,16 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal, statusAwal 
                         ? <button type="button" className="btn kecil" disabled={memuat === d.id} onClick={() => bukaBerkas(d)} aria-label={`Lihat ${d.jumlah_berkas} berkas evidence ${d.kode}`}>
                             <Eye aria-hidden="true" /> {memuat === d.id ? 'Memuat…' : `Lihat${d.jumlah_berkas! > 1 ? ` (${d.jumlah_berkas})` : ''}`}
                           </button>
-                        : <span className="txt-bad small">belum ada</span>}
+                        : (d.jumlah_isian ?? 0) > 0
+                          ? <Link className="btn kecil" href={`/dokumen/${d.id}#formulir`}>{d.jumlah_isian} isian</Link>
+                          : <span className="txt-bad small">belum ada</span>}
                     </td>
                   </tr>,
                 ]
               })}
             </tbody>
             <tfoot>
-              <tr><td colSpan={6}>{tersaring.length} dari {rows.length} dokumen · kesiapan tampilan ini {Math.round(kesiapan(tersaring))}% · Sumber: Checklist Monev, Dokumen Implementasi SMEn, Timeline Rev.3</td></tr>
+              <tr><td colSpan={5}>{tersaring.length} dari {rows.length} dokumen · kesiapan tampilan ini {Math.round(kesiapan(tersaring))}% · Sumber: Checklist Monev, Dokumen Implementasi SMEn, Timeline Rev.3</td></tr>
             </tfoot>
           </table>
         </div>

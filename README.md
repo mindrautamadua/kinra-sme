@@ -25,6 +25,8 @@ Jalankan di Supabase SQL Editor sesuai urutan nomor (semua aman diulang):
 4. `0007_kinerja_energi.sql`: variabel relevan, EnPI/EnB, sasaran, rencana aksi (+ RLS). Membuat 2 EnPI awal (metode absolut, baseline 2025) dan 2 variabel usulan tanpa data.
 5. `0008_peran_pembaca.sql`: menambah peran `pembaca` (hanya lihat).
 6. `0009_tim_kinra_ubah.sql`: Tim KINRA boleh mengubah variabel relevan, EnPI & baseline, dan sasaran.
+7. `0010_evidence_storage.sql`: berkas evidence di Supabase Storage.
+8. `0011_formulir.sql`: tabel isian formulir (`formulir_isian`, `formulir_riwayat`), alur persetujuan, dan RLS.
 
 ## Evidence
 
@@ -38,6 +40,7 @@ Cara mengisi: unggah berkas ke OneDrive → Bagikan → Salin tautan → tempel 
 |---|---|
 | `/` | Ringkasan: skor kesiapan, matriks per klausul, tenggat terdekat, sesi berikutnya, energi |
 | `/kesiapan` | Lembar monitoring kesiapan audit: filter, ubah status langsung, unduh CSV |
+| `/formulir` | 27 formulir SMEn per klausul; `/formulir/[kode]` buat isian; `/formulir/isian/[id]` isi, ajukan, setujui; `/cetak` untuk cetak/PDF |
 | `/dokumen/[id]` | Detail dokumen, tautan evidence OneDrive, riwayat status, temuan terkait |
 | `/energi` | Grafik dan input data energi bulanan (kWh, liter → TJ) |
 | `/kinerja` | EnPI & baseline energi (EnB): konsumsi aktual vs harapan ternormalisasi, CUSUM, validitas model (R², CV(RMSE)), input variabel relevan bulanan, definisi EnPI |
@@ -83,3 +86,15 @@ Perhitungan di `lib/enpi.ts`, mengikuti ISO 50006:
 - **Regresi**: OLS konsumsi terhadap satu atau lebih variabel pada periode baseline. Model dianggap layak bila n ≥ 12, R² ≥ 0,75, CV(RMSE) ≤ 15% (ASHRAE Guideline 14).
 
 Perbaikan (%) = (Σ harapan − Σ aktual) ÷ Σ harapan pada bulan pelaporan (setelah baseline). CUSUM = Σ(aktual − harapan); menurun berarti hemat. Bulan dihitung hanya bila semua sumber dalam ruang lingkup EnPI dan semua variabelnya terisi.
+
+## Formulir
+
+Templat formulir dibangun dari berkas asli di folder `formulir/` (unduhan OneDrive "6. Dokumen Implementasi SMEn - KINRA"):
+
+```bash
+python3 -I scripts/impor_formulir.py   # butuh openpyxl
+```
+
+Skrip menulis `lib/formulir/templat/*.json` dan `index.ts`. Jalankan ulang bila berkas sumber direvisi; isian lama tetap terbaca (kolom/blok baru dilengkapi otomatis). Manual, Kebijakan SMEn, SK, dan PDF tidak dijadikan formulir karena bukan isian. Data Konsumsi Energi (xlsx) sudah ditangani halaman Data Energi.
+
+Isian disimpan sebagai jsonb di `formulir_isian.isi`. Alur: Draf, lalu Diajukan (semua peran penulis), lalu Disetujui (admin/konsultan). Isian yang disetujui terkunci sampai dikembalikan ke draf. Editor menyimpan otomatis 4 detik setelah berhenti mengetik dan menolak menimpa perubahan orang lain yang disimpan lebih dulu.

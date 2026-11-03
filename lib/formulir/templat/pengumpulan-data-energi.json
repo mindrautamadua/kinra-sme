@@ -1,0 +1,388 @@
+{
+ "kode": "pengumpulan-data-energi",
+ "klausul": [
+  "6.5",
+  "6.6"
+ ],
+ "judul": "Pengumpulan dan Analisis Data Energi",
+ "subjudul": "Sistem Manajemen Energi ISO 50001:2018 – PT Kawasan Industri Nusantara (KINRA)",
+ "kepala": [
+  {
+   "label": "Nomor Dokumen",
+   "nilai": "001/SOP-011/KINRA/SMEn/X/2026"
+  },
+  {
+   "label": "Revisi",
+   "nilai": "0"
+  },
+  {
+   "label": "Tanggal Berlaku",
+   "nilai": "22 Oktober 2026"
+  },
+  {
+   "label": "Bagian",
+   "nilai": "Mekanikal & Elektrikal, Fasilitas, dan Pengamanan"
+  },
+  {
+   "label": "Sub Bagian",
+   "nilai": "Mekanikal & Elektrikal"
+  },
+  {
+   "label": "Lokasi Penyimpanan",
+   "nilai": "Bagian Mekanikal & Elektrikal, Fasilitas, dan Pengamanan"
+  }
+ ],
+ "blok": [
+  {
+   "jenis": "judul",
+   "teks": "1. Identifikasi sumber energi dan Daftar penggunaan energi"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t1",
+   "kolom": [
+    {
+     "label": "Pemeriksaan"
+    },
+    {
+     "label": "Ketentuan/hasil untuk KINRA"
+    }
+   ],
+   "baris": [
+    [
+     "Sumber energi dalam ruang lingkup telah diidentifikasi",
+     "Identifikasi listrik dari jaringan dan energi lain yang benar-benar digunakan dalam kendali/pengaruh KINRA, misalnya bahan bakar genset, BBM kendaraan operasional, LPG, atau sumber lain jika ada. Jangan mencantumkan sumber yang tidak digunakan."
+    ],
+    [
+     "Data energi disimpan pada lokasi terpusat",
+     "Tetapkan repositori terpusat untuk tagihan, pembacaan meter/submeter, catatan bahan bakar, log operasi, data jam kerja peralatan, dan hasil analisis. Nama sistem/lokasi penyimpanan: __________________."
+    ],
+    [
+     "Data historis dan saat ini dianalisis",
+     "Analisis tren penggunaan dan konsumsi energi pada tingkat fasilitas/peralatan yang datanya tersedia; bandingkan periode yang setara dan catat faktor yang memengaruhi perubahan."
+    ],
+    [
+     "Penggunaan energi terkait sumber energi diidentifikasi",
+     "Lengkapi tabel penggunaan energi di bawah ini; tentukan pengguna energi signifikan (SEU) melalui tinjauan energi dan kriteria yang terdokumentasi."
+    ]
+   ]
+  },
+  {
+   "jenis": "tabel",
+   "id": "t2",
+   "kolom": [
+    {
+     "label": "Penggunaan energi"
+    },
+    {
+     "label": "Sumber energi"
+    },
+    {
+     "label": "Faktor/orang yang memengaruhi konsumsi"
+    }
+   ],
+   "baris": [
+    [
+     "Sistem pencahayaan gedung dan area bersama",
+     "Listrik",
+     "Luas/jenis area, jam operasi, tingkat pencahayaan, jenis lampu dan kontrol"
+    ],
+    [
+     "Tata udara/HVAC (AC, AHU, chiller jika tersedia)",
+     "Listrik",
+     "Suhu dan kelembapan luar, set point, jam operasi, okupansi/beban ruang, kondisi filter dan perawatan"
+    ],
+    [
+     "Pompa air dan sistem distribusi/utilitas",
+     "Listrik",
+     "Debit, tekanan, jam operasi, kondisi pompa, kebocoran, kebutuhan layanan"
+    ],
+    [
+     "Peralatan kantor dan administrasi",
+     "Listrik",
+     "Jumlah perangkat, beban, jam penggunaan, mode siaga, jumlah pengguna"
+    ],
+    [
+     "Peralatan bengkel/pemeliharaan atau fasilitas pendukung (jika ada)",
+     "Listrik/energi lain sesuai penggunaan aktual",
+     "Jenis peralatan, kapasitas, waktu operasi, beban kerja, frekuensi pemeliharaan"
+    ],
+    [
+     "Genset/catu daya darurat (jika ada)",
+     "BBM dan/atau listrik keluaran sesuai metode pencatatan",
+     "Jam operasi, beban, frekuensi uji, konsumsi bahan bakar, kondisi peralatan"
+    ],
+    [
+     "Kendaraan operasional KINRA (jika masuk batas EnMS)",
+     "BBM sesuai jenis aktual",
+     "Jarak tempuh, jam operasi, beban angkut, rute, kondisi kendaraan"
+    ],
+    [
+     "Sistem kelistrikan (trafo, panel, UPS bila ada)",
+     "Listrik",
+     "Beban gedung dan utilitas, faktor daya, rugi-rugi, efisiensi peralatan, kondisi operasi"
+    ],
+    [
+     "Fasilitas luar ruang dan penerangan kawasan yang dikendalikan KINRA",
+     "Listrik",
+     "Jam nyala, panjang/luas area, jenis lampu, sensor/kontrol, kebutuhan keamanan"
+    ],
+    [
+     "Sumber energi/proses lain yang ditemukan dalam tinjauan energi",
+     "Diisi sesuai sumber aktual",
+     "Faktor spesifik penggunaan energi yang dapat diukur atau diperkirakan secara wajar"
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "2. Variabel relevan yang memengaruhi SEU, EnPI, dan EnB"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t3",
+   "kolom": [
+    {
+     "label": "Variabel relevan"
+    },
+    {
+     "label": "SEU/penggunaan energi yang terdampak"
+    },
+    {
+     "label": "Cara verifikasi atau data pendukung"
+    }
+   ],
+   "baris": [
+    [
+     "Suhu/kelembapan luar dan kondisi cuaca",
+     "HVAC dan fasilitas yang sensitif terhadap cuaca",
+     "Data cuaca setempat dan konsumsi HVAC; tentukan relevansi melalui analisis data."
+    ],
+    [
+     "Jam operasi dan jadwal layanan",
+     "Pencahayaan, HVAC, pompa, peralatan kantor, fasilitas pendukung",
+     "Jam operasi peralatan/area; kalender operasi; perubahan jam kerja."
+    ],
+    [
+     "Okupansi dan intensitas pemanfaatan gedung",
+     "HVAC, pencahayaan, peralatan kantor",
+     "Jumlah pengguna, tingkat pemakaian ruang, atau indikator aktivitas yang relevan."
+    ],
+    [
+     "Beban kerja/kebutuhan layanan kawasan",
+     "Pompa, utilitas, fasilitas bersama",
+     "Volume layanan, debit/tekanan, luas area terlayani, atau indikator operasi yang sesuai."
+    ],
+    [
+     "Kondisi dan efisiensi peralatan",
+     "HVAC, pompa, trafo, motor, dan peralatan terkait",
+     "Umur, kondisi, jadwal pemeliharaan, kerusakan, dan perubahan setelan."
+    ],
+    [
+     "Perubahan fasilitas, kapasitas, atau tenant",
+     "Utilitas bersama dan area yang dipengaruhi KINRA",
+     "Perubahan area, kapasitas layanan, konfigurasi peralatan, dan batas tanggung jawab."
+    ],
+    [
+     "Tarif, faktor daya, dan pola beban (jika relevan)",
+     "Konsumsi listrik dan biaya energi",
+     "Data tagihan, demand/puncak, faktor daya, dan struktur tarif yang berlaku."
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "3. Rencana pengumpulan data energi"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t4",
+   "kolom": [
+    {
+     "label": "Data yang dibutuhkan"
+    },
+    {
+     "label": "Sumber data"
+    },
+    {
+     "label": "Penanggung jawab usulan"
+    },
+    {
+     "label": "Frekuensi"
+    },
+    {
+     "label": "Satuan/rekaman"
+    },
+    {
+     "label": "Pengendalian kualitas data"
+    }
+   ],
+   "baris": [
+    [
+     "Konsumsi listrik utama",
+     "Tagihan dan meter utama",
+     "Keuangan/Operasi",
+     "Bulanan; pembacaan lebih sering jika tersedia",
+     "kWh, biaya, demand bila tersedia",
+     "Rekonsiliasi tagihan dan pembacaan meter"
+    ],
+    [
+     "Konsumsi per gedung/area/SEU",
+     "Submeter atau pengukuran sementara",
+     "Pengelola fasilitas/Tim Energi",
+     "Bulanan atau interval sesuai kebutuhan analisis",
+     "kWh dan periode waktu",
+     "Bandingkan dengan meter utama dan cek kelengkapan"
+    ],
+    [
+     "Konsumsi BBM genset/kendaraan (jika ada)",
+     "Catatan pembelian, pengeluaran, jam operasi",
+     "Operasi/Logistik/Keuangan",
+     "Setiap pengisian dan rekap bulanan",
+     "Liter, jam operasi, km atau beban",
+     "Rekonsiliasi bukti pembelian dan pemakaian"
+    ],
+    [
+     "Jam operasi dan kondisi peralatan",
+     "Log operasi, BMS/monitoring, checklist inspeksi",
+     "Operasi/Pemeliharaan",
+     "Harian/mingguan sesuai peralatan",
+     "Jam, set point, status, alarm",
+     "Verifikasi log, inspeksi, dan pencatatan konsisten"
+    ],
+    [
+     "Variabel relevan",
+     "Data cuaca, okupansi, jam kerja, volume layanan",
+     "Unit pemilik data",
+     "Harian/bulanan sesuai variabel",
+     "Satuan sesuai variabel",
+     "Periksa sumber, periode, dan keterkaitan dengan konsumsi"
+    ],
+    [
+     "Pengukuran dan kalibrasi",
+     "Sertifikat kalibrasi, verifikasi meter/sensor",
+     "Pemeliharaan/penyedia kompeten",
+     "Sesuai rekomendasi pabrikan, risiko, dan program",
+     "Akurasi, tanggal, status alat",
+     "Rekaman kalibrasi/verifikasi dan tindak lanjut"
+    ],
+    [
+     "Hasil analisis energi",
+     "Register data terpusat, lembar analisis",
+     "Tim Energi",
+     "Bulanan; evaluasi berkala",
+     "Tren, EnPI, EnB, penyimpangan",
+     "Tinjauan independen/validasi oleh pemilik data"
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "4. Akurasi dan keterulangan pengukuran"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t5",
+   "kolom": [
+    {
+     "label": "Pemeriksaan"
+    },
+    {
+     "label": "Ketentuan/hasil untuk KINRA"
+    }
+   ],
+   "baris": [
+    [
+     "Kebutuhan data untuk tinjauan energi ditetapkan",
+     "Tentukan data konsumsi, periode, satuan, variabel relevan, tingkat rincian, dan pengguna energi yang akan dianalisis."
+    ],
+    [
+     "Proses pengumpulan data pada interval terjadwal ditetapkan",
+     "Tetapkan kalender pembacaan meter, pengumpulan tagihan, pencatatan operasi, dan rekap data."
+    ],
+    [
+     "Sumber data telah diidentifikasi",
+     "Daftar meter utama/submeter, tagihan pemasok, catatan BBM, log peralatan, sensor, dan sumber variabel terkait."
+    ],
+    [
+     "Personel yang bertanggung jawab ditetapkan",
+     "Fungsi usulan: Tim Energi mengoordinasikan; Operasi/Pemeliharaan mencatat meter dan operasi; Keuangan mengelola tagihan; unit terkait menyampaikan variabel. Nama ditetapkan KINRA."
+    ],
+    [
+     "Sumber data akurat dan dapat diulang",
+     "Periksa kesesuaian meter, satuan, waktu pembacaan, kondisi alat, konsistensi pencatatan, serta kalibrasi/verifikasi sesuai kebutuhan."
+    ],
+    [
+     "Metode pengendalian pengukuran",
+     "Gunakan meter utilitas dan sensor yang sesuai; dokumentasikan verifikasi/kalibrasi, pemeliharaan, ketidaknormalan, koreksi data, dan jejak perubahan."
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "5. Metode analisis untuk memahami dan memantau penggunaan energi"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t6",
+   "kolom": [
+    {
+     "label": "Metode"
+    },
+    {
+     "label": "Penerapan untuk KINRA"
+    }
+   ],
+   "baris": [
+    [
+     "Analisis tren",
+     "Bandingkan konsumsi per bulan/tahun dan antarperiode yang sebanding untuk menemukan perubahan dan anomali."
+    ],
+    [
+     "Analisis per fasilitas atau SEU",
+     "Pisahkan data per gedung, sistem HVAC, pencahayaan, pompa, peralatan, atau pengguna energi signifikan sesuai ketersediaan meter."
+    ],
+    [
+     "Normalisasi terhadap variabel relevan",
+     "Analisis hubungan energi dengan jam operasi, cuaca, okupansi, volume layanan, atau faktor lain jika terbukti relevan."
+    ],
+    [
+     "Penetapan EnPI dan EnB",
+     "Pilih indikator yang sesuai data dan tujuan, tetapkan baseline dengan periode representatif, serta dokumentasikan metode dan penyesuaian bila diperlukan."
+    ],
+    [
+     "Analisis biaya dan beban",
+     "Tinjau biaya, demand puncak, faktor daya, dan struktur tarif bila tersedia dan relevan."
+    ],
+    [
+     "Verifikasi tindakan efisiensi",
+     "Bandingkan kondisi sebelum/sesudah dengan mempertimbangkan perubahan operasi dan variabel relevan; dokumentasikan asumsi dan batasan."
+    ],
+    [
+     "Pelaporan dan tindak lanjut",
+     "Sajikan tren, penyimpangan, peluang, status tindakan, dan rekomendasi dalam laporan berkala Tim Energi dan tinjauan manajemen."
+    ]
+   ]
+  }
+ ],
+ "ttd": [
+  {
+   "peran": "Disiapkan oleh",
+   "jabatan": "Dokumen Kontrol"
+  },
+  {
+   "peran": "Ditinjau oleh",
+   "jabatan": "Management Representative"
+  },
+  {
+   "peran": "Disetujui oleh",
+   "jabatan": "Direktur"
+  }
+ ],
+ "sumber": "6.6 Perencanaan Pengumpulan Data Energi/001_ Formulir Pengumpulan dan Analisis Data Energi.docx",
+ "nomor": "001/SOP-011/KINRA/SMEn/X/2026",
+ "tautan": {
+  "href": "/energi",
+  "label": "Data Energi"
+ }
+}

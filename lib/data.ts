@@ -1,5 +1,6 @@
 import 'server-only'
 import { hitungEnpi } from './enpi'
+import { DOKUMEN_TEMPLAT } from './formulir/tautan'
 import { BUCKET_BUKTI } from './status'
 import { db } from './supabase'
 import type { Berkas, BerkasTampil, Dokumen, EnergiBulanan, Enpi, Isu, Kegiatan, Klausul, Peluang, RencanaAksi, RiwayatStatus, Sasaran, SumberEnergi, Temuan, VariabelBulanan, VariabelRelevan } from './types'
@@ -17,10 +18,26 @@ export async function ambilKlausul(): Promise<Klausul[]> {
 
 export async function ambilDokumen(): Promise<Dokumen[]> {
   const s = await db()
-  const r = await s.from('dokumen_audit').select('*, berkas(count)').order('kode')
+  const [r, isian] = await Promise.all([
+    s.from('dokumen_audit').select('*, berkas(count)').order('kode'),
+    isianDisetujuiPerDokumen(),
+  ])
+  const tambah = (d: Dokumen) => ({ ...d, jumlah_isian: isian.get(d.kode) ?? 0 })
   // Relasi berkas belum ada (migrasi 0010 belum dijalankan): baca tanpa jumlah berkas
-  if (r.error?.code === 'PGRST200') return cek(await s.from('dokumen_audit').select('*').order('kode'), 'dokumen_audit')
-  return cek(r, 'dokumen_audit').map(({ berkas, ...d }: Dokumen & { berkas?: { count: number }[] }) => ({ ...d, jumlah_berkas: berkas?.[0]?.count ?? 0 }))
+  if (r.error?.code === 'PGRST200') return cek<Dokumen[]>(await s.from('dokumen_audit').select('*').order('kode'), 'dokumen_audit').map(tambah)
+  return cek(r, 'dokumen_audit').map(({ berkas, ...d }: Dokumen & { berkas?: { count: number }[] }) => tambah({ ...d, jumlah_berkas: berkas?.[0]?.count ?? 0 }))
+}
+
+/** Jumlah isian formulir disetujui per kode dokumen kesiapan. Kosong bila tabel formulir belum ada (migrasi 0011). */
+export async function isianDisetujuiPerDokumen(): Promise<Map<string, number>> {
+  const { data, error } = await (await db()).from('formulir_isian').select('templat_kode').eq('status', 'disetujui')
+  const hasil = new Map<string, number>()
+  if (error) return hasil
+  for (const { templat_kode } of data as { templat_kode: string }[]) {
+    const kode = DOKUMEN_TEMPLAT[templat_kode]
+    if (kode) hasil.set(kode, (hasil.get(kode) ?? 0) + 1)
+  }
+  return hasil
 }
 
 /** Berkas evidence satu dokumen beserta signed URL (bucket privat, berlaku 1 jam). `migrasi` true bila tabel berkas belum ada. */

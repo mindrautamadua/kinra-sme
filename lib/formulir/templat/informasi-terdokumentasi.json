@@ -1,0 +1,362 @@
+{
+ "kode": "informasi-terdokumentasi",
+ "klausul": [
+  "7.5"
+ ],
+ "judul": "Informasi Terdokumentasi (Daftar Induk Dokumen & Catatan)",
+ "subjudul": "PT Kawasan Industri Nusantara (KINRA)",
+ "kepala": [
+  {
+   "label": "Nomor Dokumen",
+   "nilai": "001/SOP-012/KINRA/SMEn/X/2026"
+  },
+  {
+   "label": "Revisi",
+   "nilai": "0"
+  },
+  {
+   "label": "Tanggal Berlaku",
+   "nilai": "22 Oktober 2026"
+  },
+  {
+   "label": "Bagian",
+   "nilai": "Manajemen Risiko & TI"
+  },
+  {
+   "label": "Sub Bagian",
+   "nilai": "Manajemen Risiko"
+  },
+  {
+   "label": "Lokasi Penyimpanan",
+   "nilai": "Bagian Manajemen Risiko"
+  }
+ ],
+ "blok": [
+  {
+   "jenis": "judul",
+   "teks": "DAFTAR INDUK DOKUMEN"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t1",
+   "kolom": [
+    {
+     "label": "No"
+    },
+    {
+     "label": "Nama Dokumen\nPedoman/ Prosedur/ Dokumen Acuan Kerja (yang relevan dengan Sistem Manajemen Anti Penyuapan)"
+    },
+    {
+     "label": "Nomor Dokumen/ Identifitas Dokumen"
+    },
+    {
+     "label": "Revisi/ Terbitan"
+    },
+    {
+     "label": "Jenis Dokumen\n(Softcopy/ Hardcopy)"
+    },
+    {
+     "label": "Hak Akses – hak melihat \n(read only)"
+    },
+    {
+     "label": "Hak Akses – hak merubah \n(edit/ upload)"
+    },
+    {
+     "label": "Lokasi Simpan"
+    },
+    {
+     "label": "Masa Simpan"
+    },
+    {
+     "label": "Penanggung Jawab"
+    }
+   ],
+   "baris": [
+    [
+     "1",
+     "",
+     "",
+     "",
+     "Softcopy",
+     "Internal Use Only",
+     "",
+     "Softfile",
+     "3 Tahun",
+     ""
+    ],
+    [
+     "2",
+     "",
+     "",
+     "",
+     "Softcopy",
+     "Internal Use Only",
+     "",
+     "Softfile",
+     "3 Tahun",
+     ""
+    ],
+    [
+     "3",
+     "",
+     "",
+     "",
+     "Softcopy",
+     "Internal Use Only",
+     "",
+     "Softfile",
+     "3 Tahun",
+     ""
+    ],
+    [
+     "4",
+     "",
+     "",
+     "",
+     "Softcopy",
+     "Internal Use Only",
+     "",
+     "Softfile",
+     "3 Tahun",
+     ""
+    ],
+    [
+     "5",
+     "",
+     "",
+     "",
+     "Softcopy",
+     "Internal Use Only",
+     "",
+     "Softfile",
+     "3 Tahun",
+     ""
+    ],
+    [
+     "6",
+     "",
+     "",
+     "",
+     "Softcopy",
+     "Internal Use Only",
+     "",
+     "Softfile",
+     "3 Tahun",
+     ""
+    ],
+    [
+     "7",
+     "",
+     "",
+     "",
+     "Softcopy",
+     "Internal Use Only",
+     "",
+     "Softfile",
+     "3 Tahun",
+     ""
+    ],
+    [
+     "8",
+     "",
+     "",
+     "",
+     "Softcopy",
+     "Internal Use Only",
+     "",
+     "Softfile",
+     "3 Tahun",
+     ""
+    ],
+    [
+     "9",
+     "",
+     "",
+     "",
+     "Softcopy",
+     "Internal Use Only",
+     "",
+     "Softfile",
+     "3 Tahun",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     "Softcopy",
+     "Internal Use Only",
+     "",
+     "Softfile",
+     "3 Tahun",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     "Softcopy",
+     "Internal Use Only",
+     "",
+     "Softfile",
+     "3 Tahun",
+     ""
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "DAFTAR CATATAN / FORMULIR"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t2",
+   "kolom": [
+    {
+     "label": "No."
+    },
+    {
+     "label": "Catatan"
+    },
+    {
+     "label": "PIC Catatan"
+    },
+    {
+     "label": "Lokasi Penyimpanan"
+    },
+    {
+     "label": "Media Penyimpanan"
+    },
+    {
+     "label": "Metode Indeks"
+    },
+    {
+     "label": "Lama Penyimpanan"
+    },
+    {
+     "label": "Nomor Dokumen"
+    }
+   ],
+   "baris": [
+    [
+     "1",
+     "",
+     "ISO Team",
+     "Ruang Departemen",
+     "Hard Copy/ Soft Copy",
+     "Penomeran",
+     "5 Tahun",
+     ""
+    ],
+    [
+     "2",
+     "",
+     "ISO Team",
+     "",
+     "Hard Copy/ Soft Copy",
+     "Penomeran",
+     "5 Tahun",
+     ""
+    ],
+    [
+     "3",
+     "",
+     "ISO Team",
+     "",
+     "Hard Copy/ Soft Copy",
+     "Penomeran",
+     "5 Tahun",
+     ""
+    ],
+    [
+     "4",
+     "",
+     "ISO Team",
+     "",
+     "Hard Copy/ Soft Copy",
+     "Penomeran",
+     "5 Tahun",
+     ""
+    ],
+    [
+     "5",
+     "",
+     "ISO Team",
+     "",
+     "Hard Copy/ Soft Copy",
+     "Penomeran",
+     "5 Tahun",
+     ""
+    ],
+    [
+     "6",
+     "",
+     "ISO Team",
+     "",
+     "Hard Copy/ Soft Copy",
+     "Penomeran",
+     "5 Tahun",
+     ""
+    ],
+    [
+     "7",
+     "",
+     "ISO Team",
+     "",
+     "Hard Copy/ Soft Copy",
+     "Penomeran",
+     "5 Tahun",
+     ""
+    ],
+    [
+     "8",
+     "",
+     "ISO Team",
+     "",
+     "Hard Copy/ Soft Copy",
+     "Penomeran",
+     "5 Tahun",
+     ""
+    ],
+    [
+     "9",
+     "",
+     "ISO Team",
+     "",
+     "Hard Copy/ Soft Copy",
+     "Penomeran",
+     "5 Tahun",
+     ""
+    ],
+    [
+     "10",
+     "",
+     "ISO Team",
+     "",
+     "Hard Copy/ Soft Copy",
+     "Ditinjau oleh:Management RepresentativeDisiapkan oleh:Dokumen KontrolDisetujui OlehDirektur Ditinjau oleh:Management RepresentativeDisiapkan oleh:Dokumen KontrolDisetujui OlehDirektur Penomeran\nDitinjau oleh:\nManagement Representative\nDisiapkan oleh:\nDokumen Kontrol\nDisetujui Oleh\nDirektur\nDitinjau oleh:\nManagement Representative\nDisiapkan oleh:\nDokumen Kontrol\nDisetujui Oleh\nDirektur",
+     "5 Tahun",
+     ""
+    ]
+   ]
+  }
+ ],
+ "ttd": [
+  {
+   "peran": "Disiapkan oleh",
+   "jabatan": "Dokumen Kontrol"
+  },
+  {
+   "peran": "Ditinjau oleh",
+   "jabatan": "Management Representative"
+  },
+  {
+   "peran": "Disetujui oleh",
+   "jabatan": "Direktur"
+  }
+ ],
+ "sumber": "7.5.1 Informasi Terdokumentasi/001_ Formulir Informasi Terdokumentasi.docx",
+ "nomor": "001/SOP-012/KINRA/SMEn/X/2026"
+}

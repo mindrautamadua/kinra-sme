@@ -1,0 +1,323 @@
+{
+ "kode": "isu-internal-eksternal",
+ "klausul": [
+  "4.1",
+  "6.1"
+ ],
+ "judul": "Identifikasi Isu Internal dan Eksternal",
+ "subjudul": "SISTEM MANAJEMEN ENERGI (EnMS)",
+ "kepala": [
+  {
+   "label": "Nomor Dokumen",
+   "nilai": "001/SOP-003/KINRA/SMEn/X/2026"
+  },
+  {
+   "label": "Revisi",
+   "nilai": "0"
+  },
+  {
+   "label": "Tanggal Berlaku",
+   "nilai": "22 Oktober 2026"
+  },
+  {
+   "label": "Bagian",
+   "nilai": "Manajemen Risiko & TI"
+  },
+  {
+   "label": "Sub Bagian",
+   "nilai": "Manajemen Risiko"
+  },
+  {
+   "label": "Lokasi Penyimpanan",
+   "nilai": "Bagian Manajemen Risiko & TI"
+  }
+ ],
+ "blok": [
+  {
+   "jenis": "judul",
+   "teks": "ISO 50001:2018 | PT KAWASAN INDUSTRI NUSANTARA (KINRA)"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t1",
+   "kolom": [
+    {
+     "label": "Internal/Eksternal (I/E)"
+    },
+    {
+     "label": "Risiko/Peluang (R/O)"
+    },
+    {
+     "label": "Isu yang diidentifikasi"
+    },
+    {
+     "label": "Dampak terhadap EnMS (1–5)"
+    },
+    {
+     "label": "Kemungkinan (1–5)"
+    },
+    {
+     "label": "Tingkat risiko"
+    },
+    {
+     "label": "Tindakan untuk menangani risiko/peluang"
+    },
+    {
+     "label": "Evaluasi efektivitas"
+    }
+   ],
+   "baris": [
+    [
+     "Internal",
+     "Risiko",
+     "Anggaran operasional untuk program efisiensi energi berkurang.",
+     "3",
+     "2",
+     "Sedang",
+     "Prioritaskan tindakan tanpa/berbiaya rendah; lakukan pengaturan operasi, pemadaman beban tidak perlu, dan kampanye hemat energi. Usulkan kebutuhan anggaran berbasis potensi penghematan terukur.",
+     "Pantau biaya energi, realisasi program, dan penghematan aktual."
+    ],
+    [
+     "Internal",
+     "Risiko",
+     "Anggaran investasi modal untuk penggantian/perbaikan peralatan hemat energi terbatas.",
+     "3",
+     "2",
+     "Sedang",
+     "Susun business case berdasarkan biaya siklus hidup, penghematan energi, ROI/payback, dan risiko operasional; kaji pelaksanaan bertahap serta peluang insentif yang sah.",
+     "Bandingkan penghematan dan biaya aktual terhadap business case."
+    ],
+    [
+     "Internal",
+     "Risiko",
+     "Komitmen atau pemahaman pegawai dan unit kerja terhadap pengelolaan energi belum merata.",
+     "3",
+     "2",
+     "Sedang",
+     "Tetapkan peran dan tanggung jawab; lakukan sosialisasi, pelatihan, komunikasi indikator energi, dan pelibatan unit terkait.",
+     "Ukur tingkat partisipasi, penyelesaian pelatihan, dan kepatuhan praktik operasi."
+    ],
+    [
+     "Internal",
+     "Risiko",
+     "Data konsumsi energi per gedung, fasilitas, atau penggunaan signifikan belum lengkap/terintegrasi.",
+     "3",
+     "2",
+     "Sedang",
+     "Bangun inventaris meter dan sumber data; tetapkan metode pencatatan, validasi, frekuensi pelaporan, serta penanggung jawab data energi.",
+     "Periksa kelengkapan, ketepatan waktu, dan konsistensi data."
+    ],
+    [
+     "Internal",
+     "Risiko",
+     "Peralatan tata udara (HVAC), pompa, penerangan, dan utilitas beroperasi di luar kebutuhan aktual.",
+     "3",
+     "2",
+     "Sedang",
+     "Tetapkan jadwal operasi dan set point yang sesuai; lakukan preventive maintenance, pemeriksaan jam operasi, serta pengendalian beban saat area tidak digunakan.",
+     "Bandingkan konsumsi sebelum/sesudah dan hasil inspeksi operasional."
+    ],
+    [
+     "Internal",
+     "Risiko",
+     "Pemeliharaan infrastruktur dan peralatan energi tidak konsisten atau tertunda.",
+     "3",
+     "2",
+     "Sedang",
+     "Terapkan jadwal pemeliharaan berbasis risiko untuk panel, trafo, pompa, HVAC, penerangan, dan peralatan pendukung; catat gangguan dan tindak lanjut.",
+     "Pantau kepatuhan jadwal, kerusakan berulang, dan konsumsi energi."
+    ],
+    [
+     "Internal",
+     "Risiko",
+     "Perubahan tingkat hunian, aktivitas tenant, atau kebutuhan layanan kawasan menyebabkan pola konsumsi berubah.",
+     "3",
+     "2",
+     "Sedang",
+     "Pantau perubahan beban dan profil penggunaan; tinjau baseline serta indikator kinerja energi jika perubahan relevan dan terdokumentasi.",
+     "Tinjau kesesuaian baseline/EnPI terhadap kondisi operasi terkini."
+    ],
+    [
+     "Internal",
+     "Risiko",
+     "Pembelian atau penggantian peralatan tidak mempertimbangkan kinerja energi.",
+     "3",
+     "2",
+     "Sedang",
+     "Masukkan kriteria kinerja energi ke spesifikasi, evaluasi pemasok, desain, pengadaan, dan keputusan penggantian peralatan dalam kendali/pengaruh KINRA.",
+     "Periksa dokumen pengadaan dan spesifikasi teknis."
+    ],
+    [
+     "Internal",
+     "Risiko",
+     "Kompetensi personel pengoperasian dan pemeliharaan terkait energi belum memadai.",
+     "3",
+     "2",
+     "Sedang",
+     "Identifikasi kompetensi yang diperlukan; berikan pelatihan bagi operator/pemelihara dan verifikasi pemahaman serta penerapan di lapangan.",
+     "Tinjau matriks kompetensi dan hasil observasi."
+    ],
+    [
+     "Internal",
+     "Risiko",
+     "Kebocoran, kerusakan, atau pengaturan tidak tepat pada sistem utilitas meningkatkan konsumsi energi.",
+     "3",
+     "2",
+     "Sedang",
+     "Lakukan inspeksi rutin, pencatatan anomali, analisis akar masalah, dan tindakan korektif terhadap sistem listrik, pompa, tata udara, serta utilitas lain yang relevan.",
+     "Verifikasi penutupan temuan dan perubahan konsumsi."
+    ],
+    [
+     "Internal",
+     "Risiko",
+     "Kegiatan administrasi dan operasional gedung menggunakan pencahayaan/peralatan saat tidak diperlukan.",
+     "3",
+     "2",
+     "Sedang",
+     "Terapkan prosedur shutdown, zonasi pencahayaan, pemanfaatan cahaya alami bila sesuai, serta pengingat dan inspeksi akhir jam kerja.",
+     "Lakukan inspeksi berkala dan bandingkan pemakaian di luar jam operasi."
+    ],
+    [
+     "Internal",
+     "Risiko",
+     "Perubahan proses, renovasi, atau pengembangan fasilitas tidak menilai dampak penggunaan energi sejak tahap perencanaan.",
+     "3",
+     "2",
+     "Sedang",
+     "Integrasikan tinjauan energi ke perencanaan desain, modifikasi, proyek, dan perubahan operasional; dokumentasikan asumsi serta persetujuan teknis.",
+     "Audit sampel proyek/perubahan dan tindak lanjut rekomendasi energi."
+    ],
+    [
+     "Eksternal",
+     "Risiko",
+     "Gangguan pasokan listrik, penurunan kualitas tegangan, atau pemadaman dari jaringan eksternal.",
+     "3",
+     "2",
+     "Sedang",
+     "Siapkan prosedur respons gangguan, prioritas beban, koordinasi dengan penyedia listrik, serta pemeliharaan sumber daya cadangan jika tersedia dan relevan.",
+     "Kaji catatan gangguan, durasi, dampak, dan hasil uji kesiapan."
+    ],
+    [
+     "Eksternal",
+     "Risiko",
+     "Perubahan tarif energi, biaya beban, atau struktur harga dari penyedia energi.",
+     "3",
+     "2",
+     "Sedang",
+     "Pantau tagihan dan perubahan tarif; evaluasi pola beban, faktor daya, waktu penggunaan, dan opsi pengendalian yang sesuai ketentuan.",
+     "Bandingkan biaya per satuan energi dan profil beban."
+    ],
+    [
+     "Eksternal",
+     "Risiko",
+     "Cuaca ekstrem, suhu tinggi, curah hujan, atau perubahan iklim meningkatkan kebutuhan pendinginan dan memengaruhi operasi fasilitas.",
+     "3",
+     "2",
+     "Sedang",
+     "Evaluasi dampak kondisi cuaca terhadap beban HVAC dan fasilitas; sesuaikan jadwal, pemeliharaan, kesiapsiagaan, dan rencana energi berdasarkan data.",
+     "Analisis tren energi terhadap suhu/cuaca dan gangguan operasional."
+    ],
+    [
+     "Eksternal",
+     "Risiko",
+     "Perubahan peraturan, persyaratan pemerintah, atau kewajiban pelaporan energi dan lingkungan.",
+     "3",
+     "2",
+     "Sedang",
+     "Identifikasi kewajiban yang berlaku, tetapkan pemilik kepatuhan, evaluasi berkala, dan perbarui prosedur serta bukti pemenuhan.",
+     "Periksa daftar peraturan dan hasil evaluasi kepatuhan."
+    ],
+    [
+     "Eksternal",
+     "Risiko",
+     "Ketersediaan atau mutu pasokan energi dan layanan dari penyedia eksternal berubah.",
+     "3",
+     "2",
+     "Sedang",
+     "Tinjau ketergantungan pada penyedia, ketentuan layanan, dan rencana kontingensi; koordinasikan perubahan yang dapat berdampak pada operasi kawasan.",
+     "Tinjau catatan layanan dan hasil koordinasi penyedia."
+    ],
+    [
+     "Eksternal",
+     "Risiko",
+     "Keterbatasan ketersediaan air atau sumber daya pendukung memengaruhi sistem utilitas yang menggunakan energi.",
+     "3",
+     "2",
+     "Sedang",
+     "Identifikasi hubungan penggunaan air dan energi pada fasilitas relevan; evaluasi opsi operasi yang efisien tanpa mengganggu fungsi dan persyaratan layanan.",
+     "Pantau konsumsi sumber daya dan kinerja fasilitas terkait."
+    ],
+    [
+     "Eksternal",
+     "Opportunity",
+     "Program insentif, skema tarif, atau layanan konsultasi efisiensi energi tersedia dari penyedia/pemerintah.",
+     "2",
+     "2",
+     "Peluang",
+     "Pantau program resmi; evaluasi kelayakan teknis dan finansial serta ajukan insentif yang memenuhi persyaratan. Gunakan hasilnya untuk mempercepat proyek efisiensi.",
+     "Catat peluang yang dikaji, diajukan, disetujui, dan penghematan yang tercapai."
+    ],
+    [
+     "Eksternal",
+     "Opportunity",
+     "Teknologi hemat energi, otomasi, sub-metering, kontrol HVAC, dan penerangan efisien semakin tersedia.",
+     "2",
+     "2",
+     "Peluang",
+     "Lakukan kajian kelayakan dan uji coba terukur; prioritaskan penggunaan energi signifikan serta teknologi yang kompatibel dengan infrastruktur kawasan.",
+     "Ukur kinerja energi sebelum/sesudah dan biaya siklus hidup."
+    ],
+    [
+     "Eksternal",
+     "Opportunity",
+     "Kolaborasi dengan tenant, pemasok, dan penyedia layanan dapat mendorong penghematan energi di area yang dapat dipengaruhi KINRA.",
+     "2",
+     "2",
+     "Peluang",
+     "Komunikasikan praktik efisiensi, sediakan panduan atau kriteria energi, dan dorong pertukaran data yang disepakati tanpa mengasumsikan kendali atas operasi tenant.",
+     "Ukur partisipasi dan hasil inisiatif bersama."
+    ],
+    [
+     "Internal",
+     "Opportunity",
+     "Pengukuran energi dan analisis pola beban dapat mengungkap peluang penghematan dan peningkatan kinerja energi.",
+     "2",
+     "2",
+     "Peluang",
+     "Tetapkan EnPI dan baseline energi yang sesuai; analisis tren, penyimpangan, beban puncak, serta peluang optimasi secara berkala.",
+     "Dokumentasikan peluang, tindakan, dan hasil terukur."
+    ],
+    [
+     "Internal",
+     "Opportunity",
+     "Integrasi kriteria energi ke dalam pengadaan dan desain fasilitas dapat menurunkan konsumsi selama umur pakai.",
+     "2",
+     "2",
+     "Peluang",
+     "Terapkan evaluasi kinerja energi pada spesifikasi dan keputusan desain/pengadaan; dokumentasikan alasan pemilihan dan verifikasi hasil setelah implementasi.",
+     "Lakukan pemeriksaan spesifikasi dan verifikasi kinerja pascaimplementasi."
+    ]
+   ]
+  }
+ ],
+ "ttd": [
+  {
+   "peran": "Disiapkan oleh",
+   "jabatan": "Dokumen Kontrol"
+  },
+  {
+   "peran": "Ditinjau oleh",
+   "jabatan": "Management Representative"
+  },
+  {
+   "peran": "Disetujui oleh",
+   "jabatan": "Direktur"
+  }
+ ],
+ "sumber": "4.1 Konteks Organisasi/001_ Formulir Isu Internal Eksternal ok.docx",
+ "nomor": "001/SOP-003/KINRA/SMEn/X/2026",
+ "tautan": {
+  "href": "/register",
+  "label": "Register Isu & Peluang"
+ }
+}

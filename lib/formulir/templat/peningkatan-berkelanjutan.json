@@ -1,0 +1,285 @@
+{
+ "kode": "peningkatan-berkelanjutan",
+ "klausul": [
+  "10.2"
+ ],
+ "judul": "Peningkatan Berkelanjutan",
+ "subjudul": "SISTEM MANAJEMEN ENERGI (EnMS) — PT KAWASAN INDUSTRI NUSANTARA (KINRA)",
+ "kepala": [
+  {
+   "label": "Nomor Dokumen",
+   "nilai": "001/SOP-025/KINRA/SMEn/X/2026"
+  },
+  {
+   "label": "Revisi",
+   "nilai": "0"
+  },
+  {
+   "label": "Tanggal Berlaku",
+   "nilai": "22 Oktober 2026"
+  },
+  {
+   "label": "Bagian",
+   "nilai": "Mekanikal & Elektrikal, fasilitas, dan Pengamanan"
+  },
+  {
+   "label": "Sub Bagian",
+   "nilai": "Mekanikal & Elektrikal"
+  },
+  {
+   "label": "Lokasi Penyimpanan",
+   "nilai": "Mekanikal & Elektrikal, fasilitas, dan Pengamanan"
+  }
+ ],
+ "blok": [
+  {
+   "jenis": "judul",
+   "teks": "Peninjauan dan pembaruan proses EnMS secara berkala"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t1",
+   "kolom": [
+    {
+     "label": "Pemeriksaan"
+    },
+    {
+     "label": "Catatan/keputusan KINRA"
+    }
+   ],
+   "baris": [
+    [
+     "Keputusan mengenai proses peninjauan dan pembaruan telah ditetapkan agar peninjauan berlangsung sesuai rencana dan interval yang ditentukan.",
+     "Keputusan, proses, prosedur, dan protokol peninjauan didokumentasikan melalui mekanisme tinjauan manajemen. Referensi dokumen/rekaman: __________________"
+    ],
+    [
+     "Tindakan telah dilakukan untuk menerapkan proses peninjauan atau pembaruan yang sebelumnya belum tersedia.",
+     "Tindakan yang telah dilakukan dan bukti implementasi: ______________________________________________"
+    ]
+   ]
+  },
+  {
+   "jenis": "teks",
+   "id": "p1",
+   "teks": "Log peninjauan/proses untuk metode, penanggung jawab, waktu, dampak, tindakan dan verifikasi efektivitas."
+  },
+  {
+   "jenis": "tabel",
+   "id": "t2",
+   "kolom": [
+    {
+     "label": "Peninjauan/proses"
+    },
+    {
+     "label": "Dampak terhadap EnMS"
+    },
+    {
+     "label": "Penyebab dampak/kesenjangan"
+    },
+    {
+     "label": "Tindakan yang dilakukan"
+    },
+    {
+     "label": "Efektivitas tindakan"
+    },
+    {
+     "label": "Penanggung jawab"
+    },
+    {
+     "label": "Tanggal selesai"
+    }
+   ],
+   "baris": []
+  },
+  {
+   "jenis": "judul",
+   "teks": "Keterkaitan EnMS dengan pengelolaan perubahan"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t3",
+   "kolom": [
+    {
+     "label": "Pemeriksaan"
+    },
+    {
+     "label": "Catatan/hasil verifikasi"
+    }
+   ],
+   "baris": [
+    [
+     "Manajemen puncak memastikan proses untuk menentukan dan menangani perubahan besar yang memengaruhi EnMS dan kinerja energi.",
+     "Bukti konfirmasi dalam tinjauan manajemen/dokumen pengelolaan perubahan: __________________________"
+    ],
+    [
+     "Mekanisme pengelolaan perubahan yang berdampak pada EnMS telah ditinjau, diterapkan, dan berfungsi dengan baik.",
+     "Catatan evaluasi efektivitas dan tindak lanjut: _________________________________________________"
+    ],
+    [
+     "Komunikasi perubahan melibatkan fungsi/personel yang relevan sehingga tindakan yang sesuai dapat diambil.",
+     "Pihak yang dikomunikasikan, media, tanggal dan bukti: ____________________________________________"
+    ]
+   ]
+  },
+  {
+   "jenis": "teks",
+   "id": "p2",
+   "teks": "Perubahan yang dapat memengaruhi EnMS dan kinerja energi dipertimbangkan, termasuk:"
+  },
+  {
+   "jenis": "cek",
+   "id": "p3",
+   "teks": "Perubahan organisasi: struktur, tanggung jawab, personel, pola operasi atau penyedia layanan.",
+   "nilai": ""
+  },
+  {
+   "jenis": "cek",
+   "id": "p4",
+   "teks": "Perubahan teknis: peralatan, utilitas, sistem tata udara, pencahayaan, meter, sistem kendali, desain fasilitas atau teknologi.",
+   "nilai": ""
+  },
+  {
+   "jenis": "cek",
+   "id": "p5",
+   "teks": "Perubahan hukum dan persyaratan lain yang berlaku atau diadopsi.",
+   "nilai": ""
+  },
+  {
+   "jenis": "cek",
+   "id": "p6",
+   "teks": "Perubahan kompetitif/strategis: kebutuhan layanan kawasan, target bisnis, biaya energi atau tuntutan pemangku kepentingan.",
+   "nilai": ""
+  },
+  {
+   "jenis": "cek",
+   "id": "p7",
+   "teks": "Perubahan lainnya: perluasan fasilitas, perubahan jam operasi, renovasi, pengadaan, kontrak, kondisi pasokan energi atau keadaan darurat.",
+   "nilai": ""
+  },
+  {
+   "jenis": "teks",
+   "id": "p8",
+   "teks": "Untuk setiap perubahan signifikan, catat usulan dan alasan perubahan, dampak terhadap penggunaan/konsumsi energi, SEU, EnPI/EnB, risiko dan peluang, kebutuhan kompetensi, pengendalian operasional, komunikasi, persetujuan, serta verifikasi setelah perubahan."
+  },
+  {
+   "jenis": "judul",
+   "teks": "Integrasi persyaratan EnMS ke operasi dan praktik bisnis"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t4",
+   "kolom": [
+    {
+     "label": "Area integrasi"
+    },
+    {
+     "label": "Pemeriksaan/ketentuan"
+    },
+    {
+     "label": "Status dan bukti"
+    }
+   ],
+   "baris": [
+    [
+     "Tinjauan manajemen",
+     "Keputusan peningkatan berkelanjutan, termasuk peluang integrasi dengan proses bisnis, menjadi salah satu keluaran tinjauan manajemen.",
+     ""
+    ],
+    [
+     "Tujuan, sasaran dan rencana tindakan energi",
+     "Rencana implementasi dan integrasi tindakan EnMS dimasukkan ke tujuan, sasaran energi, rencana tindakan, komunikasi, pengendalian operasional, desain, pemantauan dan pengukuran.",
+     ""
+    ],
+    [
+     "Perencanaan strategis dan anggaran",
+     "Tindakan pencapaian sasaran energi dipertimbangkan dalam perencanaan strategis, penyusunan anggaran dan prioritas investasi.",
+     ""
+    ],
+    [
+     "Kompetensi dan pelatihan",
+     "Kebutuhan kompetensi berbasis peran dan pelatihan terkait energi diintegrasikan ke rencana pengembangan personel.",
+     ""
+    ],
+    [
+     "Pengadaan dan desain",
+     "Pertimbangan kinerja energi dimasukkan dalam pembelian peralatan/layanan yang memengaruhi penggunaan energi dan dalam desain/perubahan fasilitas yang relevan.",
+     ""
+    ],
+    [
+     "Informasi terdokumentasi",
+     "Prosedur, instruksi, data, rekaman pemeliharaan, hasil pemantauan dan dokumen lain diperbarui serta dikendalikan.",
+     ""
+    ],
+    [
+     "Proses operasional kawasan",
+     "Tindakan energi terintegrasi ke pengoperasian gedung, utilitas, pencahayaan, HVAC, fasilitas pendukung, serta pemeliharaan infrastruktur yang berada dalam kendali/pengaruh KINRA.",
+     ""
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "Peran manajemen puncak dalam peningkatan berkelanjutan"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t5",
+   "kolom": [
+    {
+     "label": "Pernyataan pemeriksaan"
+    },
+    {
+     "label": "Bukti/rujukan"
+    }
+   ],
+   "baris": [
+    [
+     "Manajemen puncak menunjukkan komitmen pada peningkatan berkelanjutan kinerja energi dan efektivitas EnMS melalui tinjauan manajemen.",
+     "Notulen tinjauan manajemen, keputusan, arahan dan tindak lanjut: ______________________________"
+    ],
+    [
+     "Manajemen puncak memenuhi tanggung jawab yang ditetapkan dalam komitmen manajemen, termasuk dukungan sumber daya, komunikasi, prioritas dan akuntabilitas.",
+     "Rujukan dokumen komitmen manajemen/rekaman: __________________________________________"
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "Proses peningkatan berkelanjutan EnMS dan kinerja energi"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t6",
+   "kolom": [
+    {
+     "label": "Pernyataan pemeriksaan"
+    },
+    {
+     "label": "Mekanisme dan bukti KINRA"
+    }
+   ],
+   "baris": [
+    [
+     "KINRA meningkatkan kesesuaian, kecukupan dan efektivitas EnMS dengan menangkap, menganalisis, dan mengevaluasi hasil secara sistematis.",
+     "Rencana pemantauan dan pengukuran; evaluasi EnPI/EnB; pencapaian tujuan dan sasaran; jadwal pelatihan; audit internal; tindakan korektif; tinjauan manajemen; dan log peluang peningkatan. Referensi: __________________________"
+    ]
+   ]
+  }
+ ],
+ "ttd": [
+  {
+   "peran": "Disiapkan oleh",
+   "jabatan": "Dokumen Kontrol"
+  },
+  {
+   "peran": "Ditinjau oleh",
+   "jabatan": "Management Representative"
+  },
+  {
+   "peran": "Disetujui oleh",
+   "jabatan": "Direktur"
+  }
+ ],
+ "sumber": "10.2 Peningkatan Berkelanjutan/001_Peningkatan Berkelanjutan Rev.0.docx",
+ "nomor": "001/SOP-025/KINRA/SMEn/X/2026"
+}

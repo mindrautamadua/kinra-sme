@@ -1,0 +1,694 @@
+{
+ "kode": "tujuan-target-energi",
+ "klausul": [
+  "6.2"
+ ],
+ "judul": "Tujuan dan Target Energi",
+ "subjudul": "Sistem Manajemen Energi ISO 50001:2018 — PT Kawasan Industri Nusantara (KINRA)",
+ "kepala": [
+  {
+   "label": "Nomor Dokumen",
+   "nilai": "002/SOP-008/KINRA/SMEn/X/2026"
+  },
+  {
+   "label": "Revisi",
+   "nilai": "0"
+  },
+  {
+   "label": "Tanggal Berlaku",
+   "nilai": "22 Oktober 2026"
+  },
+  {
+   "label": "Bagian",
+   "nilai": "Mekanikal & Elektrikal, Fasilitas, dan Pengamanan"
+  },
+  {
+   "label": "Sub Bagian",
+   "nilai": "Mekanikal & Elektrikal"
+  },
+  {
+   "label": "Lokasi Penyimpanan",
+   "nilai": "Bagian Mekanikal & Elektrikal, Fasilitas, dan Pengamanan"
+  }
+ ],
+ "blok": [
+  {
+   "jenis": "judul",
+   "teks": "1. Susunan tim yang terlibat:"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t1",
+   "kolom": [
+    {
+     "label": "Nama anggota tim"
+    },
+    {
+     "label": "Fungsi yang diwakili"
+    },
+    {
+     "label": "Tanggung jawab utama"
+    }
+   ],
+   "baris": [
+    [
+     "",
+     "Tim Energi/Penanggung Jawab EnMS",
+     "Koordinasi penyusunan tujuan, target, pemantauan dan pelaporan."
+    ],
+    [
+     "",
+     "Teknik/Fasilitas/Pemeliharaan",
+     "Data teknis, operasi peralatan, utilitas, dan peluang efisiensi."
+    ],
+    [
+     "",
+     "Operasional kawasan/gedung",
+     "Data operasi, jam layanan, kondisi pemakaian energi."
+    ],
+    [
+     "",
+     "Keuangan/Anggaran/Pengadaan",
+     "Analisis biaya, anggaran, pembelian dan kelayakan investasi."
+    ],
+    [
+     "",
+     "Manajemen",
+     "Penyelarasan strategi, penyediaan sumber daya, persetujuan."
+    ],
+    [
+     "",
+     "Pemasok/kontraktor (bila relevan)",
+     "Informasi teknis dan dukungan peningkatan kinerja energi."
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "Masukan yang harus tersedia bagi Tim Energi"
+  },
+  {
+   "jenis": "teks",
+   "id": "p1",
+   "teks": "Kebijakan energi KINRA dan komitmen peningkatan berkelanjutan atas kinerja energi."
+  },
+  {
+   "jenis": "teks",
+   "id": "p2",
+   "teks": "Hasil tinjauan energi, daftar penggunaan energi signifikan (SEU), EnPI dan baseline energi (EnB)."
+  },
+  {
+   "jenis": "teks",
+   "id": "p3",
+   "teks": "Peluang peningkatan kinerja energi yang telah diidentifikasi dan diprioritaskan."
+  },
+  {
+   "jenis": "teks",
+   "id": "p4",
+   "teks": "Persyaratan hukum dan persyaratan lain terkait energi yang berlaku dan telah diidentifikasi KINRA."
+  },
+  {
+   "jenis": "teks",
+   "id": "p5",
+   "teks": "Data konsumsi energi, pola operasi, kondisi fasilitas, biaya, ketersediaan anggaran, serta kendala operasional."
+  },
+  {
+   "jenis": "teks",
+   "id": "p6",
+   "teks": "Rencana strategis, rencana pengembangan kawasan, kebutuhan layanan, dan masukan pihak berkepentingan."
+  },
+  {
+   "jenis": "judul",
+   "teks": "Kesesuaian tujuan dan target energi"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t2",
+   "kolom": [
+    {
+     "label": "Kriteria"
+    },
+    {
+     "label": "Penerapan/penilaian KINRA"
+    }
+   ],
+   "baris": [
+    [
+     "Konsisten dengan kebijakan energi",
+     "Tujuan dan target harus mendukung komitmen dalam kebijakan energi dan menerjemahkan komitmen tersebut menjadi tindakan terukur."
+    ],
+    [
+     "Peluang peningkatan dan persyaratan",
+     "Pertimbangkan peluang peningkatan yang teridentifikasi dan diprioritaskan, persyaratan hukum/persyaratan lain, serta hasil tinjauan energi. Target harus realistis untuk dicapai."
+    ],
+    [
+     "Penggunaan energi signifikan (SEU)",
+     "Tujuan/target harus mempertimbangkan SEU yang ditetapkan dalam tinjauan energi. Untuk SEU yang relevan, tetapkan tujuan dan/atau target yang berkaitan dengan peningkatan kinerjanya."
+    ],
+    [
+     "Kondisi bisnis dan keuangan",
+     "Pertimbangkan situasi bisnis dan keuangan KINRA, kondisi operasi, keterbatasan sumber daya, kesesuaian dengan rencana strategis, serta manfaat terhadap kinerja energi dan EnMS."
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "Rancangan tujuan energi KINRA"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t3",
+   "kolom": [
+    {
+     "label": "No."
+    },
+    {
+     "label": "Tujuan energi yang diusulkan"
+    },
+    {
+     "label": "Keterkaitan/hasil yang diharapkan"
+    }
+   ],
+   "baris": [
+    [
+     "1",
+     "Meningkatkan kinerja energi pada gedung administrasi dan fasilitas yang berada dalam kendali operasional KINRA.",
+     "Penggunaan energi lebih efisien dengan tetap menjaga kebutuhan layanan dan kenyamanan kerja."
+    ],
+    [
+     "2",
+     "Mengurangi konsumsi energi pada SEU yang telah ditetapkan berdasarkan hasil tinjauan energi.",
+     "Prioritas peningkatan diarahkan pada pengguna energi yang paling signifikan dan peluang yang layak."
+    ],
+    [
+     "3",
+     "Memastikan operasi dan pemeliharaan peralatan serta sistem utilitas mendukung kinerja energi yang baik.",
+     "Mengurangi pemborosan akibat operasi tidak optimal, kerusakan, atau jadwal operasi yang tidak sesuai kebutuhan."
+    ],
+    [
+     "4",
+     "Memenuhi persyaratan hukum dan persyaratan lain terkait energi yang berlaku bagi lingkup KINRA.",
+     "Kepatuhan dipantau dan dievaluasi secara terencana."
+    ],
+    [
+     "5",
+     "Meningkatkan kompetensi, kepedulian, dan komunikasi efisiensi energi bagi pekerja serta kontraktor relevan.",
+     "Mendorong perilaku hemat energi dan partisipasi dalam usulan perbaikan."
+    ],
+    [
+     "6",
+     "Membangun proses pemantauan, pengukuran, analisis, dan pelaporan kinerja energi secara konsisten.",
+     "Keputusan dan tindakan perbaikan didasarkan pada data yang dapat ditelusuri."
+    ]
+   ]
+  },
+  {
+   "jenis": "teks",
+   "id": "p7",
+   "teks": "Catatan: tujuan di atas merupakan rancangan yang disesuaikan dengan lingkup KINRA, bukan pernyataan bahwa target tersebut telah disahkan. KINRA perlu meninjau dan menetapkannya berdasarkan kebijakan energi, tinjauan energi, data baseline, risiko, peluang, dan sumber daya yang tersedia."
+  },
+  {
+   "jenis": "judul",
+   "teks": "Target energi kuantitatif — lembar kerja untuk ditetapkan KINRA"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t4",
+   "kolom": [
+    {
+     "label": "No."
+    },
+    {
+     "label": "SEU/area"
+    },
+    {
+     "label": "Indikator dan target terukur"
+    },
+    {
+     "label": "Baseline/periode acuan"
+    },
+    {
+     "label": "Tenggat waktu"
+    },
+    {
+     "label": "Penanggung jawab"
+    }
+   ],
+   "baris": [
+    [
+     "1",
+     "Gedung administrasi",
+     "Menurunkan intensitas konsumsi listrik sebesar ____% dibanding baseline.",
+     "Nilai: ____; tahun/periode: ____",
+     "",
+     ""
+    ],
+    [
+     "2",
+     "Tata udara/HVAC (jika tersedia dalam lingkup)",
+     "Menurunkan konsumsi/intensitas energi sebesar ____% dibanding baseline.",
+     "Nilai: ____; tahun/periode: ____",
+     "",
+     ""
+    ],
+    [
+     "3",
+     "Pompa/sistem utilitas (jika relevan)",
+     "Menurunkan kWh per m³ layanan atau indikator terpilih sebesar ____%.",
+     "Nilai: ____; tahun/periode: ____",
+     "",
+     ""
+    ],
+    [
+     "4",
+     "Pencahayaan",
+     "Menurunkan konsumsi energi pencahayaan sebesar ____% atau mencapai ____ kWh/periode.",
+     "Nilai: ____; tahun/periode: ____",
+     "",
+     ""
+    ],
+    [
+     "5",
+     "Sistem kelistrikan/fasilitas pendukung",
+     "Mengurangi konsumsi/rugi energi yang dapat diukur sebesar ____%.",
+     "Nilai: ____; tahun/periode: ____",
+     "",
+     ""
+    ],
+    [
+     "6",
+     "Partisipasi personel",
+     "Mengumpulkan dan mengevaluasi sekurang-kurangnya ____ usulan peluang peningkatan energi.",
+     "Jumlah usulan awal: ____",
+     "",
+     ""
+    ],
+    [
+     "7",
+     "Kompetensi dan kesadaran",
+     "Melaksanakan sosialisasi/pelatihan efisiensi energi untuk ____% personel/kontraktor relevan.",
+     "Cakupan awal: ____",
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "jenis": "teks",
+   "id": "p8",
+   "teks": "Nilai persentase, baseline, dan tenggat waktu harus diisi setelah data aktual dianalisis dan disetujui. Angka target dari contoh sumber yang berhubungan dengan pusat data (misalnya pengurangan 25%, 50%, atau skor ENERGY STAR) tidak diterapkan sebagai target KINRA karena konteks dan basis datanya berbeda."
+  },
+  {
+   "jenis": "judul",
+   "teks": "Proses pemantauan, peninjauan, dan pembaruan tujuan/target"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t5",
+   "kolom": [
+    {
+     "label": "Elemen"
+    },
+    {
+     "label": "Ketentuan untuk KINRA"
+    },
+    {
+     "label": "Bukti"
+    }
+   ],
+   "baris": [
+    [
+     "Proses berkala",
+     "Tim Energi memantau, meninjau, dan memperbarui tujuan serta target secara berkelanjutan, sesuai periode yang ditetapkan atau bila terjadi perubahan penting.",
+     "Laporan kinerja, notulen, daftar revisi."
+    ],
+    [
+     "Peran dan tanggung jawab",
+     "Tetapkan pemilik setiap target, pengumpul data, penganalisis, pemeriksa, dan pemberi persetujuan.",
+     "Matriks tanggung jawab/penetapan tugas."
+    ],
+    [
+     "Pelaporan ke manajemen",
+     "Laporkan pencapaian dan penyimpangan melalui tinjauan manajemen; revisi tujuan/target bila dibutuhkan.",
+     "Bahan dan notulen tinjauan manajemen."
+    ],
+    [
+     "Informasi terdokumentasi",
+     "Simpan tujuan, target, baseline, rencana, data pemantauan, analisis, keputusan, dan revisi sebagai informasi terdokumentasi.",
+     "Daftar induk dokumen/rekaman EnMS."
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "Lembar Kerja Tujuan dan Target Energi"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t6",
+   "kolom": [
+    {
+     "label": "Komponen lembar kerja"
+    },
+    {
+     "label": "Isian KINRA"
+    }
+   ],
+   "baris": [
+    [
+     "ID dokumen",
+     "Nomor: ____________ Revisi: ____________ Tanggal berlaku: ____________"
+    ],
+    [
+     "Tujuan energi",
+     ""
+    ],
+    [
+     "Target jangka panjang dan tenggat",
+     ""
+    ],
+    [
+     "Target antara 1",
+     ""
+    ],
+    [
+     "Target antara 2",
+     ""
+    ],
+    [
+     "Target antara 3",
+     ""
+    ],
+    [
+     "Komitmen kebijakan energi yang terkait",
+     ""
+    ],
+    [
+     "SEU yang terkait",
+     ""
+    ],
+    [
+     "EnPI dan baseline yang digunakan",
+     ""
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "Pemantauan dan Pengukuran Tujuan/Target"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t7",
+   "kolom": [
+    {
+     "label": "Pertanyaan/elemen – Bagaimana tujuan dipantau dan diukur?"
+    },
+    {
+     "label": "Rencana pemantauan KINRA – Melalui data konsumsi energi dan EnPI yang telah ditetapkan, kemudian dibandingkan dengan baseline dan target untuk periode yang sama. Metode: ______________________________"
+    }
+   ],
+   "baris": [
+    [
+     "Bagaimana target dipantau dan diukur?",
+     "Gunakan data meter/tagihan, submeter jika tersedia, catatan operasi, data variabel relevan, dan metode perhitungan terdokumentasi. Metode: ______________________________"
+    ]
+   ]
+  },
+  {
+   "jenis": "tabel",
+   "id": "t8",
+   "kolom": [
+    {
+     "label": "Data yang dikumpulkan/dianalisis"
+    },
+    {
+     "label": "Pengumpul/penganalisis data (jabatan)"
+    },
+    {
+     "label": "Frekuensi pemantauan/pengukuran"
+    },
+    {
+     "label": "Rekaman hasil"
+    }
+   ],
+   "baris": [
+    [
+     "Konsumsi listrik total dan per SEU; energi lain yang termasuk lingkup; variabel relevan.",
+     "Tim Energi bersama unit pemilik data: __________",
+     "☐ Harian ☐ Bulanan ☐ Triwulanan ☐ Lainnya: ____",
+     "Data meter/tagihan, lembar EnPI, laporan kinerja energi."
+    ],
+    [
+     "Kondisi meter/peralatan pengukuran dan data pendukung.",
+     "Unit teknik/fasilitas atau pihak kompeten: __________",
+     "Sesuai rencana pengukuran dan kebutuhan verifikasi.",
+     "Log pemeriksaan, bukti verifikasi/kalibrasi bila relevan."
+    ],
+    [
+     "Peralatan/metode pengukuran",
+     "Peralatan yang memerlukan kalibrasi/verifikasi",
+     "Status dalam sistem kalibrasi",
+     "Rekaman kalibrasi/verifikasi"
+    ],
+    [
+     "Meter utama, submeter, alat ukur energi, sistem pemantauan atau metode perhitungan yang digunakan.",
+     "Identifikasi alat yang hasilnya memengaruhi keandalan data: __________________",
+     "☐ Ya ☐ Sebagian ☐ Tidak; tindak lanjut: __________",
+     "Sertifikat, laporan, label status, atau rekaman verifikasi: __________"
+    ]
+   ]
+  },
+  {
+   "jenis": "teks",
+   "id": "p9",
+   "teks": "EnPI yang digunakan untuk melaporkan tujuan/target (pilih sesuai ketersediaan data): konsumsi listrik (kWh/periode), intensitas energi (kWh/m²), energi per jam operasi, energi per unit layanan (misalnya kWh/m³ bila volume tersedia), konsumsi bahan bakar per unit aktivitas, atau indikator lain yang ditetapkan dari hasil tinjauan energi."
+  },
+  {
+   "jenis": "judul",
+   "teks": "Rencana tindakan manajemen energi terkait"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t9",
+   "kolom": [
+    {
+     "label": "Rencana tindakan/program terkait tujuan"
+    },
+    {
+     "label": "Hasil/keluaran yang diharapkan"
+    },
+    {
+     "label": "Penanggung jawab"
+    },
+    {
+     "label": "Jadwal/status"
+    }
+   ],
+   "baris": [
+    [
+     "Audit/analisis penggunaan energi pada SEU prioritas",
+     "Peluang peningkatan dan dasar teknis/ekonomi teridentifikasi.",
+     "",
+     ""
+    ],
+    [
+     "Optimasi jadwal operasi peralatan, tata udara, pencahayaan dan utilitas sesuai kebutuhan",
+     "Pengurangan operasi tidak perlu tanpa mengganggu layanan.",
+     "",
+     ""
+    ],
+    [
+     "Program pemeliharaan dan pemeriksaan kinerja peralatan",
+     "Kondisi peralatan terjaga dan penyimpangan terdeteksi.",
+     "",
+     ""
+    ],
+    [
+     "Program pengukuran, rekonsiliasi tagihan, dan analisis EnPI",
+     "Data konsisten, tren terpantau, dan keputusan berbasis bukti.",
+     "",
+     ""
+    ],
+    [
+     "Sosialisasi dan pelatihan perilaku hemat energi",
+     "Personel dan kontraktor memahami kontribusinya.",
+     "",
+     ""
+    ],
+    [
+     "Tindakan lain berdasarkan tinjauan energi",
+     "",
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "Komunikasi tujuan dan target energi kepada organisasi"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t10",
+   "kolom": [
+    {
+     "label": "Kelompok sasaran"
+    },
+    {
+     "label": "Cara komunikasi yang direncanakan"
+    },
+    {
+     "label": "Tanggal/periodisasi"
+    },
+    {
+     "label": "Penanggung jawab"
+    },
+    {
+     "label": "Bukti/rekaman"
+    }
+   ],
+   "baris": [
+    [
+     "Tim Energi",
+     "Rapat koordinasi, pembahasan EnPI/EnB, target dan tindakan.",
+     "",
+     "",
+     "Notulen/daftar hadir"
+    ],
+    [
+     "Personel yang dapat memengaruhi target",
+     "Sosialisasi sesuai peran, instruksi kerja, rapat unit, atau media internal.",
+     "",
+     "",
+     "Materi/daftar hadir"
+    ],
+    [
+     "Pekerja dan kontraktor di lokasi",
+     "Induksi, pengarahan kerja, toolbox meeting, atau komunikasi pengendalian operasional yang relevan.",
+     "",
+     "",
+     "Rekaman induksi/pelatihan"
+    ],
+    [
+     "Seluruh organisasi",
+     "Komunikasi kebijakan, tujuan, target, perilaku hemat energi, dan capaian program.",
+     "",
+     "",
+     "Pengumuman/media internal"
+    ],
+    [
+     "Pelatihan kesadaran EnMS",
+     "Integrasikan tujuan dan target energi ke dalam pelatihan kesadaran EnMS.",
+     "",
+     "",
+     "Rencana dan evaluasi pelatihan"
+    ],
+    [
+     "Pembaruan kemajuan",
+     "Sampaikan kemajuan secara berkala dan bagikan pembelajaran/keberhasilan yang relevan.",
+     "",
+     "",
+     "Laporan kinerja energi"
+    ]
+   ]
+  },
+  {
+   "jenis": "teks",
+   "id": "p10",
+   "teks": "Matriks pelaksanaan komunikasi/pelatihan:"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t11",
+   "kolom": [
+    {
+     "label": "Kegiatan komunikasi/pelatihan"
+    },
+    {
+     "label": "Sasaran"
+    },
+    {
+     "label": "Tanggal kegiatan"
+    },
+    {
+     "label": "Penanggung jawab"
+    },
+    {
+     "label": "Tanda tangan/bukti"
+    }
+   ],
+   "baris": [
+    [
+     "Pengumuman kepada seluruh personel",
+     "Seluruh personel",
+     "",
+     "",
+     ""
+    ],
+    [
+     "Rapat unit operasional",
+     "Tim operasi kawasan/gedung",
+     "",
+     "",
+     ""
+    ],
+    [
+     "Rapat unit teknik/fasilitas",
+     "Personel teknik dan pemeliharaan",
+     "",
+     "",
+     ""
+    ],
+    [
+     "Koordinasi Tim Energi",
+     "Tim Energi",
+     "",
+     "",
+     ""
+    ],
+    [
+     "Pelatihan kontraktor",
+     "Kontraktor relevan",
+     "",
+     "",
+     ""
+    ],
+    [
+     "Kegiatan tambahan",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "Kegiatan tambahan",
+     "",
+     "",
+     "",
+     ""
+    ]
+   ]
+  }
+ ],
+ "ttd": [
+  {
+   "peran": "Disiapkan oleh",
+   "jabatan": "Dokumen Kontrol"
+  },
+  {
+   "peran": "Ditinjau oleh",
+   "jabatan": "Management Representative"
+  },
+  {
+   "peran": "Disetujui oleh",
+   "jabatan": "Direktur"
+  }
+ ],
+ "sumber": "6.2 Tujuan, Target energi, & Perencanaan Untuk Mencapainya/002_ Formulir Tujuan dan Target Energi.docx",
+ "nomor": "002/SOP-008/KINRA/SMEn/X/2026",
+ "tautan": {
+  "href": "/sasaran",
+  "label": "Sasaran & Aksi"
+ }
+}

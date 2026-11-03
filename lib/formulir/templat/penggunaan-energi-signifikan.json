@@ -1,0 +1,361 @@
+{
+ "kode": "penggunaan-energi-signifikan",
+ "klausul": [
+  "6.3"
+ ],
+ "judul": "Penggunaan Energi Signifikan (SEU)",
+ "subjudul": "Sistem Manajemen Energi ISO 50001:2018 – PT Kawasan Industri Nusantara (KINRA)",
+ "kepala": [
+  {
+   "label": "Nomor Dokumen",
+   "nilai": "001/SOP-009/KINRA/SMEn/X/2026"
+  },
+  {
+   "label": "Revisi",
+   "nilai": "0"
+  },
+  {
+   "label": "Tanggal Berlaku",
+   "nilai": "22 Oktober 2026"
+  },
+  {
+   "label": "Bagian",
+   "nilai": "Mekanikal & Elektrikal, Fasilitas, dan Pengamanan"
+  },
+  {
+   "label": "Sub Bagian",
+   "nilai": "Mekanikal & Elektrikal"
+  },
+  {
+   "label": "Lokasi Penyimpanan",
+   "nilai": "Bagian Mekanikal & Elektrikal, Fasilitas, dan Pengamanan"
+  }
+ ],
+ "blok": [
+  {
+   "jenis": "judul",
+   "teks": "Identifikasi penggunaan energi terbesar dan 2. Faktor/personel yang memengaruhi"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t1",
+   "kolom": [
+    {
+     "label": "Pemeriksaan"
+    },
+    {
+     "label": "Ketentuan/hasil untuk KINRA"
+    }
+   ],
+   "baris": [
+    [
+     "Penggunaan energi terbesar telah diidentifikasi",
+     "Lengkapi kolom penggunaan energi, sumber energi, faktor yang memengaruhi konsumsi, serta status SEU– Pengumpulan dan Analisis Data Energi. Prioritaskan pengguna energi berdasarkan data konsumsi dan hasil tinjauan energi."
+    ],
+    [
+     "Faktor dan personel yang memengaruhi konsumsi telah dicatat",
+     "Identifikasi jam operasi, cuaca, okupansi, beban layanan, kondisi peralatan, set point, jadwal pemeliharaan, dan unit/personel yang dapat memengaruhi kinerja."
+    ],
+    [
+     "Kriteria pemilihan SEU telah ditetapkan",
+     "Tetapkan kriteria terdokumentasi yang sesuai konteks KINRA, misalnya konsumsi energi absolut, persentase terhadap total, potensi peningkatan kinerja, pengaruh terhadap biaya, risiko layanan, dan kemampuan kendali/pengaruh. Kriteria dan bobot harus disahkan internal."
+    ],
+    [
+     "Metode penentuan SEU telah ditetapkan",
+     "Gunakan data meter/tagihan, submeter jika tersedia, estimasi yang dapat dipertanggungjawabkan, jam operasi, dan variabel relevan. Dokumentasikan sumber, asumsi, periode, serta validasi data."
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "Kriteria awal penetapan SEU yang diusulkan untuk KINRA"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t2",
+   "kolom": [
+    {
+     "label": "Kriteria"
+    },
+    {
+     "label": "Penjelasan"
+    },
+    {
+     "label": "Bukti/data yang diperlukan"
+    }
+   ],
+   "baris": [
+    [
+     "Konsumsi energi",
+     "Konsumsi absolut dan/atau proporsi terhadap konsumsi energi dalam batas EnMS.",
+     "Data meter/tagihan dan periode representatif."
+    ],
+    [
+     "Peluang peningkatan kinerja",
+     "Terdapat peluang teknis/operasional untuk meningkatkan efisiensi secara terukur.",
+     "Hasil inspeksi, analisis tren, audit/penilaian teknis."
+    ],
+    [
+     "Pengaruh terhadap layanan",
+     "Penggunaan energi berkaitan dengan keandalan fasilitas, keselamatan, atau mutu layanan kawasan.",
+     "Penilaian operasi dan risiko layanan."
+    ],
+    [
+     "Kendali/pengaruh KINRA",
+     "KINRA memiliki kendali langsung atau pengaruh yang dapat dilaksanakan melalui prosedur, kontrak, koordinasi, atau pengadaan.",
+     "Peta kendali operasional dan pembagian tanggung jawab."
+    ],
+    [
+     "Kualitas data dan kemampuan pemantauan",
+     "Data cukup andal untuk mengukur, memantau, dan mengevaluasi kinerja.",
+     "Ketersediaan meter, catatan operasi, serta kualitas data."
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "Daftar awal penggunaan energi untuk evaluasi SEU"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t3",
+   "kolom": [
+    {
+     "label": "Nama penggunaan energi"
+    },
+    {
+     "label": "Sumber energi"
+    },
+    {
+     "label": "Variabel relevan"
+    },
+    {
+     "label": "Status SEU"
+    },
+    {
+     "label": "Personel/unit bertanggung jawab"
+    },
+    {
+     "label": "Kinerja saat ini/proyeksi"
+    }
+   ],
+   "baris": [
+    [
+     "Sistem HVAC/tata udara",
+     "Listrik",
+     "Jam operasi, set point, cuaca, okupansi, kondisi filter/peralatan",
+     "Belum dinilai",
+     "Pengelola gedung/Operasi",
+     "Diisi setelah analisis data"
+    ],
+    [
+     "Pompa dan sistem utilitas",
+     "Listrik",
+     "Debit/tekanan, jam operasi, kebutuhan layanan, kondisi pompa",
+     "Belum dinilai",
+     "Operasi/Pemeliharaan",
+     "Diisi setelah analisis data"
+    ],
+    [
+     "Pencahayaan gedung dan area bersama",
+     "Listrik",
+     "Jam nyala, luas area, jenis lampu, kontrol dan kebutuhan layanan",
+     "Belum dinilai",
+     "Pengelola fasilitas",
+     "Diisi setelah analisis data"
+    ],
+    [
+     "Sistem kelistrikan (trafo, panel, UPS jika ada)",
+     "Listrik",
+     "Beban, faktor daya, efisiensi, rugi-rugi, kondisi peralatan",
+     "Belum dinilai",
+     "Operasi/Pemeliharaan",
+     "Diisi setelah analisis data"
+    ],
+    [
+     "Peralatan kantor/administrasi",
+     "Listrik",
+     "Jumlah perangkat, beban, jam penggunaan, mode siaga",
+     "Belum dinilai",
+     "Administrasi/IT",
+     "Diisi setelah analisis data"
+    ],
+    [
+     "Genset atau sistem energi cadangan (jika ada)",
+     "BBM/listrik sesuai pencatatan",
+     "Jam uji/operasi, beban, konsumsi bahan bakar, kondisi peralatan",
+     "Belum dinilai",
+     "Operasi/Pemeliharaan",
+     "Diisi setelah analisis data"
+    ],
+    [
+     "Kendaraan operasional KINRA (jika dalam lingkup)",
+     "BBM sesuai jenis aktual",
+     "Jarak tempuh, jam operasi, rute, beban kerja",
+     "Belum dinilai",
+     "Logistik/Operasi",
+     "Diisi setelah analisis data"
+    ],
+    [
+     "Fasilitas pendukung lainnya dalam kendali KINRA",
+     "Sesuai sumber aktual",
+     "Faktor yang ditetapkan dari tinjauan energi",
+     "Belum dinilai",
+     "Unit pemilik fasilitas",
+     "Diisi setelah analisis data"
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "Kriteria dan metode pemilihan SEU"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t4",
+   "kolom": [
+    {
+     "label": "Pemeriksaan"
+    },
+    {
+     "label": "Ketentuan/hasil untuk KINRA"
+    }
+   ],
+   "baris": [
+    [
+     "Kriteria pemilihan SEU telah didokumentasikan",
+     "Kriteria ditetapkan sebelum pemilihan dan digunakan secara konsisten untuk semua penggunaan energi yang relevan. Catat dasar keputusan dan alasan penggunaan energi ditetapkan/tidak ditetapkan sebagai SEU."
+    ],
+    [
+     "Metode penentuan SEU telah diterapkan",
+     "Evaluasi data konsumsi dan faktor relevan untuk periode representatif; jika data belum memadai, tandai sebagai sementara dan tetapkan rencana perbaikan data."
+    ],
+    [
+     "Kinerja SEU dan penanggung jawab ditentukan",
+     "Untuk SEU terpilih, catat konsumsi/kinerja saat ini, EnPI bila tersedia, target/proyeksi hanya jika telah disetujui, dan personel/unit penanggung jawab."
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "Penentuan kinerja energi SEU berdasarkan konsumsi dan variabel relevan"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t5",
+   "kolom": [
+    {
+     "label": "SEU"
+    },
+    {
+     "label": "Kriteria pemilihan"
+    },
+    {
+     "label": "Variabel relevan"
+    },
+    {
+     "label": "Konsumsi/kinerja saat ini"
+    },
+    {
+     "label": "Target/proyeksi"
+    },
+    {
+     "label": "Penanggung jawab"
+    }
+   ],
+   "baris": [
+    [
+     "",
+     "",
+     "",
+     "________ kWh/tahun atau satuan relevan",
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "________ kWh/tahun atau satuan relevan",
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "________ kWh/tahun atau satuan relevan",
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "________ kWh/tahun atau satuan relevan",
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "jenis": "teks",
+   "id": "p1",
+   "teks": "Catatan: Jangan menyalin angka contoh sumber (12.000.000, 6.000.000, dan 2.000.000 kWh/tahun) sebagai konsumsi KINRA. Nilai kinerja saat ini dan proyeksi harus berasal dari data aktual dan rencana yang disetujui."
+  },
+  {
+   "jenis": "judul",
+   "teks": "Peninjauan kriteria dan pembaruan SEU"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t6",
+   "kolom": [
+    {
+     "label": "Pemeriksaan"
+    },
+    {
+     "label": "Ketentuan/hasil untuk KINRA"
+    }
+   ],
+   "baris": [
+    [
+     "Prosedur peninjauan variabel relevan ditetapkan",
+     "Tetapkan interval peninjauan dan penanggung jawab; tinjau saat ada perubahan fasilitas, jam operasi, penggunaan energi, cuaca yang relevan, okupansi, atau kebutuhan layanan."
+    ],
+    [
+     "Sistem pemantauan kinerja SEU dikembangkan",
+     "Gunakan pembacaan meter/submeter, tagihan, log operasi, indikator kinerja, dan laporan tren yang sesuai dengan ketersediaan data."
+    ],
+    [
+     "Peran dan tanggung jawab pemantauan ditetapkan",
+     "Tentukan pemilik data, petugas pencatatan, pemeriksa data, analis, serta pejabat yang menyetujui hasil evaluasi."
+    ],
+    [
+     "Jadwal pemantauan SEU ditetapkan",
+     "Usulan awal: pemantauan bulanan untuk data konsumsi yang tersedia; interval yang lebih sering untuk operasi kritis bila diperlukan. Jadwal final disahkan KINRA."
+    ],
+    [
+     "Kriteria pemilihan SEU ditinjau sebagai bagian pembaruan",
+     "Evaluasi kriteria secara berkala dan ketika perubahan material terjadi; catat perubahan status SEU beserta alasan, data pendukung, dan persetujuan."
+    ]
+   ]
+  }
+ ],
+ "ttd": [
+  {
+   "peran": "Disiapkan oleh",
+   "jabatan": "Dokumen Kontrol"
+  },
+  {
+   "peran": "Ditinjau oleh",
+   "jabatan": "Management Representative"
+  },
+  {
+   "peran": "Disetujui oleh",
+   "jabatan": "Direktur"
+  }
+ ],
+ "sumber": "6.3 Tinjauan Energi/001_Formulir Penggunaan Energi Signifikan SEU.docx",
+ "nomor": "001/SOP-009/KINRA/SMEn/X/2026"
+}

@@ -1,0 +1,597 @@
+{
+ "kode": "kesadaran-komunikasi",
+ "klausul": [
+  "7.3",
+  "7.4"
+ ],
+ "judul": "Kesadaran dan Komunikasi",
+ "subjudul": "Sistem Manajemen Energi ISO 50001:2018 — PT Kawasan Industri Nusantara (KINRA)",
+ "kepala": [
+  {
+   "label": "Nomor Dokumen",
+   "nilai": "001/SOP-017/KINRA/SMEn/X/2026"
+  },
+  {
+   "label": "Revisi",
+   "nilai": "0"
+  },
+  {
+   "label": "Tanggal Berlaku",
+   "nilai": "22 Oktober 2026"
+  },
+  {
+   "label": "Bagian",
+   "nilai": "Manajemen Risiko & TI"
+  },
+  {
+   "label": "Sub Bagian",
+   "nilai": "Manajemen Risiko"
+  },
+  {
+   "label": "Lokasi Penyimpanan",
+   "nilai": "Bagian Manajemen Risiko"
+  }
+ ],
+ "blok": [
+  {
+   "jenis": "judul",
+   "teks": "Daftar Rincian Pelatihan Kesadaran Enms Bagi Personel/Departemen Tertentu"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t1",
+   "kolom": [
+    {
+     "label": "Unsur kesadaran wajib"
+    },
+    {
+     "label": "Persyaratan khusus untuk KINRA"
+    },
+    {
+     "label": "Bahan referensi"
+    }
+   ],
+   "baris": [
+    [
+     "Kepatuhan terhadap kebijakan energi",
+     "Personel memahami komitmen energi dan cara menerapkannya dalam pekerjaan.",
+     "Kebijakan Energi KINRA"
+    ],
+    [
+     "Kepatuhan terhadap prosedur terkait",
+     "Personel mengetahui dan mampu merujuk SOP operasi, pemeliharaan, pemantauan, dan pencatatan energi yang relevan.",
+     "SOP dan instruksi kerja unit"
+    ],
+    [
+     "Kepatuhan terhadap persyaratan EnMS",
+     "Personel memahami persyaratan EnMS yang terkait dengan tugasnya.",
+     "Dokumen EnMS dan prosedur"
+    ],
+    [
+     "Peran, tanggung jawab, dan wewenang",
+     "Personel memahami siapa yang melaksanakan, memantau, melaporkan, dan menyetujui tindakan terkait energi.",
+     "Uraian jabatan, matriks tanggung jawab, SOP"
+    ],
+    [
+     "Manfaat peningkatan kinerja energi",
+     "Personel memahami manfaat efisiensi energi bagi biaya operasi, keandalan fasilitas, dan kinerja kawasan.",
+     "Kebijakan energi, tujuan dan target"
+    ],
+    [
+     "Dampak kegiatan terhadap konsumsi energi",
+     "Personel memahami dampak operasi HVAC, pencahayaan, pompa, peralatan, kendaraan/fasilitas pendukung, dan sistem utilitas sesuai tugasnya.",
+     "SOP, hasil tinjauan energi, daftar SEU"
+    ],
+    [
+     "Kontribusi terhadap tujuan dan target energi",
+     "Personel mengetahui kontribusi aktivitasnya terhadap EnPI, baseline, tujuan, dan target yang relevan.",
+     "EnPI, baseline, laporan kinerja energi"
+    ],
+    [
+     "Konsekuensi penyimpangan prosedur",
+     "Personel memahami potensi pemborosan energi, penurunan kinerja, gangguan fasilitas, atau ketidaksesuaian akibat penyimpangan SOP.",
+     "SOP, catatan insiden/ketidaksesuaian"
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "Daftar komunikasi internal EnMS, termasuk sistem saran"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t2",
+   "kolom": [
+    {
+     "label": "Elemen komunikasi internal"
+    },
+    {
+     "label": "Rencana/proses KINRA"
+    },
+    {
+     "label": "Penanggung jawab"
+    }
+   ],
+   "baris": [
+    [
+     "Kebijakan energi dan pentingnya manajemen energi",
+     "Disampaikan saat orientasi, rapat unit, pengarahan, papan informasi, surat elektronik atau media internal.",
+     "Manajemen puncak/Tim Energi"
+    ],
+    [
+     "Tanggung jawab, tujuan dan target energi",
+     "Disampaikan kepada unit terkait dan diperbarui jika terdapat perubahan.",
+     "Ketua Tim Energi dan pimpinan unit"
+    ],
+    [
+     "Kinerja energi dan EnPI",
+     "Laporan tren konsumsi, pencapaian target, penyimpangan, dan peluang peningkatan disampaikan berkala.",
+     "Tim Energi/pengelola data energi"
+    ],
+    [
+     "Informasi EnMS dan perubahan prosedur",
+     "Disampaikan melalui sosialisasi, revisi dokumen, rapat koordinasi, atau instruksi kerja.",
+     "Pemilik proses/dokumen"
+    ],
+    [
+     "Sistem saran internal",
+     "Sediakan kanal saran, misalnya formulir, email khusus, QR/formulir digital, atau kotak saran; catat, evaluasi, prioritaskan, dan berikan umpan balik.",
+     "Ketua Tim Energi"
+    ],
+    [
+     "Pencatatan dan tindak lanjut saran",
+     "Catat tanggal, pengusul bila bersedia, usulan, evaluasi manfaat energi, keputusan, PIC, status dan hasil.",
+     "Tim Energi/pemilik proses"
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "Daftar komunikasi eksternal EnMS"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t3",
+   "kolom": [
+    {
+     "label": "Pihak berkepentingan eksternal"
+    },
+    {
+     "label": "Tujuan komunikasi"
+    },
+    {
+     "label": "Informasi yang dikomunikasikan"
+    },
+    {
+     "label": "Penanggung jawab awal / cadangan / otoritas akhir"
+    }
+   ],
+   "baris": [
+    [
+     "Tenant/pelanggan kawasan",
+     "Meningkatkan kesadaran dan kerja sama peningkatan kinerja energi.",
+     "Kebijakan energi, program efisiensi, informasi penggunaan energi yang relevan, target/hasil yang dapat dibagikan.",
+     "Pengelola layanan/teknik; cadangan ;otoritas akhir: Manajemen Puncak"
+    ],
+    [
+     "Pemegang saham/pemilik",
+     "Pelaporan kinerja, risiko, dan program peningkatan energi.",
+     "Ringkasan kinerja energi, sasaran, proyek dan kebutuhan sumber daya.",
+     "Fungsi yang ditunjuk manajemen"
+    ],
+    [
+     "Penyedia energi/utilitas",
+     "Koordinasi data, kualitas pasokan, peluang efisiensi, dan program bersama.",
+     "Data konsumsi yang relevan, kebutuhan teknis, peluang perbaikan, dan tindak lanjut.",
+     "Fungsi teknik/utilitas"
+    ],
+    [
+     "Kontraktor dan pemasok",
+     "Memastikan persyaratan energi relevan dipahami dan diterapkan.",
+     "Persyaratan EnMS, spesifikasi efisiensi, SOP, dan hasil evaluasi pekerjaan.",
+     "Pengadaan/pemilik kontrak"
+    ],
+    [
+     "Pemerintah/regulator",
+     "Memenuhi kewajiban komunikasi dan pelaporan yang berlaku.",
+     "Informasi atau laporan sesuai ketentuan yang relevan dan telah diverifikasi.",
+     "Fungsi kepatuhan/teknik"
+    ],
+    [
+     "Pemerintah daerah/otoritas KEK",
+     "Koordinasi pengelolaan kawasan dan informasi kinerja energi yang relevan.",
+     "Program efisiensi, kinerja energi yang disetujui untuk dibagikan, dan koordinasi kegiatan.",
+     "Pengelola kawasan/fungsi terkait"
+    ],
+    [
+     "Tanggap darurat",
+     "Koordinasi saat keadaan darurat yang berdampak pada fasilitas atau pasokan energi.",
+     "Informasi teknis dan kontak darurat sesuai prosedur.",
+     "Fungsi K3/operasional"
+    ],
+    [
+     "Masyarakat sekitar/publik/media",
+     "Menyampaikan informasi yang disetujui dan menangani pertanyaan secara konsisten.",
+     "Informasi kebijakan atau program yang telah disetujui untuk dipublikasikan.",
+     "Humas/pejabat yang ditunjuk"
+    ],
+    [
+     "Lembaga/kelompok lingkungan",
+     "Koordinasi peluang peningkatan yang relevan.",
+     "Informasi program dan hasil yang telah disetujui untuk dibagikan.",
+     "Fungsi lingkungan/EnMS"
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "Formulir rekaman komunikasi eksternal EnMS"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t4",
+   "kolom": [
+    {
+     "label": "Elemen rekaman"
+    },
+    {
+     "label": "Isian"
+    }
+   ],
+   "baris": [
+    [
+     "Tanggal diterima / ditugaskan kepada",
+     "Tanggal: __________ / PIC: __________"
+    ],
+    [
+     "Nama pemohon / organisasi / kontak",
+     "Nama: __________ / Organisasi: __________ / Kontak: __________"
+    ],
+    [
+     "Informasi yang diminta",
+     ""
+    ],
+    [
+     "Ringkasan tanggapan dan lampiran",
+     ""
+    ],
+    [
+     "Tanggal tanggapan",
+     ""
+    ],
+    [
+     "Apakah tindak lanjut diperlukan?",
+     "☐ Ya ☐ Tidak. Jika ya, kapan: __________"
+    ],
+    [
+     "Uraian tindak lanjut yang diperlukan",
+     ""
+    ],
+    [
+     "Penanggung jawab tindak lanjut / tanggal selesai",
+     "PIC: __________ / Tanggal selesai: __________"
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "Matriks perencanaan kebutuhan pelatihan EnMS"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t5",
+   "kolom": [
+    {
+     "label": "Pelatihan yang dibutuhkan"
+    },
+    {
+     "label": "Siapa yang perlu dilatih"
+    },
+    {
+     "label": "Informasi/dokumen terkait"
+    },
+    {
+     "label": "Penanggung jawab pelatihan"
+    },
+    {
+     "label": "Metode/tempat"
+    },
+    {
+     "label": "Waktu pelaksanaan"
+    },
+    {
+     "label": "Rekaman pelatihan"
+    }
+   ],
+   "baris": [
+    [
+     "Pengenalan EnMS, kebijakan energi, EnPI dan SOP",
+     "Pimpinan unit dan personel terkait",
+     "Kebijakan energi, tujuan/target, EnPI, SOP terdokumentasi",
+     "Ketua Tim Energi/pelatih yang ditunjuk",
+     "Tatap muka/daring; lokasi: PT Kinra",
+     "Tanggal: 22 Oktober 2026",
+     "Daftar hadir, materi, hasil evaluasi, konfirmasi pemahaman"
+    ],
+    [
+     "Tinjauan SOP operasi dan pengendalian energi",
+     "Petugas operasi gedung/utilitas dan pemeliharaan",
+     "SOP operasi, pemeliharaan, pemantauan meter dan SEU",
+     "Manajer teknik/fasilitas",
+     "Praktik lapangan/briefing",
+     "Tanggal: 22 Oktober 2026",
+     "Daftar hadir, hasil observasi, catatan praktik"
+    ],
+    [
+     "Komunikasi eksternal dan penanganan saran",
+     "Tim Energi, layanan tenant, humas dan fungsi terkait",
+     "Prosedur komunikasi, formulir log, daftar pihak berkepentingan",
+     "Penanggung jawab komunikasi EnMS",
+     "Rapat/simulasi",
+     "Tanggal: 22 Oktober 2026",
+     "Notulen, daftar hadir, contoh rekaman tindak lanjut"
+    ],
+    [
+     "Pengumpulan data energi dan pelaporan EnPI",
+     "Pengelola data, administrasi, keuangan dan Tim Energi",
+     "Data meter/tagihan, baseline, metode perhitungan EnPI",
+     "Pengelola data energi",
+     "Lokakarya/praktik",
+     "Tanggal: 22 Oktober 2026",
+     "Data tervalidasi dan hasil evaluasi"
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "Daftar perencanaan komunikasi eksternal"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t6",
+   "kolom": [
+    {
+     "label": "Audiens sasaran"
+    },
+    {
+     "label": "Tujuan komunikasi"
+    },
+    {
+     "label": "Informasi yang dikomunikasikan"
+    },
+    {
+     "label": "Penanggung jawab"
+    },
+    {
+     "label": "Media/mekanisme"
+    },
+    {
+     "label": "Frekuensi"
+    },
+    {
+     "label": "Mulai"
+    }
+   ],
+   "baris": [
+    [
+     "Tenant/pelanggan",
+     "Meningkatkan kesadaran dan kolaborasi energi",
+     "Kebijakan, program, target dan hasil yang disetujui",
+     "Fungsi layanan/teknik",
+     "Surat, email, rapat tenant, portal",
+     "Tahunan/ketika diperlukan",
+     "22 Oktober 2026"
+    ],
+    [
+     "Penyedia utilitas",
+     "Mengidentifikasi peluang peningkatan dan koordinasi data",
+     "Data penggunaan relevan, peluang, tindak lanjut",
+     "Fungsi teknik/utilitas",
+     "Rapat koordinasi/email",
+     "Triwulanan/ketika diperlukan",
+     "22 Oktober 2026"
+    ],
+    [
+     "Regulator/otoritas KEK",
+     "Memenuhi kewajiban komunikasi/pelaporan",
+     "Informasi dan laporan sesuai ketentuan",
+     "Fungsi kepatuhan/pejabat berwenang",
+     "Surat resmi/sistem pelaporan",
+     "Sesuai kewajiban",
+     "22 Oktober 2026"
+    ],
+    [
+     "Kontraktor/pemasok",
+     "Menyampaikan persyaratan energi terkait pekerjaan",
+     "Spesifikasi, SOP, persyaratan pengadaan dan pelaksanaan",
+     "Pengadaan/pemilik kontrak",
+     "Kontrak, briefing, rapat kerja",
+     "Awal kontrak dan sesuai kebutuhan",
+     "22 Oktober 2026"
+    ],
+    [
+     "Masyarakat/publik/media",
+     "Memberikan informasi resmi yang disetujui",
+     "Program dan informasi kinerja yang boleh dipublikasikan",
+     "Humas/pejabat yang ditunjuk",
+     "Situs web, siaran resmi, forum",
+     "Sesuai kebutuhan",
+     "22 Oktober 2026"
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "Daftar perencanaan komunikasi internal EnMS"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t7",
+   "kolom": [
+    {
+     "label": "Kepada siapa"
+    },
+    {
+     "label": "Informasi yang dikomunikasikan"
+    },
+    {
+     "label": "Penanggung jawab"
+    },
+    {
+     "label": "Media"
+    },
+    {
+     "label": "Frekuensi"
+    }
+   ],
+   "baris": [
+    [
+     "Pimpinan unit/supervisor",
+     "Kebijakan energi, status EnPI terhadap target, proyek peningkatan dan penyimpangan penting.",
+     "Ketua Tim Energi/fungsi teknik",
+     "Email, rapat koordinasi, laporan kinerja",
+     "Triwulanan"
+    ],
+    [
+     "Seluruh staf",
+     "Penerapan SOP, perilaku hemat energi, pembaruan program, dan cara menyampaikan saran.",
+     "Pimpinan unit/Tim Energi",
+     "Email, briefing, papan informasi, intranet",
+     "Triwulanan dan saat perubahan"
+    ],
+    [
+     "Petugas operasi dan pemeliharaan",
+     "Setelan operasi, jadwal peralatan, hasil pemantauan, anomali, dan tindakan koreksi.",
+     "Manajer fasilitas/pengawas",
+     "Briefing shift, log operasi, instruksi kerja",
+     "Setiap shift/bulanan sesuai kebutuhan"
+    ],
+    [
+     "Manajemen puncak",
+     "Pencapaian tujuan/target, EnPI, kebutuhan sumber daya, peluang dan risiko energi.",
+     "Ketua Tim Energi",
+     "Laporan dan tinjauan manajemen",
+     "Sesuai jadwal tinjauan manajemen"
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "Matriks tanggung jawab dan wewenang komunikasi eksternal terkait energi"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t8",
+   "kolom": [
+    {
+     "label": "Pihak eksternal yang berkepentingan"
+    },
+    {
+     "label": "Penanggung jawab utama"
+    },
+    {
+     "label": "Penanggung jawab pengganti"
+    },
+    {
+     "label": "Otoritas akhir/manajemen puncak"
+    }
+   ],
+   "baris": [
+    [
+     "Tenant/pelanggan kawasan",
+     "Fungsi layanan/operasional kawasan",
+     "",
+     ""
+    ],
+    [
+     "Pemegang saham/pemilik",
+     "Fungsi keuangan/sekretariat perusahaan",
+     "",
+     ""
+    ],
+    [
+     "Penyedia energi/utilitas",
+     "Fungsi teknik/utilitas",
+     "",
+     ""
+    ],
+    [
+     "Kontraktor",
+     "Fungsi teknik/pemilik kontrak",
+     "",
+     ""
+    ],
+    [
+     "Pemasok",
+     "Fungsi pengadaan",
+     "",
+     ""
+    ],
+    [
+     "Asuransi",
+     "Fungsi keuangan/risiko",
+     "",
+     ""
+    ],
+    [
+     "Regulator pemerintah",
+     "Fungsi kepatuhan/teknik",
+     "",
+     ""
+    ],
+    [
+     "Pemerintah daerah/otoritas KEK",
+     "Pengelola kawasan/fungsi hubungan eksternal",
+     "",
+     ""
+    ],
+    [
+     "Petugas tanggap darurat",
+     "Fungsi operasional/K3",
+     "",
+     ""
+    ],
+    [
+     "Media saat krisis",
+     "Pejabat komunikasi krisis yang ditunjuk",
+     "",
+     ""
+    ],
+    [
+     "Media nonkrisis",
+     "Humas/komunikasi perusahaan",
+     "",
+     ""
+    ],
+    [
+     "Masyarakat sekitar/komunitas/publik",
+     "Humas/pengelola kawasan",
+     "",
+     ""
+    ],
+    [
+     "Kelompok lingkungan",
+     "Fungsi lingkungan/EnMS",
+     "",
+     ""
+    ]
+   ]
+  }
+ ],
+ "ttd": [
+  {
+   "peran": "Disiapkan oleh",
+   "jabatan": "Dokumen Kontrol"
+  },
+  {
+   "peran": "Ditinjau oleh",
+   "jabatan": "Management Representative"
+  },
+  {
+   "peran": "Disetujui oleh",
+   "jabatan": "Direktur"
+  }
+ ],
+ "sumber": "7.3 Kepedulian/001_ Formulir Kesadaran dan Komunikasi.docx",
+ "nomor": "001/SOP-017/KINRA/SMEn/X/2026"
+}

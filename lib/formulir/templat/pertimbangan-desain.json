@@ -1,0 +1,382 @@
+{
+ "kode": "pertimbangan-desain",
+ "klausul": [
+  "8.2"
+ ],
+ "judul": "Pertimbangan Energi dalam Desain",
+ "subjudul": "Sistem Manajemen Energi ISO 50001:2018 — PT Kawasan Industri Nusantara (KINRA)",
+ "kepala": [
+  {
+   "label": "Nomor Dokumen",
+   "nilai": "001/SOP-018/KINRA/SMEn/X/2026"
+  },
+  {
+   "label": "Revisi",
+   "nilai": "0"
+  },
+  {
+   "label": "Tanggal Berlaku",
+   "nilai": "22 Oktober 2026"
+  },
+  {
+   "label": "Bagian",
+   "nilai": "Pengembangan"
+  },
+  {
+   "label": "Sub Bagian",
+   "nilai": "Pengembangan Usaha"
+  },
+  {
+   "label": "Lokasi Penyimpanan",
+   "nilai": "Bagian Pengembangan"
+  }
+ ],
+ "blok": [
+  {
+   "jenis": "judul",
+   "teks": "1. Identifikasi fasilitas, peralatan, sistem, dan proses yang berdampak signifikan terhadap kinerja energi"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t1",
+   "kolom": [
+    {
+     "label": "Pemeriksaan"
+    },
+    {
+     "label": "Status/rujukan"
+    },
+    {
+     "label": "Bukti/rujukan dokumen"
+    }
+   ],
+   "baris": [
+    [
+     "Fasilitas, peralatan, sistem, dan proses yang berdampak signifikan terhadap kinerja energi telah diidentifikasi.",
+     "",
+     ""
+    ],
+    [
+     "Pengelolaan dan pengoperasian SEU telah ditentukan.",
+     "",
+     ""
+    ],
+    [
+     "Pencapaian tujuan, sasaran, dan rencana tindakan energi telah dipertimbangkan.",
+     "",
+     ""
+    ],
+    [
+     "Indikator kinerja energi (EnPI) telah diidentifikasi.",
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "2. Integrasi peluang energi dan pengendalian operasional ke dalam proyek desain"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t2",
+   "kolom": [
+    {
+     "label": "Pemeriksaan"
+    },
+    {
+     "label": "Status/penjelasan"
+    },
+    {
+     "label": "Bukti/rujukan"
+    }
+   ],
+   "baris": [
+    [
+     "Peluang energi dan pengendalian operasional dimasukkan dalam kegiatan desain, renovasi, dan modifikasi.",
+     "",
+     ""
+    ],
+    [
+     "Proyek desain mencakup strategi pengendalian operasional untuk memastikan penghematan energi yang diperkirakan dapat dicapai.",
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "Pertimbangan peningkatan kinerja energi"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t3",
+   "kolom": [
+    {
+     "label": "Pertimbangan"
+    },
+    {
+     "label": "Penerapan yang direncanakan/diperiksa di KINRA"
+    },
+    {
+     "label": "Status/bukti"
+    }
+   ],
+   "baris": [
+    [
+     "Peluang peningkatan kinerja energi",
+     "Setiap proyek relevan menilai efisiensi energi sebagai parameter desain, termasuk konsumsi energi, biaya siklus hidup dan dampak operasional.",
+     ""
+    ],
+    [
+     "Pengendalian operasional yang diperlukan",
+     "Pengendalian yang dibutuhkan diidentifikasi sebagai parameter desain, termasuk setelan, jadwal operasi, kontrol otomatis, pemantauan dan prosedur pemeliharaan.",
+     ""
+    ],
+    [
+     "Pengelolaan dampak desain terhadap kinerja energi",
+     "Tim Energi bersama fungsi terkait meninjau desain untuk mengevaluasi dampak terhadap penggunaan energi, SEU, EnPI dan baseline energi.",
+     ""
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "Pertanyaan evaluasi peluang peningkatan kinerja energi"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t4",
+   "kolom": [
+    {
+     "label": "Pertanyaan evaluasi"
+    },
+    {
+     "label": "Panduan pertimbangan untuk proyek KINRA"
+    },
+    {
+     "label": "Hasil evaluasi/catatan"
+    }
+   ],
+   "baris": [
+    [
+     "Bagaimana infrastruktur dan proses yang ada akan dimodifikasi?",
+     "Nilai dampak perubahan gedung, jaringan listrik, pompa, sistem tata udara, penerangan, utilitas, dan fasilitas kawasan terhadap konsumsi energi dan operasi.",
+     ""
+    ],
+    [
+     "Apa yang dapat diubah untuk meningkatkan konsumsi/kinerja energi dari waktu ke waktu?",
+     "Pertimbangkan efisiensi peralatan, kontrol otomatis, optimasi jadwal, perawatan, pemantauan, dan peluang pengurangan pemborosan energi.",
+     ""
+    ],
+    [
+     "Sumber energi apa yang paling tepat untuk aplikasi tersebut?",
+     "Bandingkan ketersediaan, keandalan, biaya, efisiensi, dampak lingkungan, dan kesesuaian teknis sumber energi yang tersedia.",
+     ""
+    ],
+    [
+     "Apa pilihan teknologi yang tersedia?",
+     "Evaluasi alternatif teknologi berdasarkan kinerja energi, kemudahan pemeliharaan, kompatibilitas, risiko, dan biaya siklus hidup.",
+     ""
+    ],
+    [
+     "Pengendalian operasi apa yang diperlukan untuk mencapai dan mempertahankan kinerja energi?",
+     "Tetapkan setelan, jadwal operasi, sensor/meter, pemantauan, SOP, kompetensi operator dan pemeliharaan yang diperlukan.",
+     ""
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "3. Lembar kerja pertimbangan energi dalam desain"
+  },
+  {
+   "jenis": "teks",
+   "id": "p1",
+   "teks": "Tujuan: membantu mengidentifikasi dan mempertimbangkan peluang peningkatan kinerja energi serta pengendalian operasional dalam desain fasilitas, peralatan, sistem, dan proses baru, yang dimodifikasi, atau direnovasi yang dapat berdampak signifikan terhadap kinerja energi."
+  },
+  {
+   "jenis": "tabel",
+   "id": "t5",
+   "kolom": [
+    {
+     "label": "Informasi proyek – Jenis kegiatan desain (centang semua yang sesuai)"
+    },
+    {
+     "label": "Isian untuk – ☐ Fasilitas baru ☐ Peralatan/sistem/proses baru ☐ Renovasi/modifikasi fasilitas ☐ Renovasi/modifikasi peralatan/sistem/proses ☐ SEU dan pengendalian terkait ☐ Tujuan, sasaran dan rencana tindakan energi ☐ Peningkatan kinerja energi ☐ Pemeliharaan sistem energi"
+    }
+   ],
+   "baris": [
+    [
+     "Nama/deskripsi proyek",
+     ""
+    ],
+    [
+     "Fasilitas/sistem/proses terkait",
+     ""
+    ],
+    [
+     "Disusun oleh/jabatan",
+     ""
+    ],
+    [
+     "Tanggal",
+     ""
+    ],
+    [
+     "Pemilik proyek/penanggung jawab",
+     ""
+    ]
+   ]
+  },
+  {
+   "jenis": "tabel",
+   "id": "t6",
+   "kolom": [
+    {
+     "label": "Fasilitas/peralatan/sistem/proses yang berdampak signifikan pada kinerja energi"
+    },
+    {
+     "label": "Sumber energi saat ini"
+    },
+    {
+     "label": "Apakah ada alternatif sumber energi?"
+    },
+    {
+     "label": "Teknologi/opsi peningkatan kinerja energi"
+    },
+    {
+     "label": "Pengendalian operasional tambahan yang diperlukan"
+    },
+    {
+     "label": "Penanggung jawab desain"
+    },
+    {
+     "label": "Peningkatan yang diharapkan"
+    }
+   ],
+   "baris": [
+    [
+     "Contoh pengisian yang disesuaikan: sistem HVAC gedung (chiller, AHU/FCU dan kontrolnya).",
+     "Listrik.",
+     "Dievaluasi berdasarkan kelayakan teknis dan pasokan yang tersedia.",
+     "Optimasi setelan dan jadwal, pemantauan energi, kontrol otomatis, evaluasi efisiensi peralatan dan commissioning.",
+     "SOP operasi, batas setelan, pemantauan parameter, jadwal pemeliharaan, verifikasi hasil setelah implementasi.",
+     "Fungsi teknik/fasilitas bersama konsultan atau kontraktor yang ditunjuk.",
+     "Penghematan energi, penurunan biaya operasi dan pemeliharaan, serta peningkatan keandalan."
+    ],
+    [
+     "Isian proyek KINRA lainnya: ____________________",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "4. Memasukkan hasil pertimbangan energi ke spesifikasi, desain, dan pengadaan"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t7",
+   "kolom": [
+    {
+     "label": "Pemeriksaan"
+    },
+    {
+     "label": "Status/hasil"
+    },
+    {
+     "label": "Bukti/rujukan"
+    }
+   ],
+   "baris": [
+    [
+     "Pertimbangan kinerja energi dalam lembar kerja desain telah dimasukkan ke spesifikasi, desain dan pengadaan yang relevan.",
+     "",
+     ""
+    ],
+    [
+     "Teknologi hemat energi yang baru telah dispesifikasikan, diterapkan, dan digunakan dengan benar untuk menghindari kesalahan penerapan.",
+     "",
+     ""
+    ],
+    [
+     "Peran dan tanggung jawab telah diberikan kepada personel yang kompeten.",
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "5. Penyimpanan rekaman hasil kegiatan desain terkait kinerja energi"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t8",
+   "kolom": [
+    {
+     "label": "Pemeriksaan/jenis dokumen"
+    },
+    {
+     "label": "Status/lokasi rekaman"
+    }
+   ],
+   "baris": [
+    [
+     "Rekaman hasil kegiatan desain dipelihara secara berkelanjutan pada lokasi penyimpanan terpusat yang dikendalikan.",
+     ""
+    ],
+    [
+     "Daftar periksa yang telah diisi",
+     ""
+    ],
+    [
+     "Notulen rapat desain dan tinjauan teknis",
+     ""
+    ],
+    [
+     "Gambar desain dan revisi gambar",
+     ""
+    ],
+    [
+     "Spesifikasi teknis/pengadaan",
+     ""
+    ],
+    [
+     "Rekaman proyek dan persetujuan perubahan",
+     ""
+    ],
+    [
+     "Urutan operasi baru atau revisi untuk kontrol BMS/otomasi, bila digunakan",
+     ""
+    ],
+    [
+     "Laporan commissioning/pengujian dan verifikasi kinerja energi",
+     ""
+    ]
+   ]
+  }
+ ],
+ "ttd": [
+  {
+   "peran": "Disiapkan oleh",
+   "jabatan": "Dokumen Kontrol"
+  },
+  {
+   "peran": "Ditinjau oleh",
+   "jabatan": "Management Representative"
+  },
+  {
+   "peran": "Disetujui oleh",
+   "jabatan": "Direktur"
+  }
+ ],
+ "sumber": "8.2 Desain/001_ Formulir Pertimbangan Energi dalam Desain.docx",
+ "nomor": "001/SOP-018/KINRA/SMEn/X/2026"
+}

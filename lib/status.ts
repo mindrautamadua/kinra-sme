@@ -1,4 +1,4 @@
-import type { Dokumen, KelompokDokumen, RiwayatStatus, StatusDokumen } from './types'
+import type { Dokumen, Kegiatan, KelompokDokumen, Klausul, RiwayatStatus, StatusDokumen } from './types'
 
 export type KodeChip = 'good' | 'warn' | 'serious' | 'crit' | 'na' | 'info'
 
@@ -31,10 +31,12 @@ export const INDUK_KLAUSUL: Record<string, string> = {
 }
 
 /** Nilai satu dokumen dalam skor kesiapan: bobot status, tetapi 0 selama belum ada berkas evidence (auditor memeriksa bukti). */
-export const nilaiKesiapan = (d: Pick<Dokumen, 'status' | 'jumlah_berkas'>) => (adaBukti(d) ? STATUS[d.status].bobot : 0)
+type DokBukti = Pick<Dokumen, 'status' | 'jumlah_berkas' | 'jumlah_isian'>
+
+export const nilaiKesiapan = (d: DokBukti) => (adaBukti(d) ? STATUS[d.status].bobot : 0)
 
 /** Kesiapan berbobot 0–100: belum 0, draft 25, review 50, disetujui 85, final 100; dokumen tanpa berkas evidence bernilai 0. */
-export function kesiapan(dokumen: Pick<Dokumen, 'status' | 'jumlah_berkas'>[]): number {
+export function kesiapan(dokumen: DokBukti[]): number {
   if (!dokumen.length) return 0
   return (dokumen.reduce((s, d) => s + nilaiKesiapan(d), 0) / dokumen.length) * 100
 }
@@ -56,13 +58,13 @@ export function trenKesiapan(dokumen: Dokumen[], riwayat: RiwayatStatus[], hari:
   }
   return hari.map((h) => {
     // Keberadaan berkas memakai kondisi saat ini (riwayat unggah tidak direkam per hari)
-    const st: Pick<Dokumen, 'status' | 'jumlah_berkas'>[] = []
+    const st: DokBukti[] = []
     for (const d of dokumen) {
       const l = per.get(d.id)
       if (!l?.length) { st.push(d); continue }
       let s = l[0].dari
       for (const e of l) { if (e.h > h) break; s = e.ke }
-      if (s) st.push({ status: s, jumlah_berkas: d.jumlah_berkas })
+      if (s) st.push({ status: s, jumlah_berkas: d.jumlah_berkas, jumlah_isian: d.jumlah_isian })
     }
     return kesiapan(st)
   })
@@ -100,16 +102,41 @@ export function tingkatRisiko(skor: number): { label: string; chip: KodeChip } {
   return { label: 'Rendah', chip: 'good' }
 }
 
-/** Jadwal kunci dari Timeline Pendampingan Rev.3 */
-export const TONGGAK = [
-  { kode: 'ia', nama: 'Internal Audit', tanggal: '2026-11-05' },
-  { kode: 'tm', nama: 'Tinjauan Manajemen', tanggal: '2026-11-24' },
-  { kode: 's1', nama: 'TÜV Stage 1', tanggal: '2026-11-20' },
-  { kode: 's2', nama: 'TÜV Stage 2', tanggal: '2026-12-10' },
+/** Jadwal kunci cadangan, dipakai hanya bila tabel kegiatan belum punya kolom tonggak (migrasi 0012). */
+const TONGGAK_CADANGAN: { kode: string; no: number; nama: string }[] = [
+  { kode: 'ia', no: 10, nama: 'Internal Audit' },
+  { kode: 's1', no: 12, nama: 'TÜV Stage 1' },
+  { kode: 'tm', no: 11, nama: 'Tinjauan Manajemen' },
+  { kode: 's2', no: 13, nama: 'TÜV Stage 2' },
 ]
 
-/** Dokumen dianggap sudah punya evidence bila ada berkas terunggah. */
-export const adaBukti = (d: Pick<Dokumen, 'jumlah_berkas'>) => (d.jumlah_berkas ?? 0) > 0
+export type Tonggak = { kode: string; nama: string; tanggal: string }
+
+/**
+ * Tonggak audit dari Timeline (tabel kegiatan), memakai tanggal sesi pertama tiap kegiatan.
+ * Menggeser jadwal di Timeline otomatis menggeser hitung mundur di seluruh aplikasi.
+ */
+export function tonggakDari(kegiatan: Kegiatan[]): Tonggak[] {
+  const bertanda = kegiatan.filter((k) => k.tonggak)
+  const pasangan = bertanda.length
+    ? bertanda.map((k) => ({ kode: k.tonggak!, k }))
+    : TONGGAK_CADANGAN.map((t) => ({ kode: t.kode, k: kegiatan.find((x) => x.no === t.no) })).filter((x) => x.k)
+  return pasangan
+    .map(({ kode, k }) => ({ kode, nama: k!.nama.replace(/^Eksternal Audit\s+/i, ''), tanggal: k!.sesi.map((s) => s.tanggal).sort()[0] }))
+    .filter((t) => t.tanggal)
+    .sort((a, b) => a.tanggal.localeCompare(b.tanggal))
+}
+
+/** Kesiapan per klausul (hanya klausul yang punya dokumen). Dipakai Ringkasan dan Kesiapan Audit. */
+export function kesiapanPerKlausul(dokumen: Dokumen[], klausul: Klausul[], kini: string) {
+  return klausul.map((k) => {
+    const ds = dokumen.filter((d) => d.klausul_kode === k.kode)
+    return { ...k, n: ds.length, p: kesiapan(ds), lewat: ds.filter((d) => terlambat(d, kini)).length }
+  }).filter((k) => k.n > 0)
+}
+
+/** Dokumen dianggap sudah punya evidence bila ada berkas terunggah atau isian formulir tertaut yang sudah disetujui. */
+export const adaBukti = (d: Pick<Dokumen, 'jumlah_berkas' | 'jumlah_isian'>) => (d.jumlah_berkas ?? 0) + (d.jumlah_isian ?? 0) > 0
 
 /** Bucket Storage privat untuk berkas evidence (migrasi 0010). */
 export const BUCKET_BUKTI = 'smen-evidence'

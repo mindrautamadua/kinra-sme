@@ -1,0 +1,166 @@
+{
+ "kode": "ruang-lingkup",
+ "klausul": [
+  "4.3"
+ ],
+ "judul": "Ruang Lingkup dan Batasan EnMS",
+ "subjudul": "ISO 50001:2018 – PT Kawasan Industri Nusantara (KINRA)",
+ "kepala": [
+  {
+   "label": "Nomor Dokumen",
+   "nilai": "001/MN-002/KINRA/SMEn/X/2026"
+  },
+  {
+   "label": "Revisi",
+   "nilai": "0"
+  },
+  {
+   "label": "Tanggal Berlaku",
+   "nilai": "22 Oktober 2026"
+  },
+  {
+   "label": "Bagian",
+   "nilai": "Manajemen Risiko & TI"
+  },
+  {
+   "label": "Sub Bagian",
+   "nilai": "Manajemen Risiko"
+  },
+  {
+   "label": "Lokasi Penyimpanan",
+   "nilai": "Bagian Manajemen Risiko & TI"
+  }
+ ],
+ "blok": [
+  {
+   "jenis": "judul",
+   "teks": "1. Menentukan Ruang Lingkup dan Batasan"
+  },
+  {
+   "jenis": "teks",
+   "id": "p1",
+   "teks": "1.1 Cakupan aktivitas, fasilitas, dan struktur pengambilan keputusan yang dimasukkan dalam EnMS."
+  },
+  {
+   "jenis": "teks",
+   "id": "p2",
+   "teks": "Ruang lingkup mencakup Penerapan Sistem Manajemen Energi (EnMS) ISO 50001:2018 pada kegiatan pengembangan, pengelolaan, dan pelayanan kawasan industri PT Kawasan Industri Nusantara (KINRA) di Kawasan Ekonomi Khusus Sei Mangkei, Kabupaten Simalungun, Sumatera Utara, yang meliputi kegiatan administrasi, operasional gedung, serta pengelolaan dan pemeliharaan infrastruktur dan fasilitas kawasan yang berada dalam kendali operasional KINRA, termasuk penggunaan energi listrik dan energi lainnya pada peralatan, sistem utilitas, pencahayaan, tata udara, fasilitas pendukung, serta proses operasional terkait yang dapat dikendalikan atau dipengaruhi oleh KINRA.."
+  },
+  {
+   "jenis": "teks",
+   "id": "p3",
+   "teks": "Penggunaan energi yang dipertimbangkan meliputi energi listrik dan energi lainnya yang digunakan pada peralatan dan sistem utilitas, pencahayaan, tata udara/HVAC, pompa, fasilitas pendukung, peralatan kantor, serta proses operasional terkait yang dapat dikendalikan atau dipengaruhi oleh KINRA. Daftar final sumber energi, pengguna energi signifikan (SEU), aset, lokasi, dan batas meter harus ditentukan melalui tinjauan energi dan data aktual."
+  },
+  {
+   "jenis": "teks",
+   "id": "p4",
+   "teks": "1.2 Batas lokasi dan/atau batas organisasi EnMS."
+  },
+  {
+   "jenis": "teks",
+   "id": "p5",
+   "teks": "Batas lokasi adalah fasilitas, gedung, area, jaringan utilitas, dan infrastruktur di kawasan KEK Sei Mangkei yang secara hukum/operasional berada dalam kendali KINRA dan telah ditetapkan dalam daftar aset serta peta batas EnMS. Batas organisasi meliputi unit kerja KINRA yang memiliki kewenangan untuk menetapkan, mengendalikan, memengaruhi, atau memantau penggunaan energi dalam lingkup tersebut."
+  },
+  {
+   "jenis": "teks",
+   "id": "p6",
+   "teks": "Fasilitas milik tenant, operasi proses produksi tenant, atau aset pihak ketiga tidak otomatis dimasukkan sebagai aset yang dikendalikan KINRA. Namun, aspek energi tenant/pihak ketiga yang dapat dipengaruhi KINRA melalui kontrak, standar layanan, koordinasi, desain fasilitas bersama, atau mekanisme komunikasi dapat dipertimbangkan sesuai tingkat pengaruh dan ketersediaan data. Batas akhir harus dinyatakan secara transparan, konsisten, dan tidak mengecualikan jenis energi atau fasilitas yang berada dalam kendali operasional KINRA hanya untuk menghindari kewajiban peningkatan kinerja energi."
+  },
+  {
+   "jenis": "teks",
+   "id": "p7",
+   "teks": "Area atau aset yang dikecualikan, jika ada, harus dicatat secara spesifik beserta alasan objektif, pemilik/pengelola, status kendali, cara pengukuran energi, dan bukti pendukung. Draf ini tidak menetapkan pengecualian fasilitas tertentu karena data peta, daftar aset, meter, dan pembagian tanggung jawab KINRA belum dilampirkan."
+  },
+  {
+   "jenis": "judul",
+   "teks": "2. Pernyataan Ruang Lingkup dan Batasan EnMS"
+  },
+  {
+   "jenis": "teks",
+   "id": "p8",
+   "teks": "Penerapan Sistem Manajemen Energi (EnMS) ISO 50001:2018 pada kegiatan pengembangan, pengelolaan, dan pelayanan kawasan industri PT Kawasan Industri Nusantara (KINRA) di Kawasan Ekonomi Khusus Sei Mangkei, Kabupaten Simalungun, Sumatera Utara, yang meliputi kegiatan administrasi, operasional gedung, serta pengelolaan dan pemeliharaan infrastruktur dan fasilitas kawasan yang berada dalam kendali operasional KINRA, termasuk penggunaan energi listrik dan energi lainnya pada peralatan, sistem utilitas, pencahayaan, tata udara, fasilitas pendukung, serta proses operasional terkait yang dapat dikendalikan atau dipengaruhi oleh KINRA."
+  },
+  {
+   "jenis": "teks",
+   "id": "p9",
+   "teks": "Melalui EnMS, KINRA berkomitmen mengelola penggunaan energi secara sistematis, memantau dan menganalisis konsumsi energi, menetapkan baseline dan indikator kinerja energi sesuai hasil tinjauan energi, mematuhi persyaratan hukum dan persyaratan lainnya yang berlaku, serta menetapkan sasaran dan program peningkatan kinerja energi. Implementasi dilakukan dengan mempertimbangkan keandalan layanan kawasan, keselamatan, kebutuhan tenant/pengguna layanan, kelayakan teknis dan finansial, serta ketersediaan sumber daya."
+  },
+  {
+   "jenis": "teks",
+   "id": "p10",
+   "teks": "KINRA akan memanfaatkan data meter/tagihan, pencatatan operasi, inspeksi dan pemeliharaan, spesifikasi pengadaan, serta sistem pemantauan yang tersedia untuk mengidentifikasi peluang peningkatan. Fungsi/unit yang ditunjuk bertanggung jawab mengoordinasikan pelaksanaan, target, pemantauan, dan pelaporan kepada manajemen. Batas kendali terhadap tenant dan pihak ketiga akan dikelola melalui komunikasi, kontrak, koordinasi, dan kriteria yang relevan, tanpa menyatakan bahwa KINRA mengendalikan peralatan yang berada di luar kewenangannya."
+  },
+  {
+   "jenis": "teks",
+   "id": "p11",
+   "teks": "Ruang lingkup dan batasan ditinjau bila terjadi perubahan signifikan pada struktur organisasi, lokasi/fasilitas, batas kendali operasional, sumber energi, pola penggunaan energi, kontrak, atau persyaratan yang berlaku. Rincian fasilitas yang dimasukkan/ dikecualikan dan daftar sumber energi harus didukung oleh peta batas EnMS, daftar aset, diagram meter, serta hasil tinjauan energi."
+  },
+  {
+   "jenis": "judul",
+   "teks": "Batasan operasional untuk verifikasi"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t1",
+   "kolom": [
+    {
+     "label": "Elemen"
+    },
+    {
+     "label": "Implementasi EnMS"
+    },
+    {
+     "label": "Keterangan"
+    }
+   ],
+   "baris": [
+    [
+     "Organisasi",
+     "Unit KINRA yang mengelola, mengoperasikan, mengembangkan, dan memelihara fasilitas dalam kendali KINRA.",
+     "Bagan organisasi, pemilik proses, delegasi kewenangan, dan unit penanggung jawab energi."
+    ],
+    [
+     "Lokasi",
+     "Fasilitas/area di KEK Sei Mangkei yang berada dalam kendali operasional KINRA.",
+     "Daftar lokasi, peta batas, status kepemilikan/pengelolaan, dan perjanjian operasi."
+    ],
+    [
+     "Sumber energi",
+     "Listrik dan energi lainnya yang digunakan dalam lingkup operasional.",
+     "Jenis energi aktual, data tagihan, titik meter, submeter, dan sumber energi cadangan jika ada."
+    ],
+    [
+     "Peralatan dan fasilitas",
+     "Utilitas, pencahayaan, HVAC, pompa, peralatan kantor, fasilitas pendukung, dan peralatan terkait yang dikendalikan/dipengaruhi KINRA.",
+     "Daftar aset, kapasitas, jam operasi, kondisi, pemilik, dan pengguna energi signifikan."
+    ],
+    [
+     "Tenant/pihak ketiga",
+     "Aspek penggunaan energi yang dapat dipengaruhi melalui kontrak, layanan, desain fasilitas bersama, atau koordinasi.",
+     "Batas kendali langsung/tidak langsung, hak akses data, pembagian biaya, dan mekanisme komunikasi."
+    ],
+    [
+     "Pengecualian",
+     "Tidak ada pengecualian spesifik yang ditetapkan dalam draf ini.",
+     "Jika ada, dokumentasikan alasan, batas yang jelas, pemilik aset, dan dasar keputusan."
+    ]
+   ]
+  }
+ ],
+ "ttd": [
+  {
+   "peran": "Disiapkan oleh",
+   "jabatan": "Dokumen Kontrol"
+  },
+  {
+   "peran": "Ditinjau oleh",
+   "jabatan": "Management Representative"
+  },
+  {
+   "peran": "Disetujui oleh",
+   "jabatan": "Direktur"
+  }
+ ],
+ "sumber": "4.3 Penentuan Ruang Lingkup SMEn/001_Ruang Lingkup & Batasan.docx",
+ "nomor": "001/MN-002/KINRA/SMEn/X/2026"
+}

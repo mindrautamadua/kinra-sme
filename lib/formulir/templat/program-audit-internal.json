@@ -1,0 +1,367 @@
+{
+ "kode": "program-audit-internal",
+ "klausul": [
+  "9.2"
+ ],
+ "judul": "Formulir Program Audit Internal",
+ "subjudul": "Sistem Manajemen Energi (SMEn) – ISO 50001:2018",
+ "kepala": [
+  {
+   "label": "No. Formulir",
+   "nilai": "002/FRM-SOP-022/KINRA/SMEn/X/2026"
+  },
+  {
+   "label": "Tanggal",
+   "nilai": "22 Oktober 2026"
+  },
+  {
+   "label": "Revisi",
+   "nilai": "00"
+  },
+  {
+   "label": "Tahun",
+   "nilai": "2026"
+  }
+ ],
+ "blok": [
+  {
+   "jenis": "isian",
+   "id": "kriteria",
+   "label": "Kriteria audit",
+   "teks": "ISO 50001:2018"
+  },
+  {
+   "jenis": "isian",
+   "id": "tujuan",
+   "label": "Tujuan",
+   "teks": "Merupakan salah satu persyaratan (requirement) dari standar ISO 50001:2018.\nMerupakan bagian dari proses check dari siklus proses PDCA.\nUntuk memastikan kesesuaian implementasi Sistem Manajemen Energi di PT Kawasan Industri Nusantara (KINRA) berdasarkan persyaratan ISO 50001:2018.",
+   "panjang": true
+  },
+  {
+   "jenis": "isian",
+   "id": "fokus",
+   "label": "Fokus area",
+   "teks": "PT Kawasan Industri Nusantara (KINRA)"
+  },
+  {
+   "jenis": "isian",
+   "id": "organisasi",
+   "label": "Organisasi auditor",
+   "teks": ""
+  },
+  {
+   "jenis": "isian",
+   "id": "koordinator",
+   "label": "Koordinator audit",
+   "teks": "Lidwina Vidya"
+  },
+  {
+   "jenis": "isian",
+   "id": "auditor",
+   "label": "Para auditor",
+   "teks": "Jeri Azwan, Pindi Filsa dan Fazar Anggita"
+  },
+  {
+   "jenis": "judul",
+   "teks": "Rencana pelaksanaan audit (centang bulan pelaksanaan)"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t1",
+   "kolom": [
+    {
+     "label": "No."
+    },
+    {
+     "label": "Proses/Fungsi yang Diaudit"
+    },
+    {
+     "label": "Klausul"
+    },
+    {
+     "label": "Jan",
+     "jenis": "cek"
+    },
+    {
+     "label": "Feb",
+     "jenis": "cek"
+    },
+    {
+     "label": "Mar",
+     "jenis": "cek"
+    },
+    {
+     "label": "Apr",
+     "jenis": "cek"
+    },
+    {
+     "label": "Mei",
+     "jenis": "cek"
+    },
+    {
+     "label": "Jun",
+     "jenis": "cek"
+    },
+    {
+     "label": "Jul",
+     "jenis": "cek"
+    },
+    {
+     "label": "Agust",
+     "jenis": "cek"
+    },
+    {
+     "label": "Sep",
+     "jenis": "cek"
+    },
+    {
+     "label": "Okt",
+     "jenis": "cek"
+    },
+    {
+     "label": "Nop",
+     "jenis": "cek"
+    },
+    {
+     "label": "Des",
+     "jenis": "cek"
+    }
+   ],
+   "baris": [
+    [
+     "1",
+     "Manajemen Puncak",
+     "5.1 Kepemimpinan dan komitmen\n5.2 Kebijakan energi\n5.3 Peran, tanggung jawab, dan wewenang\n6.2 Tujuan energi dan perencanaan untuk mencapainya\n7.1 Sumber daya\n9.3 Tinjauan manajemen\n10.1 Ketidaksesuaian dan tindakan korektif",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "ya",
+     ""
+    ],
+    [
+     "2",
+     "Steering Committee/MR",
+     "5.1 Kepemimpinan dan komitmen\n5.3 Peran, tanggung jawab, dan wewenang\n6.2 Tujuan energi dan perencanaan untuk mencapainya\n7.1 Sumber daya\n9.3 Tinjauan manajemen\n10.1 Ketidaksesuaian dan tindakan korektif",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "ya",
+     ""
+    ],
+    [
+     "3",
+     "Manajer Energi/Koordinator Energi",
+     "4.3 Penentuan ruang lingkup SMEn\n4.4 Sistem manajemen energi\n6.1 Tindakan untuk menangani risiko dan peluang\n6.2 Tujuan energi dan perencanaan untuk mencapainya\n6.3 Tinjauan energi\n6.4 Indikator kinerja energi (EnPI)\n6.5 Dasar konsumsi energi (EnB)\n6.6 Perencanaan pengumpulan data energi\n7.2 Kompetensi\n7.3 Kesadaran\n7.4 Komunikasi\n8.1 Perencanaan dan pengendalian operasional\n8.2 Desain\n9.1 Pemantauan, pengukuran, analisis, dan evaluasi kinerja energi dan SMEn\n9.2 Audit internal\n9.3 Tinjauan manajemen\n10.1 Ketidaksesuaian dan tindakan korektif\n10.2 Peningkatan berkelanjutan",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "ya",
+     ""
+    ],
+    [
+     "4",
+     "Sekretaris/Dokumen Kontrol (SMEn)",
+     "7.4 Komunikasi\n7.5 Informasi terdokumentasi\n9.2 Audit internal\n10.1 Ketidaksesuaian dan tindakan korektif",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "ya",
+     ""
+    ],
+    [
+     "5",
+     "Satuan Pengawas Internal (SPI)",
+     "9.1 Pemantauan, pengukuran, analisis, dan evaluasi kinerja energi dan SMEn\n9.2 Audit internal\n10.1 Ketidaksesuaian dan tindakan korektif",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "ya",
+     ""
+    ],
+    [
+     "6",
+     "Bagian Sekretariat Perusahaan, Hukum & Tanggung Jawab Sosial Perusahaan",
+     "4.1 Memahami organisasi dan konteksnya\n4.2 Memahami kebutuhan dan harapan pihak berkepentingan\n6.1 Tindakan untuk menangani risiko dan peluang\n7.4 Komunikasi\n7.5 Informasi terdokumentasi\n8.1 Perencanaan dan pengendalian operasional",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "ya",
+     ""
+    ],
+    [
+     "7",
+     "Bagian Akuntansi & Keuangan",
+     "6.2 Tujuan energi dan perencanaan untuk mencapainya\n7.1 Sumber daya\n7.5 Informasi terdokumentasi\n8.1 Perencanaan dan pengendalian operasional\n9.1 Pemantauan, pengukuran, analisis, dan evaluasi kinerja energi dan SMEn\n9.3 Tinjauan manajemen",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "ya",
+     ""
+    ],
+    [
+     "8",
+     "Bagian Sumber Daya Manusia, Umum & Pengadaan",
+     "7.1 Sumber daya\n7.2 Kompetensi\n7.3 Kesadaran\n7.4 Komunikasi\n8.1 Perencanaan dan pengendalian operasional\n8.3 Desain\n8.4 Pengadaan",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "ya",
+     ""
+    ],
+    [
+     "9",
+     "Bagian Manajemen Risiko & TI",
+     "4.1 Memahami organisasi dan konteksnya\n4.2 Memahami kebutuhan dan harapan pihak berkepentingan\n6.1 Tindakan untuk menangani risiko dan peluang\n6.6 Perencanaan pengumpulan data energi\n7.5 Informasi terdokumentasi\n8.1 Perencanaan dan pengendalian operasional\n9.1 Pemantauan, pengukuran, analisis, dan evaluasi kinerja energi dan SMEn\n10.1 Ketidaksesuaian dan tindakan korektif",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "ya",
+     ""
+    ],
+    [
+     "10",
+     "Bagian Pengembangan",
+     "6.3 Tinjauan energi\n8.1 Perencanaan dan pengendalian operasional\n8.2 Desain\n8.3 Desain\n8.4 Pengadaan",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "ya",
+     ""
+    ],
+    [
+     "11",
+     "Bagian Pemasaran & Penjualan",
+     "4.2 Memahami kebutuhan dan harapan pihak berkepentingan\n7.4 Komunikasi\n8.1 Perencanaan dan pengendalian operasional",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "ya",
+     ""
+    ],
+    [
+     "12",
+     "Bagian Produksi Kawasan",
+     "6.3 Tinjauan energi\n6.6 Perencanaan pengumpulan data energi\n8.1 Perencanaan dan pengendalian operasional\n8.2 Desain\n9.1 Pemantauan, pengukuran, analisis, dan evaluasi kinerja energi dan SMEn",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "ya",
+     ""
+    ],
+    [
+     "13",
+     "Bagian Mekanikal & Elektrikal, Fasilitas, dan Pengamanan",
+     "6.3 Tinjauan energi\n6.6 Perencanaan pengumpulan data energi\n7.1 Sumber daya\n7.2 Kompetensi\n7.5 Informasi terdokumentasi\n8.1 Perencanaan dan pengendalian operasional\n8.2 Desain\n8.3 Desain\n8.4 Pengadaan\n9.1 Pemantauan, pengukuran, analisis, dan evaluasi kinerja energi dan SMEn",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "ya",
+     ""
+    ]
+   ]
+  }
+ ],
+ "ttd": [
+  {
+   "peran": "Disusun oleh",
+   "jabatan": "Lead Auditor"
+  },
+  {
+   "peran": "Disahkan oleh",
+   "jabatan": "Management Representative"
+  }
+ ],
+ "sumber": "9.2 Audit Internal/9.2 Audit Internal (KINRA-02.11.26)/02-Formulir Program Audit Internal Rev.0.docx",
+ "nomor": "002/FRM-SOP-022/KINRA/SMEn/X/2026"
+}

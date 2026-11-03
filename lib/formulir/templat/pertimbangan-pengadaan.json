@@ -1,0 +1,748 @@
+{
+ "kode": "pertimbangan-pengadaan",
+ "klausul": [
+  "8.3"
+ ],
+ "judul": "Pertimbangan Energi dalam Pengadaan",
+ "subjudul": "Sistem Manajemen Energi ISO 50001:2018 — PT Kawasan Industri Nusantara (KINRA)",
+ "kepala": [
+  {
+   "label": "Nomor Dokumen",
+   "nilai": "001/SOP-019/KINRA/SMEn/X/2026"
+  },
+  {
+   "label": "Revisi",
+   "nilai": "0"
+  },
+  {
+   "label": "Tanggal Berlaku",
+   "nilai": "22 Oktober 2026"
+  },
+  {
+   "label": "Bagian",
+   "nilai": "SDM, Umum & Pengadaan"
+  },
+  {
+   "label": "Sub Bagian",
+   "nilai": "Umum & Pengadaan"
+  },
+  {
+   "label": "Lokasi Penyimpanan",
+   "nilai": "SDM, Umum & Pengadaan"
+  }
+ ],
+ "blok": [
+  {
+   "jenis": "judul",
+   "teks": "1. Persyaratan kinerja energi untuk pengadaan yang berkaitan dengan SEU"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t1",
+   "kolom": [
+    {
+     "label": "Pemeriksaan"
+    },
+    {
+     "label": "Penerapan yang dilakukan"
+    },
+    {
+     "label": "Bukti/rekaman"
+    }
+   ],
+   "baris": [
+    [
+     "Persyaratan terkait kinerja energi telah diidentifikasi.",
+     "",
+     ""
+    ],
+    [
+     "Persyaratan telah dikomunikasikan kepada pemasok dan penyedia jasa.",
+     "",
+     ""
+    ],
+    [
+     "Pemasok diberi tahu bahwa kinerja energi menjadi kriteria evaluasi.",
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "2. Evaluasi proses pengadaan yang berdampak pada kinerja energi"
+  },
+  {
+   "jenis": "teks",
+   "id": "p1",
+   "teks": "Faktor-faktor berikut dipertimbangkan saat mengevaluasi pemasok dan penyedia jasa yang dapat memengaruhi kinerja energi. Status harus diisi berdasarkan evaluasi aktual."
+  },
+  {
+   "jenis": "tabel",
+   "id": "t2",
+   "kolom": [
+    {
+     "label": "Faktor evaluasi"
+    },
+    {
+     "label": "Panduan penerapan"
+    },
+    {
+     "label": "Status/bukti"
+    }
+   ],
+   "baris": [
+    [
+     "Pelatihan",
+     "Pastikan personel pemasok/kontraktor memahami kebijakan energi, pertimbangan energi dalam desain dan pengadaan, serta EnMS KINRA.",
+     ""
+    ],
+    [
+     "Sertifikasi",
+     "Evaluasi sertifikasi yang relevan jika diperlukan. Kewajiban sertifikasi tidak boleh dinyatakan sebagai persyaratan universal tanpa dasar kebutuhan pengadaan.",
+     ""
+    ],
+    [
+     "Pengalaman pada penggunaan energi sejenis",
+     "Nilai rekam jejak pemasok untuk peralatan listrik, sistem tata udara, pompa, penerangan, utilitas, dan SEU lain yang relevan dengan kawasan industri.",
+     ""
+    ],
+    [
+     "Ketersediaan tenaga terampil",
+     "Pastikan ketersediaan tenaga kerja kompeten untuk pemasangan, commissioning, operasi, dan pemeliharaan peralatan.",
+     ""
+    ],
+    [
+     "Praktik pengadaan suku cadang/material",
+     "Komunikasikan prioritas kinerja energi kepada petugas pengadaan dan penyedia jasa terkait.",
+     ""
+    ],
+    [
+     "Rekomendasi/ulasan pelanggan",
+     "Periksa referensi pelanggan, hasil evaluasi pekerjaan sebelumnya, dan kinerja penyedia jasa.",
+     ""
+    ],
+    [
+     "Faktor lain",
+     "Tuliskan faktor lain yang sesuai dengan risiko, jenis barang/jasa, atau kebutuhan energi KINRA.",
+     ""
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "3. Checklist kebijakan pengadaan"
+  },
+  {
+   "jenis": "teks",
+   "id": "p2",
+   "teks": "Gunakan daftar periksa ini untuk meninjau kebijakan pembelian produk, peralatan, dan jasa energi yang dapat berdampak signifikan pada kinerja energi. Catat penyesuaian yang diperlukan pada kolom tindakan."
+  },
+  {
+   "jenis": "tabel",
+   "id": "t3",
+   "kolom": [
+    {
+     "label": "Kebijakan/proses pengadaan yang ditinjau"
+    },
+    {
+     "label": "Ya",
+     "jenis": "cek"
+    },
+    {
+     "label": "Tidak",
+     "jenis": "cek"
+    },
+    {
+     "label": "Tindakan yang diperlukan/rekaman"
+    }
+   ],
+   "baris": [
+    [
+     "a. Kebijakan memastikan kinerja energi dipertimbangkan, terutama untuk SEU.",
+     "",
+     "",
+     "Masukkan persyaratan kinerja energi dalam kebijakan dan spesifikasi pengadaan."
+    ],
+    [
+     "b. Terdapat kriteria evaluasi penggunaan, konsumsi, dan efisiensi energi selama umur produk/peralatan/jasa.",
+     "",
+     "",
+     "Gunakan data konsumsi energi, efisiensi dan biaya daur hidup."
+    ],
+    [
+     "c. Evaluasi mencakup penggunaan, konsumsi dan efisiensi energi selama umur operasi yang direncanakan untuk pembelian yang berdampak signifikan.",
+     "",
+     "",
+     "Dokumentasikan asumsi umur operasi dan profil beban/pemakaian."
+    ],
+    [
+     "d. Terdapat kriteria evaluasi dan seleksi barang, peralatan, atau jasa, terutama yang terkait SEU.",
+     "",
+     "",
+     "Cantumkan kriteria teknis dan bobot penilaian kinerja energi."
+    ],
+    [
+     "e. Kriteria pengadaan memprioritaskan kinerja energi serta penilaian/biaya daur hidup.",
+     "",
+     "",
+     "Bandingkan biaya awal, energi, pemeliharaan, penggantian dan akhir masa pakai."
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "Kebijakan pengadaan terkait kinerja energi dan EnMS"
+  },
+  {
+   "jenis": "teks",
+   "id": "p3",
+   "teks": "KINRA mengevaluasi pilihan barang, peralatan, jasa, dan sistem yang hemat energi untuk pengadaan yang direncanakan, terutama yang memengaruhi SEU. Pemilihan mempertimbangkan kinerja energi, kebutuhan operasional dan keandalan fasilitas, kesesuaian teknis, keselamatan, biaya energi, biaya pemeliharaan, umur manfaat dan biaya daur hidup. Pilihan yang direkomendasikan harus didukung evaluasi teknis yang terdokumentasi serta tidak mengurangi fungsi, keselamatan, keandalan, atau mutu layanan kawasan."
+  },
+  {
+   "jenis": "tabel",
+   "id": "t4",
+   "kolom": [
+    {
+     "label": "Informasi yang dikomunikasikan kepada pemasok/penyedia jasa"
+    },
+    {
+     "label": "Ya",
+     "jenis": "cek"
+    },
+    {
+     "label": "Tidak",
+     "jenis": "cek"
+    },
+    {
+     "label": "Tindakan/rekaman"
+    }
+   ],
+   "baris": [
+    [
+     "a. Persyaratan kinerja energi merupakan bagian dari kriteria evaluasi.",
+     "",
+     "",
+     "Bagikan kebijakan dan spesifikasi pengadaan kepada pemasok, kontraktor, konsultan desain, dan penyedia jasa terkait."
+    ],
+    [
+     "b. Kriteria evaluasi tersebut menjadi faktor penting dalam keputusan pengadaan.",
+     "",
+     "",
+     "Buktikan melalui dokumen tender, matriks evaluasi, klarifikasi, dan keputusan pemilihan pemasok."
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "Spesifikasi pembelian pasokan energi"
+  },
+  {
+   "jenis": "teks",
+   "id": "p4",
+   "teks": "KINRA menetapkan, mengembangkan, mendokumentasikan, dan menerapkan spesifikasi pembelian pasokan energi yang sesuai dengan sumber energi, karakteristik pasokan, kebutuhan operasi dan ketentuan kontrak."
+  },
+  {
+   "jenis": "tabel",
+   "id": "t5",
+   "kolom": [
+    {
+     "label": "Elemen"
+    },
+    {
+     "label": "Isian"
+    }
+   ],
+   "baris": [
+    [
+     "Sumber energi",
+     "☐ Listrik ☐ Gas alam ☐ BBM ☐ Biomassa ☐ Bahan bakar lain: __________ ☐ Lainnya: __________"
+    ],
+    [
+     "Kebijakan/spesifikasi pembelian energi",
+     "Jelaskan sumber pasokan, kebutuhan energi, ketentuan mutu, keandalan, tarif, pemantauan konsumsi dan mekanisme peninjauan: __________________________"
+    ],
+    [
+     "Penanggung jawab pengadaan energi",
+     "Nama/jabatan: __________________________"
+    ],
+    [
+     "Pihak yang meninjau teknis",
+     "Fungsi teknik/fasilitas/Tim Energi: __________________________"
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "4. Checklist proses pengadaan"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t6",
+   "kolom": [
+    {
+     "label": "Pertanyaan evaluasi"
+    },
+    {
+     "label": "Ya",
+     "jenis": "cek"
+    },
+    {
+     "label": "Tidak",
+     "jenis": "cek"
+    },
+    {
+     "label": "Tindakan/rekaman yang diperlukan"
+    }
+   ],
+   "baris": [
+    [
+     "1a. Apakah personel pengadaan mempertimbangkan SEU dan pengendalian terkait?",
+     "",
+     "",
+     "Komunikasikan daftar SEU dan kontrol operasional yang relevan."
+    ],
+    [
+     "1b. Apakah tujuan, sasaran dan rencana tindakan energi dipertimbangkan?",
+     "",
+     "",
+     "Komunikasikan tujuan, target dan program energi kepada personel pengadaan."
+    ],
+    [
+     "1c. Apakah kinerja energi berdasarkan EnPI dipertimbangkan?",
+     "",
+     "",
+     "Komunikasikan EnPI dan persyaratan data kinerja energi."
+    ],
+    [
+     "1d. Apakah keberlanjutan hasil peningkatan dari proyek energi sebelumnya dipertimbangkan?",
+     "",
+     "",
+     "Masukkan persyaratan operasi/pemeliharaan untuk mempertahankan hasil peningkatan."
+    ],
+    [
+     "1e. Apakah pemeliharaan sistem energi seperti penerangan, udara bertekanan, uap atau utilitas lain dipertimbangkan?",
+     "",
+     "",
+     "Sampaikan kebutuhan pemeliharaan dan suku cadang."
+    ],
+    [
+     "1f. Apakah biaya daur hidup dipertimbangkan?",
+     "",
+     "",
+     "Dokumentasikan analisis biaya daur hidup."
+    ],
+    [
+     "2. Apakah kriteria penggunaan, konsumsi dan efisiensi energi selama umur produk/peralatan/jasa telah ditetapkan dan diterapkan?",
+     "",
+     "",
+     "Perbarui kebijakan pengadaan dan kriteria evaluasi."
+    ],
+    [
+     "3a. Apakah hasil perencanaan energi—SEU, kontrol, tujuan, sasaran, rencana tindakan dan EnPI—dikomunikasikan kepada personel pengadaan?",
+     "",
+     "",
+     "Catat tanggal, peserta dan materi komunikasi."
+    ],
+    [
+     "3b. Apakah kontrol operasional untuk mempertahankan hasil proyek energi dikomunikasikan?",
+     "",
+     "",
+     "Simpan bukti sosialisasi/briefing."
+    ],
+    [
+     "3c. Apakah kebutuhan pemeliharaan utama sistem energi dikomunikasikan?",
+     "",
+     "",
+     "Simpan daftar kebutuhan pemeliharaan dan bukti komunikasi."
+    ],
+    [
+     "4. Apakah spesifikasi barang yang dibeli mencantumkan persyaratan terkait kinerja energi?",
+     "",
+     "",
+     "Perbarui spesifikasi teknis dan dokumen permintaan penawaran."
+    ],
+    [
+     "5. Apakah persyaratan kinerja energi disampaikan kepada pemasok?",
+     "",
+     "",
+     "Simpan korespondensi/tender/kontrak."
+    ],
+    [
+     "6. Apakah pemasok mengetahui bahwa kinerja energi merupakan bagian dari kriteria evaluasi?",
+     "",
+     "",
+     "Cantumkan pada dokumen tender dan formulir evaluasi."
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "5. Lembar penilaian biaya daur hidup (Life Cycle Cost Assessment)"
+  },
+  {
+   "jenis": "teks",
+   "id": "p5",
+   "teks": "Tujuan: membandingkan alternatif pengadaan berdasarkan biaya sepanjang umur operasi, bukan hanya harga pembelian awal. Isi data sesuai penawaran dan data operasional yang dapat dipertanggungjawabkan."
+  },
+  {
+   "jenis": "tabel",
+   "id": "t7",
+   "kolom": [
+    {
+     "label": "Data dasar penilaian – Penggunaan energi/peralatan yang dinilai"
+    },
+    {
+     "label": "Isian"
+    }
+   ],
+   "baris": [
+    [
+     "Tingkat diskonto finansial",
+     ""
+    ],
+    [
+     "Tarif/biaya energi",
+     ""
+    ],
+    [
+     "Biaya tenaga kerja pemeliharaan",
+     ""
+    ],
+    [
+     "Waktu/interval penggantian unit",
+     ""
+    ],
+    [
+     "Disusun oleh dan tanggal",
+     ""
+    ]
+   ]
+  },
+  {
+   "jenis": "tabel",
+   "id": "t8",
+   "kolom": [
+    {
+     "label": "Alternatif"
+    },
+    {
+     "label": "Konsumsi energi tahunan"
+    },
+    {
+     "label": "Biaya pembelian awal"
+    },
+    {
+     "label": "Jumlah unit per tahun"
+    },
+    {
+     "label": "Biaya tahunan pemeliharaan/perbaikan"
+    },
+    {
+     "label": "Biaya energi tahunan"
+    },
+    {
+     "label": "Umur operasi yang diharapkan"
+    },
+    {
+     "label": "Biaya pembuangan"
+    },
+    {
+     "label": "Biaya penggantian tahunan"
+    },
+    {
+     "label": "Nilai sisa"
+    },
+    {
+     "label": "Biaya daur hidup"
+    }
+   ],
+   "baris": [
+    [
+     "A",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "B",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "C",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "D",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "E",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "jenis": "teks",
+   "id": "p6",
+   "teks": "Rumus sesuai lembar kerja sumber:"
+  },
+  {
+   "jenis": "teks",
+   "id": "p7",
+   "teks": "Biaya pemeliharaan dan perbaikan tahunan = biaya tenaga kerja × jumlah jam × jumlah unit."
+  },
+  {
+   "jenis": "teks",
+   "id": "p8",
+   "teks": "Biaya energi tahunan = konsumsi energi tahunan × biaya energi per satuan (misalnya kWh)."
+  },
+  {
+   "jenis": "teks",
+   "id": "p9",
+   "teks": "Biaya penggantian tahunan = biaya pembelian awal ÷ umur operasi (tahun)."
+  },
+  {
+   "jenis": "teks",
+   "id": "p10",
+   "teks": "Biaya daur hidup = biaya pemeliharaan dan perbaikan tahunan + biaya energi tahunan + biaya penggantian tahunan − nilai sisa."
+  },
+  {
+   "jenis": "teks",
+   "id": "p11",
+   "teks": "Untuk memperhitungkan nilai waktu uang, biaya tahunan dapat didiskontokan menjadi nilai kini."
+  },
+  {
+   "jenis": "teks",
+   "id": "p12",
+   "teks": "Catatan: Gunakan satuan, periode, batas sistem, asumsi umur pakai, tarif energi dan tingkat diskonto yang konsisten ketika membandingkan alternatif."
+  },
+  {
+   "jenis": "judul",
+   "teks": "6. Koordinasi dengan fungsi korporat dan unit pengadaan untuk menetapkan proses pengadaan terkait energi"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t9",
+   "kolom": [
+    {
+     "label": "Pertanyaan"
+    },
+    {
+     "label": "Panduan penerapan /tindakan"
+    },
+    {
+     "label": "Ya/Tidak",
+     "jenis": "pilihan",
+     "opsi": [
+      "Ya",
+      "Tidak"
+     ]
+    }
+   ],
+   "baris": [
+    [
+     "Bagaimana informasi pengadaan mengalir antara KINRA dan fungsi korporat?",
+     "Tetapkan alur persetujuan, pemberian arahan pengadaan dan tinjauan spesifikasi kinerja energi.",
+     ""
+    ],
+    [
+     "Bagaimana fungsi korporat diberi informasi tentang pembelian terkait SEU?",
+     "Tentukan mekanisme notifikasi dan persetujuan sebelum pembelian yang berdampak signifikan.",
+     ""
+    ],
+    [
+     "Apa peran fungsi korporat dalam penyusunan spesifikasi kinerja energi?",
+     "Tetapkan peran dalam memberi arahan, meninjau dan menyetujui spesifikasi bila relevan.",
+     ""
+    ],
+    [
+     "Apakah ada proses penyampaian spesifikasi energi kepada fungsi pengadaan?",
+     "Tetapkan prosedur kerja bersama Tim Energi, teknik/fasilitas dan pengadaan.",
+     ""
+    ],
+    [
+     "Apakah evaluasi penawaran mempertimbangkan kinerja energi?",
+     "Cantumkan kriteria pada matriks evaluasi teknis dan komersial.",
+     ""
+    ],
+    [
+     "Siapa yang bertanggung jawab mengevaluasi pembelian terkait energi?",
+     "Pengadaan bersama dukungan fungsi teknik/fasilitas dan Tim Energi.",
+     ""
+    ],
+    [
+     "Siapa yang memberi tahu pemasok bahwa kinerja energi menjadi kriteria evaluasi?",
+     "Tetapkan pengadaan sebagai koordinator komunikasi kepada pemasok.",
+     ""
+    ],
+    [
+     "Apakah fungsi korporat memiliki proses penilaian biaya daur hidup?",
+     "Tentukan metode dan kewenangan analisis biaya daur hidup.",
+     ""
+    ],
+    [
+     "Bagaimana dampak signifikan terhadap kinerja energi ditentukan dan dievaluasi?",
+     "Tim Energi menilai dampak pembelian terhadap SEU, EnPI dan baseline energi.",
+     ""
+    ],
+    [
+     "Informasi apa yang dapat diberikan KINRA untuk meningkatkan keputusan pengadaan?",
+     "Berikan analisis biaya daur hidup, data kinerja, perubahan kebutuhan operasi dan ketentuan yang berlaku.",
+     ""
+    ],
+    [
+     "Apakah informasi harga pasokan energi memengaruhi keputusan operasi?",
+     "Evaluasi struktur tarif, beban puncak dan data konsumsi yang tersedia sebelum menetapkan keputusan.",
+     ""
+    ],
+    [
+     "Hubungan apa yang perlu dibangun antara KINRA dan fungsi pengadaan?",
+     "Jadwalkan komunikasi, peninjauan spesifikasi, evaluasi pemasok dan tindak lanjut berkala.",
+     ""
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "7. Ringkasan spesifikasi pembelian energi"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t10",
+   "kolom": [
+    {
+     "label": "Bagian"
+    },
+    {
+     "label": "Persyaratan/isian"
+    }
+   ],
+   "baris": [
+    [
+     "Disusun oleh/tanggal",
+     "Nama dan jabatan: ____________________ Tanggal: ____________________"
+    ],
+    [
+     "Disetujui oleh/tanggal",
+     "Nama dan jabatan: ____________________ Tanggal: ____________________"
+    ],
+    [
+     "Sumber energi",
+     "☐ Listrik ☐ Batu bara ☐ Gas alam ☐ Biomassa ☐ BBM ☐ Bahan limbah: ______ ☐ Lainnya: ______"
+    ],
+    [
+     "Kuantitas",
+     "Jumlah yang dipasok: sesuai kebutuhan/kontrak ______; satuan: kWh, liter, m³ atau satuan relevan ______."
+    ],
+    [
+     "Metode penyaluran",
+     "☐ Jaringan listrik ☐ Pipa ☐ Truk tangki ☐ Truk ☐ Lainnya: ______"
+    ],
+    [
+     "Periode pasokan",
+     "☐ Kuartalan ☐ Bulanan ☐ Mingguan ☐ Harian ☐ Berkelanjutan ☐ Lainnya: ______"
+    ],
+    [
+     "Persyaratan mutu energi",
+     "Tetapkan karakteristik yang dibutuhkan untuk operasi fasilitas dan peralatan. Untuk listrik, pertimbangkan tegangan, arus, kualitas daya, frekuensi dan durasi gangguan. Untuk bahan bakar, pertimbangkan nilai energi dan parameter mutu relevan."
+    ],
+    [
+     "Persyaratan kualitas khusus",
+     ""
+    ],
+    [
+     "Dasar harga",
+     "☐ Tarif yang dipublikasikan ☐ Tarif waktu pemakaian ☐ Harga pasar ☐ Harga tetap ☐ Biaya distribusi/transportasi ☐ Lainnya: ______"
+    ],
+    [
+     "Komponen penentuan biaya total",
+     "☐ Konsumsi energi ☐ Biaya beban/daya ☐ Volume/massa konsumsi ☐ Volume pengiriman ☐ Lainnya: ______"
+    ],
+    [
+     "Persyaratan lain termasuk hukum/regulasi",
+     ""
+    ],
+    [
+     "Periode kontrak",
+     "Mulai: __________ Berakhir: __________. Sebelum perpanjangan, spesifikasi ditinjau dan direvisi sesuai kebutuhan operasi."
+    ],
+    [
+     "Metode dan lokasi tagihan",
+     "Metode: ☐ Kertas ☐ Elektronik ☐ Lainnya: ______. Lokasi: ☐ Kantor fasilitas ☐ Kantor divisi ☐ Kantor pusat ☐ Lainnya: ______"
+    ],
+    [
+     "Interval tagihan",
+     "☐ Harian ☐ Mingguan ☐ Bulanan ☐ Saat pengiriman ☐ Lainnya: ______"
+    ],
+    [
+     "Pemeriksa dan pemberi persetujuan pembayaran",
+     "☐ Pengadaan ☐ Penerima barang/jasa ☐ Operasi ☐ Manajemen ☐ Lainnya: ______"
+    ],
+    [
+     "Metode pembayaran",
+     "☐ Cek ☐ Instrumen bank ☐ Transfer dana elektronik ☐ Kredit ☐ Lainnya: ______"
+    ]
+   ]
+  }
+ ],
+ "ttd": [
+  {
+   "peran": "Disiapkan oleh",
+   "jabatan": "Dokumen Kontrol"
+  },
+  {
+   "peran": "Ditinjau oleh",
+   "jabatan": "Management Representative"
+  },
+  {
+   "peran": "Disetujui oleh",
+   "jabatan": "Direktur"
+  }
+ ],
+ "sumber": "8.3 Pengadaan/001_ Formulir Pertimbangan Energi dalam Pengadaan.docx",
+ "nomor": "001/SOP-019/KINRA/SMEn/X/2026"
+}

@@ -1,0 +1,224 @@
+{
+ "kode": "rencana-audit-internal",
+ "klausul": [
+  "9.2"
+ ],
+ "judul": "Rencana (Jadwal) Audit Internal",
+ "subjudul": "Sistem Manajemen Energi – SMEn",
+ "kepala": [
+  {
+   "label": "No. Formulir",
+   "nilai": "004/ FRM-SOP-022/KINRA/SMEn/X/2026"
+  },
+  {
+   "label": "Revisi",
+   "nilai": "00"
+  },
+  {
+   "label": "Tanggal",
+   "nilai": "22 Oktober 2026"
+  }
+ ],
+ "blok": [
+  {
+   "jenis": "isian",
+   "id": "standar",
+   "label": "Sistem manajemen energi",
+   "teks": "ISO 50001:2018"
+  },
+  {
+   "jenis": "isian",
+   "id": "tanggal",
+   "label": "Tanggal audit",
+   "teks": "6, 12, 13 November 2026"
+  },
+  {
+   "jenis": "isian",
+   "id": "koordinator",
+   "label": "Koordinator audit",
+   "teks": "Lidwina Vidya Arambuana"
+  },
+  {
+   "jenis": "isian",
+   "id": "auditor",
+   "label": "Para auditor",
+   "teks": "Jeri Azwan, Pindi Filsa dan Fazar Anggita"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t1",
+   "kolom": [
+    {
+     "label": "No."
+    },
+    {
+     "label": "Fungsi/Proses yang Diaudit"
+    },
+    {
+     "label": "Klausul pada Kriteria Audit"
+    },
+    {
+     "label": "Auditee"
+    },
+    {
+     "label": "Tanggal"
+    },
+    {
+     "label": "Jam"
+    },
+    {
+     "label": "Auditor"
+    }
+   ],
+   "baris": [
+    [
+     "1",
+     "Opening Meeting",
+     "--",
+     "Top Manajemen, Ka. Bagian, Auditor & Tim ISO",
+     "6 November 2026",
+     "13.30 – 13.45",
+     "Vidya, Jeri Azwan, Pindi Filsa, Fazar A."
+    ],
+    [
+     "2",
+     "Manajemen Puncak",
+     "5.1, 5.2, 5.3, 6.2, 7.1, 9.3, 10.1",
+     "Top Manajemen",
+     "6 November 2026",
+     "13.45 – 14.00",
+     "Vidya, Jeri Azwan"
+    ],
+    [
+     "3",
+     "Steering Committee/MR",
+     "4.1,4.2,4.3,4.4,5.1, 5.3, 6.2, 7.1, 9.3, 10.1",
+     "MR",
+     "6 November 2026",
+     "14.30 – 15.00",
+     "Jeri Azwan, Fazar A."
+    ],
+    [
+     "4",
+     "Sekretaris/Dokumen Kontrol (SMEn)",
+     "7.5, 7.4, 9.2, 10.2",
+     "Dokumen Kontrol",
+     "6 November 2026",
+     "15.00 – 15.30",
+     "Jeri Azwan, Fazar A."
+    ],
+    [
+     "5",
+     "Manajer Energi/Koordinator Energi",
+     "4.3, 4.4, 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 7.2, 7.3, 7.4, 8.1, 8.2, 9.1, 9.2, 9.3, 10.1, 10.2",
+     "Koordinator Energi",
+     "6 November 2026",
+     "15.30 – 16.00",
+     "Vidya, Pindi Filsa"
+    ],
+    [
+     "6",
+     "Satuan Pengawas Internal (SPI)",
+     "9.2, 9.1, 10.2",
+     "Kepala SPI",
+     "10 November 2026",
+     "13.00 – 13.45",
+     "Vidya, Pindi Filsa"
+    ],
+    [
+     "7",
+     "Bagian Sekretariat Perusahaan, Hukum & Tanggung Jawab Sosial Perusahaan",
+     "4.1, 4.2, 6.1, 7.4, 7.5, 8.1",
+     "Kepala Bagian Sekretariat Perusahaan, Hukum & Tanggung Jawab Sosial Perusahaan",
+     "10 November 2026",
+     "13.45 – 14.30",
+     "Vidya, Jeri Azwan"
+    ],
+    [
+     "8",
+     "Bagian Akuntansi & Keuangan",
+     "6.2, 7.1, 7.5, 8.1, 9.1, 9.3",
+     "Kepala Bagian Akuntansi & Keuangan",
+     "10 November 2026",
+     "14.30 – 15.15",
+     "Pindi Filsa, Fazar A."
+    ],
+    [
+     "9",
+     "Bagian Sumber Daya Manusia, Umum & Pengadaan",
+     "7.1, 7.2, 7.3, 7.4, 8.1, 8.3, 8.4",
+     "Kepala Bagian Sumber Daya Manusia, Umum & Pengadaan",
+     "10 November 2026",
+     "15.15 – 16.00",
+     "Vidya, Pindi Filsa"
+    ],
+    [
+     "10",
+     "Bagian Manajemen Risiko & TI",
+     "4.1, 4.2, 6.1, 6.6, 7.5, 8.1, 9.1, 10.1",
+     "Kepala Bagian Manajemen Risiko & TI",
+     "12 November 2026",
+     "13.00 – 13.45",
+     "Jeri Azwan, Fazar A."
+    ],
+    [
+     "11",
+     "Bagian Pengembangan",
+     "6.3, 8.1, 8.2, 8.3, 8.4",
+     "Kepala Bagian Pengembangan",
+     "12 November 2026",
+     "13.45 – 14.30",
+     "Vidya, Jeri Azwan"
+    ],
+    [
+     "12",
+     "Bagian Pemasaran & Penjualan",
+     "4.2, 7.4, 8.1",
+     "Kepala Bagian Pemasaran & Penjualan",
+     "12 November 2026",
+     "14.30 – 15.15",
+     "Pindi Filsa, Fazar A."
+    ],
+    [
+     "13",
+     "Bagian Produksi Kawasan",
+     "6.3, 6.6, 8.1, 8.2, 9.1",
+     "Kepala Bagian Produksi Kawasan",
+     "13 November 2026",
+     "14.00 – 15.00",
+     "Vidya, Jeri Azwan"
+    ],
+    [
+     "14",
+     "Bagian Mekanikal & Elektrikal, Fasilitas, dan Pengamanan",
+     "6.3, 6.6, 7.1, 7.2, 7.5, 8.1, 8.2, 8.3, 8.4, 9.1",
+     "Kepala Bagian Mekanikal & Elektrikal, Fasilitas, dan Pengamanan",
+     "13 November 2026",
+     "15.00 – 16.00",
+     "Pindi Filsa, Fazar A."
+    ],
+    [
+     "15",
+     "Closing Meeting",
+     "--",
+     "Top Manajemen, Ka. Bagian, Auditor & Tim ISO",
+     "13 November 2026",
+     "16.00 – 16.30",
+     "Vidya, Jeri Azwan, Pindi Filsa, Fazar A."
+    ]
+   ]
+  }
+ ],
+ "ttd": [
+  {
+   "peran": "Disusun oleh",
+   "jabatan": "Lead Auditor"
+  },
+  {
+   "peran": "Disahkan oleh",
+   "jabatan": "Management Representative"
+  }
+ ],
+ "sumber": "9.2 Audit Internal/9.2 Audit Internal (KINRA-02.11.26)/04-Formulir Rencana Audit Internal Rev.0 011126.docx",
+ "nomor": "004/ FRM-SOP-022/KINRA/SMEn/X/2026"
+}

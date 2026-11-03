@@ -1,4 +1,4 @@
-import { Plus } from 'lucide-react'
+import { FileText, Plus } from 'lucide-react'
 import Link from 'next/link'
 import { SectionHead } from '@/components/SectionHead'
 import { boleh } from '@/lib/akses'
@@ -27,6 +27,7 @@ export default async function Kesiapan({ searchParams }: { searchParams: Promise
           </p>
         </SectionHead>
         <div className="toolbar">
+          <Link className="btn" href="/kesiapan/cetak"><FileText aria-hidden="true" /><span className="teks">Cetak laporan</span></Link>
           {boleh(saya?.peran, 'dokumen.tambah') && <Link className="btn utama" href="/dokumen/baru"><Plus aria-hidden="true" /><span className="teks">Tambah dokumen</span></Link>}
         </div>
       </div>

@@ -1,0 +1,386 @@
+{
+ "kode": "peluang-peningkatan",
+ "klausul": [
+  "6.1"
+ ],
+ "judul": "Peluang Peningkatan Kinerja Energi (Metode & Register)",
+ "subjudul": "Sistem Manajemen Energi ISO 50001:2018 – PT Kawasan Industri Nusantara (KINRA)",
+ "kepala": [
+  {
+   "label": "Nomor Dokumen",
+   "nilai": "002/SOP-007/KINRA/SMEn/X/2026"
+  },
+  {
+   "label": "Revisi",
+   "nilai": "0"
+  },
+  {
+   "label": "Tanggal Berlaku",
+   "nilai": "22 Oktober 2026"
+  },
+  {
+   "label": "Bagian",
+   "nilai": "Manajemen Risiko & TI"
+  },
+  {
+   "label": "Sub Bagian",
+   "nilai": "Manajemen Risiko"
+  },
+  {
+   "label": "Lokasi Penyimpanan",
+   "nilai": "Bagian Manajemen Risiko & TI"
+  }
+ ],
+ "blok": [
+  {
+   "jenis": "judul",
+   "teks": "1. Metode dan kriteria identifikasi serta prioritas peluang"
+  },
+  {
+   "jenis": "teks",
+   "id": "p1",
+   "teks": "Metode yang diusulkan: gunakan Register Peluang Peningkatan Kinerja Energi. Nilai setiap peluang dengan skala 1–5, dengan 1 = paling rendah dan 5 = paling tinggi. Gunakan dua kriteria inti seperti contoh sumber, yaitu potensi penghematan energi dan pengembalian investasi. Untuk konteks KINRA, kajian juga perlu mencatat kesesuaian dengan sasaran energi, kendala operasional, kebutuhan layanan, risiko, biaya modal, dan persyaratan persetujuan proyek."
+  },
+  {
+   "jenis": "tabel",
+   "id": "t1",
+   "kolom": [
+    {
+     "label": "Kriteria"
+    },
+    {
+     "label": "Panduan pemberian skor 1–5"
+    },
+    {
+     "label": "Bobot usulan"
+    },
+    {
+     "label": "Bukti yang dibutuhkan"
+    }
+   ],
+   "baris": [
+    [
+     "Potensi penghematan energi",
+     "1: sangat kecil/tidak terukur; 3: sedang dan dapat diperkirakan; 5: tinggi serta didukung pengukuran/perhitungan.",
+     "50%",
+     "Data baseline, perhitungan kWh/energi, asumsi, metode verifikasi."
+    ],
+    [
+     "Pengembalian investasi/kelayakan ekonomi",
+     "1: pengembalian rendah atau tidak layak; 3: menengah; 5: sangat menarik sesuai kriteria investasi KINRA.",
+     "50%",
+     "Estimasi biaya, penghematan biaya, masa pengembalian/analisis finansial."
+    ],
+    [
+     "Pemeriksaan kelayakan sebelum pemeringkatan",
+     "Pastikan peluang tidak melanggar persyaratan keselamatan, keandalan layanan, teknis, kontraktual, atau persyaratan hukum yang berlaku.",
+     "Syarat wajib",
+     "Kajian teknis, risiko, persetujuan pemilik proses, dan kebutuhan modal."
+    ]
+   ]
+  },
+  {
+   "jenis": "teks",
+   "id": "p2",
+   "teks": "Rumus skor rata-rata (metode contoh): Skor prioritas = (Skor potensi penghematan energi + Skor pengembalian investasi) / 2. Peluang dengan skor lebih tinggi diprioritaskan untuk kajian atau pelaksanaan. KINRA dapat menetapkan ambang prioritas dan bobot final melalui persetujuan internal. Skor tidak menggantikan kajian risiko, kelayakan teknis, dan persetujuan investasi."
+  },
+  {
+   "jenis": "judul",
+   "teks": "Pertimbangan dalam penetapan kriteria"
+  },
+  {
+   "jenis": "teks",
+   "id": "p3",
+   "teks": "Sasaran dan target energi yang telah ditetapkan KINRA."
+  },
+  {
+   "jenis": "teks",
+   "id": "p4",
+   "teks": "Perkiraan penghematan energi dari setiap peluang peningkatan."
+  },
+  {
+   "jenis": "teks",
+   "id": "p5",
+   "teks": "Kendala organisasi, termasuk kontinuitas layanan kawasan, sumber daya, waktu pelaksanaan, dan batas kendali terhadap fasilitas/tenant."
+  },
+  {
+   "jenis": "teks",
+   "id": "p6",
+   "teks": "Justifikasi belanja modal atau kriteria lain yang disyaratkan untuk persetujuan proyek."
+  },
+  {
+   "jenis": "judul",
+   "teks": "2. Register peluang peningkatan kinerja energi"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t2",
+   "kolom": [
+    {
+     "label": "ID"
+    },
+    {
+     "label": "Peluang peningkatan"
+    },
+    {
+     "label": "Variabel/data terkait"
+    },
+    {
+     "label": "Metode kajian/tindakan awal"
+    },
+    {
+     "label": "Pemilik usulan"
+    },
+    {
+     "label": "Penilaian prioritas"
+    },
+    {
+     "label": "Status"
+    }
+   ],
+   "baris": [
+    [
+     "P-01",
+     "Optimasi jadwal dan set point HVAC",
+     "Jam operasi, okupansi, cuaca, set point, kondisi filter",
+     "Analisis data operasi; uji pengaturan; verifikasi kenyamanan dan kinerja",
+     "Operasi Gedung/Pemeliharaan",
+     "Skor energi: __; ROI: __; rata-rata: __",
+     "Belum dinilai"
+    ],
+    [
+     "P-02",
+     "Penggantian lampu dengan LED dan/atau kontrol otomatis",
+     "Jam nyala, daya lampu, luas area, tingkat pencahayaan",
+     "Inventaris lampu; hitung beban dan biaya; uji coba pada area terpilih",
+     "Pengelola Fasilitas/Pengadaan",
+     "Skor energi: __; ROI: __; rata-rata: __",
+     "Belum dinilai"
+    ],
+    [
+     "P-03",
+     "Optimasi pompa dan sistem distribusi utilitas",
+     "Debit, tekanan, jam operasi, kebocoran, kondisi pompa",
+     "Ukur kondisi operasi; evaluasi kebocoran, kontrol, dan kesesuaian kapasitas",
+     "Operasi/Pemeliharaan",
+     "Skor energi: __; ROI: __; rata-rata: __",
+     "Belum dinilai"
+    ],
+    [
+     "P-04",
+     "Submeter untuk gedung, area, atau SEU prioritas",
+     "Konsumsi per area, variasi beban, ketersediaan meter",
+     "Analisis kebutuhan data dan biaya; tentukan titik ukur dan metode rekonsiliasi",
+     "Tim Energi/Operasi/Keuangan",
+     "Skor energi: __; ROI: __; rata-rata: __",
+     "Belum dinilai"
+    ],
+    [
+     "P-05",
+     "Peningkatan efisiensi sistem kelistrikan",
+     "Profil beban, faktor daya, kondisi trafo/panel, rugi-rugi",
+     "Kajian teknis oleh personel kompeten; verifikasi manfaat dan keselamatan",
+     "Operasi/Pemeliharaan",
+     "Skor energi: __; ROI: __; rata-rata: __",
+     "Belum dinilai"
+    ],
+    [
+     "P-06",
+     "Pemeliharaan preventif berbasis kondisi",
+     "Kondisi peralatan, alarm, kinerja, jadwal pemeliharaan",
+     "Tinjau riwayat gangguan; perbaiki frekuensi dan checklist pemeliharaan",
+     "Pemeliharaan",
+     "Skor energi: __; ROI: __; rata-rata: __",
+     "Belum dinilai"
+    ],
+    [
+     "P-07",
+     "Kriteria efisiensi energi dalam pengadaan/proyek",
+     "Spesifikasi, kapasitas, jam operasi, biaya siklus hidup",
+     "Masukkan persyaratan kinerja energi dalam spesifikasi dan evaluasi vendor",
+     "Pengadaan/Perencana Proyek",
+     "Skor energi: __; ROI: __; rata-rata: __",
+     "Belum dinilai"
+    ],
+    [
+     "P-08",
+     "Perilaku hemat energi di kantor dan fasilitas bersama",
+     "Jam penggunaan, beban siaga, kepatuhan prosedur",
+     "Sosialisasi, kampanye, umpan balik, dan pemantauan konsumsi",
+     "HR/Tim Energi/Unit terkait",
+     "Skor energi: __; ROI: __; rata-rata: __",
+     "Belum dinilai"
+    ],
+    [
+     "P-09",
+     "Koordinasi data dan efisiensi dengan tenant/pihak ketiga",
+     "Batas kendali, data energi, kontrak, layanan bersama",
+     "Tentukan mekanisme data dan peluang bersama dalam batas pengaruh KINRA",
+     "Pengelola Kawasan/Legal/Tim Energi",
+     "Skor energi: __; ROI: __; rata-rata: __",
+     "Belum dinilai"
+    ],
+    [
+     "P-10",
+     "Evaluasi energi untuk fasilitas luar ruang",
+     "Jam nyala, jenis lampu, luas/panjang area, kebutuhan keamanan",
+     "Survei penerangan; kaji kontrol waktu/sensor dan kecukupan pencahayaan",
+     "Operasi Kawasan/Pemeliharaan",
+     "Skor energi: __; ROI: __; rata-rata: __",
+     "Belum dinilai"
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "3. Pembaruan daftar peluang pada interval dan saat perubahan besar"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t3",
+   "kolom": [
+    {
+     "label": "Pemicu pembaruan"
+    },
+    {
+     "label": "Ketentuan yang diusulkan"
+    },
+    {
+     "label": "Rekaman/bukti"
+    }
+   ],
+   "baris": [
+    [
+     "Peninjauan berkala",
+     "Tinjau Register Peluang secara triwulanan oleh Tim Energi; frekuensi final ditetapkan KINRA. Evaluasi status, skor, estimasi penghematan, biaya, hambatan, dan keputusan.",
+     "Register bertanggal, notulen rapat, daftar tindakan."
+    ],
+    [
+     "Perubahan besar pada fasilitas/peralatan/sistem",
+     "Perbarui daftar ketika ada pembangunan/renovasi gedung, penggantian HVAC/pompa/trafo, perubahan jam operasi, perubahan kebutuhan layanan, atau sistem energi baru.",
+     "Kajian perubahan, data sebelum/sesudah, persetujuan proyek."
+    ],
+    [
+     "Hasil pemantauan energi atau audit",
+     "Tambahkan peluang yang ditemukan dari tren EnPI/EnB, inspeksi, audit, pemeliharaan, keluhan operasi, dan saran pegawai.",
+     "Laporan analisis, inspeksi, audit, saran, dan tindak lanjut."
+    ],
+    [
+     "Peluang selesai atau tidak dilanjutkan",
+     "Catat hasil aktual, penghematan terverifikasi bila tersedia, alasan penundaan/penolakan, serta pembelajaran untuk penilaian berikutnya.",
+     "Bukti pelaksanaan, verifikasi hasil, keputusan manajemen."
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "Daftar metode lain untuk mengidentifikasi peluang energi"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t4",
+   "kolom": [
+    {
+     "label": "Metode"
+    },
+    {
+     "label": "Kontak/sumber"
+    },
+    {
+     "label": "Hasil yang diharapkan"
+    },
+    {
+     "label": "Terakhir digunakan"
+    },
+    {
+     "label": "Penggunaan berikutnya"
+    }
+   ],
+   "baris": [
+    [
+     "Saran pegawai",
+     "Karyawan, formulir saran, survei, evaluasi kinerja",
+     "Efisiensi proses, pengurangan pemborosan energi, dan usulan perbaikan operasi.",
+     "Diisi KINRA",
+     "Tahunan/usulan"
+    ],
+    [
+     "Perwakilan penyedia utilitas",
+     "Kontak resmi penyedia listrik/utilitas",
+     "Informasi tarif dan insentif, teknologi, dan peluang pengelolaan beban.",
+     "Diisi KINRA",
+     "Berkala"
+    ],
+    [
+     "Teknisi servis peralatan/proses",
+     "Penyedia jasa pemeliharaan atau vendor",
+     "Rekomendasi operasi dan pemeliharaan untuk meningkatkan efisiensi.",
+     "Diisi KINRA",
+     "Berkala"
+    ],
+    [
+     "Dukungan teknis produsen peralatan",
+     "Pabrikan atau layanan teknis vendor",
+     "Kondisi operasi dan praktik pemeliharaan yang efisien.",
+     "Diisi KINRA",
+     "Berkala"
+    ],
+    [
+     "Asosiasi/standar industri",
+     "Asosiasi relevan dan sumber teknis yang kredibel",
+     "Indikator kinerja energi dan praktik operasi yang baik.",
+     "Diisi KINRA",
+     "Berkala"
+    ],
+    [
+     "Standar dan panduan peralatan",
+     "Vendor, asosiasi teknis, panduan produsen",
+     "Kondisi operasi dan pemeliharaan peralatan yang efisien.",
+     "Diisi KINRA",
+     "Saat pengadaan/tinjauan"
+    ],
+    [
+     "Pemetaan aliran nilai/proses",
+     "Tim operasi, pemeliharaan, dan perbaikan proses",
+     "Identifikasi pemborosan energi pada aliran proses dan peluang efisiensi.",
+     "Diisi KINRA",
+     "Saat kajian proses"
+    ],
+    [
+     "Metode Six Sigma/DMAIC",
+     "Tim peningkatan berkelanjutan atau pelatihan",
+     "Perbandingan proyek, analisis akar masalah, dan seleksi proyek perbaikan.",
+     "Diisi KINRA",
+     "Sesuai kebutuhan"
+    ],
+    [
+     "Sumber daya industri dan studi kasus",
+     "Publikasi teknis, lembaga riset, asosiasi energi",
+     "Ide peningkatan efisiensi yang dapat diuji kesesuaiannya pada KINRA.",
+     "Diisi KINRA",
+     "Berkala"
+    ]
+   ]
+  }
+ ],
+ "ttd": [
+  {
+   "peran": "Disiapkan oleh",
+   "jabatan": "Dokumen Kontrol"
+  },
+  {
+   "peran": "Ditinjau oleh",
+   "jabatan": "Management Representative"
+  },
+  {
+   "peran": "Disetujui oleh",
+   "jabatan": "Direktur"
+  }
+ ],
+ "sumber": "6.1 Tindakan untuk mengatasi risiko dan peluang/002_ Formulir Peluang Peningkatan Kinerja Energi.docx",
+ "nomor": "002/SOP-007/KINRA/SMEn/X/2026",
+ "tautan": {
+  "href": "/register",
+  "label": "Register Isu & Peluang"
+ }
+}

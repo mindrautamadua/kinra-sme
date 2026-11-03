@@ -2,7 +2,7 @@ import 'server-only'
 import { ambilDokumen, ambilIsu, ambilKegiatan, ambilKinerja, ambilKlausul, ambilPeluang, ambilSasaran, ambilTemuan, rekapEnergi } from './data'
 import { LABEL_METODE, ringkas } from './enpi'
 import { angka, hariIni, persen, tanggal } from './format'
-import { adaBukti, kesiapan, STATUS, terlambat, tingkatRisiko, TONGGAK } from './status'
+import { adaBukti, kesiapan, STATUS, terlambat, tingkatRisiko, tonggakDari } from './status'
 
 /** Ringkasan data dashboard dalam teks ringkas untuk instruksi sistem chatbot. Dibaca dengan sesi pengguna (RLS berlaku). */
 export async function konteksDashboard(): Promise<string> {
@@ -13,7 +13,7 @@ export async function konteksDashboard(): Promise<string> {
   const b: string[] = [`Tanggal hari ini: ${tanggal(kini, 'panjang')}.`]
 
   b.push('\n## Tonggak audit')
-  for (const t of TONGGAK) b.push(`- ${t.nama}: ${tanggal(t.tanggal, 'panjang')}`)
+  for (const t of tonggakDari(kegiatan)) b.push(`- ${t.nama}: ${tanggal(t.tanggal, 'panjang')}`)
 
   const siap = dokumen.filter((d) => d.status === 'final' || d.status === 'disetujui').length
   b.push(`\n## Kesiapan dokumen\nSkor berbobot ${persen(kesiapan(dokumen))} (dokumen tanpa berkas evidence dihitung 0); ${siap} dari ${dokumen.length} dokumen final/disetujui.`)

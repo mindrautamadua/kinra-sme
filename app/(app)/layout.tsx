@@ -15,7 +15,8 @@ import { Ungkap } from '@/components/Ungkap'
 import { boleh, LABEL_PERAN } from '@/lib/akses'
 import { hariIni, selisihHari, tanggal } from '@/lib/format'
 import { penggunaSaya } from '@/lib/sesi'
-import { TONGGAK } from '@/lib/status'
+import { ambilKegiatan } from '@/lib/data'
+import { tonggakDari } from '@/lib/status'
 import { db } from '@/lib/supabase'
 
 export default async function AppLayout({ children }: { children: ReactNode }) {
@@ -26,7 +27,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
   const ciut = (await cookies()).get('kinra_sidebar')?.value === 'ciut'
   const kini = hariIni()
   const { error: galatDb } = await (await db()).from('klausul').select('kode', { head: true, count: 'exact' })
-  const berikut = TONGGAK.filter((t) => t.tanggal >= kini).sort((a, b) => a.tanggal.localeCompare(b.tanggal))[0]
+  const berikut = tonggakDari(galatDb ? [] : await ambilKegiatan()).find((t) => t.tanggal >= kini)
 
   return (
     <PeranProvider peran={saya.peran}>

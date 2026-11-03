@@ -1,0 +1,148 @@
+{
+ "kode": "pihak-berkepentingan",
+ "klausul": [
+  "4.2"
+ ],
+ "judul": "Kebutuhan Pihak Berkepentingan",
+ "subjudul": "Penerapan ISO 50001:2018 – PT Kawasan Industri Nusantara (KINRA), KEK Sei Mangkei",
+ "kepala": [
+  {
+   "label": "Nomor Dokumen",
+   "nilai": "002/SOP-004/KINRA/SMEn/X/2026"
+  },
+  {
+   "label": "Revisi",
+   "nilai": "0"
+  },
+  {
+   "label": "Tanggal Berlaku",
+   "nilai": "22 Oktober 2026"
+  },
+  {
+   "label": "Bagian",
+   "nilai": "Manajemen Risiko & TI"
+  },
+  {
+   "label": "Sub Bagian",
+   "nilai": "Manajemen Risiko"
+  },
+  {
+   "label": "Lokasi Penyimpanan",
+   "nilai": "Bagian Manajemen Risiko & TI"
+  }
+ ],
+ "blok": [
+  {
+   "jenis": "judul",
+   "teks": "Pihak Berkepentingan, Relevansi terhadap EnMS, serta Kebutuhan/Harapan"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t1",
+   "kolom": [
+    {
+     "label": "Pihak berkepentingan"
+    },
+    {
+     "label": "Relevansi terhadap EnMS"
+    },
+    {
+     "label": "Kebutuhan/harapan"
+    }
+   ],
+   "baris": [
+    [
+     "Manajemen puncak KINRA",
+     "Menetapkan arah, kebijakan, sasaran, sumber daya, dan keputusan terkait kinerja energi.",
+     "Kinerja energi membaik; biaya energi terkendali; risiko operasional dikelola; sasaran EnMS tercapai; tersedia laporan dan tinjauan berkala."
+    ],
+    [
+     "Pegawai dan pengelola fasilitas",
+     "Perilaku, kompetensi, serta operasi sehari-hari memengaruhi penggunaan energi.",
+     "Instruksi operasi jelas, pelatihan memadai, fasilitas kerja nyaman dan aman, serta tidak ada beban administrasi yang menghambat layanan penting."
+    ],
+    [
+     "Tenant/pelaku usaha kawasan",
+     "Aktivitas tenant dapat memengaruhi profil beban kawasan; pengaruh KINRA bergantung pada kontrak dan batas kendali.",
+     "Layanan kawasan andal, informasi yang transparan, biaya layanan yang wajar, koordinasi efisiensi energi, serta pembagian tanggung jawab yang jelas."
+    ],
+    [
+     "Pelanggan/pengguna layanan kawasan",
+     "Kualitas layanan dan keandalan fasilitas terkait dengan penggunaan energi.",
+     "Pelayanan berkelanjutan, fasilitas berfungsi, gangguan energi diminimalkan, dan penghematan tidak mengurangi mutu layanan."
+    ],
+    [
+     "Penyedia listrik dan energi lainnya",
+     "Pasokan, tarif, mutu energi, data tagihan, dan komunikasi gangguan memengaruhi EnMS.",
+     "Perencanaan kebutuhan energi yang baik, pembayaran sesuai ketentuan, komunikasi gangguan, data pemakaian akurat, dan koordinasi teknis."
+    ],
+    [
+     "Pemerintah/pengelola KEK dan otoritas terkait",
+     "Ketentuan kawasan, perizinan, pelaporan, dan kebijakan pemerintah dapat memengaruhi operasi dan energi.",
+     "Kepatuhan terhadap kewajiban yang berlaku, pelaporan benar, koordinasi, serta pengelolaan fasilitas sesuai persyaratan."
+    ],
+    [
+     "Instansi regulator dan pengawas energi/lingkungan",
+     "Persyaratan hukum terkait konservasi energi, bangunan, lingkungan, dan ketenagalistrikan dapat berlaku sesuai kondisi KINRA.",
+     "Kepatuhan, bukti terdokumentasi, akses pemeriksaan sesuai kewenangan, dan tindakan korektif atas temuan."
+    ],
+    [
+     "Kontraktor pemeliharaan dan penyedia jasa",
+     "Pekerjaan pemeliharaan, pengoperasian, dan modifikasi fasilitas berdampak pada konsumsi energi.",
+     "Spesifikasi dan prosedur yang jelas, koordinasi jadwal, kompetensi teknis, akses aman, serta kriteria kinerja energi yang relevan."
+    ],
+    [
+     "Pemasok peralatan dan material",
+     "Spesifikasi efisiensi energi, mutu, ketersediaan suku cadang, dan dukungan teknis memengaruhi kinerja sepanjang umur pakai.",
+     "Kriteria pengadaan jelas, data teknis akurat, layanan purna jual, dan pemenuhan persyaratan yang disepakati."
+    ],
+    [
+     "Pemilik/pengelola infrastruktur utilitas",
+     "Pengelolaan jaringan listrik, penerangan, HVAC, pompa, dan utilitas terkait berada dalam atau berbagi kendali operasional.",
+     "Batas tanggung jawab jelas, pemeliharaan terkoordinasi, data pemakaian tersedia, serta gangguan dan perubahan diinformasikan."
+    ],
+    [
+     "Lembaga sertifikasi/auditor eksternal",
+     "Menilai kesesuaian EnMS terhadap ISO 50001:2018 dalam lingkup sertifikasi.",
+     "Informasi terdokumentasi yang terkendali, bukti implementasi, akses audit, dan penyelesaian temuan."
+    ],
+    [
+     "Masyarakat sekitar dan pemangku kepentingan lokal",
+     "Keandalan infrastruktur, efisiensi sumber daya, dan dampak lingkungan operasi kawasan dapat menjadi perhatian.",
+     "Operasi bertanggung jawab, penggunaan energi yang efisien, komunikasi yang tepat, serta pengelolaan dampak sesuai kewajiban."
+    ],
+    [
+     "Lembaga pembiayaan/investor (jika relevan)",
+     "Investasi efisiensi energi memerlukan dasar manfaat, risiko, dan biaya siklus hidup.",
+     "Rencana investasi yang layak, data penghematan dapat diverifikasi, dan pengendalian risiko finansial."
+    ],
+    [
+     "Tim pengadaan dan perencana proyek",
+     "Keputusan desain, renovasi, pengadaan, dan penggantian peralatan dapat memengaruhi kinerja energi jangka panjang.",
+     "Kriteria energi dipertimbangkan sejak awal, persyaratan teknis jelas, dan hasil kinerja dapat diverifikasi."
+    ],
+    [
+     "Penyedia layanan darurat/teknis",
+     "Gangguan listrik atau kerusakan utilitas memerlukan respons terkoordinasi agar layanan penting tetap berjalan.",
+     "Kontak dan eskalasi jelas, prosedur respons tersedia, serta prioritas pemulihan fasilitas dipahami."
+    ]
+   ]
+  }
+ ],
+ "ttd": [
+  {
+   "peran": "Disiapkan oleh",
+   "jabatan": "Dokumen Kontrol"
+  },
+  {
+   "peran": "Ditinjau oleh",
+   "jabatan": "Management Representative"
+  },
+  {
+   "peran": "Disetujui oleh",
+   "jabatan": "Direktur"
+  }
+ ],
+ "sumber": "4.2 Memahami Kebutuhan Pihak Berkepentingan/002_ Formulir Pihak Berkepentingan .docx",
+ "nomor": "002/SOP-004/KINRA/SMEn/X/2026"
+}

@@ -1,0 +1,668 @@
+{
+ "kode": "pemantauan-pengukuran",
+ "klausul": [
+  "9.1"
+ ],
+ "judul": "Pemantauan dan Pengukuran Kinerja Energi",
+ "subjudul": "PT Kawasan Industri Nusantara (KINRA)",
+ "kepala": [
+  {
+   "label": "Nomor Dokumen",
+   "nilai": "001/SOP-019/KINRA/SMEn/X/2026"
+  },
+  {
+   "label": "Revisi",
+   "nilai": "0"
+  },
+  {
+   "label": "Tanggal Berlaku",
+   "nilai": "22 Oktober 2026"
+  },
+  {
+   "label": "Bagian",
+   "nilai": "Mekanikal & Elektrikal, Fasilitas, dan Pengamanan"
+  },
+  {
+   "label": "Sub Bagian",
+   "nilai": "Mekanikal & Elektrikal"
+  },
+  {
+   "label": "Lokasi Penyimpanan",
+   "nilai": "Bagian Mekanikal & Elektrikal, Fasilitas, dan Pengamanan"
+  }
+ ],
+ "blok": [
+  {
+   "jenis": "judul",
+   "teks": "Parameter yang dipantau dan diukur"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t1",
+   "kolom": [
+    {
+     "label": "Aktivitas/tugas sebelumnya"
+    },
+    {
+     "label": "Penerapan/bukti yang perlu disiapkan"
+    }
+   ],
+   "baris": [
+    [
+     "Pengumpulan dan analisis data energi: mengumpulkan serta menganalisis konsumsi menurut jenis energi dan data tinjauan energi untuk menentukan kinerja dan menyusun metrik EnPI/EnB.",
+     "Tinjauan energi, tagihan dan meter energi, data historis, profil penggunaan energi serta dasar perhitungan EnPI/EnB."
+    ],
+    [
+     "Rencana pengumpulan data energi: mengumpulkan variabel relevan SEU, konsumsi, kriteria operasi, faktor statis jika berlaku, dan data rencana tindakan.",
+     "Rencana pengumpulan data, sumber data, pemilik data, metode, frekuensi dan rekaman."
+    ],
+    [
+     "Penggunaan energi signifikan (SEU): analisis data untuk menentukan SEU, variabel relevan dan kinerja energi saat ini; menerapkan pemantauan terkait.",
+     "Daftar SEU yang telah disahkan melalui tinjauan energi; calon SEU dapat berupa tata udara, penerangan, pompa/utilitas, distribusi listrik atau fasilitas lain bila terbukti signifikan."
+    ],
+    [
+     "Indikator dan baseline kinerja energi (EnPI/EnB): pemantauan dan analisis indikator serta baseline telah diterapkan.",
+     "Daftar EnPI, rumus, unit, sumber data, baseline, periode baseline dan metode normalisasi bila relevan."
+    ],
+    [
+     "Tujuan dan sasaran energi: pemantauan tujuan dan target ditetapkan dan diterapkan.",
+     "Tujuan, sasaran, indikator, pemilik, jadwal, sumber daya dan status pencapaian."
+    ],
+    [
+     "Rencana tindakan peningkatan berkelanjutan: metode evaluasi hasil tindakan dan verifikasi peningkatan kinerja ditetapkan.",
+     "Rencana tindakan, bukti implementasi, metode verifikasi penghematan dan hasil aktual."
+    ]
+   ]
+  },
+  {
+   "jenis": "tabel",
+   "id": "t2",
+   "kolom": [
+    {
+     "label": "Pernyataan proses pemantauan kinerja energi"
+    },
+    {
+     "label": "Ketentuan/metode yang perlu ditetapkan"
+    }
+   ],
+   "baris": [
+    [
+     "Hal yang perlu dipantau dan diukur telah ditentukan.",
+     "Rujukan: tinjauan energi, EnPI/EnB, SEU dan rencana pengumpulan data."
+    ],
+    [
+     "Metode untuk memastikan hasil pemantauan, pengukuran, analisis dan evaluasi valid telah ditentukan.",
+     "Tetapkan metode ukur, pemeriksaan kualitas data, validasi, estimasi yang diperbolehkan dan penanganan data hilang."
+    ],
+    [
+     "Frekuensi pemantauan dan pengukuran telah ditentukan.",
+     "Tetapkan per metrik sesuai ketersediaan alat, risiko, tingkat penggunaan energi dan kebutuhan operasional."
+    ],
+    [
+     "Waktu analisis dan evaluasi hasil telah ditentukan.",
+     "Usulan awal: analisis data bulanan, tinjauan tren triwulanan, dan evaluasi saat terjadi perubahan signifikan; sesuaikan prosedur KINRA."
+    ],
+    [
+     "Efektivitas rencana tindakan dalam mencapai tujuan dan sasaran dipantau.",
+     "Bandingkan hasil aktual dengan hasil yang diharapkan dan verifikasi manfaat."
+    ],
+    [
+     "EnPI dipantau dan dianalisis.",
+     "Bandingkan nilai EnPI dengan EnB yang sesuai dan lakukan normalisasi jika diperlukan."
+    ],
+    [
+     "Operasi SEU dipantau.",
+     "Pantau konsumsi energi, variabel relevan dan kriteria operasi SEU."
+    ],
+    [
+     "Konsumsi aktual dibandingkan dengan konsumsi yang diharapkan.",
+     "Analisis selisih, penyebab dan kebutuhan tindakan korektif."
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "Metode pemantauan, pengukuran, analisis dan evaluasi"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t3",
+   "kolom": [
+    {
+     "label": "Pernyataan/aktivitas"
+    },
+    {
+     "label": "Metode dan waktu pelaksanaan yang direncanakan"
+    }
+   ],
+   "baris": [
+    [
+     "Konsumsi energi dipantau secara berkelanjutan dengan membandingkan konsumsi saat ini terhadap periode sebelumnya.",
+     "Gunakan meter, tagihan dan alat pengumpulan data. Rekap bulanan; tinjau tren triwulanan."
+    ],
+    [
+     "Data sebelum perubahan dicatat sebagai baseline.",
+     "Catat periode, kondisi operasi, variabel relevan dan sumber data sebelum perubahan."
+    ],
+    [
+     "Data setelah perubahan dibandingkan dengan baseline.",
+     "Gunakan batas sistem, satuan, periode dan metode perhitungan yang konsisten; jelaskan penyesuaian/normalisasi."
+    ],
+    [
+     "Kondisi operasi normal dan faktor yang memengaruhi kinerja energi dipertimbangkan.",
+     "Catat perubahan jam operasi, luas area aktif, tingkat pemanfaatan, cuaca atau variabel lain yang relevan."
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "Matriks pengelolaan pengumpulan data"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t4",
+   "kolom": [
+    {
+     "label": "Data"
+    },
+    {
+     "label": "Sumber data"
+    },
+    {
+     "label": "Lokasi penyimpanan data"
+    },
+    {
+     "label": "Pengumpulan oleh"
+    },
+    {
+     "label": "Metode pencatatan"
+    },
+    {
+     "label": "Frekuensi usulan"
+    },
+    {
+     "label": "Keterangan"
+    }
+   ],
+   "baris": [
+    [
+     "Konsumsi listrik",
+     "Meter utilitas listrik/meter utama/submeter bila tersedia",
+     "Repositori EnMS; unit Teknik/Fasilitas",
+     "Teknik/Fasilitas",
+     "Otomatis bila tersedia; jika manual gunakan log pembacaan",
+     "Per jam bila sistem mendukung; rekap bulanan",
+     ""
+    ],
+    [
+     "Konsumsi air (sebagai data pendukung bila relevan terhadap energi/utilitas)",
+     "Meter utilitas air",
+     "Repositori EnMS; unit Operasi/Fasilitas",
+     "Operasi/Fasilitas",
+     "Otomatis atau log manual",
+     "Per jam bila tersedia; rekap bulanan",
+     ""
+    ],
+    [
+     "Penggunaan dan biaya listrik",
+     "Tagihan listrik dan data meter",
+     "Repositori EnMS; Keuangan/Procurement dan Teknik",
+     "Keuangan/Procurement bersama Teknik",
+     "Pencatatan tagihan dan rekonsiliasi meter",
+     "Setiap tagihan; rekap bulanan",
+     ""
+    ],
+    [
+     "Penggunaan dan biaya energi lain (jika digunakan)",
+     "Tagihan, catatan pasokan/pengisian, meter dan log operasi",
+     "Repositori EnMS; unit pemilik energi",
+     "Unit pemilik data/Keuangan",
+     "Catatan transaksi dan rekonsiliasi",
+     "Setiap transaksi; rekap bulanan",
+     ""
+    ],
+    [
+     "Data SEU dan variabel relevan",
+     "Submeter, BMS, log operasi, jam operasi, data fasilitas",
+     "Repositori EnMS/unit pemilik SEU",
+     "Pemilik SEU",
+     "Otomatis atau formulir operasi terkontrol",
+     "Harian/per jam bila tersedia; analisis bulanan",
+     ""
+    ],
+    [
+     "Nilai EnPI dan EnB",
+     "Data konsumsi, variabel relevan dan lembar kalkulasi",
+     "Repositori EnMS/Tim Energi",
+     "Tim Energi",
+     "Perhitungan terdokumentasi dan diperiksa",
+     "Bulanan/triwulanan sesuai metrik",
+     ""
+    ],
+    [
+     "Penyelesaian rencana tindakan dan proyek peningkatan",
+     "Laporan proyek, bukti teknis, data sebelum-sesudah",
+     "Repositori EnMS/unit pelaksana",
+     "Pemilik tindakan/Tim Energi",
+     "Formulir status tindakan dan verifikasi",
+     "Bulanan/triwulanan dan setelah proyek",
+     ""
+    ],
+    [
+     "Data tambahan: __________",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "Evaluasi kinerja energi dengan membandingkan EnPI terhadap EnB"
+  },
+  {
+   "jenis": "judul",
+   "teks": "4.1 Efektivitas rencana tindakan dalam mencapai tujuan dan sasaran energi"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t5",
+   "kolom": [
+    {
+     "label": "Pemeriksaan"
+    },
+    {
+     "label": "Metode evaluasi dan tindakan"
+    }
+   ],
+   "baris": [
+    [
+     "Rencana tindakan dianalisis untuk menilai apakah pendekatan yang efektif dapat diterapkan pada proses/area lain.",
+     "Usulan: evaluasi triwulanan; dokumentasikan dasar replikasi, batas penerapan dan risiko."
+    ],
+    [
+     "Proyek yang tidak mencapai target energi dianalisis untuk menentukan penyebab kekurangan dan tindak lanjut.",
+     "Catat target, hasil aktual, selisih, akar penyebab, tindakan, pemilik dan tenggat."
+    ],
+    [
+     "Rencana tindakan yang tidak menghasilkan hasil yang dimaksud dimodifikasi bila diperlukan.",
+     "Indikasi ketidakefektifan: tujuan/target tidak tercapai; tenggat terlewat; personel tidak tersedia; anggaran tidak cukup; teknologi tidak memadai; atau prioritas berubah."
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "4.2 Indikator kinerja energi (EnPI)"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t6",
+   "kolom": [
+    {
+     "label": "Pemeriksaan"
+    },
+    {
+     "label": "Metode evaluasi"
+    }
+   ],
+   "baris": [
+    [
+     "Nilai EnPI dibandingkan dengan EnB yang sesuai.",
+     "Usulan: ditinjau bulanan sesuai ketersediaan data. Pastikan rumus, unit, batas sistem dan normalisasi konsisten."
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "4.3 Operasi penggunaan energi signifikan (SEU)"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t7",
+   "kolom": [
+    {
+     "label": "Pemeriksaan"
+    },
+    {
+     "label": "Metode evaluasi"
+    }
+   ],
+   "baris": [
+    [
+     "Data variabel relevan SEU, konsumsi energi SEU dan kriteria operasi dikumpulkan sebagai bagian rencana data energi.",
+     "Usulan: kumpulkan minimal bulanan; frekuensi lebih tinggi bila sistem tersedia atau diperlukan untuk pengendalian operasi."
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "4.4 Konsumsi energi aktual dibandingkan dengan yang diharapkan"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t8",
+   "kolom": [
+    {
+     "label": "Pemeriksaan"
+    },
+    {
+     "label": "Metode evaluasi"
+    }
+   ],
+   "baris": [
+    [
+     "Varians antara hasil aktual dan hasil yang diharapkan dari rencana tindakan dianalisis untuk mengidentifikasi peluang peningkatan atau masalah.",
+     "Usulan: tinjau triwulanan dan saat penyimpangan signifikan terdeteksi."
+    ],
+    [
+     "Estimasi ditinjau dan diperbarui secara berkala serta ketika terjadi perubahan besar pada fasilitas, peralatan, sistem atau proses.",
+     "Usulan: tinjau triwulanan dan setelah perubahan sistem/fasilitas yang signifikan. Dokumentasikan dasar revisi estimasi."
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "Kriteria dan metode identifikasi penyimpangan kinerja energi yang signifikan"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t9",
+   "kolom": [
+    {
+     "label": "Metrik/objek"
+    },
+    {
+     "label": "Kriteria penyimpangan yang perlu ditetapkan"
+    },
+    {
+     "label": "Ambang/batas"
+    },
+    {
+     "label": "Metode identifikasi"
+    },
+    {
+     "label": "Penanggung jawab"
+    }
+   ],
+   "baris": [
+    [
+     "EnPI listrik total",
+     "Variasi terhadap EnB/target, tren naik tidak wajar atau nilai di luar batas kendali.",
+     "",
+     "Analisis bulanan, grafik tren dan perbandingan dengan baseline.",
+     "Tim Energi/Keuangan"
+    ],
+    [
+     "EnPI tata udara/AC (jika SEU)",
+     "Variasi konsumsi setelah memperhitungkan jam operasi, suhu/set point dan beban relevan.",
+     "",
+     "Data submeter/BMS, log operasi dan perbandingan baseline.",
+     "Teknik/Fasilitas"
+    ],
+    [
+     "EnPI pompa/utilitas (jika SEU)",
+     "Perubahan konsumsi per volume layanan/jam operasi atau perubahan efisiensi.",
+     "",
+     "Meter energi, log operasi, debit/volume dan analisis tren.",
+     "Operasi/Fasilitas"
+    ],
+    [
+     "EnPI penerangan/fasilitas umum (jika relevan)",
+     "Konsumsi menyimpang dari rencana, perubahan jam nyala atau target tidak tercapai.",
+     "",
+     "Meter/tagihan, inventaris peralatan dan jadwal operasi.",
+     "Teknik/Fasilitas"
+    ],
+    [
+     "Penyelesaian rencana tindakan",
+     "Target tidak tercapai, jadwal tertunda, biaya/sumber daya tidak tersedia atau hasil tidak efektif.",
+     "",
+     "Tinjauan status proyek dan verifikasi hasil.",
+     "Pemilik tindakan/Tim Energi"
+    ],
+    [
+     "Metrik lain: __________",
+     "",
+     "",
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "jenis": "tabel",
+   "id": "t10",
+   "kolom": [
+    {
+     "label": "Penetapan kriteria"
+    },
+    {
+     "label": "Ketentuan"
+    }
+   ],
+   "baris": [
+    [
+     "Kriteria untuk menentukan penyimpangan yang dapat diterima/tidak dapat diterima telah ditetapkan untuk tiap metrik.",
+     "Dokumentasikan nilai ambang, dasar penetapan, arah variasi, periode pembanding dan pihak yang berwenang."
+    ],
+    [
+     "Penyimpangan positif maupun negatif diselidiki bila melewati ambang yang ditetapkan.",
+     "Ambang usulan untuk diputuskan: variasi absolut >10% dari nilai pembanding, atau batas spesifik metrik jika lebih tepat: ________."
+    ],
+    [
+     "Metode untuk mengidentifikasi, menetapkan dan menyelidiki penyimpangan tersedia.",
+     "Gunakan laporan penyimpangan, validasi data, analisis akar penyebab dan keputusan tindak lanjut."
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "Proses investigasi, respons dan penyimpanan rekaman"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t11",
+   "kolom": [
+    {
+     "label": "Pernyataan/persyaratan"
+    },
+    {
+     "label": "Pelaksanaan/bukti yang diperlukan"
+    }
+   ],
+   "baris": [
+    [
+     "KINRA menyelidiki dan merespons penyimpangan signifikan.",
+     "Laporan penyimpangan, pemeriksaan validitas data, analisis akar penyebab, tindakan dan penanggung jawab."
+    ],
+    [
+     "Proses tindakan korektif digunakan untuk menangani penyimpangan signifikan.",
+     "Gunakan checklist tindakan korektif; tetapkan tenggat dan verifikasi efektivitas."
+    ],
+    [
+     "Investigasi mempertimbangkan operasi normal, penggunaan/konsumsi energi yang diharapkan setelah perubahan proses dan penerapan peluang peningkatan.",
+     "Evaluasi perubahan operasi, fasilitas, peralatan, proses dan proyek peningkatan."
+    ],
+    [
+     "Keputusan untuk tidak mengambil tindakan tetap didokumentasikan dan memiliki alasan yang dapat dipertanggungjawabkan.",
+     "Contoh alasan dari sumber: kejadian satu kali; hasil peningkatan yang akan bertahan; perubahan proses; kesalahan matematis; biaya perbaikan terlalu tinggi; atau teknologi belum tersedia. Dokumentasikan analisis dan persetujuan."
+    ],
+    [
+     "Rekaman seluruh penetapan, tindakan dan keputusan untuk tidak bertindak disimpan.",
+     "Lokasi rekaman yang diusulkan: repositori EnMS terkendali, dikelola Tim Energi bersama unit pemilik data."
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "Rekaman investigasi dan respons"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t12",
+   "kolom": [
+    {
+     "label": "Elemen rekaman"
+    },
+    {
+     "label": "Perlu dicatat"
+    },
+    {
+     "label": "Rincian"
+    }
+   ],
+   "baris": [
+    [
+     "Tanggung jawab",
+     "",
+     "Nama/jabatan pemilik penyimpangan dan pihak yang menyetujui keputusan."
+    ],
+    [
+     "Jangka waktu",
+     "",
+     "Tanggal ditemukan, tenggat investigasi, tanggal tindakan dan tanggal penutupan."
+    ],
+    [
+     "Aktivitas yang dilakukan",
+     "",
+     "Pemeriksaan, validasi, analisis akar penyebab dan tindakan."
+    ],
+    [
+     "Sumber daya yang dikonsultasikan",
+     "",
+     "Personel, dokumen teknis, pemasok atau sumber data yang digunakan."
+    ],
+    [
+     "Peralatan/meter yang digunakan",
+     "",
+     "Identitas alat, status verifikasi/kalibrasi bila relevan dan sumber data."
+    ],
+    [
+     "Analisis yang dilakukan dan hasilnya",
+     "",
+     "Data pembanding, metode, hasil perhitungan dan simpulan."
+    ],
+    [
+     "Respons/tindakan yang diambil",
+     "",
+     "Tindakan korektif, pengendalian sementara atau alasan tidak bertindak."
+    ],
+    [
+     "Efektivitas respons",
+     "",
+     "Verifikasi pascatindakan dan bukti penyimpangan tidak berulang/terkendali."
+    ],
+    [
+     "Informasi lain",
+     "",
+     "Foto, grafik tren, tiket pemeliharaan, persetujuan atau lampiran pendukung."
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "Pelatihan personel terkait"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t13",
+   "kolom": [
+    {
+     "label": "Materi/kompetensi"
+    },
+    {
+     "label": "Sasaran peserta"
+    },
+    {
+     "label": "Metode/bukti"
+    },
+    {
+     "label": "Frekuensi/pemicu"
+    }
+   ],
+   "baris": [
+    [
+     "Mengenali penyimpangan EnPI dan konsumsi aktual terhadap baseline/target",
+     "Tim Energi, pemilik SEU, Teknik/Fasilitas dan Keuangan",
+     "Pelatihan, studi kasus, daftar hadir, evaluasi pemahaman",
+     "Saat penerapan awal, perubahan metode/indikator dan penyegaran sesuai kebutuhan"
+    ],
+    [
+     "Validasi data, pemeriksaan meter/log, dan eskalasi penyimpangan",
+     "Petugas pencatat data dan operator fasilitas",
+     "Instruksi kerja, demonstrasi, observasi kompetensi",
+     "Saat penugasan baru atau perubahan sistem"
+    ],
+    [
+     "Investigasi akar penyebab dan tindakan korektif",
+     "Pemilik SEU, supervisor dan personel pemeliharaan",
+     "Simulasi kasus, formulir investigasi dan bukti evaluasi",
+     "Berkala dan setelah temuan berulang"
+    ],
+    [
+     "Verifikasi efektivitas dan penyimpanan rekaman",
+     "Tim Energi, auditor internal terkait dan pemilik tindakan",
+     "Latihan evaluasi hasil, checklist dan pemeriksaan rekaman",
+     "Sesuai program EnMS/audit dan kebutuhan"
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "Daftar personel yang telah dilatih"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t14",
+   "kolom": [
+    {
+     "label": "Nama personel"
+    },
+    {
+     "label": "Departemen/unit"
+    },
+    {
+     "label": "Nama pelatih"
+    },
+    {
+     "label": "Tanggal pelatihan"
+    },
+    {
+     "label": "Materi dan hasil evaluasi"
+    }
+   ],
+   "baris": [
+    [
+     "",
+     "",
+     "",
+     "Ditinjau oleh:Management RepresentativeDisiapkan oleh:Dokumen KontrolDisetujui OlehDirektur Ditinjau oleh:Management RepresentativeDisiapkan oleh:Dokumen KontrolDisetujui OlehDirektur\nDitinjau oleh:\nManagement Representative\nDisiapkan oleh:\nDokumen Kontrol\nDisetujui Oleh\nDirektur\nDitinjau oleh:\nManagement Representative\nDisiapkan oleh:\nDokumen Kontrol\nDisetujui Oleh\nDirektur",
+     ""
+    ]
+   ]
+  }
+ ],
+ "ttd": [
+  {
+   "peran": "Disiapkan oleh",
+   "jabatan": "Dokumen Kontrol"
+  },
+  {
+   "peran": "Ditinjau oleh",
+   "jabatan": "Management Representative"
+  },
+  {
+   "peran": "Disetujui oleh",
+   "jabatan": "Direktur"
+  }
+ ],
+ "sumber": "9.1 Pemantauan, Pengukuran, Analisis, & Evaluasi Kinerja Energi & EnMS/001_Pemantauan Pengukuran Kinerja Energi Rev.0.docx",
+ "nomor": "001/SOP-019/KINRA/SMEn/X/2026",
+ "tautan": {
+  "href": "/kinerja",
+  "label": "Kinerja Energi"
+ }
+}

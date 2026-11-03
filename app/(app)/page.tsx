@@ -7,7 +7,7 @@ import { SectionHead } from '@/components/SectionHead'
 import { ambilDokumen, ambilKegiatan, ambilKinerja, ambilKlausul, ambilRiwayat, ambilTemuan, rekapEnergi } from '@/lib/data'
 import { LABEL_METODE, ringkas } from '@/lib/enpi'
 import { angka, BULAN, delta, hariIni, persen, selisihHari, tanggal, waktu } from '@/lib/format'
-import { adaBukti, hariWib, INDUK_KLAUSUL, kesiapan, KELOMPOK, STATUS, terlambat, trenKesiapan, TONGGAK, URUTAN_STATUS } from '@/lib/status'
+import { adaBukti, hariWib, kesiapan, kesiapanPerKlausul, KELOMPOK, STATUS, terlambat, tonggakDari, trenKesiapan, URUTAN_STATUS } from '@/lib/status'
 
 export const dynamic = 'force-dynamic'
 
@@ -20,7 +20,7 @@ export default async function Ringkasan() {
   const siap = dokumen.filter((d) => d.status === 'final' || d.status === 'disetujui').length
   const lewat = dokumen.filter((d) => terlambat(d, kini))
   const temuanBuka = temuan.filter((t) => t.status !== 'Tertutup')
-  const tonggak = TONGGAK.filter((t) => t.tanggal >= kini).sort((a, b) => a.tanggal.localeCompare(b.tanggal))
+  const tonggak = tonggakDari(kegiatan).filter((t) => t.tanggal >= kini)
   const berikut = tonggak[0]
 
   const perStatus = URUTAN_STATUS.map((s) => ({ s, n: dokumen.filter((d) => d.status === s).length }))
@@ -31,10 +31,7 @@ export default async function Ringkasan() {
     kumulatif += lebar
     return r
   })
-  const perKlausul = klausul.map((k) => {
-    const ds = dokumen.filter((d) => d.klausul_kode === k.kode)
-    return { ...k, n: ds.length, p: kesiapan(ds), lewat: ds.filter((d) => terlambat(d, kini)).length }
-  }).filter((k) => k.n > 0)
+  const perKlausul = kesiapanPerKlausul(dokumen, klausul, kini)
   const terlemah = [...perKlausul].sort((a, b) => a.p - b.p).slice(0, 3)
 
   const tenggatDekat = dokumen
@@ -115,7 +112,7 @@ export default async function Ringkasan() {
         <div className="ks-kepala">
           <SectionHead hero eyebrow="Kesiapan audit ISO 50001:2018" judul={<>Kesiapan dokumen <span className="ks-sorot">{persen(skor)}</span>: {siap} dari {dokumen.length} dokumen siap diaudit</>}>
             <p className="muted">
-              Skor berbobot dari status setiap dokumen dan rekaman (Belum 0 · Draft 25 · Review 50 · Disetujui 85 · Final 100). Dokumen tanpa berkas evidence dihitung 0.
+              Skor berbobot dari status setiap dokumen dan rekaman (Belum 0 · Draft 25 · Review 50 · Disetujui 85 · Final 100). Dokumen tanpa evidence (berkas atau isian formulir yang disetujui) dihitung 0.
               {berikut && <> {berikut.nama} dijadwalkan {tanggal(berikut.tanggal, 'panjang')}, {hBerikut} hari lagi.</>}
             </p>
           </SectionHead>
@@ -239,7 +236,7 @@ export default async function Ringkasan() {
             <span className="area"><Link2Off aria-hidden="true" />Evidence</span>
             <div className="angka tnum">{tanpaBukti} <small className="muted" style={{ fontSize: 14 }}>dokumen</small></div>
             <h3>{tanpaBukti ? 'Belum ada evidence' : 'Evidence lengkap'}</h3>
-            <p>{tanpaBukti ? `Auditor meminta bukti; ${persen((tanpaBukti / Math.max(1, dokumen.length)) * 100, 0)} dokumen belum punya berkas evidence.` : 'Setiap dokumen sudah punya evidence.'}</p>
+            <p>{tanpaBukti ? `Auditor meminta bukti; ${persen((tanpaBukti / Math.max(1, dokumen.length)) * 100, 0)} dokumen belum punya evidence.` : 'Setiap dokumen sudah punya evidence.'}</p>
           </Link>
           <Link href="/temuan" className={`insight ${mayor ? 'kritis' : temuanBuka.length ? 'perhatian' : 'positif'}`}>
             <span className="area"><SearchCheck aria-hidden="true" />Temuan audit</span>
@@ -295,27 +292,7 @@ export default async function Ringkasan() {
       </section>
 
       <section>
-        <SectionHead no="01" eyebrow="Per klausul" judul={`${perKlausul.filter((k) => k.p >= 100).length} dari ${perKlausul.length} klausul sudah lengkap`}>
-          <p className="muted">Klik klausul untuk melihat dokumennya. Klausul terlemah: {terlemah.map((k) => `${k.kode} (${persen(k.p, 0)})`).join(', ')}.</p>
-        </SectionHead>
-        <div className="card">
-          <div className="matrix">
-            {perKlausul.map((k, i) => (
-              <Link key={k.kode} href={`/kesiapan?klausul=${encodeURIComponent(k.kode)}`} className={k.p >= 70 ? 'terang' : undefined}
-                style={{ '--f': `${Math.round(k.p)}%`, '--i': i } as React.CSSProperties} aria-label={`Klausul ${k.kode} ${k.judul}: kesiapan ${Math.round(k.p)}%, ${k.n} dokumen`}>
-                <span className="k"><span>{k.kode === 'P' ? 'Persiapan' : k.kode}</span><span>{k.n} dok</span></span>
-                <span className="j">{k.judul}</span>
-                <span className="p">{persen(k.p, 0)}{k.lewat > 0 && ` · ${k.lewat} terlambat`}</span>
-              </Link>
-            ))}
-          </div>
-          <div className="legend-scale"><span>0%</span><i /><span>100% siap</span></div>
-          <p className="sumber">Kelompok klausul: {Object.entries(INDUK_KLAUSUL).filter(([k]) => k !== 'P').map(([k, v]) => `${k} ${v}`).join(' · ')}</p>
-        </div>
-      </section>
-
-      <section>
-        <SectionHead no="02" eyebrow="Agenda" judul={`${tenggatDekat.length} dokumen jatuh tempo dalam 10 hari`} />
+        <SectionHead no="01" eyebrow="Agenda" judul={`${tenggatDekat.length} dokumen jatuh tempo dalam 10 hari`} />
         <div className="grid-2">
           <div className="card">
             <div className="row"><div><h3>Tenggat terdekat</h3><p className="muted small">Belum final/disetujui, urut tenggat</p></div><Link className="btn kecil" href="/kesiapan">Semua dokumen</Link></div>
@@ -353,7 +330,7 @@ export default async function Ringkasan() {
       </section>
 
       <section>
-        <SectionHead no="03" eyebrow="Kinerja energi"
+        <SectionHead no="02" eyebrow="Kinerja energi"
           judul={`Konsumsi ${BULAN[0]}–${BULAN[blnAkhir - 1] ?? ''} ${thnAkhir}: ${angka(tjKini, 1)} TJ, ${delta(tjLalu ? ((tjKini - tjLalu) / tjLalu) * 100 : null)} dari ${thnAkhir - 1}`}>
           <p className="muted">Pangsa energi terbarukan (PLTBG + PLTS) {persen(pangsaEbt)}. Kenaikan didorong beban PLN kawasan yang bertambah.</p>
         </SectionHead>

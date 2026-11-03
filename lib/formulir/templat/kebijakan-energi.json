@@ -1,0 +1,106 @@
+{
+ "kode": "kebijakan-energi",
+ "klausul": [
+  "5.2"
+ ],
+ "judul": "Kebijakan Energi",
+ "subjudul": "Sistem Manajemen Energi ISO 50001:2018 – PT Kawasan Industri Nusantara (KINRA)",
+ "kepala": [
+  {
+   "label": "Nomor Dokumen",
+   "nilai": "001/SOP-005/KINRA/SMEn/X/2026"
+  },
+  {
+   "label": "Revisi",
+   "nilai": "0"
+  },
+  {
+   "label": "Tanggal Berlaku",
+   "nilai": "22 Oktober 2026"
+  },
+  {
+   "label": "Bagian",
+   "nilai": "Manajemen Risiko & TI"
+  },
+  {
+   "label": "Sub Bagian",
+   "nilai": "Manajemen Risiko"
+  },
+  {
+   "label": "Lokasi Penyimpanan",
+   "nilai": "Bagian Manajemen Risiko & TI"
+  }
+ ],
+ "blok": [
+  {
+   "jenis": "judul",
+   "teks": "KINRA berkomitmen untuk:"
+  },
+  {
+   "jenis": "teks",
+   "id": "p1",
+   "teks": "Menetapkan, melaksanakan, memelihara, dan meningkatkan Sistem Manajemen Energi sesuai dengan ruang lingkup dan kondisi operasional KINRA."
+  },
+  {
+   "jenis": "teks",
+   "id": "p2",
+   "teks": "Meningkatkan kinerja energi secara berkelanjutan, termasuk efisiensi penggunaan energi, pengurangan pemborosan, dan pengendalian konsumsi energi pada kegiatan yang berada dalam kendali atau dapat dipengaruhi KINRA."
+  },
+  {
+   "jenis": "teks",
+   "id": "p3",
+   "teks": "Menetapkan tujuan, target, program, indikator kinerja energi, dan dasar konsumsi energi yang relevan berdasarkan tinjauan energi serta data yang dapat dipertanggungjawabkan."
+  },
+  {
+   "jenis": "teks",
+   "id": "p4",
+   "teks": "Menyediakan informasi, data, kompetensi, teknologi, dan sumber daya yang diperlukan untuk mencapai tujuan dan target energi."
+  },
+  {
+   "jenis": "teks",
+   "id": "p5",
+   "teks": "Mematuhi peraturan perundang-undangan dan persyaratan lain yang berlaku terkait energi, efisiensi energi, serta penggunaan dan konsumsi energi dalam ruang lingkup penerapan EnMS."
+  },
+  {
+   "jenis": "teks",
+   "id": "p6",
+   "teks": "Mempertimbangkan peningkatan kinerja energi dalam perencanaan dan desain fasilitas, pengembangan atau renovasi infrastruktur, pengadaan peralatan, produk, dan jasa yang memengaruhi kinerja energi."
+  },
+  {
+   "jenis": "teks",
+   "id": "p7",
+   "teks": "Menerapkan pengendalian operasional, pemantauan, pengukuran, analisis, dan evaluasi penggunaan serta konsumsi energi, termasuk pada operasional gedung, sistem utilitas, pencahayaan, tata udara, dan fasilitas pendukung."
+  },
+  {
+   "jenis": "teks",
+   "id": "p8",
+   "teks": "Meningkatkan kompetensi dan kesadaran personel serta mendorong komunikasi dan partisipasi pihak terkait dalam mendukung kinerja energi."
+  },
+  {
+   "jenis": "teks",
+   "id": "p9",
+   "teks": "Melakukan evaluasi berkala terhadap konteks organisasi, risiko dan peluang, tinjauan energi, pencapaian target, audit internal, dan tinjauan manajemen untuk memastikan kesesuaian serta efektivitas EnMS."
+  },
+  {
+   "jenis": "teks",
+   "id": "p10",
+   "teks": "Melaksanakan tindakan korektif dan peningkatan berkelanjutan berdasarkan hasil pemantauan, evaluasi, audit, dan tinjauan manajemen."
+  }
+ ],
+ "ttd": [
+  {
+   "peran": "Disiapkan oleh",
+   "jabatan": "Dokumen Kontrol"
+  },
+  {
+   "peran": "Ditinjau oleh",
+   "jabatan": "Management Representative"
+  },
+  {
+   "peran": "Disetujui oleh",
+   "jabatan": "Direktur"
+  }
+ ],
+ "sumber": "5.2 Kebijakan Energi/001_ Formulir Kebijakan Energi.docx",
+ "nomor": "001/SOP-005/KINRA/SMEn/X/2026"
+}

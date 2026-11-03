@@ -1,4 +1,4 @@
-/** Matriks hak akses. Sinkron dengan policy RLS di supabase/migrations/0006_login_peran.sql, 0007, dan 0009. */
+/** Matriks hak akses. Sinkron dengan policy RLS di supabase/migrations/0006_login_peran.sql, 0007, 0009, dan 0011. */
 export type Peran = 'admin' | 'konsultan' | 'tim_kinra' | 'pembaca'
 
 export const LABEL_PERAN: Record<Peran, string> = { admin: 'Admin', konsultan: 'Konsultan', tim_kinra: 'Tim KINRA', pembaca: 'Pembaca' }
@@ -28,6 +28,9 @@ export const AKSES = {
   'temuan.ubah': SEMUA,
   'temuan.tutup': ['admin', 'konsultan'],
   'temuan.hapus': ['admin'],
+  'formulir.isi': SEMUA,                        // buat, isi, ajukan formulir
+  'formulir.setujui': ['admin', 'konsultan'],   // setujui / buka kembali formulir
+  'formulir.hapus': ['admin'],
   'pengguna.kelola': ['admin'],
 } satisfies Record<string, Peran[]>
 
@@ -40,7 +43,9 @@ export const LABEL_AKSI: Record<Aksi, string> = {
   'enpi.tambah': 'Tambah EnPI & variabel relevan', 'enpi.ubah': 'Ubah EnPI, baseline & variabel', 'enpi.hapus': 'Hapus EnPI & variabel',
   'sasaran.tambah': 'Tambah sasaran energi', 'sasaran.ubah': 'Ubah sasaran energi', 'aksi.ubah': 'Isi rencana aksi', 'sasaran.hapus': 'Hapus sasaran & aksi', 'kegiatan.ubah': 'Tandai kegiatan timeline',
   'register.ubah': 'Isi isu & peluang', 'register.hapus': 'Hapus isu', 'temuan.tambah': 'Catat temuan',
-  'temuan.ubah': 'Tindak lanjut temuan', 'temuan.tutup': 'Tutup temuan', 'temuan.hapus': 'Hapus temuan', 'pengguna.kelola': 'Kelola pengguna',
+  'temuan.ubah': 'Tindak lanjut temuan', 'temuan.tutup': 'Tutup temuan', 'temuan.hapus': 'Hapus temuan',
+  'formulir.isi': 'Isi & ajukan formulir', 'formulir.setujui': 'Setujui formulir', 'formulir.hapus': 'Hapus isian formulir',
+  'pengguna.kelola': 'Kelola pengguna',
 }
 
 export function boleh(peran: Peran | null | undefined, aksi: Aksi): boolean {

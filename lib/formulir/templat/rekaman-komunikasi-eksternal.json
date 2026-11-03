@@ -1,0 +1,98 @@
+{
+ "kode": "rekaman-komunikasi-eksternal",
+ "klausul": [
+  "7.4"
+ ],
+ "judul": "Rekaman Komunikasi Eksternal EnMS",
+ "subjudul": "Sistem Manajemen Energi ISO 50001:2018 — PT Kawasan Industri Nusantara (KINRA)",
+ "kepala": [
+  {
+   "label": "Nomor Dokumen",
+   "nilai": "001/SOP-017/KINRA/SMEn/X/2026"
+  },
+  {
+   "label": "Revisi",
+   "nilai": "0"
+  },
+  {
+   "label": "Tanggal Berlaku",
+   "nilai": "22 Oktober 2026"
+  },
+  {
+   "label": "Bagian",
+   "nilai": "Manajemen Risiko & TI"
+  },
+  {
+   "label": "Sub Bagian",
+   "nilai": "Manajemen Risiko"
+  },
+  {
+   "label": "Lokasi Penyimpanan",
+   "nilai": "Bagian Manajemen Risiko & TI"
+  }
+ ],
+ "blok": [
+  {
+   "jenis": "tabel",
+   "id": "t1",
+   "kolom": [
+    {
+     "label": "Elemen rekaman"
+    },
+    {
+     "label": "Isian"
+    }
+   ],
+   "baris": [
+    [
+     "Tanggal diterima / ditugaskan kepada",
+     "Tanggal: __________ / PIC: __________"
+    ],
+    [
+     "Nama pemohon / organisasi / kontak",
+     "Nama: __________ / Organisasi: __________ / Kontak: __________"
+    ],
+    [
+     "Informasi yang diminta",
+     ""
+    ],
+    [
+     "Ringkasan tanggapan dan lampiran",
+     ""
+    ],
+    [
+     "Tanggal tanggapan",
+     ""
+    ],
+    [
+     "Apakah tindak lanjut diperlukan?",
+     "☐ Ya ☐ Tidak. Jika ya, kapan: __________"
+    ],
+    [
+     "Uraian tindak lanjut yang diperlukan",
+     ""
+    ],
+    [
+     "Penanggung jawab tindak lanjut / tanggal selesai",
+     "PIC: __________ / Tanggal selesai: __________"
+    ]
+   ]
+  }
+ ],
+ "ttd": [
+  {
+   "peran": "Disiapkan oleh",
+   "jabatan": "Dokumen Kontrol"
+  },
+  {
+   "peran": "Ditinjau oleh",
+   "jabatan": "Management Representative"
+  },
+  {
+   "peran": "Disetujui oleh",
+   "jabatan": "Direktur"
+  }
+ ],
+ "sumber": "7.4 Komunikasi/003_Formulir Rekaman Komunikasi Eksternal.docx",
+ "nomor": "001/SOP-017/KINRA/SMEn/X/2026"
+}

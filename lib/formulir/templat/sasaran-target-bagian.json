@@ -1,0 +1,571 @@
+{
+ "kode": "sasaran-target-bagian",
+ "klausul": [
+  "6.2"
+ ],
+ "judul": "Objective dan Target per Bagian",
+ "subjudul": "Sasaran & target per bagian beserta pencapaian bulanan",
+ "kepala": [
+  {
+   "label": "Management System",
+   "nilai": "Sistem Manajemen Energi - ISO 50001:2018"
+  },
+  {
+   "label": "Nomor Dokumen",
+   "nilai": "001/SOP-008/KINRA/SMEn/X/2026"
+  },
+  {
+   "label": "Periode",
+   "nilai": ""
+  },
+  {
+   "label": "Perusahaan",
+   "nilai": "PT Kawasan Industri Nusantara (KINRA)"
+  },
+  {
+   "label": "Bagian",
+   "nilai": "ALL"
+  },
+  {
+   "label": "Sub Bagian",
+   "nilai": "ALL"
+  },
+  {
+   "label": "Lokasi Penyimpanan",
+   "nilai": "PT Kawasan Industri Nusantara (KINRA)"
+  },
+  {
+   "label": "Tanggal Pencapaian",
+   "nilai": ""
+  }
+ ],
+ "blok": [
+  {
+   "jenis": "teks",
+   "id": "p1",
+   "teks": "Isi kolom Pencapaian setiap bulan (Tercapai / Belum tercapai / keterangan progres). Buat isian baru per periode pemantauan."
+  },
+  {
+   "jenis": "tabel",
+   "id": "t1",
+   "kolom": [
+    {
+     "label": "No"
+    },
+    {
+     "label": "Aktivitas"
+    },
+    {
+     "label": "Aspek Energi"
+    },
+    {
+     "label": "Tujuan"
+    },
+    {
+     "label": "Target"
+    },
+    {
+     "label": "Program"
+    },
+    {
+     "label": "Pencapaian"
+    },
+    {
+     "label": "Batas Waktu"
+    },
+    {
+     "label": "PIC"
+    }
+   ],
+   "baris": [
+    [
+     "1",
+     "Sosialisasi Kebijakan Energi ISO 50001:2018",
+     "Pemahaman dan kesadaran energi",
+     "Meningkatkan pemahaman personel terhadap Kebijakan Energi",
+     "100% personel sasaran mengikuti sosialisasi dan minimal 90% memperoleh nilai tes ≥80",
+     "Sosialisasi, tes pemahaman, dan sosialisasi ulang",
+     "",
+     "Desember 2026",
+     "Tim SMEn dan seluruh kepala bagian terkait"
+    ],
+    [
+     "2",
+     "Pelatihan SOP Sistem Manajemen Energi",
+     "Kompetensi penerapan SOP energi",
+     "Memastikan personel memahami SOP sesuai tugasnya",
+     "100% personel terkait mengikuti pelatihan dan minimal 90% memperoleh nilai evaluasi ≥80",
+     "Pelatihan SOP, evaluasi kompetensi, dan pelatihan ulang",
+     "",
+     "Desember 2026",
+     "Tim SMEn, SDM, dan pemilik proses"
+    ],
+    [
+     "3",
+     "Pemantauan penerapan Kebijakan dan SOP SMEn",
+     "Kepatuhan pengendalian penggunaan energi",
+     "Meningkatkan konsistensi penerapan SMEn dalam operasional",
+     "Minimal 90% kepatuhan SOP berdasarkan hasil inspeksi terdokumentasi",
+     "Inspeksi, evaluasi kepatuhan, tindakan korektif, dan pelaporan",
+     "",
+     "Desember 2026",
+     "Tim SMEn dan PIC operasional/fasilitas"
+    ]
+   ]
+  }
+ ],
+ "varian": [
+  {
+   "nama": "Korporasi",
+   "kepala": {
+    "Bagian": "ALL",
+    "Sub Bagian": "ALL"
+   },
+   "tabel": {
+    "t1": [
+     [
+      "1",
+      "Sosialisasi Kebijakan Energi ISO 50001:2018",
+      "Pemahaman dan kesadaran energi",
+      "Meningkatkan pemahaman personel terhadap Kebijakan Energi",
+      "100% personel sasaran mengikuti sosialisasi dan minimal 90% memperoleh nilai tes ≥80",
+      "Sosialisasi, tes pemahaman, dan sosialisasi ulang",
+      "",
+      "Desember 2026",
+      "Tim SMEn dan seluruh kepala bagian terkait"
+     ],
+     [
+      "2",
+      "Pelatihan SOP Sistem Manajemen Energi",
+      "Kompetensi penerapan SOP energi",
+      "Memastikan personel memahami SOP sesuai tugasnya",
+      "100% personel terkait mengikuti pelatihan dan minimal 90% memperoleh nilai evaluasi ≥80",
+      "Pelatihan SOP, evaluasi kompetensi, dan pelatihan ulang",
+      "",
+      "Desember 2026",
+      "Tim SMEn, SDM, dan pemilik proses"
+     ],
+     [
+      "3",
+      "Pemantauan penerapan Kebijakan dan SOP SMEn",
+      "Kepatuhan pengendalian penggunaan energi",
+      "Meningkatkan konsistensi penerapan SMEn dalam operasional",
+      "Minimal 90% kepatuhan SOP berdasarkan hasil inspeksi terdokumentasi",
+      "Inspeksi, evaluasi kepatuhan, tindakan korektif, dan pelaporan",
+      "",
+      "Desember 2026",
+      "Tim SMEn dan PIC operasional/fasilitas"
+     ]
+    ]
+   }
+  },
+  {
+   "nama": "Akuntansi & Keuangan",
+   "kepala": {
+    "Bagian": "Akuntansi & Keuangan",
+    "Sub Bagian": "Akuntansi & Keuangan"
+   },
+   "tabel": {
+    "t1": [
+     [
+      "1",
+      "Sosialisasi Kebijakan Energi",
+      "Kurangnya pemahaman kebijakan energi",
+      "Meningkatkan pemahaman Kebijakan Energi ISO 50001:2018",
+      "100% personel mengikuti sosialisasi dan ≥90% memperoleh nilai evaluasi ≥80",
+      "Sosialisasi, pre-test/post-test, dokumentasi hasil",
+      "",
+      "Desember 2026",
+      "Kepala Akuntansi & Keuangan, Tim SMEn"
+     ],
+     [
+      "2",
+      "Sosialisasi dan penerapan SOP SMEn",
+      "Ketidakpatuhan terhadap SOP",
+      "Meningkatkan pemahaman dan kepatuhan penerapan SOP SMEn",
+      "100% personel terkait mendapat pengarahan dan ≥95% sampel rekaman memenuhi SOP",
+      "Briefing SOP, pemeriksaan rekaman, tindak lanjut ketidaksesuaian",
+      "",
+      "Desember 2026",
+      "Kepala Akuntansi & Keuangan, Tim SMEn"
+     ],
+     [
+      "3",
+      "Pencatatan dan analisis biaya energi",
+      "Data biaya energi tidak akurat atau tidak lengkap",
+      "Meningkatkan penerapan SMEn dalam pencatatan, analisis, dan penganggaran energi",
+      "100% data biaya energi direkonsiliasi dan dianalisis setiap bulan; seluruh usulan efisiensi energi dievaluasi dari aspek anggaran",
+      "Rekap biaya energi, rekonsiliasi tagihan dan meter, analisis tren, evaluasi anggaran",
+      "",
+      "Desember 2026",
+      "Kepala Akuntansi & Keuangan, PIC Anggaran, Tim SMEn"
+     ]
+    ]
+   }
+  },
+  {
+   "nama": "SPI",
+   "kepala": {
+    "Bagian": "Satuan Pengawas Internal (SPI)",
+    "Sub Bagian": "Auditor"
+   },
+   "tabel": {
+    "t1": [
+     [
+      "1",
+      "Sosialisasi Kebijakan Energi ISO 50001:2018 kepada personel SPI",
+      "Pemahaman dan kesadaran terhadap Kebijakan Energi",
+      "Meningkatkan pemahaman personel SPI mengenai Kebijakan Energi dan perannya dalam pengawasan SMEn",
+      "100% personel SPI mengikuti sosialisasi dan minimal 90% memperoleh nilai evaluasi ≥80",
+      "Sosialisasi Kebijakan Energi, evaluasi pemahaman, dan sosialisasi ulang",
+      "",
+      "Desember 2026",
+      "Kepala SPI dan Tim SMEn"
+     ],
+     [
+      "2",
+      "Pemahaman SOP SMEn yang relevan dengan kegiatan pengawasan internal",
+      "Kompetensi dalam mengevaluasi penerapan prosedur dan pengendalian energi",
+      "Memastikan personel SPI memahami SOP SMEn yang relevan dengan aktivitas pengawasan",
+      "100% personel SPI mengikuti pengarahan SOP yang relevan dan minimal 90% memperoleh nilai evaluasi ≥80",
+      "Pelatihan SOP, evaluasi pemahaman, dan penyusunan checklist audit SMEn",
+      "",
+      "Desember 2026",
+      "Kepala SPI dan Koordinator/Tim SMEn"
+     ],
+     [
+      "3",
+      "Pengawasan penerapan Kebijakan Energi dan SOP SMEn",
+      "Kepatuhan penerapan pengendalian operasional dan dokumentasi SMEn",
+      "Meningkatkan efektivitas pengawasan terhadap penerapan Kebijakan Energi dan SOP SMEn",
+      "Minimal 90% pemenuhan kriteria pemeriksaan berdasarkan hasil audit atau sampling terdokumentasi; seluruh temuan memiliki rencana tindak lanjut dan PIC",
+      "Audit internal SMEn, pemeriksaan bukti objektif, pelaporan temuan, serta pemantauan tindakan korektif",
+      "",
+      "Desember 2026 dan berkala sesuai program audit",
+      "Kepala SPI dan Auditor Internal SMEn"
+     ]
+    ]
+   }
+  },
+  {
+   "nama": "Sekretariat Perusahaan",
+   "kepala": {
+    "Bagian": "Sekretariat Perusahaan, Hukum, & Tanggung Jawab Sosial Prusahaan",
+    "Sub Bagian": "Sekretariat Perusahaan, Hukum, & Tanggung Jawab Sosial Prusahaan"
+   },
+   "tabel": {
+    "t1": [
+     [
+      "1",
+      "Sosialisasi Kebijakan Energi ISO 50001:2018 kepada personel bagian terkait",
+      "Pemahaman dan kesadaran terhadap Kebijakan Energi",
+      "Meningkatkan pemahaman personel terhadap komitmen dan penerapan Kebijakan Energi KINRA",
+      "100% personel sasaran mengikuti sosialisasi dan minimal 90% memperoleh nilai evaluasi ≥80",
+      "Sosialisasi Kebijakan Energi, evaluasi pemahaman, dan sosialisasi ulang",
+      "",
+      "Desember 2026",
+      "Kepala Bagian Sekretariat Perusahaan, Hukum, & Tanggung Jawab Sosial Perusahaan bersama Tim SMEn"
+     ],
+     [
+      "2",
+      "Pemahaman SOP SMEn yang relevan dengan kegiatan kesekretariatan, hukum, komunikasi, dan tanggung jawab sosial perusahaan",
+      "Pemahaman prosedur dan komunikasi terkait pengelolaan energi",
+      "Memastikan personel memahami SOP SMEn yang relevan dengan tugas dan tanggung jawabnya",
+      "100% personel terkait mengikuti pengarahan SOP dan minimal 90% memperoleh nilai evaluasi ≥80",
+      "Identifikasi SOP relevan, pengarahan prosedur, evaluasi pemahaman, dan dokumentasi pelatihan",
+      "",
+      "Desember 2026",
+      "Kepala Bagian Sekretariat Perusahaan, Hukum, & Tanggung Jawab Sosial Perusahaan bersama Koordinator/Tim SMEn"
+     ],
+     [
+      "3",
+      "Penerapan Kebijakan Energi dan SOP SMEn dalam komunikasi, pengelolaan dokumen, serta kegiatan operasional bagian",
+      "Kepatuhan penerapan prosedur dan dukungan terhadap budaya hemat energi",
+      "Meningkatkan konsistensi penerapan Kebijakan Energi dan SOP SMEn dalam aktivitas kerja sehari-hari",
+      "Minimal 90% pemenuhan kriteria pemeriksaan penerapan SOP berdasarkan hasil evaluasi terdokumentasi; seluruh ketidaksesuaian ditindaklanjuti",
+      "Pemeriksaan penerapan SOP, pengendalian dokumen, sosialisasi internal, komunikasi kepada pihak berkepentingan, dan tindak lanjut hasil evaluasi",
+      "",
+      "Desember 2026",
+      "Kepala Bagian Sekretariat Perusahaan, Hukum, & Tanggung Jawab Sosial Perusahaan bersama Tim SMEn"
+     ]
+    ]
+   }
+  },
+  {
+   "nama": "SDM, Umum & Pengadaan",
+   "kepala": {
+    "Bagian": "SDM, Umum & Pengadaan",
+    "Sub Bagian": "SDM, Umum & Pengadaan"
+   },
+   "tabel": {
+    "t1": [
+     [
+      "1",
+      "Sosialisasi Kebijakan Energi ISO 50001:2018 kepada seluruh personel bagian terkait",
+      "Pemahaman dan kesadaran terhadap Kebijakan Energi",
+      "Meningkatkan pemahaman personel terhadap komitmen dan tanggung jawab pengelolaan energi KINRA",
+      "100% personel sasaran mengikuti sosialisasi dan minimal 90% memperoleh nilai evaluasi ≥80",
+      "Sosialisasi Kebijakan Energi, tes pemahaman, dan sosialisasi ulang bagi personel yang belum memenuhi target",
+      "",
+      "Desember 2026",
+      "Kepala Bagian SDM, Umum & Pengadaan bersama Tim SMEn"
+     ],
+     [
+      "2",
+      "Pelatihan SOP SMEn yang relevan dengan pengelolaan SDM, fasilitas umum, pemeliharaan, dan pengadaan",
+      "Kompetensi penerapan prosedur pengelolaan dan penggunaan energi",
+      "Memastikan personel memahami SOP SMEn sesuai tugas dan tanggung jawabnya",
+      "100% personel terkait mengikuti pengarahan SOP dan minimal 90% memperoleh nilai evaluasi ≥80",
+      "Identifikasi SOP berdasarkan fungsi kerja, pelatihan, evaluasi pemahaman, serta dokumentasi kompetensi",
+      "",
+      "Desember 2026",
+      "Kepala Bagian SDM, Umum & Pengadaan bersama Koordinator/Tim SMEn"
+     ],
+     [
+      "3",
+      "Penerapan SOP SMEn pada pengelolaan fasilitas dan proses pengadaan barang/jasa yang relevan",
+      "Kepatuhan operasional dan pertimbangan kinerja energi dalam pengadaan",
+      "Meningkatkan konsistensi penerapan SOP dan pertimbangan efisiensi energi pada fasilitas serta pengadaan",
+      "Minimal 90% pemenuhan kriteria pemeriksaan SOP dan pengadaan berdasarkan evaluasi terdokumentasi; seluruh ketidaksesuaian memiliki rencana tindak lanjut",
+      "Inspeksi penerapan SOP, pemeriksaan kriteria energi dalam spesifikasi pengadaan, evaluasi pemasok, dan tindak lanjut hasil pemeriksaan",
+      "",
+      "Desember 2026",
+      "Kepala Bagian SDM, Umum & Pengadaan; PIC fasilitas/pemeliharaan; Koordinator/Tim SMEn"
+     ]
+    ]
+   }
+  },
+  {
+   "nama": "Manajemen Risiko & TI",
+   "kepala": {
+    "Bagian": "Manajemen Risiko & TI",
+    "Sub Bagian": "Manajemen Risiko & TI"
+   },
+   "tabel": {
+    "t1": [
+     [
+      "1",
+      "Sosialisasi Kebijakan Energi ISO 50001:2018 kepada personel Bagian Manajemen Risiko & TI",
+      "Pemahaman dan kesadaran terhadap Kebijakan Energi",
+      "Meningkatkan pemahaman personel terhadap Kebijakan Energi dan tanggung jawabnya dalam mendukung SMEn",
+      "100% personel sasaran mengikuti sosialisasi dan minimal 90% memperoleh nilai evaluasi ≥80",
+      "Sosialisasi Kebijakan Energi, evaluasi pemahaman, dan sosialisasi ulang bagi personel yang belum memenuhi target",
+      "",
+      "Desember 2026",
+      "Kepala Bagian Manajemen Risiko & TI bersama Tim SMEn"
+     ],
+     [
+      "2",
+      "Pelatihan SOP SMEn yang relevan dengan pengelolaan risiko, data energi, dan dukungan TI",
+      "Kompetensi penerapan SOP serta pengelolaan risiko yang memengaruhi kinerja energi",
+      "Memastikan personel memahami SOP SMEn sesuai tugas dan tanggung jawabnya",
+      "100% personel terkait mengikuti pengarahan SOP dan minimal 90% memperoleh nilai evaluasi ≥80",
+      "Identifikasi SOP relevan, pelatihan, evaluasi pemahaman, dan dokumentasi kompetensi",
+      "",
+      "Desember 2026",
+      "Kepala Bagian Manajemen Risiko & TI bersama Koordinator/Tim SMEn"
+     ],
+     [
+      "3",
+      "Penerapan manajemen risiko energi dan dukungan TI untuk pemantauan serta pengendalian informasi energi",
+      "Risiko operasional energi, keandalan data, dan ketersediaan informasi pendukung SMEn",
+      "Meningkatkan konsistensi penerapan SOP, pengendalian risiko energi, dan keandalan data yang mendukung evaluasi kinerja energi",
+      "Minimal 90% pemenuhan kriteria pemeriksaan penerapan SOP berdasarkan evaluasi terdokumentasi; seluruh risiko prioritas memiliki rencana penanganan dan PIC",
+      "Identifikasi dan evaluasi risiko energi, pengendalian akses serta pencadangan data energi sesuai kebutuhan, pemantauan tindak lanjut, dan evaluasi efektivitas pengendalian",
+      "",
+      "Desember 2026",
+      "Kepala Bagian Manajemen Risiko & TI, PIC TI terkait, dan Koordinator/Tim SMEn"
+     ]
+    ]
+   }
+  },
+  {
+   "nama": "Pengembangan",
+   "kepala": {
+    "Bagian": "Pengembangan",
+    "Sub Bagian": "Pengembangan Usaha & Kawasan"
+   },
+   "tabel": {
+    "t1": [
+     [
+      "1",
+      "Sosialisasi dan evaluasi pemahaman Kebijakan Energi kepada seluruh personel Bagian Pengembangan.",
+      "Kesadaran dan pemahaman kebijakan energi dalam kegiatan perencanaan dan pengembangan kawasan.",
+      "Meningkatkan pemahaman personel terhadap komitmen KINRA dalam peningkatan kinerja energi dan penerapan SMEn ISO 50001:2018.",
+      "100% personel mengikuti sosialisasi Kebijakan Energi dan minimal 90% peserta memperoleh nilai evaluasi ≥80.",
+      "Sosialisasi Kebijakan Energi, penjelasan keterkaitan kebijakan dengan kegiatan pengembangan kawasan, serta evaluasi dan dokumentasi hasil pemahaman.",
+      "",
+      "Desember 2026",
+      "Kepala Bagian Pengembangan bersama Koordinator/Tim SMEn"
+     ],
+     [
+      "2",
+      "Sosialisasi dan pelatihan SOP SMEn yang relevan dengan proses pengembangan, terutama pertimbangan kinerja energi dalam desain dan perencanaan.",
+      "Pemahaman prosedur dan kriteria efisiensi energi pada perencanaan, desain, spesifikasi teknis, dan pengembangan infrastruktur/fasilitas.",
+      "Memastikan personel memahami SOP SMEn yang relevan dan mampu menerapkannya dalam kegiatan pengembangan kawasan.",
+      "100% personel terkait menerima pengarahan/pelatihan SOP SMEn dan minimal 90% peserta memperoleh nilai evaluasi ≥80.",
+      "Identifikasi SOP yang relevan, pengarahan penggunaan SOP dan daftar periksa, evaluasi pemahaman, serta pemutakhiran rekaman pelatihan.",
+      "",
+      "Desember 2026",
+      "Kepala Bagian Pengembangan bersama Koordinator/Tim SMEn"
+     ],
+     [
+      "3",
+      "Penerapan pertimbangan kinerja energi dalam penelaahan dokumen perencanaan/desain dan spesifikasi teknis proyek pengembangan yang relevan.",
+      "Peluang efisiensi energi pada desain infrastruktur, utilitas, pencahayaan, tata udara, dan fasilitas pendukung sesuai relevansi proyek.",
+      "Memastikan persyaratan dan peluang peningkatan kinerja energi dipertimbangkan serta didokumentasikan dalam proses pengembangan.",
+      "100% dokumen perencanaan/desain yang relevan ditelaah menggunakan kriteria energi yang disepakati. Minimal 90% kriteria yang berlaku terpenuhi atau memiliki tindak lanjut, PIC, dan target waktu.",
+      "Menetapkan kriteria/checklist pertimbangan energi, menelaah dokumen proyek, mencatat hasil evaluasi dan peluang peningkatan, serta memantau tindak lanjut.",
+      "",
+      "Desember 2026",
+      "Kepala Bagian Pengembangan, PIC teknis proyek, dan Koordinator/Tim SMEn"
+     ]
+    ]
+   }
+  },
+  {
+   "nama": "Pemasaran & Penjualan",
+   "kepala": {
+    "Bagian": "Pemasaran & Penjualan",
+    "Sub Bagian": "Pemasaran & Hubungan Pelanggan & Penjualan"
+   },
+   "tabel": {
+    "t1": [
+     [
+      "1",
+      "Sosialisasi dan evaluasi pemahaman Kebijakan Energi kepada seluruh personel Bagian Pemasaran & Penjualan.",
+      "Pemahaman kebijakan energi dalam kegiatan administrasi, pemasaran, penjualan, dan pelayanan pelanggan.",
+      "Meningkatkan pemahaman personel terhadap komitmen KINRA dalam penerapan SMEn dan peningkatan kinerja energi.",
+      "100% personel Bagian Pemasaran & Penjualan mengikuti sosialisasi Kebijakan Energi dan minimal 90% peserta memperoleh nilai evaluasi ≥80.",
+      "Melaksanakan sosialisasi Kebijakan Energi dan ruang lingkup SMEn; menjelaskan relevansinya terhadap aktivitas pemasaran, penjualan, dan pelayanan; melakukan evaluasi serta menyimpan rekaman hasil.",
+      "",
+      "Desember 2026",
+      "Kepala Bagian Pemasaran & Penjualan bersama Koordinator/Tim SMEn"
+     ],
+     [
+      "2",
+      "Pengarahan dan pelatihan SOP SMEn yang relevan dengan kegiatan Bagian Pemasaran & Penjualan.",
+      "Pemahaman prosedur kerja yang relevan, termasuk penggunaan energi pada aktivitas kantor dan pengendalian informasi terkait SMEn dalam pelayanan pelanggan.",
+      "Memastikan personel memahami SOP SMEn yang relevan dengan tugasnya dan mengetahui cara menerapkannya dalam aktivitas kerja sehari-hari.",
+      "100% personel yang relevan menerima pengarahan/pelatihan SOP SMEn dan minimal 90% peserta memperoleh nilai evaluasi ≥80.",
+      "Mengidentifikasi SOP yang relevan dengan fungsi pemasaran dan penjualan; memberikan pengarahan tentang langkah kerja dan tanggung jawab; melakukan evaluasi pemahaman; memperbarui daftar pelatihan dan rekaman kompetensi.",
+      "",
+      "Desember 2026",
+      "Kepala Bagian Pemasaran & Penjualan bersama Koordinator/Tim SMEn"
+     ],
+     [
+      "3",
+      "Pemantauan penerapan Kebijakan Energi dan SOP SMEn dalam kegiatan pemasaran, penjualan, administrasi, dan pelayanan pelanggan yang berada dalam kendali atau pengaruh bagian.",
+      "Penerapan perilaku hemat energi pada aktivitas kantor serta konsistensi pelaksanaan prosedur SMEn yang relevan.",
+      "Memastikan pemahaman Kebijakan Energi dan SOP diwujudkan dalam praktik kerja serta mendukung penerapan SMEn di KINRA.",
+      "Minimal 90% kriteria penerapan yang relevan terpenuhi berdasarkan checklist/evaluasi terdokumentasi; seluruh ketidaksesuaian yang ditemukan memiliki PIC dan target penyelesaian.",
+      "Melakukan pemeriksaan berkala menggunakan checklist; memantau penerapan praktik hemat energi pada aktivitas kerja; mencatat ketidaksesuaian dan peluang perbaikan; menetapkan PIC serta tenggat tindak lanjut; memverifikasi penyelesaian.",
+      "",
+      "Desember 2026",
+      "Kepala Bagian Pemasaran & Penjualan, PIC terkait, dan Koordinator/Tim SMEn"
+     ]
+    ]
+   }
+  },
+  {
+   "nama": "Produksi Kawasan",
+   "kepala": {
+    "Bagian": "Produksi Kawasan",
+    "Sub Bagian": "Instalasi Pengolahan Air Bersih (IPAB), Air Limbah (IPAL), Tangki Timbun & Logistik"
+   },
+   "tabel": {
+    "t1": [
+     [
+      "1",
+      "Sosialisasi dan evaluasi pemahaman Kebijakan Energi kepada seluruh personel Bagian Produksi Kawasan.",
+      "Pemahaman kebijakan energi dalam kegiatan operasional dan pengelolaan produksi/layanan kawasan yang berada dalam kendali KINRA.",
+      "Memastikan personel memahami komitmen KINRA terhadap penerapan SMEn dan peningkatan kinerja energi dalam operasional kawasan.",
+      "100% personel Bagian Produksi Kawasan mengikuti sosialisasi Kebijakan Energi dan minimal 90% peserta memperoleh nilai evaluasi ≥80.",
+      "Melaksanakan sosialisasi Kebijakan Energi dan ruang lingkup SMEn; menjelaskan keterkaitan kebijakan dengan operasional kawasan; melakukan evaluasi pemahaman dan mendokumentasikan hasilnya.",
+      "",
+      "Desember 2026",
+      "Kepala Bagian Produksi Kawasan bersama Koordinator/Tim SMEn"
+     ],
+     [
+      "2",
+      "Pengarahan dan pelatihan SOP SMEn yang relevan dengan tugas operasional, pengelolaan, dan pemeliharaan fasilitas kawasan.",
+      "Pemahaman SOP terkait pengendalian operasional dan penggunaan energi pada peralatan, sistem utilitas, pencahayaan, tata udara, serta fasilitas pendukung yang relevan.",
+      "Meningkatkan pemahaman personel terhadap SOP SMEn dan tanggung jawab penerapannya dalam kegiatan operasional sehari-hari.",
+      "100% personel terkait menerima pengarahan/pelatihan SOP SMEn yang relevan dan minimal 90% peserta memperoleh nilai evaluasi ≥80.",
+      "Mengidentifikasi SOP sesuai fungsi kerja; memberikan pengarahan langkah kerja dan kriteria pengendalian operasional; mengevaluasi pemahaman; serta menyimpan daftar hadir, hasil evaluasi, dan rekaman pelatihan.",
+      "",
+      "Desember 2026",
+      "Kepala Bagian Produksi Kawasan, PIC operasional/fasilitas, dan Koordinator/Tim SMEn"
+     ],
+     [
+      "3",
+      "Pemantauan penerapan SOP SMEn dan praktik penggunaan energi pada kegiatan operasional serta pemeliharaan fasilitas kawasan.",
+      "Kepatuhan terhadap prosedur operasional dan penerapan praktik hemat energi pada fasilitas yang berada dalam kendali atau pengaruh KINRA.",
+      "Memastikan Kebijakan Energi dan SOP SMEn diterapkan secara konsisten serta mendukung pengendalian dan peningkatan kinerja energi.",
+      "Minimal 90% kriteria penerapan SOP yang relevan terpenuhi berdasarkan inspeksi/evaluasi terdokumentasi; seluruh ketidaksesuaian yang ditemukan memiliki PIC, tindakan perbaikan, dan target penyelesaian.",
+      "Melakukan inspeksi berkala menggunakan checklist; memeriksa penerapan SOP dan praktik penggunaan energi; mencatat ketidaksesuaian serta peluang perbaikan; menetapkan PIC dan tenggat; lalu memverifikasi tindak lanjut.",
+      "",
+      "Desember 2026",
+      "Kepala Bagian Produksi Kawasan, PIC operasional/fasilitas, dan Koordinator/Tim SMEn"
+     ]
+    ]
+   }
+  },
+  {
+   "nama": "Mekanikal & Elektrikal, Fasilitas & Pengamanan",
+   "kepala": {
+    "Bagian": "Mekanikal & Elektrikal, Fasilitas dan Pengamanan",
+    "Sub Bagian": "Mekanikal & Elektrikal, Fasilitas dan Keselamatan & Manajemen Lalu Lintas"
+   },
+   "tabel": {
+    "t1": [
+     [
+      "1",
+      "Sosialisasi dan evaluasi pemahaman Kebijakan Energi kepada seluruh personel Bagian Mekanikal & Elektrikal, Fasilitas dan Pengamanan.",
+      "Pemahaman kebijakan energi dalam pengoperasian dan pemeliharaan sistem mekanikal-elektrikal, fasilitas gedung/kawasan, serta kegiatan pengamanan yang relevan.",
+      "Memastikan personel memahami komitmen KINRA terhadap penerapan SMEn dan peningkatan kinerja energi pada fasilitas yang berada dalam kendali operasional KINRA.",
+      "100% personel bagian mengikuti sosialisasi Kebijakan Energi dan minimal 90% peserta memperoleh nilai evaluasi ≥80.",
+      "Melaksanakan sosialisasi Kebijakan Energi dan ruang lingkup SMEn; menjelaskan relevansinya terhadap pekerjaan mekanikal-elektrikal, fasilitas, dan pengamanan; melakukan evaluasi pemahaman serta mendokumentasikan hasil.",
+      "",
+      "Desember 2026",
+      "Kepala Bagian Mekanikal & Elektrikal, Fasilitas dan Pengamanan bersama Koordinator/Tim SMEn"
+     ],
+     [
+      "2",
+      "Pengarahan dan pelatihan SOP SMEn yang relevan dengan pengoperasian, pemantauan, dan pemeliharaan peralatan serta fasilitas.",
+      "Pemahaman SOP pengendalian operasional dan penggunaan energi pada sistem listrik, pencahayaan, tata udara, utilitas, serta fasilitas pendukung sesuai tanggung jawab bagian.",
+      "Meningkatkan pemahaman personel mengenai SOP SMEn dan memastikan mereka mengetahui langkah pengendalian energi sesuai fungsi kerja.",
+      "100% personel terkait menerima pengarahan/pelatihan SOP SMEn yang relevan dan minimal 90% peserta memperoleh nilai evaluasi ≥80.",
+      "Mengidentifikasi SOP sesuai fungsi kerja; memberikan pengarahan tentang prosedur operasi dan pemeliharaan yang relevan; mengevaluasi pemahaman; serta menyimpan daftar hadir, hasil evaluasi, dan rekaman pelatihan.",
+      "",
+      "Desember 2026",
+      "Kepala Bagian, PIC Mekanikal-Elektrikal/Fasilitas/Pengamanan, dan Koordinator/Tim SMEn"
+     ],
+     [
+      "3",
+      "Pemantauan penerapan SOP SMEn dalam operasi dan pemeliharaan fasilitas serta pengendalian penggunaan energi yang relevan.",
+      "Kepatuhan terhadap prosedur operasi/pemeliharaan dan penerapan praktik hemat energi pada peralatan serta fasilitas dalam kendali atau pengaruh KINRA.",
+      "Memastikan Kebijakan Energi dan SOP SMEn diterapkan konsisten serta mendukung pengendalian dan peningkatan kinerja energi.",
+      "Minimal 90% kriteria penerapan SOP yang relevan terpenuhi berdasarkan inspeksi/evaluasi terdokumentasi; seluruh ketidaksesuaian yang ditemukan memiliki PIC, tindakan perbaikan, dan target penyelesaian.",
+      "Melakukan inspeksi berkala dengan checklist; memeriksa penerapan SOP dan praktik penggunaan energi; mencatat ketidaksesuaian serta peluang perbaikan; menetapkan PIC dan tenggat; serta memverifikasi penyelesaian tindak lanjut.",
+      "",
+      "Desember 2026",
+      "Kepala Bagian, PIC terkait, dan Koordinator/Tim SMEn"
+     ]
+    ]
+   }
+  }
+ ],
+ "ttd": [
+  {
+   "peran": "Disiapkan oleh",
+   "jabatan": "PIC Bagian"
+  },
+  {
+   "peran": "Ditinjau oleh",
+   "jabatan": "Management Representative"
+  }
+ ],
+ "sumber": "6.2 Tujuan, Target energi, & Perencanaan Untuk Mencapainya/001_Formulir Sasaran & Target Rev.0",
+ "nomor": "001/SOP-008/KINRA/SMEn/X/2026"
+}

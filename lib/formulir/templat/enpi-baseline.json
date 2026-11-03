@@ -1,0 +1,425 @@
+{
+ "kode": "enpi-baseline",
+ "klausul": [
+  "6.4",
+  "6.5"
+ ],
+ "judul": "Indikator Kinerja Energi (EnPI) dan Baseline Energi (EnB)",
+ "subjudul": "Sistem Manajemen Energi ISO 50001:2018 – PT Kawasan Industri Nusantara (KINRA)",
+ "kepala": [
+  {
+   "label": "Nomor Dokumen",
+   "nilai": "002/SOP-011/KINRA/SMEn/X/2026"
+  },
+  {
+   "label": "Revisi",
+   "nilai": "0"
+  },
+  {
+   "label": "Tanggal Berlaku",
+   "nilai": "22 Oktober 2026"
+  },
+  {
+   "label": "Bagian",
+   "nilai": "Mekanikal & Elektrikal, Fasilitas, dan Pengamanan"
+  },
+  {
+   "label": "Sub Bagian",
+   "nilai": "Mekanikal & Elektrikal"
+  },
+  {
+   "label": "Lokasi Penyimpanan",
+   "nilai": "Bagian Mekanikal & Elektrikal, Fasilitas, dan Pengamanan"
+  }
+ ],
+ "blok": [
+  {
+   "jenis": "judul",
+   "teks": "Pengembangan indikator kinerja energi (EnPI)"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t1",
+   "kolom": [
+    {
+     "label": "Pemeriksaan/elemen"
+    },
+    {
+     "label": "Penerapan yang diusulkan untuk KINRA"
+    },
+    {
+     "label": "Status/bukti"
+    }
+   ],
+   "baris": [
+    [
+     "Sumber penentuan EnPI",
+     "EnPI dikembangkan dari hasil tinjauan energi, daftar SEU, data pengumpulan dan analisis energi, tujuan/target energi, serta kemampuan pengukuran.",
+     ""
+    ],
+    [
+     "Penanggung jawab pengembangan",
+     "Tim Energi/penanggung jawab EnMS menyusun usulan EnPI. Unit operasi, fasilitas, pemeliharaan, administrasi, keuangan, dan pengadaan memberi data sesuai tanggung jawab. Manajemen puncak menyetujui kecukupan EnPI.",
+     ""
+    ],
+    [
+     "EnPI untuk setiap SEU",
+     "Setiap SEU yang telah ditetapkan harus mempunyai EnPI yang sesuai, misalnya kWh per jam operasi, kWh per luas gedung, kWh per volume air yang dipompa, atau konsumsi bahan bakar per jam operasi. Pilih sesuai fungsi dan data.",
+     ""
+    ],
+    [
+     "Manfaat bagi pemangku kepentingan",
+     "Pastikan indikator membantu pengambilan keputusan bagi manajemen, operasi, pemeliharaan, pengelola gedung, keuangan, serta unit lain yang terkait.",
+     ""
+    ],
+    [
+     "Kriteria identifikasi EnPI",
+     "Pilih indikator yang relevan, dapat dihitung, konsisten, dapat ditelusuri ke data sumber, sensitif terhadap perubahan kinerja, dan sesuai tujuan pengukuran.",
+     ""
+    ],
+    [
+     "Metode penentuan dan normalisasi",
+     "Gunakan data meter/tagihan, submeter bila tersedia, catatan operasi, jam operasi, luas area, okupansi, debit/volume layanan, cuaca atau variabel lain yang terbukti relevan. Normalisasi bila variabel berpengaruh signifikan.",
+     ""
+    ],
+    [
+     "Pencatatan dan peninjauan metode",
+     "Dokumentasikan sumber data, rumus, satuan, periode, asumsi, pemilik data, pemeriksa, frekuensi, dan versi metode. Tinjau berkala dan ketika terjadi perubahan.",
+     ""
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "Daftar awal EnPI untuk lingkup KINRA"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t2",
+   "kolom": [
+    {
+     "label": "EnPI"
+    },
+    {
+     "label": "Satuan/indikator"
+    },
+    {
+     "label": "Tujuan penggunaan"
+    },
+    {
+     "label": "Data yang diperlukan"
+    }
+   ],
+   "baris": [
+    [
+     "1. Kinerja energi gedung administrasi",
+     "kWh/bulan; kWh/m²/bulan",
+     "Memantau konsumsi listrik gedung; normalisasi terhadap luas dan jam operasi bila relevan.",
+     "Tagihan, meter utama/submeter, luas gedung, jam operasi."
+    ],
+    [
+     "2. Sistem HVAC/tata udara (jika ada)",
+     "kWh/bulan; kWh/jam operasi; kWh/m²",
+     "Memantau konsumsi tata udara dan mengevaluasi pengaruh cuaca, okupansi, set point, serta jam operasi.",
+     "Meter/submeter, log operasi, data cuaca/okupansi yang tersedia."
+    ],
+    [
+     "3. Pompa dan sistem utilitas",
+     "kWh/bulan; kWh/m³ air yang dipompa (jika volume terukur)",
+     "Memantau energi untuk layanan pompa dengan mempertimbangkan volume/debit dan jam operasi.",
+     "Meter listrik, meter debit/volume, jam operasi, catatan pemeliharaan."
+    ],
+    [
+     "4. Pencahayaan gedung dan area bersama",
+     "kWh/bulan; kWh/m²; kWh/jam nyala",
+     "Memantau konsumsi pencahayaan dan dampak penggantian lampu atau pengaturan jam nyala.",
+     "Inventaris lampu, daya, luas area, jam nyala, submeter/estimasi terdokumentasi."
+    ],
+    [
+     "5. Sistem kelistrikan/fasilitas pendukung",
+     "kWh/bulan; kW beban puncak bila tersedia; indikator rugi-rugi jika dapat dihitung",
+     "Memantau konsumsi dan profil beban pada sistem yang termasuk batas kendali KINRA.",
+     "Meter, data beban, catatan pemeliharaan, hasil pemeriksaan teknis."
+    ],
+    [
+     "6. Genset/energi cadangan (jika ada)",
+     "Liter bahan bakar/jam operasi; liter per kWh keluaran jika data tersedia",
+     "Memantau efisiensi penggunaan bahan bakar untuk pengujian atau operasi aktual.",
+     "Catatan bahan bakar, jam operasi, kWh keluaran, log uji/operasi."
+    ],
+    [
+     "7. Kendaraan operasional KINRA (jika dalam lingkup)",
+     "Liter/100 km atau liter/jam operasi",
+     "Memantau bahan bakar terhadap jarak tempuh atau jam operasi sesuai jenis kendaraan.",
+     "Catatan pembelian BBM, odometer, log perjalanan, jam operasi."
+    ],
+    [
+     "8. Kinerja energi kawasan/fasilitas bersama",
+     "kWh/bulan; kWh per unit layanan yang terukur",
+     "Memantau tren agregat hanya jika batas, kepemilikan, dan data energi dapat ditentukan secara konsisten.",
+     "Rekonsiliasi meter/tagihan, definisi batas, data layanan dan catatan perubahan."
+    ]
+   ]
+  },
+  {
+   "jenis": "teks",
+   "id": "p1",
+   "teks": "Rumus umum: EnPI berbasis intensitas = konsumsi energi pada periode / variabel aktivitas relevan pada periode. Contoh: kWh/m², kWh/m³, atau kWh/jam operasi. Pilih rumus hanya jika pembilang dan penyebut tersedia serta hubungan keduanya masuk akal. Untuk indikator absolut, gunakan konsumsi per periode tanpa pembagian variabel."
+  },
+  {
+   "jenis": "judul",
+   "teks": "Pengembangan baseline energi (EnB)"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t3",
+   "kolom": [
+    {
+     "label": "Pertanyaan/elemen penetapan EnB"
+    },
+    {
+     "label": "Penerapan untuk KINRA"
+    },
+    {
+     "label": "Rekaman/bukti"
+    }
+   ],
+   "baris": [
+    [
+     "Bagaimana EnPI digunakan untuk mengevaluasi kinerja energi? Apakah ada EnB yang logis?",
+     "Bandingkan EnPI periode berjalan terhadap baseline yang mewakili kondisi operasi relevan. EnPI intensitas membantu menilai konsumsi setelah memperhitungkan variabel aktivitas yang berpengaruh. Tetapkan EnB yang sesuai untuk setiap EnPI.",
+     "Tabel EnPI-EnB, data historis, rumus, dan hasil perbandingan."
+    ],
+    [
+     "Perubahan historis pada fasilitas, peralatan, sistem, proses, atau organisasi",
+     "Catat perubahan gedung, perluasan/pengurangan area, penggantian peralatan, perubahan jam layanan, okupansi, kebutuhan utilitas, dan perubahan batas kendali yang dapat memengaruhi evaluasi.",
+     "Log perubahan, data sebelum/sesudah, catatan proyek dan operasi."
+    ],
+    [
+     "Kepentingan pemangku kepentingan",
+     "Libatkan unit pengelola gedung, operasi kawasan, pemeliharaan, administrasi, keuangan, pengadaan, dan pihak lain yang menguasai data atau memengaruhi kinerja energi.",
+     "Notulen konsultasi, penetapan peran, daftar data."
+    ],
+    [
+     "Inisiatif strategis terkait",
+     "Selaraskan EnPI dan EnB dengan sasaran energi, efisiensi biaya operasional, keandalan layanan, perencanaan pemeliharaan, dan rencana investasi fasilitas.",
+     "Sasaran/target energi, program kerja, rencana investasi."
+    ],
+    [
+     "Periode historis yang andal dan konsisten",
+     "Pilih periode baseline yang memiliki data cukup, konsisten, representatif terhadap operasi, dan dapat ditelusuri. Dokumentasikan alasan jika periode tertentu tidak representatif.",
+     "Tagihan, meter, log operasi, catatan perubahan dan justifikasi periode."
+    ]
+   ]
+  },
+  {
+   "jenis": "teks",
+   "id": "p2",
+   "teks": "Template penetapan EnB (diisi berdasarkan data aktual):"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t4",
+   "kolom": [
+    {
+     "label": "EnPI"
+    },
+    {
+     "label": "Periode baseline"
+    },
+    {
+     "label": "Nilai EnB"
+    },
+    {
+     "label": "Variabel relevan/normalisasi"
+    },
+    {
+     "label": "Sumber dan validasi data"
+    },
+    {
+     "label": "Persetujuan"
+    }
+   ],
+   "baris": []
+  },
+  {
+   "jenis": "judul",
+   "teks": "Komunikasi dan persetujuan manajemen puncak"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t5",
+   "kolom": [
+    {
+     "label": "Pemeriksaan"
+    },
+    {
+     "label": "Ketentuan"
+    },
+    {
+     "label": "Status/catatan"
+    }
+   ],
+   "baris": [
+    [
+     "EnPI dan EnB telah dikomunikasikan",
+     "Sampaikan daftar EnPI, baseline, metode, asumsi, variabel relevan, sumber data, dan implikasi terhadap sasaran energi kepada manajemen puncak.",
+     ""
+    ],
+    [
+     "Kesesuaian telah ditinjau",
+     "Manajemen puncak memastikan indikator dan baseline sesuai lingkup, tujuan, karakteristik operasi, dan ketersediaan data KINRA.",
+     ""
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "Dokumentasi metode, peninjauan, dan kondisi penyesuaian EnB"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t6",
+   "kolom": [
+    {
+     "label": "Elemen"
+    },
+    {
+     "label": "Penerapan yang diusulkan"
+    },
+    {
+     "label": "Status/bukti"
+    }
+   ],
+   "baris": [
+    [
+     "Informasi terdokumentasi",
+     "Simpan metode penentuan/pembaruan EnPI dan EnB, rumus, sumber data, variabel relevan, asumsi, periode, dan tanggung jawab pada dokumen terkendali EnMS.",
+     ""
+    ],
+    [
+     "Pemilik dan lokasi rekaman",
+     "Pemilik: Tim Energi/Penanggung Jawab EnMS bersama unit pemilik data. Lokasi: repositori dokumen EnMS/rekaman energi yang ditetapkan KINRA.",
+     ""
+    ],
+    [
+     "Evaluasi perubahan",
+     "Evaluasi perubahan fasilitas, peralatan, sistem, proses, prosedur operasi, bahan, variabel relevan, dan faktor lain. Perbarui EnPI bila metode atau indikator tidak lagi mencerminkan kinerja.",
+     ""
+    ],
+    [
+     "Kondisi penyesuaian EnB",
+     "Pertimbangkan penyesuaian bila EnPI tidak lagi mewakili kinerja energi; terjadi perubahan besar pada faktor statis, proses, pola operasi atau sistem energi; atau metode penyesuaian yang telah ditetapkan mengharuskannya.",
+     ""
+    ],
+    [
+     "Rekaman perubahan EnB",
+     "Catat nilai lama dan baru, alasan, data pendukung, metode, tanggal berlaku, dampak pada perbandingan, serta pihak yang meninjau dan menyetujui.",
+     ""
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "Perbandingan EnPI dengan EnB secara berkala"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t7",
+   "kolom": [
+    {
+     "label": "Pemeriksaan"
+    },
+    {
+     "label": "Ketentuan/hasil untuk KINRA"
+    },
+    {
+     "label": "Status/bukti"
+    }
+   ],
+   "baris": [
+    [
+     "Peninjauan berkala",
+     "Usulan awal: tinjau tren EnPI dan bandingkan dengan EnB setiap bulan bila data tersedia; lakukan evaluasi formal minimal sesuai interval yang ditetapkan KINRA. Frekuensi final disahkan organisasi.",
+     ""
+    ],
+    [
+     "Penyimpanan hasil",
+     "Simpan nilai EnPI, EnB, variabel normalisasi, hasil perbandingan, anomali, penjelasan deviasi, dan tindakan yang diputuskan.",
+     ""
+    ],
+    [
+     "Penilaian kebutuhan penyesuaian",
+     "Tentukan apakah perubahan menunjukkan peningkatan/penurunan kinerja nyata atau dipengaruhi variabel relevan, perubahan batas, atau kualitas data.",
+     ""
+    ],
+    [
+     "Catatan perubahan",
+     "Gunakan data historis dan silang-periksa sumber sebelum mengubah EnB; semua revisi harus memiliki alasan dan persetujuan.",
+     ""
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "Pemantauan, pengukuran, dan analisis berkelanjutan"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t8",
+   "kolom": [
+    {
+     "label": "Pemeriksaan"
+    },
+    {
+     "label": "Penerapan yang diusulkan untuk KINRA"
+    },
+    {
+     "label": "Status/bukti"
+    }
+   ],
+   "baris": [
+    [
+     "Nilai EnPI dan EnB direkam dan ditinjau",
+     "Catat secara berkala sesuai frekuensi yang ditetapkan, analisis tren, bandingkan dengan baseline, dan dokumentasikan tindak lanjut.",
+     ""
+    ],
+    [
+     "Akurasi dan keterulangan data",
+     "Petugas memeriksa kelengkapan, konsistensi satuan, kewajaran nilai, fungsi meter, catatan pembacaan, dan rekonsiliasi tagihan. Verifikasi/kalibrasi dilakukan sesuai kebutuhan dan ketentuan yang berlaku.",
+     ""
+    ],
+    [
+     "Tinjauan manajemen puncak",
+     "Tinjauan mencakup hasil EnPI dibandingkan EnB, pencapaian target, perubahan signifikan, anomali, peluang peningkatan, dan kebutuhan perubahan strategi.",
+     ""
+    ],
+    [
+     "Perubahan jika indikator tidak lagi sesuai",
+     "Manajemen memastikan tindakan perubahan dilakukan, ditinjau, dan ditutup dengan bukti implementasi.",
+     ""
+    ]
+   ]
+  }
+ ],
+ "ttd": [
+  {
+   "peran": "Disiapkan oleh",
+   "jabatan": "Dokumen Kontrol"
+  },
+  {
+   "peran": "Ditinjau oleh",
+   "jabatan": "Management Representative"
+  },
+  {
+   "peran": "Disetujui oleh",
+   "jabatan": "Direktur"
+  }
+ ],
+ "sumber": "6.4 Indikator Kinerja Energi/002_ Formulir Indikator Kinerja Energi dan Baseline.docx",
+ "nomor": "002/SOP-011/KINRA/SMEn/X/2026",
+ "tautan": {
+  "href": "/kinerja",
+  "label": "Kinerja Energi"
+ }
+}

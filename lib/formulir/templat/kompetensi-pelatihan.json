@@ -1,0 +1,268 @@
+{
+ "kode": "kompetensi-pelatihan",
+ "klausul": [
+  "7.2"
+ ],
+ "judul": "Kompetensi dan Pelatihan",
+ "subjudul": "Sistem Manajemen Energi ISO 50001:2018 — PT Kawasan Industri Nusantara (KINRA)",
+ "kepala": [
+  {
+   "label": "Nomor Dokumen",
+   "nilai": "001/SOP-016/KINRA/SMEn/X/2026"
+  },
+  {
+   "label": "Revisi",
+   "nilai": "0"
+  },
+  {
+   "label": "Tanggal Berlaku",
+   "nilai": "22 Oktober 2026"
+  },
+  {
+   "label": "Bagian",
+   "nilai": "Manajemen Risiko & TI"
+  },
+  {
+   "label": "Sub Bagian",
+   "nilai": "Manajemen Risiko"
+  },
+  {
+   "label": "Lokasi Penyimpanan",
+   "nilai": "Bagian Manajemen Risiko & TI"
+  }
+ ],
+ "blok": [
+  {
+   "jenis": "judul",
+   "teks": "1. Standar Kompetensi"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t1",
+   "kolom": [
+    {
+     "label": "Personel/fungsi"
+    },
+    {
+     "label": "Kompetensi"
+    },
+    {
+     "label": "Evaluasi kompetensi saat ini"
+    }
+   ],
+   "baris": [
+    [
+     "Anggota Tim Energi",
+     "Pemahaman prinsip EnMS ISO 50001:2018, kebijakan energi, tinjauan energi, SEU, baseline energi, EnPI, tujuan dan target, peluang peningkatan, serta pelaporan.",
+     ""
+    ],
+    [
+     "Pimpinan/manajemen lokasi",
+     "Pemahaman tanggung jawab kepemimpinan, sasaran energi, kebutuhan sumber daya, kepatuhan dan pelaporan energi yang relevan.",
+     ""
+    ],
+    [
+     "Manajer teknik/fasilitas",
+     "Pengetahuan tentang konsumsi energi fasilitas, sistem utilitas, HVAC/tata udara, pencahayaan, pompa, peralatan, pemeliharaan, data pengukuran, dan pengendalian operasi.",
+     ""
+    ],
+    [
+     "Petugas operasi gedung dan utilitas",
+     "Kemampuan menjalankan peralatan sesuai SOP, memantau parameter operasi, mencatat meter, mengenali kondisi abnormal, serta melaporkan pemborosan/gangguan energi.",
+     ""
+    ],
+    [
+     "Petugas pemeliharaan",
+     "Kemampuan inspeksi dan pemeliharaan peralatan, identifikasi kerusakan yang memengaruhi energi, penerapan prosedur, dan verifikasi hasil pekerjaan.",
+     ""
+    ],
+    [
+     "Pengadaan/kontrak dan pengelola pemasok",
+     "Pemahaman kriteria efisiensi energi yang relevan saat pengadaan peralatan/jasa dan komunikasi persyaratan EnMS kepada kontraktor/pemasok.",
+     ""
+    ],
+    [
+     "Pengelola data/administrasi/keuangan",
+     "Kemampuan mengumpulkan dan menjaga ketertelusuran data tagihan, meter, biaya energi, jam operasi, dan dokumen pendukung perhitungan.",
+     ""
+    ],
+    [
+     "Kontraktor/penyedia jasa terkait",
+     "Kompetensi sesuai pekerjaan pada fasilitas atau peralatan yang memengaruhi kinerja energi, termasuk kepatuhan terhadap instruksi operasi dan keselamatan yang berlaku.",
+     ""
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "2. Mengidentifikasi kesenjangan kompetensi dan kebutuhan pelatihan"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t2",
+   "kolom": [
+    {
+     "label": "Fungsi/personel"
+    },
+    {
+     "label": "Kebutuhan kompetensi/pelatihan untuk menutup kesenjangan"
+    }
+   ],
+   "baris": [
+    [
+     "Tim Energi",
+     "Pelatihan pengenalan EnMS ISO 50001:2018; pemahaman istilah umum; kebijakan energi; tinjauan energi; SEU; baseline; EnPI; tujuan, target, dan program; pemantauan serta pelaporan."
+    ],
+    [
+     "Pimpinan/manajemen",
+     "Penyegaran peran dan tanggung jawab; penetapan tujuan/target; dukungan sumber daya; evaluasi pencapaian; dan integrasi kinerja energi dalam tinjauan manajemen."
+    ],
+    [
+     "Manajer teknik/fasilitas",
+     "Pelatihan analisis konsumsi dan tren energi; pengoperasian efisien sistem utilitas, HVAC, pencahayaan dan pompa; pengendalian operasional; evaluasi perubahan desain/pengadaan; serta pemeliharaan peluang peningkatan."
+    ],
+    [
+     "Petugas operasi gedung/utilitas",
+     "Pelatihan SOP operasi hemat energi, pengaturan jadwal dan setelan peralatan, pembacaan meter, pencatatan parameter, identifikasi kondisi abnormal, dan pelaporan pemborosan."
+    ],
+    [
+     "Petugas pemeliharaan",
+     "Pelatihan inspeksi dan pemeliharaan yang berdampak pada efisiensi energi, pemeriksaan kebocoran/kerusakan, pengujian pascaperbaikan, dan pencatatan work order."
+    ],
+    [
+     "Pengadaan/kontrak",
+     "Pelatihan penerapan kriteria kinerja energi dalam spesifikasi peralatan/jasa, evaluasi pemasok, pengadaan yang relevan, dan penyampaian persyaratan EnMS kepada kontraktor."
+    ],
+    [
+     "Administrasi/keuangan/pengelola data",
+     "Pelatihan pengumpulan dan validasi data energi, pencatatan tagihan, ketertelusuran bukti, konsistensi periode data, serta dukungan perhitungan biaya dan penghematan."
+    ],
+    [
+     "Kontraktor/pemasok",
+     "Induksi terkait persyaratan energi yang relevan dengan pekerjaan, SOP dan batas operasi, pelaporan kondisi tidak normal, serta bukti kompetensi sesuai jenis pekerjaan."
+    ]
+   ]
+  },
+  {
+   "jenis": "judul",
+   "teks": "3. Rekaman kompetensi dan tindakan terkait"
+  },
+  {
+   "jenis": "tabel",
+   "id": "t3",
+   "kolom": [
+    {
+     "label": "Personel/fungsi"
+    },
+    {
+     "label": "Hubungan dengan EnMS/SEU"
+    },
+    {
+     "label": "Pelatihan/tindakan yang diperlukan"
+    },
+    {
+     "label": "Tanggal selesai"
+    },
+    {
+     "label": "Atasan yang menyetujui"
+    },
+    {
+     "label": "Pelatihan berikutnya"
+    },
+    {
+     "label": "Evaluasi efektivitas tindakan"
+    }
+   ],
+   "baris": [
+    [
+     "Anggota Tim Energi",
+     "Koordinasi dan pengelolaan EnMS",
+     "Pengenalan EnMS ISO 50001:2018; tinjauan energi; SEU; EnPI; tujuan dan target",
+     "",
+     "",
+     "",
+     "Pemahaman konsep dan tanggung jawab diverifikasi melalui tes/observasi: ________"
+    ],
+    [
+     "Pimpinan/manajemen lokasi",
+     "Kepemimpinan, sumber daya, dan tinjauan manajemen",
+     "Peran kepemimpinan, peninjauan target, dan keputusan peningkatan kinerja energi",
+     "",
+     "",
+     "",
+     "Bukti keterlibatan dan keputusan terdokumentasi: ________"
+    ],
+    [
+     "Manajer teknik/fasilitas",
+     "Pengelolaan sistem utilitas dan fasilitas signifikan",
+     "Analisis data energi, pengendalian operasi, HVAC, pencahayaan, pompa, dan pemeliharaan",
+     "",
+     "",
+     "",
+     "Kemampuan analisis dan penerapan kontrol diverifikasi: ________"
+    ],
+    [
+     "Petugas operasi gedung/utilitas",
+     "Pengoperasian peralatan yang memengaruhi konsumsi energi",
+     "SOP operasi hemat energi, pembacaan meter, pengaturan setelan, dan pelaporan abnormalitas",
+     "",
+     "",
+     "",
+     "Observasi kepatuhan SOP dan kelengkapan log: ________"
+    ],
+    [
+     "Petugas pemeliharaan",
+     "Menjaga kinerja peralatan dan fasilitas",
+     "Inspeksi, pemeliharaan efisien energi, uji fungsi, dan rekaman pekerjaan",
+     "",
+     "",
+     "",
+     "Hasil pekerjaan dan kondisi peralatan diverifikasi: ________"
+    ],
+    [
+     "Pengadaan/kontrak",
+     "Pemilihan peralatan/jasa dan pengendalian kontraktor",
+     "Kriteria efisiensi energi, spesifikasi, evaluasi pemasok, dan komunikasi persyaratan",
+     "",
+     "",
+     "",
+     "Dokumen pengadaan/kontrak menunjukkan penerapan kriteria: ________"
+    ],
+    [
+     "Administrasi/keuangan/data",
+     "Pencatatan dan pelaporan energi",
+     "Validasi data meter/tagihan, pengendalian rekaman, dan pelaporan indikator energi",
+     "",
+     "",
+     "",
+     "Data akurat, lengkap, konsisten, dan tertelusur: ________"
+    ],
+    [
+     "Kontraktor/pemasok terkait",
+     "Pekerjaan yang memengaruhi EnMS/kinerja energi",
+     "Induksi, persyaratan operasi dan pemeliharaan, serta kompetensi khusus pekerjaan",
+     "",
+     "",
+     "",
+     "Kepatuhan kerja dan bukti kompetensi diverifikasi: ________"
+    ]
+   ]
+  }
+ ],
+ "ttd": [
+  {
+   "peran": "Disiapkan oleh",
+   "jabatan": "Dokumen Kontrol"
+  },
+  {
+   "peran": "Ditinjau oleh",
+   "jabatan": "Management Representative"
+  },
+  {
+   "peran": "Disetujui oleh",
+   "jabatan": "Direktur"
+  }
+ ],
+ "sumber": "7.2 Kompetensi/001_ Formulir Kompetensi dan Pelatihan.docx",
+ "nomor": "001/SOP-016/KINRA/SMEn/X/2026"
+}
