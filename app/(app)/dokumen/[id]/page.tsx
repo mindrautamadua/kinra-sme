@@ -16,6 +16,7 @@ import { db } from '@/lib/supabase'
 import type { Dokumen, Temuan } from '@/lib/types'
 import { EvidenceBerkas } from './EvidenceBerkas'
 import { FormDokumen } from './FormDokumen'
+import { HapusIsian } from './HapusIsian'
 
 export const dynamic = 'force-dynamic'
 
@@ -83,11 +84,14 @@ export default async function HalamanDokumen({ params }: { params: Promise<{ id:
                   </Link>
                 ))}
                 {daftarIsian.map((x) => (
-                  <Link key={x.id} href={`/formulir/isian/${x.id}`} className="list-item">
-                    <span className="mono small muted" style={{ width: 130 }}>{waktu(x.diubah_at)}</span>
-                    <span className="grow small">{x.judul}</span>
-                    <Chip kode={STATUS_FORMULIR[x.status].chip} label={STATUS_FORMULIR[x.status].label} />
-                  </Link>
+                  <div key={x.id}>
+                    <Link href={`/formulir/isian/${x.id}`} className="list-item" style={{ display: 'flex', gap: 12, alignItems: 'center', flex: 1, minWidth: 0, color: 'inherit', textDecoration: 'none' }}>
+                      <span className="mono small muted" style={{ width: 130 }}>{waktu(x.diubah_at)}</span>
+                      <span className="grow small">{x.judul}</span>
+                      <Chip kode={STATUS_FORMULIR[x.status].chip} label={STATUS_FORMULIR[x.status].label} />
+                    </Link>
+                    <HapusIsian id={x.id} judul={x.judul} />
+                  </div>
                 ))}
               </div>
             </div>

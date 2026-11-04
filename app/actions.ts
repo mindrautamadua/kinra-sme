@@ -452,7 +452,7 @@ export async function segarkanDataIsian(id: string): Promise<Hasil & { versi?: s
 export async function hapusIsian(id: string): Promise<Hasil> {
   const t = await tolak('formulir.hapus'); if (t) return t
   const { data, error } = await (await db()).from('formulir_isian').delete().eq('id', id).select('id')
-  revalidatePath('/formulir', 'layout')
+  revalidatePath('/', 'layout')
   if (!error && !data?.length) return { ok: false, pesan: 'Isian tidak terhapus: tidak punya akses.' }
   return gagal(error)
 }

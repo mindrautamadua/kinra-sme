@@ -1,4 +1,4 @@
-/** Matriks hak akses. Sinkron dengan policy RLS di supabase/migrations/0006_login_peran.sql, 0007, 0009, dan 0011. */
+/** Matriks hak akses. Sinkron dengan policy RLS di supabase/migrations/0006_login_peran.sql, 0007, 0009, 0011, dan 0014. */
 export type Peran = 'admin' | 'konsultan' | 'tim_kinra' | 'pembaca'
 
 export const LABEL_PERAN: Record<Peran, string> = { admin: 'Admin', konsultan: 'Konsultan', tim_kinra: 'Tim KINRA', pembaca: 'Pembaca' }
@@ -30,7 +30,7 @@ export const AKSES = {
   'temuan.hapus': ['admin'],
   'formulir.isi': SEMUA,                        // buat, isi, ajukan formulir
   'formulir.setujui': ['admin', 'konsultan'],   // setujui / buka kembali formulir
-  'formulir.hapus': ['admin'],
+  'formulir.hapus': ['admin', 'tim_kinra'],     // migrasi 0014
   'pengguna.kelola': ['admin'],
 } satisfies Record<string, Peran[]>
 
