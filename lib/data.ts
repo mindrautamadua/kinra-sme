@@ -33,6 +33,11 @@ export async function ambilBerkas(dokumenId: string): Promise<{ berkas: BerkasTa
   return { berkas: daftar.map((b) => ({ ...b, url: tanda?.find((t) => t.path === b.path)?.signedUrl ?? null })), migrasi: false }
 }
 
+/** Metadata semua berkas evidence (tanpa signed URL; URL dibuat saat berkas dibuka). */
+export async function ambilDaftarBerkas(): Promise<Berkas[]> {
+  return cek(await (await db()).from('berkas').select('*').not('dokumen_id', 'is', null).order('diunggah_at').limit(10000), 'berkas')
+}
+
 /** Jejak unggah berkas evidence semua dokumen, terlama dulu: bahan tren dan aktivitas. */
 export async function ambilJejakBukti(): Promise<JejakBukti[]> {
   const r = await (await db()).from('berkas').select('dokumen_id, nama_file, diunggah_oleh, diunggah_at').not('dokumen_id', 'is', null).order('diunggah_at').limit(10000)

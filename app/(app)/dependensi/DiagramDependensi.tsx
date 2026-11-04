@@ -17,7 +17,7 @@ export type NodeDok = {
 type Rel = { k: string; r: string }
 
 // Ukuran tata letak (px)
-const W = 184, H = 46, GX = 56, GY = 8, TOP = 62, SUBH = 22, PADX = 16, JEDA_SUB = 6
+const W = 184, H = 46, GX = 56, GY = 8, TOP = 62, SUBH = 34, PADX = 16, JEDA_SUB = 6
 
 export function DiagramDependensi({ nodes, judulKlausul, urutanKlausul }: { nodes: NodeDok[]; judulKlausul: Record<string, string>; urutanKlausul: string[] }) {
   const [sel, setSel] = useState<string | null>(null)
@@ -43,7 +43,7 @@ export function DiagramDependensi({ nodes, judulKlausul, urutanKlausul }: { node
   // Posisi kotak dan judul subklausul per kolom
   const tata = useMemo(() => {
     const pos: Record<string, { x: number; y: number }> = {}
-    const sub: { x: number; y: number; teks: string }[] = []
+    const sub: { x: number; y: number; kode: string; judul: string }[] = []
     let tinggi = 0
     KOLOM_DEPENDENSI.forEach((kol, i) => {
       const x = PADX + i * (W + GX)
@@ -51,7 +51,7 @@ export function DiagramDependensi({ nodes, judulKlausul, urutanKlausul }: { node
       for (const kl of urutanKlausul) {
         const ds = tampil.filter((n) => n.kolom === kol.id && n.klausul === kl).sort((a, b) => a.kode.localeCompare(b.kode))
         if (!ds.length) continue
-        if (kl !== 'P') { sub.push({ x, y: y + 4, teks: `${kl} · ${judulKlausul[kl] ?? ''}` }); y += SUBH }
+        if (kl !== 'P') { sub.push({ x, y: y + 2, kode: kl, judul: judulKlausul[kl] ?? '' }); y += SUBH }
         for (const n of ds) { pos[n.kode] = { x, y }; y += H + GY }
         y += JEDA_SUB
       }
@@ -161,7 +161,7 @@ export function DiagramDependensi({ nodes, judulKlausul, urutanKlausul }: { node
             {KOLOM_DEPENDENSI.map((kol, i) => (
               <div key={kol.id} className="dp-kolom" style={{ left: PADX + i * (W + GX) }}>{kol.judul}<small>{kol.sub}</small></div>
             ))}
-            {tata.sub.map((s) => <div key={`${s.x}-${s.y}`} className="dp-sub" style={{ left: s.x, top: s.y, width: W }} title={s.teks}>{s.teks}</div>)}
+            {tata.sub.map((s) => <div key={`${s.x}-${s.y}`} className="dp-sub" style={{ left: s.x, top: s.y, width: W }} title={`${s.kode} · ${s.judul}`}><b>{s.kode}</b> · {s.judul}</div>)}
             {tampil.map((n) => {
               const p = tata.pos[n.kode]
               if (!p) return null
