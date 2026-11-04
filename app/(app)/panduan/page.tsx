@@ -1,4 +1,4 @@
-import { Activity, BookOpen, Bot, CalendarRange, CircleCheck, ClipboardCheck, FileText, Gauge, KeyRound, LayoutDashboard, Minus, SearchCheck, ShieldAlert, Target, Users } from 'lucide-react'
+import { Activity, BookOpen, Bot, CalendarRange, CircleCheck, ClipboardCheck, FileText, Gauge, KeyRound, LayoutDashboard, Minus, Network, SearchCheck, ShieldAlert, Target, Users } from 'lucide-react'
 import { FITUR_FORMULIR } from '@/lib/fitur'
 import Link from 'next/link'
 import { Chip } from '@/components/Chip'
@@ -22,6 +22,7 @@ const BAB = [
 const MODUL = [
   { href: '/', ikon: LayoutDashboard, nama: 'Ringkasan', klausul: 'Gambaran besar', isi: 'Skor kesiapan, tren & proyeksi menuju audit, insight prioritas, beban PIC, aktivitas terbaru, dan cuplikan kinerja energi.' },
   { href: '/kesiapan', ikon: ClipboardCheck, nama: 'Kesiapan Audit', klausul: 'Klausul 4–10', isi: 'Lembar monitoring semua dokumen dan rekaman yang akan diperiksa auditor: PIC, tenggat, lihat berkas evidence, unduh CSV.' },
+  { href: '/dependensi', ikon: Network, nama: 'Peta Evidence', klausul: 'Klausul 4–10', isi: 'Diagram hubungan antardokumen: dokumen mana yang menjadi masukan bagi dokumen lain, status evidence masing-masing, dan dokumen yang tertahan karena masukannya belum lengkap.' },
   ...(FITUR_FORMULIR ? [{ href: '/formulir', ikon: FileText, nama: 'Formulir', klausul: 'Klausul 4–10', isi: 'Semua formulir SMEn diisi langsung di aplikasi: buat isian, isi tabel, ajukan, setujui, lalu cetak atau simpan sebagai PDF.' }] : []),
   { href: '/energi', ikon: Gauge, nama: 'Data Energi', klausul: 'Klausul 6.3', isi: 'Input konsumsi bulanan per sumber (PLN, PLTBG, PLTS, BBM), aliran energi, peta panas, dan tren antar tahun dalam Terajoule.' },
   { href: '/kinerja', ikon: Activity, nama: 'Kinerja Energi', klausul: 'Klausul 6.4 & 6.5', isi: 'EnPI dan baseline energi (EnB): aktual vs harapan, CUSUM, uji kelayakan model, input variabel relevan bulanan.' },
