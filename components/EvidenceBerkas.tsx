@@ -42,11 +42,14 @@ function kirim(path: string, token: string, file: File, onPersen: (p: number) =>
   })
 }
 
-/** Daftar berkas evidence + unggah banyak berkas (dengan progres per berkas) + penampil langsung di aplikasi. */
-export function EvidenceBerkas({ dokumenId, berkas, migrasi }: { dokumenId: string; berkas: BerkasTampil[]; migrasi: boolean }) {
+/**
+ * Daftar berkas evidence + unggah banyak berkas (dengan progres per berkas) + penampil langsung di aplikasi.
+ * `hanyaLihat`: daftar dan penampil saja, tanpa unggah atau hapus (unggah hanya di Kesiapan Audit).
+ */
+export function EvidenceBerkas({ dokumenId, berkas, migrasi = false, onBerubah, hanyaLihat = false }: { dokumenId: string; berkas: BerkasTampil[]; migrasi?: boolean; onBerubah?: () => void; hanyaLihat?: boolean }) {
   const router = useRouter()
   const bisa = useBoleh()
-  const bisaUbah = bisa('dokumen.ubah')
+  const bisaUbah = !hanyaLihat && bisa('dokumen.ubah')
   const [antrean, setAntrean] = useState<Antrean[]>([])
   const [galat, setGalat] = useState<string | null>(null)
   const [seret, setSeret] = useState(false)
@@ -74,6 +77,7 @@ export function EvidenceBerkas({ dokumenId, berkas, migrasi }: { dokumenId: stri
     const c = await catatBerkas(dokumenId, { path: s.path, nama_file: file.name, mime: file.type, ukuran: file.size })
     if (!c.ok) return ubah(id, { tahap: 'gagal', pesan: c.pesan })
     ubah(id, { tahap: 'sukses', path: s.path })
+    onBerubah?.()
     router.refresh()
     // Baris sukses memudar lalu hilang; berkasnya sudah muncul di daftar di atas
     setTimeout(() => setAntrean((a) => a.filter((x) => x.id !== id)), 4000)
@@ -103,6 +107,7 @@ export function EvidenceBerkas({ dokumenId, berkas, migrasi }: { dokumenId: stri
       const h = await hapusBerkas(b.id)
       if (!h.ok) return setGalat(h.pesan)
       setBuka(null)
+      onBerubah?.()
       router.refresh()
     })
   }

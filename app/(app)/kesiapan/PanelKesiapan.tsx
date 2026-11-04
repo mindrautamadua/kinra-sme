@@ -71,7 +71,7 @@ export function PanelKesiapan({ rows, klausul, kini, kl, setKl, hanyaLewat, setH
           <div className="stackbar ks-ringkas-bar" role="img" aria-label={`Kesiapan ${fmt(skor, 1)}%`}>
             <span className="bg-good" style={{ width: `${Math.min(100, skor)}%` }} />
           </div>
-          <span className="muted small">Dokumen dihitung siap bila berkas evidence sudah diunggah atau isian formulirnya sudah disetujui.</span>
+          <span className="muted small">Dokumen dihitung siap begitu minimal satu berkas evidence diunggah. Unggah lewat kolom Evidence di tabel.</span>
         </div>
       </div>
 
@@ -84,7 +84,7 @@ export function PanelKesiapan({ rows, klausul, kini, kl, setKl, hanyaLewat, setH
         <button type="button" className={`insight ks-alert ${kosongBukti ? 'perhatian' : 'positif'}`} aria-pressed={tanpaBukti} onClick={() => setTanpaBukti(!tanpaBukti)}>
           <span className="area"><Link2Off aria-hidden="true" />Tanpa evidence</span>
           <span className="angka tnum"><Angka nilai={kosongBukti} /><small> dokumen</small></span>
-          <span className="ket">{kosongBukti ? 'Belum ada berkas atau isian formulir disetujui. Klik untuk menyaring' : 'Semua dokumen sudah punya evidence'}</span>
+          <span className="ket">{kosongBukti ? 'Belum ada berkas terunggah. Klik untuk menyaring' : 'Semua dokumen sudah punya evidence'}</span>
         </button>
         <div className="insight ks-alert info">
           <span className="area"><TimerReset aria-hidden="true" />Jatuh tempo 7 hari</span>

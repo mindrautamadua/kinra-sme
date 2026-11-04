@@ -1,10 +1,10 @@
-import { ClipboardCheck, FileCheck2, FileUp, Link2Off, SearchCheck, Target, TrendingUp, UserRound, Zap } from 'lucide-react'
+import { ClipboardCheck, FileUp, Link2Off, SearchCheck, Target, TrendingUp, UserRound, Zap } from 'lucide-react'
 import Link from 'next/link'
 import { AngkaNaik } from '@/components/AngkaNaik'
 import { Grafik } from '@/components/charts/Grafik'
 import { Chip } from '@/components/Chip'
 import { SectionHead } from '@/components/SectionHead'
-import { ambilDokumen, ambilJejakBukti, ambilKegiatan, ambilKinerja, ambilKlausul, ambilTemuan, isianDiajukanPerDokumen, rekapEnergi } from '@/lib/data'
+import { ambilDokumen, ambilJejakBukti, ambilKegiatan, ambilKinerja, ambilKlausul, ambilTemuan, rekapEnergi } from '@/lib/data'
 import { LABEL_METODE, ringkas } from '@/lib/enpi'
 import { angka, BULAN, delta, hariIni, persen, selisihHari, tanggal, waktu } from '@/lib/format'
 import { adaBukti, hariWib, kesiapan, kesiapanPerKlausul, KELOMPOK, terlambat, tonggakDari, trenKesiapan } from '@/lib/status'
@@ -12,7 +12,7 @@ import { adaBukti, hariWib, kesiapan, kesiapanPerKlausul, KELOMPOK, terlambat, t
 export const dynamic = 'force-dynamic'
 
 export default async function Ringkasan() {
-  const [dokumen, klausul, temuan, kegiatan, kinerja, jejak, diajukan] = await Promise.all([ambilDokumen(), ambilKlausul(), ambilTemuan(), ambilKegiatan(), ambilKinerja(), ambilJejakBukti(), isianDiajukanPerDokumen()])
+  const [dokumen, klausul, temuan, kegiatan, kinerja, jejak] = await Promise.all([ambilDokumen(), ambilKlausul(), ambilTemuan(), ambilKegiatan(), ambilKinerja(), ambilJejakBukti()])
   const energi = { sumber: kinerja.sumber, data: kinerja.energi }
   const kini = hariIni()
 
@@ -85,9 +85,9 @@ export default async function Ringkasan() {
   const akhir = hariLalu.length - 1
 
   // Insight
-  // Quick win: dokumen tanpa evidence yang isian formulirnya sudah diajukan, tinggal disetujui
-  const nAjuan = dokumen.filter((d) => !adaBukti(d) && (diajukan.get(d.kode) ?? 0) > 0).length
-  const naikAjuan = dokumen.length ? (nAjuan / dokumen.length) * 100 : 0
+  // Quick win: dokumen tanpa evidence yang tenggatnya sudah lewat atau jatuh dalam 7 hari
+  const nMendesak = dokumen.filter((d) => !adaBukti(d) && d.tenggat && selisihHari(d.tenggat) <= 7).length
+  const naikMendesak = dokumen.length ? (nMendesak / dokumen.length) * 100 : 0
   const tanpaBukti = dokumen.length - siap
   const mayor = temuanBuka.filter((t) => t.kategori === 'Mayor').length
   const perPic = Object.values(dokumen.reduce<Record<string, { pic: string; ds: typeof dokumen }>>((a, d) => {
@@ -115,7 +115,7 @@ export default async function Ringkasan() {
         <div className="ks-kepala">
           <SectionHead hero eyebrow="Kesiapan audit ISO 50001:2018" judul={<>Kesiapan dokumen <span className="ks-sorot">{persen(skor)}</span>: {siap} dari {dokumen.length} dokumen siap diaudit</>}>
             <p className="muted">
-              Persentase dokumen dan rekaman yang sudah punya evidence: berkas terunggah atau isian formulir yang disetujui.
+              Persentase dokumen dan rekaman yang sudah punya berkas evidence terunggah di Kesiapan Audit.
               {berikut && <> {berikut.nama} dijadwalkan {tanggal(berikut.tanggal, 'panjang')}, {hBerikut} hari lagi.</>}
             </p>
           </SectionHead>
@@ -213,11 +213,11 @@ export default async function Ringkasan() {
             <h3>{skor >= 100 ? 'Semua dokumen siap' : tgl100 === null ? 'Skor tidak naik 14 hari terakhir' : keburu ? `Tuntas sebelum ${berikut?.nama}` : `${berikut ? selisihHari(tgl100) - hBerikut : 0} hari setelah ${berikut?.nama ?? 'audit'}`}</h3>
             <p>{lajuPerlu !== null && skor < 100 ? `Butuh +${angka(lajuPerlu, 1)} poin/hari; laju sekarang ${laju === null ? '–' : `${angka(laju, 2)}`} poin/hari.` : 'Jaga evidence tetap lengkap dan mutakhir.'}</p>
           </Link>
-          <Link href="/formulir" className="insight positif">
+          <Link href="/kesiapan" className="insight positif">
             <span className="area"><Zap aria-hidden="true" />Quick win</span>
-            <div className="angka tnum">+{angka(naikAjuan, 1)} poin</div>
-            <h3>{nAjuan} dokumen tinggal disetujui isiannya</h3>
-            <p>{nAjuan ? `Menyetujui isian formulir yang sudah diajukan menaikkan skor ke ${persen(Math.min(100, skor + naikAjuan))}.` : 'Belum ada isian formulir yang menunggu persetujuan.'}</p>
+            <div className="angka tnum">+{angka(naikMendesak, 1)} poin</div>
+            <h3>{nMendesak} dokumen mendesak tanpa evidence</h3>
+            <p>{nMendesak ? `Tenggatnya lewat atau jatuh dalam 7 hari. Mengunggah evidence-nya menaikkan skor ke ${persen(Math.min(100, skor + naikMendesak))}.` : 'Tidak ada dokumen mendesak yang belum punya evidence.'}</p>
           </Link>
           {terlemah[0] && (
             <Link href={`/kesiapan?klausul=${encodeURIComponent(terlemah[0].kode)}`} className="insight kritis">
@@ -271,19 +271,15 @@ export default async function Ringkasan() {
             </div>
           </div>
           <div className="card">
-            <div className="row"><div><h3>Aktivitas terbaru</h3><p className="muted small">Evidence terbaru: berkas diunggah dan isian formulir disetujui</p></div><Link className="btn kecil" href="/kesiapan">Lembar kesiapan</Link></div>
+            <div className="row"><div><h3>Aktivitas terbaru</h3><p className="muted small">Berkas evidence yang terakhir diunggah</p></div><Link className="btn kecil" href="/kesiapan">Lembar kesiapan</Link></div>
             <div className="list">
               {aktivitas.length === 0 && <p className="muted">Belum ada evidence tercatat.</p>}
               {aktivitas.map((r, i) => {
                 const d = namaDok[r.dokumen_id]
-                const Ikon = r.jenis === 'berkas' ? FileUp : FileCheck2
-                return (
+                                return (
                   <Link key={`${r.dokumen_id}-${r.at}-${i}`} href={`/dokumen/${d.id}`} className="list-item hm-akt">
-                    <span className="hm-akt-ikon naik"><Ikon aria-label={r.jenis === 'berkas' ? 'berkas diunggah' : 'isian disetujui'} /></span>
+                    <span className="hm-akt-ikon naik"><FileUp aria-label="berkas diunggah" /></span>
                     <span className="grow"><b>{d.nama}</b><span className="muted small">{d.kode} · {r.label} · {r.oleh ?? 'sistem'} · {waktu(r.at)}</span></span>
-                    <span className="hm-akt-status">
-                      <Chip kode={r.jenis === 'berkas' ? 'info' : 'good'} label={r.jenis === 'berkas' ? 'Berkas' : 'Isian disetujui'} />
-                    </span>
                   </Link>
                 )
               })}

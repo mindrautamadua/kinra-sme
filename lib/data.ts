@@ -1,6 +1,5 @@
 import 'server-only'
 import { hitungEnpi } from './enpi'
-import { DOKUMEN_TEMPLAT } from './formulir/tautan'
 import { BUCKET_BUKTI } from './status'
 import { db } from './supabase'
 import type { Berkas, BerkasTampil, Dokumen, EnergiBulanan, Enpi, Isu, JejakBukti, Kegiatan, Klausul, Peluang, RencanaAksi, Sasaran, SumberEnergi, Temuan, VariabelBulanan, VariabelRelevan } from './types'
@@ -18,26 +17,10 @@ export async function ambilKlausul(): Promise<Klausul[]> {
 
 export async function ambilDokumen(): Promise<Dokumen[]> {
   const s = await db()
-  const [r, isian] = await Promise.all([
-    s.from('dokumen_audit').select('*, berkas(count)').order('kode'),
-    isianDisetujuiPerDokumen(),
-  ])
-  const tambah = (d: Dokumen) => ({ ...d, jumlah_isian: isian.get(d.kode) ?? 0 })
+  const r = await s.from('dokumen_audit').select('*, berkas(count)').order('kode')
   // Relasi berkas belum ada (migrasi 0010 belum dijalankan): baca tanpa jumlah berkas
-  if (r.error?.code === 'PGRST200') return cek<Dokumen[]>(await s.from('dokumen_audit').select('*').order('kode'), 'dokumen_audit').map(tambah)
-  return cek(r, 'dokumen_audit').map(({ berkas, ...d }: Dokumen & { berkas?: { count: number }[] }) => tambah({ ...d, jumlah_berkas: berkas?.[0]?.count ?? 0 }))
-}
-
-/** Jumlah isian formulir disetujui per kode dokumen kesiapan. Kosong bila tabel formulir belum ada (migrasi 0011). */
-export async function isianDisetujuiPerDokumen(): Promise<Map<string, number>> {
-  const { data, error } = await (await db()).from('formulir_isian').select('templat_kode').eq('status', 'disetujui')
-  const hasil = new Map<string, number>()
-  if (error) return hasil
-  for (const { templat_kode } of data as { templat_kode: string }[]) {
-    const kode = DOKUMEN_TEMPLAT[templat_kode]
-    if (kode) hasil.set(kode, (hasil.get(kode) ?? 0) + 1)
-  }
-  return hasil
+  if (r.error?.code === 'PGRST200') return cek<Dokumen[]>(await s.from('dokumen_audit').select('*').order('kode'), 'dokumen_audit')
+  return cek(r, 'dokumen_audit').map(({ berkas, ...d }: Dokumen & { berkas?: { count: number }[] }) => ({ ...d, jumlah_berkas: berkas?.[0]?.count ?? 0 }))
 }
 
 /** Berkas evidence satu dokumen beserta signed URL (bucket privat, berlaku 1 jam). `migrasi` true bila tabel berkas belum ada. */
@@ -50,37 +33,12 @@ export async function ambilBerkas(dokumenId: string): Promise<{ berkas: BerkasTa
   return { berkas: daftar.map((b) => ({ ...b, url: tanda?.find((t) => t.path === b.path)?.signedUrl ?? null })), migrasi: false }
 }
 
-/** Jejak evidence semua dokumen (unggah berkas dan isian formulir disetujui), terlama dulu: bahan tren dan aktivitas. */
+/** Jejak unggah berkas evidence semua dokumen, terlama dulu: bahan tren dan aktivitas. */
 export async function ambilJejakBukti(): Promise<JejakBukti[]> {
-  const s = await db()
-  const [b, i, d] = await Promise.all([
-    s.from('berkas').select('dokumen_id, nama_file, diunggah_oleh, diunggah_at').not('dokumen_id', 'is', null).limit(10000),
-    s.from('formulir_isian').select('templat_kode, judul, disetujui_oleh, disetujui_at').eq('status', 'disetujui').not('disetujui_at', 'is', null),
-    s.from('dokumen_audit').select('id, kode'),
-  ])
-  const idDariKode = new Map((d.data ?? []).map((x: { id: string; kode: string }) => [x.kode, x.id]))
-  const jejak: JejakBukti[] = [
-    ...(b.error ? [] : (b.data as { dokumen_id: string; nama_file: string; diunggah_oleh: string | null; diunggah_at: string }[]))
-      .map((x) => ({ dokumen_id: x.dokumen_id, at: x.diunggah_at, oleh: x.diunggah_oleh, jenis: 'berkas' as const, label: x.nama_file })),
-    ...(i.error ? [] : (i.data as { templat_kode: string; judul: string | null; disetujui_oleh: string | null; disetujui_at: string }[]))
-      .flatMap((x) => {
-        const id = idDariKode.get(DOKUMEN_TEMPLAT[x.templat_kode] ?? '')
-        return id ? [{ dokumen_id: id, at: x.disetujui_at, oleh: x.disetujui_oleh, jenis: 'isian' as const, label: x.judul ?? 'Isian formulir' }] : []
-      }),
-  ]
-  return jejak.sort((a, b) => a.at.localeCompare(b.at))
-}
-
-/** Jumlah isian formulir yang diajukan dan menunggu persetujuan, per kode dokumen kesiapan. */
-export async function isianDiajukanPerDokumen(): Promise<Map<string, number>> {
-  const { data, error } = await (await db()).from('formulir_isian').select('templat_kode').eq('status', 'diajukan')
-  const hasil = new Map<string, number>()
-  if (error) return hasil
-  for (const { templat_kode } of data as { templat_kode: string }[]) {
-    const kode = DOKUMEN_TEMPLAT[templat_kode]
-    if (kode) hasil.set(kode, (hasil.get(kode) ?? 0) + 1)
-  }
-  return hasil
+  const r = await (await db()).from('berkas').select('dokumen_id, nama_file, diunggah_oleh, diunggah_at').not('dokumen_id', 'is', null).order('diunggah_at').limit(10000)
+  if (r.error) return []
+  return (r.data as { dokumen_id: string; nama_file: string; diunggah_oleh: string | null; diunggah_at: string }[])
+    .map((x) => ({ dokumen_id: x.dokumen_id, at: x.diunggah_at, oleh: x.diunggah_oleh, label: x.nama_file }))
 }
 
 export async function ambilEnergi(): Promise<{ sumber: SumberEnergi[]; data: EnergiBulanan[] }> {

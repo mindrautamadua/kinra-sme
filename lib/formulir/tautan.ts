@@ -5,7 +5,7 @@
 
 /**
  * Templat formulir → kode dokumen di lembar Kesiapan Audit (`dokumen_audit.kode`).
- * Isian yang disetujui dihitung sebagai evidence dokumen tersebut.
+ * Hanya rujukan; isian tidak dihitung sebagai evidence (evidence = berkas yang diunggah di Kesiapan Audit).
  */
 export const DOKUMEN_TEMPLAT: Record<string, string> = {
   'isu-internal-eksternal': 'F-4.1-01',

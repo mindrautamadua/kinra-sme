@@ -1,10 +1,11 @@
 'use client'
 
-import { Download, Eye, Search, X } from 'lucide-react'
+import { Download, Eye, Search, Upload, X } from 'lucide-react'
 import Link from 'next/link'
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { lihatBerkas } from '@/app/actions'
-import { PenampilBerkas } from '@/components/PenampilBerkas'
+import { EvidenceBerkas } from '@/components/EvidenceBerkas'
+import { useBoleh } from '@/components/Peran'
 import { selisihHari, tanggal } from '@/lib/format'
 import { adaBukti, KELOMPOK, kesiapan, terlambat } from '@/lib/status'
 import type { BerkasTampil, Dokumen, KelompokDokumen, Klausul } from '@/lib/types'
@@ -20,18 +21,33 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal }: {
   const [hanyaLewat, setHanyaLewat] = useState(false)
   const [tanpaBukti, setTanpaBukti] = useState(false)
   const [galat, setGalat] = useState<string | null>(null)
-  const [lihat, setLihat] = useState<{ judul: string; berkas: BerkasTampil[] } | null>(null)
-  const [indeks, setIndeks] = useState<number | null>(null)
+  const bisa = useBoleh()
+  const bisaUnggah = bisa('dokumen.ubah')
+  // Panel evidence: satu-satunya tempat melihat, mengunggah, dan menghapus berkas evidence
+  const dlg = useRef<HTMLDialogElement>(null)
+  const [panel, setPanel] = useState<{ d: Dokumen; berkas: BerkasTampil[] } | null>(null)
   const [memuat, setMemuat] = useState<string | null>(null)
 
-  async function bukaBerkas(d: Dokumen) {
-    setMemuat(d.id)
+  async function muatBerkas(d: Dokumen) {
     const h = await lihatBerkas(d.id)
+    if (!h.ok) { setGalat(`Berkas ${d.kode} gagal dimuat: ${h.pesan}`); return null }
+    return h.berkas ?? []
+  }
+
+  async function bukaPanel(d: Dokumen) {
+    setGalat(null)
+    setMemuat(d.id)
+    const berkas = await muatBerkas(d)
     setMemuat(null)
-    if (!h.ok) return setGalat(`Berkas ${d.kode} gagal dimuat: ${h.pesan}`)
-    if (!h.berkas?.length) return setGalat(`Berkas ${d.kode} tidak ditemukan.`)
-    setLihat({ judul: `${d.kode} · ${d.nama}`, berkas: h.berkas })
-    setIndeks(0)
+    if (!berkas) return
+    setPanel({ d, berkas })
+    dlg.current?.showModal()
+  }
+
+  async function segarkanPanel() {
+    if (!panel) return
+    const berkas = await muatBerkas(panel.d)
+    if (berkas) setPanel((p) => (p ? { ...p, berkas } : p))
   }
 
   const judulKlausul = useMemo(() => Object.fromEntries(klausul.map((k) => [k.kode, k])), [klausul])
@@ -52,9 +68,9 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal }: {
   }
 
   function unduhCsv() {
-    const kolom = ['Kode', 'Klausul', 'Kelompok', 'Nama', 'Nomor dokumen', 'PIC', 'Tenggat', 'Berkas evidence', 'Isian formulir disetujui', 'Keterangan']
+    const kolom = ['Kode', 'Klausul', 'Kelompok', 'Nama', 'Nomor dokumen', 'PIC', 'Tenggat', 'Berkas evidence', 'Keterangan']
     const esc = (v: unknown) => `"${String(v ?? '').replace(/"/g, '""')}"`
-    const isi = tersaring.map((d) => [d.kode, d.klausul_kode, KELOMPOK[d.kelompok], d.nama, d.nomor_dokumen, d.pic, d.tenggat, d.jumlah_berkas ?? 0, d.jumlah_isian ?? 0, d.keterangan].map(esc).join(','))
+    const isi = tersaring.map((d) => [d.kode, d.klausul_kode, KELOMPOK[d.kelompok], d.nama, d.nomor_dokumen, d.pic, d.tenggat, d.jumlah_berkas ?? 0, d.keterangan].map(esc).join(','))
     const blob = new Blob(['﻿' + [kolom.map(esc).join(','), ...isi].join('\n')], { type: 'text/csv;charset=utf-8' })
     const a = document.createElement('a')
     a.href = URL.createObjectURL(blob)
@@ -71,7 +87,7 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal }: {
         hanyaLewat={hanyaLewat} setHanyaLewat={setHanyaLewat} tanpaBukti={tanpaBukti} setTanpaBukti={setTanpaBukti} />
       <div className="card ks-tabel" id="tabel-kesiapan">
         <div className="row">
-          <div><h3>Lembar monitoring</h3><p className="muted small">Klik nama dokumen untuk membuka detail dan mengunggah evidence</p></div>
+          <div><h3>Lembar monitoring</h3><p className="muted small">Klik tombol di kolom Evidence untuk mengunggah atau melihat berkas</p></div>
           {adaSaring && <button type="button" className="btn kecil" onClick={reset}><X aria-hidden="true" />Hapus semua saringan</button>}
         </div>
         <div className="toolbar">
@@ -154,11 +170,13 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal }: {
                     </td>
                     <td className="num">
                       {(d.jumlah_berkas ?? 0) > 0
-                        ? <button type="button" className="btn kecil" disabled={memuat === d.id} onClick={() => bukaBerkas(d)} aria-label={`Lihat ${d.jumlah_berkas} berkas evidence ${d.kode}`}>
-                            <Eye aria-hidden="true" /> {memuat === d.id ? 'Memuat…' : `Lihat${d.jumlah_berkas! > 1 ? ` (${d.jumlah_berkas})` : ''}`}
+                        ? <button type="button" className="btn kecil" disabled={memuat === d.id} onClick={() => bukaPanel(d)} aria-label={`Lihat ${d.jumlah_berkas} berkas evidence ${d.kode}`}>
+                            <Eye aria-hidden="true" /> {memuat === d.id ? 'Memuat…' : `${d.jumlah_berkas} berkas`}
                           </button>
-                        : (d.jumlah_isian ?? 0) > 0
-                          ? <Link className="btn kecil" href={`/dokumen/${d.id}#formulir`}>{d.jumlah_isian} isian</Link>
+                        : bisaUnggah
+                          ? <button type="button" className="btn kecil utama" disabled={memuat === d.id} onClick={() => bukaPanel(d)} aria-label={`Unggah evidence ${d.kode}`}>
+                              <Upload aria-hidden="true" /> {memuat === d.id ? 'Memuat…' : 'Unggah'}
+                            </button>
                           : <span className="txt-bad small">belum ada</span>}
                     </td>
                   </tr>,
@@ -171,7 +189,21 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal }: {
           </table>
         </div>
       </div>
-      {lihat && <PenampilBerkas berkas={lihat.berkas} judul={lihat.judul} indeks={indeks} setIndeks={setIndeks} />}
+      <dialog ref={dlg} className="panel" onClose={() => setPanel(null)} aria-labelledby="judul-evidence">
+        {panel && (
+          <div className="card">
+            <div className="row">
+              <div>
+                <span className="eyebrow">{panel.d.kode} · Evidence</span>
+                <h3 id="judul-evidence">{panel.d.nama}</h3>
+                <p className="muted small">Klik berkas untuk melihatnya. Dokumen dihitung siap begitu ada minimal satu berkas.</p>
+              </div>
+              <button type="button" className="btn btn-ikon" aria-label="Tutup" onClick={() => dlg.current?.close()}><X aria-hidden="true" /></button>
+            </div>
+            <EvidenceBerkas key={panel.d.id} dokumenId={panel.d.id} berkas={panel.berkas} onBerubah={segarkanPanel} />
+          </div>
+        )}
+      </dialog>
     </>
   )
 }

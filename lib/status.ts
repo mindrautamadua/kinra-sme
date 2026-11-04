@@ -21,12 +21,12 @@ export const INDUK_KLAUSUL: Record<string, string> = {
   '10': 'Peningkatan',
 }
 
-type DokBukti = Pick<Dokumen, 'jumlah_berkas' | 'jumlah_isian'>
+type DokBukti = Pick<Dokumen, 'jumlah_berkas'>
 
 /** Nilai satu dokumen dalam skor kesiapan: 1 bila sudah ada evidence, 0 bila belum. */
 export const nilaiKesiapan = (d: DokBukti) => (adaBukti(d) ? 1 : 0)
 
-/** Kesiapan 0–100: persentase dokumen yang sudah punya evidence (berkas terunggah atau isian formulir disetujui). */
+/** Kesiapan 0–100: persentase dokumen yang sudah punya berkas evidence terunggah. */
 export function kesiapan(dokumen: DokBukti[]): number {
   if (!dokumen.length) return 0
   return (dokumen.filter(adaBukti).length / dokumen.length) * 100
@@ -36,7 +36,7 @@ export function kesiapan(dokumen: DokBukti[]): number {
 export const hariWib = (iso: string) => new Date(new Date(iso).getTime() + 7 * 3_600_000).toISOString().slice(0, 10)
 
 /**
- * Rekonstruksi skor kesiapan pada akhir tiap tanggal dari jejak evidence (unggah berkas dan persetujuan isian).
+ * Rekonstruksi skor kesiapan pada akhir tiap tanggal dari jejak unggah berkas evidence.
  * Dokumen dihitung siap sejak evidence pertamanya. Dokumen yang kini ber-evidence tetapi tanpa jejak bertanggal
  * dianggap siap sepanjang waktu; berkas yang sudah dihapus tidak direkonstruksi.
  */
@@ -55,7 +55,7 @@ export function trenKesiapan(dokumen: Dokumen[], jejak: JejakBukti[], hari: stri
 }
 
 /** Lewat tenggat: tenggat sudah lewat dan dokumen belum punya evidence. */
-export function terlambat(d: Pick<Dokumen, 'tenggat' | 'jumlah_berkas' | 'jumlah_isian'>, hariIni: string): boolean {
+export function terlambat(d: Pick<Dokumen, 'tenggat' | 'jumlah_berkas'>, hariIni: string): boolean {
   return !!d.tenggat && d.tenggat < hariIni && !adaBukti(d)
 }
 
@@ -120,8 +120,8 @@ export function kesiapanPerKlausul(dokumen: Dokumen[], klausul: Klausul[], kini:
   }).filter((k) => k.n > 0)
 }
 
-/** Dokumen dianggap sudah punya evidence bila ada berkas terunggah atau isian formulir tertaut yang sudah disetujui. */
-export const adaBukti = (d: Pick<Dokumen, 'jumlah_berkas' | 'jumlah_isian'>) => (d.jumlah_berkas ?? 0) + (d.jumlah_isian ?? 0) > 0
+/** Dokumen dianggap sudah punya evidence bila ada minimal satu berkas terunggah di Kesiapan Audit. Isian formulir tidak dihitung. */
+export const adaBukti = (d: Pick<Dokumen, 'jumlah_berkas'>) => (d.jumlah_berkas ?? 0) > 0
 
 /** Bucket Storage privat untuk berkas evidence (migrasi 0010). */
 export const BUCKET_BUKTI = 'smen-evidence'

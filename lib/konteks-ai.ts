@@ -16,7 +16,7 @@ export async function konteksDashboard(): Promise<string> {
   for (const t of tonggakDari(kegiatan)) b.push(`- ${t.nama}: ${tanggal(t.tanggal, 'panjang')}`)
 
   const siap = dokumen.filter(adaBukti).length
-  b.push(`\n## Kesiapan dokumen\nSkor ${persen(kesiapan(dokumen))} = persentase dokumen yang sudah punya evidence (berkas terunggah atau isian formulir disetujui); ${siap} dari ${dokumen.length} dokumen ada evidence. Dokumen tidak memakai status tahapan.`)
+  b.push(`\n## Kesiapan dokumen\nSkor ${persen(kesiapan(dokumen))} = persentase dokumen yang sudah punya evidence (berkas terunggah di Kesiapan Audit; isian formulir tidak dihitung); ${siap} dari ${dokumen.length} dokumen ada evidence. Dokumen tidak memakai status tahapan.`)
   for (const k of klausul) {
     const ds = dokumen.filter((d) => d.klausul_kode === k.kode)
     if (ds.length) b.push(`- Klausul ${k.kode} ${k.judul}: ${persen(kesiapan(ds))} (${ds.length} dokumen)`)

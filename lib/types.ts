@@ -18,8 +18,6 @@ export type Dokumen = {
   diubah_at: string
   /** Jumlah berkas evidence di Storage; tidak ada bila migrasi 0010 belum dijalankan */
   jumlah_berkas?: number
-  /** Jumlah isian formulir tertaut yang sudah disetujui (dihitung sebagai evidence) */
-  jumlah_isian?: number
 }
 
 export type Berkas = {
@@ -38,8 +36,8 @@ export type BerkasTampil = Berkas & { url: string | null }
 
 export type RiwayatStatus = { dokumen_id: string; dari: StatusDokumen | null; ke: StatusDokumen; at: string; oleh: string | null }
 
-/** Satu peristiwa evidence: berkas diunggah atau isian formulir tertaut disetujui. */
-export type JejakBukti = { dokumen_id: string; at: string; oleh: string | null; jenis: 'berkas' | 'isian'; label: string }
+/** Satu peristiwa evidence: berkas diunggah. */
+export type JejakBukti = { dokumen_id: string; at: string; oleh: string | null; label: string }
 
 export type SumberEnergi = {
   kode: string

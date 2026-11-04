@@ -162,7 +162,7 @@ export default async function Panduan() {
             <p className="muted small">Frekuensi yang disarankan agar data tetap mutakhir</p>
             <div className="tl" style={{ marginTop: 18 }}>
               {[
-                { t: 'Setiap hari kerja', isi: 'Unggah berkas evidence begitu dokumen siap, atau ajukan isian formulirnya untuk disetujui.' },
+                { t: 'Setiap hari kerja', isi: 'Unggah berkas evidence di Kesiapan Audit begitu dokumen siap. Formulir yang diisi di aplikasi dicetak sebagai PDF lalu diunggah.' },
                 { t: 'Setiap minggu', isi: 'Cek halaman Ringkasan: dokumen terlambat, klausul terlemah, beban PIC. Tandai kegiatan timeline yang selesai.' },
                 { t: 'Awal bulan (maks. tgl 10)', isi: 'Input konsumsi energi bulan lalu dari tagihan/meter dan data variabel relevan, lalu cek EnPI di halaman Kinerja.' },
                 { t: 'Setiap triwulan', isi: 'Tinjau register isu & peluang, progres sasaran dan rencana aksi.' },
@@ -243,9 +243,9 @@ export default async function Panduan() {
           ]} />
           <Langkah judul="Melengkapi evidence dokumen" peran="Tim KINRA, konsultan, admin" href="/kesiapan" langkah={[
             'Buka Kesiapan Audit. Saring dengan kartu peringatan (mis. Tanpa evidence), klausul, atau kotak cari.',
-            'Klik nama dokumen, lalu seret berkas ke kotak unggah di kartu Evidence (atau klik untuk memilih berkas).',
+            'Klik tombol Unggah (atau jumlah berkas) di kolom Evidence, lalu seret berkas ke kotak unggah atau klik untuk memilih berkas.',
             'Klik nama berkas untuk melihatnya langsung: PDF, gambar, video, dan Word/Excel/PowerPoint tampil di aplikasi.',
-            'Skor kesiapan naik begitu dokumen punya berkas atau isian formulir yang disetujui.',
+            'Skor kesiapan naik begitu dokumen punya minimal satu berkas.',
           ]} />
           <Langkah judul="Input data energi bulanan" peran="Tim KINRA, admin" href="/energi" langkah={[
             'Buka Data Energi, pilih tahun di kanan atas.',

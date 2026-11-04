@@ -123,7 +123,7 @@ export default async function CetakKesiapan() {
 
           <div className="lp-kpi">
             <div><span>Skor kesiapan</span><b>{persen(L.skor)}</b><small>target ≥ {AMBANG_RAG.hijau}%</small></div>
-            <div><span>Dokumen ber-evidence</span><b>{L.nBukti}<em>/{L.jumlah}</em></b><small>berkas atau isian disetujui</small></div>
+            <div><span>Dokumen ber-evidence</span><b>{L.nBukti}<em>/{L.jumlah}</em></b><small>berkas terunggah</small></div>
             <div><span>Tanpa evidence</span><b className={L.jumlah - L.nBukti ? 'buruk' : undefined}>{L.jumlah - L.nBukti}</b><small>dokumen perlu dilengkapi</small></div>
             <div><span>Lewat tenggat</span><b className={L.nLewat ? 'buruk' : undefined}>{L.nLewat}</b><small>dokumen tanpa evidence</small></div>
             <div><span>NC mayor terbuka</span><b className={L.temuan.mayorTerbuka.length ? 'buruk' : undefined}>{L.temuan.mayorTerbuka.length}</b><small>{L.temuan.minorTerbuka.length} minor terbuka</small></div>
@@ -354,7 +354,7 @@ export default async function CetakKesiapan() {
                 <tr key={d.id}>
                   <td title={judulKlausul[d.klausul_kode]}>{d.klausul_kode}</td><td className="mono">{d.kode}</td><td>{d.nama}</td>
                   <td className="mono">{d.nomor_dokumen ?? '–'}</td><td>{d.pic ?? '–'}</td>
-                  <td className={`angka${adaBukti(d) ? '' : ' buruk'}`}>{adaBukti(d) ? [d.jumlah_berkas ? `${d.jumlah_berkas} berkas` : '', d.jumlah_isian ? `${d.jumlah_isian} isian` : ''].filter(Boolean).join(' · ') : 'Tidak ada'}</td>
+                  <td className={`angka${adaBukti(d) ? '' : ' buruk'}`}>{adaBukti(d) ? `${d.jumlah_berkas} berkas` : 'Tidak ada'}</td>
                   <td className={terlambat(d, kini) ? 'buruk' : undefined}>{tanggal(d.tenggat)}</td>
                 </tr>
               ))}
@@ -367,7 +367,7 @@ export default async function CetakKesiapan() {
           <h3 className="lp-h3">Metode penilaian</h3>
           <p className="lp-p">
             Skor kesiapan adalah persentase dokumen dan rekaman yang akan diperiksa auditor yang sudah memiliki evidence:
-            berkas terunggah di aplikasi atau isian formulir yang sudah disetujui. Dokumen tanpa evidence bernilai 0,
+            minimal satu berkas terunggah di aplikasi. Dokumen tanpa evidence bernilai 0,
             karena auditor menilai bukti objektif yang dapat diperiksa.
             Skor klausul dan bab dihitung dengan cara yang sama atas dokumen yang dipetakan ke klausul tersebut.
           </p>

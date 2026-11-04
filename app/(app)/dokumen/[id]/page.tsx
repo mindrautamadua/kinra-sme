@@ -14,7 +14,7 @@ import { templatUntukDokumen } from '@/lib/formulir/tautan'
 import type { StatusFormulir } from '@/lib/formulir/tipe'
 import { db } from '@/lib/supabase'
 import type { Dokumen, Temuan } from '@/lib/types'
-import { EvidenceBerkas } from './EvidenceBerkas'
+import { EvidenceBerkas } from '@/components/EvidenceBerkas'
 import { FormDokumen } from './FormDokumen'
 import { HapusIsian } from './HapusIsian'
 
@@ -43,6 +43,7 @@ export default async function HalamanDokumen({ params }: { params: Promise<{ id:
     ambilBerkas(id),
   ])
   if (!dok) notFound()
+  const jumlahBerkas = berkas.length
   const k = klausul.find((x) => x.kode === dok.klausul_kode)
   const templat = templatUntukDokumen(dok.kode).map((kode) => ambilTemplat(kode)).filter((x) => x !== null)
   const { data: isian } = templat.length
@@ -56,7 +57,7 @@ export default async function HalamanDokumen({ params }: { params: Promise<{ id:
       <Link href={`/kesiapan?klausul=${encodeURIComponent(dok.klausul_kode)}`} className="btn kecil" style={{ marginBottom: 16 }}><ArrowLeft aria-hidden="true" /> Kesiapan audit</Link>
       <SectionHead eyebrow={`${dok.kode} · ${dok.klausul_kode === 'P' ? 'Persiapan awal' : `Klausul ${dok.klausul_kode} ${k?.judul ?? ''}`}`} judul={dok.nama}>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-          <Chip kode={berkas.length + disetujui ? 'good' : 'crit'} label={berkas.length + disetujui ? 'Ada evidence' : 'Belum ada evidence'} />
+          <Chip kode={jumlahBerkas ? 'good' : 'crit'} label={jumlahBerkas ? 'Ada evidence' : 'Belum ada evidence'} />
           <Chip kode="na" label={KELOMPOK[dok.kelompok]} />
         </div>
       </SectionHead>
@@ -66,14 +67,14 @@ export default async function HalamanDokumen({ params }: { params: Promise<{ id:
           <div className="card" id="evidence">
             <div className="row">
               <div><h3>Evidence</h3><p className="muted small">Klik berkas untuk melihatnya langsung di aplikasi</p></div>
-              <Chip kode={berkas.length ? 'good' : 'crit'} label={berkas.length ? `${berkas.length} berkas` : 'Belum ada evidence'} />
+              <Chip kode={jumlahBerkas ? 'good' : 'crit'} label={jumlahBerkas ? `${jumlahBerkas} berkas` : 'Belum ada evidence'} />
             </div>
             <EvidenceBerkas dokumenId={dok.id} berkas={berkas} migrasi={migrasi} />
           </div>
           {templat.length > 0 && (
             <div className="card" id="formulir">
               <div className="row">
-                <div><h3>Formulir di aplikasi</h3><p className="muted small">Isian yang disetujui dihitung sebagai evidence dokumen ini.</p></div>
+                <div><h3>Formulir di aplikasi</h3><p className="muted small">Alat bantu mengisi formulir. Isian tidak otomatis menjadi evidence: cetak sebagai PDF lalu unggah di kartu Evidence.</p></div>
                 <Chip kode={disetujui ? 'good' : daftarIsian.length ? 'warn' : 'na'} label={disetujui ? `${disetujui} disetujui` : daftarIsian.length ? 'Belum disetujui' : 'Belum diisi'} />
               </div>
               <div className="list">
