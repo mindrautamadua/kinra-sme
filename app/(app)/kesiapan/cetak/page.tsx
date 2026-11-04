@@ -205,10 +205,10 @@ export default async function CetakKesiapan() {
         {/* ── 4. Register kesenjangan ────────────────────────────── */}
         <Bagian no="4" judul="Register kesenjangan" acuan={`${L.gap.length} butir`} baru>
           <p className="lp-p">
-            Semua dokumen yang belum final atau belum memiliki evidence, diurutkan menurut tingkat kesenjangan lalu tenggat.{' '}
-            <b>Kritis</b>: dokumen belum ada, atau dokumen klausul wajib tanpa evidence / lewat tenggat. <b>Tinggi</b>: tanpa evidence, lewat tenggat, atau masih draft. <b>Sedang</b>: dalam review atau menunggu final.
+            Semua dokumen yang belum memiliki berkas evidence, diurutkan menurut tingkat kesenjangan lalu tenggat.{' '}
+            <b>Kritis</b>: informasi terdokumentasi wajib ISO 50001. <b>Tinggi</b>: lewat tenggat. <b>Sedang</b>: lainnya.
           </p>
-          {L.gap.length === 0 ? <p className="lp-p"><b>Tidak ada kesenjangan.</b> Semua dokumen final dan memiliki evidence.</p> : (
+          {L.gap.length === 0 ? <p className="lp-p"><b>Tidak ada kesenjangan.</b> Semua dokumen memiliki evidence.</p> : (
             <table className="lp-tbl">
               <thead><tr><th scope="col" style={{ width: '10%' }}>Tingkat</th><th scope="col" style={{ width: '9%' }}>Kode</th><th scope="col">Dokumen</th><th scope="col" style={{ width: '7%' }}>Kl.</th><th scope="col" style={{ width: '13%' }}>PIC</th><th scope="col" style={{ width: '11%' }}>Tenggat</th><th scope="col" style={{ width: '20%' }}>Kesenjangan</th></tr></thead>
               <tbody>
@@ -352,7 +352,7 @@ export default async function CetakKesiapan() {
             <tbody>
               {[...dokumen].sort((a, b) => (klausul.find((k) => k.kode === a.klausul_kode)?.urutan ?? 0) - (klausul.find((k) => k.kode === b.klausul_kode)?.urutan ?? 0) || a.kode.localeCompare(b.kode)).map((d) => (
                 <tr key={d.id}>
-                  <td title={judulKlausul[d.klausul_kode]}>{d.klausul_kode}</td><td className="mono">{d.kode}</td><td>{d.nama}</td>
+                  <td title={judulKlausul[d.klausul_kode]}>{d.klausul_kode}</td><td className="mono">{d.kode}{d.wajib_iso && <span className="lp-bintang" title="Informasi terdokumentasi wajib ISO 50001"> ★</span>}</td><td>{d.nama}</td>
                   <td className="mono">{d.nomor_dokumen ?? '–'}</td><td>{d.pic ?? '–'}</td>
                   <td className={`angka${adaBukti(d) ? '' : ' buruk'}`}>{adaBukti(d) ? `${d.jumlah_berkas} berkas` : 'Tidak ada'}</td>
                   <td className={terlambat(d, kini) ? 'buruk' : undefined}>{tanggal(d.tenggat)}</td>
@@ -360,6 +360,7 @@ export default async function CetakKesiapan() {
               ))}
             </tbody>
           </table>
+          <p className="lp-catatan">★ Informasi terdokumentasi yang disyaratkan langsung oleh ISO 50001:2018.</p>
         </Bagian>
 
         {/* ── Lampiran B ─────────────────────────────────────────── */}

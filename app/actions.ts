@@ -56,12 +56,17 @@ export async function simpanDokumen(id: string | null, f: FormData): Promise<Has
     keterangan: teks(f, 'keterangan'),
   }
   if (!data.kode || !data.nama || !data.klausul_kode || !data.kelompok) return { ok: false, pesan: 'Kode, nama, klausul, dan kelompok wajib diisi.' }
-  const q = id
-    ? (await db()).from('dokumen_audit').update(data).eq('id', id).select('id').single()
-    : (await db()).from('dokumen_audit').insert(data).select('id').single()
-  const { data: row, error } = await q
+  // Penanda wajib ISO hanya ditetapkan admin/konsultan; peran lain tidak mengirim atau mengubahnya
+  const isi: Record<string, unknown> = { ...data }
+  if (f.has('wajib_iso_ada') && !(await cekAkses('dokumen.tambah'))) isi.wajib_iso = f.get('wajib_iso') === 'on'
+  const kirim = (v: Record<string, unknown>) => id
+    ? db().then((s) => s.from('dokumen_audit').update(v).eq('id', id).select('id').single())
+    : db().then((s) => s.from('dokumen_audit').insert(v).select('id').single())
+  let { data: row, error } = await kirim(isi)
+  // Kolom wajib_iso belum ada (migrasi 0015 belum dijalankan): simpan tanpa penanda
+  if (error?.code === 'PGRST204' && 'wajib_iso' in isi) ({ data: row, error } = await kirim(data))
   revalidatePath('/', 'layout')
-  return error ? gagal(error) : { ok: true, id: row.id }
+  return error || !row ? gagal(error) : { ok: true, id: row.id }
 }
 
 export async function hapusDokumen(id: string): Promise<Hasil> {

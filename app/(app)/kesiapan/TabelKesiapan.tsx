@@ -4,6 +4,7 @@ import { Download, Eye, Search, Upload, X } from 'lucide-react'
 import Link from 'next/link'
 import { useMemo, useRef, useState } from 'react'
 import { lihatBerkas } from '@/app/actions'
+import { Chip } from '@/components/Chip'
 import { EvidenceBerkas } from '@/components/EvidenceBerkas'
 import { useBoleh } from '@/components/Peran'
 import { selisihHari, tanggal } from '@/lib/format'
@@ -20,6 +21,8 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal }: {
   const [cari, setCari] = useState('')
   const [hanyaLewat, setHanyaLewat] = useState(false)
   const [tanpaBukti, setTanpaBukti] = useState(false)
+  const [hanyaWajib, setHanyaWajib] = useState(false)
+  const adaKolomWajib = rows.some((d) => d.wajib_iso !== undefined)
   const [galat, setGalat] = useState<string | null>(null)
   const bisa = useBoleh()
   const bisaUnggah = bisa('dokumen.ubah')
@@ -58,19 +61,20 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal }: {
       .filter((d) => (!kelompok || d.kelompok === kelompok) && (!kl || d.klausul_kode === kl))
       .filter((d) => !hanyaLewat || terlambat(d, kini))
       .filter((d) => !tanpaBukti || !adaBukti(d))
+      .filter((d) => !hanyaWajib || d.wajib_iso)
       .filter((d) => !q || `${d.kode} ${d.nama} ${d.pic ?? ''} ${d.nomor_dokumen ?? ''} ${d.keterangan ?? ''}`.toLowerCase().includes(q))
       .sort((a, b) => (judulKlausul[a.klausul_kode]?.urutan ?? 0) - (judulKlausul[b.klausul_kode]?.urutan ?? 0) || a.kode.localeCompare(b.kode))
-  }, [rows, kelompok, kl, cari, hanyaLewat, tanpaBukti, kini, judulKlausul])
+  }, [rows, kelompok, kl, cari, hanyaLewat, tanpaBukti, hanyaWajib, kini, judulKlausul])
 
-  const adaSaring = !!(kelompok || kl || cari || hanyaLewat || tanpaBukti)
+  const adaSaring = !!(kelompok || kl || cari || hanyaLewat || tanpaBukti || hanyaWajib)
   function reset() {
-    setKelompok(''); setKl(''); setCari(''); setHanyaLewat(false); setTanpaBukti(false)
+    setKelompok(''); setKl(''); setCari(''); setHanyaLewat(false); setTanpaBukti(false); setHanyaWajib(false)
   }
 
   function unduhCsv() {
-    const kolom = ['Kode', 'Klausul', 'Kelompok', 'Nama', 'Nomor dokumen', 'PIC', 'Tenggat', 'Berkas evidence', 'Keterangan']
+    const kolom = ['Kode', 'Klausul', 'Kelompok', 'Nama', 'Wajib ISO 50001', 'Nomor dokumen', 'PIC', 'Tenggat', 'Berkas evidence', 'Keterangan']
     const esc = (v: unknown) => `"${String(v ?? '').replace(/"/g, '""')}"`
-    const isi = tersaring.map((d) => [d.kode, d.klausul_kode, KELOMPOK[d.kelompok], d.nama, d.nomor_dokumen, d.pic, d.tenggat, d.jumlah_berkas ?? 0, d.keterangan].map(esc).join(','))
+    const isi = tersaring.map((d) => [d.kode, d.klausul_kode, KELOMPOK[d.kelompok], d.nama, d.wajib_iso ? 'Ya' : 'Tidak', d.nomor_dokumen, d.pic, d.tenggat, d.jumlah_berkas ?? 0, d.keterangan].map(esc).join(','))
     const blob = new Blob(['﻿' + [kolom.map(esc).join(','), ...isi].join('\n')], { type: 'text/csv;charset=utf-8' })
     const a = document.createElement('a')
     a.href = URL.createObjectURL(blob)
@@ -121,6 +125,12 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal }: {
             style={tanpaBukti ? { borderColor: 'var(--warn)' } : undefined}>
             Tanpa evidence
           </button>
+          {adaKolomWajib && (
+            <button type="button" className="btn" aria-pressed={hanyaWajib} onClick={() => setHanyaWajib(!hanyaWajib)}
+              style={hanyaWajib ? { borderColor: 'var(--s1)' } : undefined} title="Informasi terdokumentasi yang disyaratkan langsung oleh ISO 50001:2018">
+              Hanya wajib ISO
+            </button>
+          )}
           <span style={{ flex: 1 }} />
           <button type="button" className="btn" onClick={unduhCsv}><Download aria-hidden="true" /><span className="teks">Unduh CSV</span></button>
         </div>
@@ -159,6 +169,7 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal }: {
                     <td className="kode">{d.kode}</td>
                     <td>
                       <Link className="judul" href={`/dokumen/${d.id}`}>{d.nama}</Link>
+                      {d.wajib_iso && <> <Chip kode="info" label="Wajib ISO" /></>}
                       <span className="upd">{KELOMPOK[d.kelompok]}{d.nomor_dokumen && ` · ${d.nomor_dokumen}`}{d.keterangan && ` · ${d.keterangan}`}</span>
                     </td>
                     <td className="small">{d.pic ?? <span className="muted">–</span>}</td>

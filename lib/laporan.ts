@@ -27,6 +27,8 @@ export const KLAUSUL_KRITIS: Record<string, string> = {
   '6.5': 'Baseline energi',
   '6.6': 'Rencana pengumpulan data energi',
   '7.2': 'Bukti kompetensi',
+  '8.1': 'Rekaman pengendalian operasional',
+  '8.2': 'Rekaman desain terkait kinerja energi',
   '9.1': 'Hasil pemantauan dan pengukuran',
   '9.2': 'Program dan hasil audit internal',
   '9.3': 'Hasil tinjauan manajemen',
@@ -141,7 +143,8 @@ export function susunLaporan(m: {
   const gap: Gap[] = dokumen.filter((d) => !adaBukti(d)).map((d) => {
     const alasan: string[] = ['Tanpa evidence']
     if (terlambat(d, kini)) alasan.push('Lewat tenggat')
-    const kritis = d.klausul_kode in KLAUSUL_KRITIS
+    // Pakai penanda dokumen (migrasi 0015) bila ada; bila belum, pakai daftar klausul wajib
+    const kritis = d.wajib_iso ?? d.klausul_kode in KLAUSUL_KRITIS
     if (kritis) alasan.push('Informasi terdokumentasi wajib')
     const tingkat: Gap['tingkat'] = kritis ? 'Kritis' : terlambat(d, kini) ? 'Tinggi' : 'Sedang'
     return { d, tingkat, alasan }

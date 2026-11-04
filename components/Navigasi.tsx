@@ -3,11 +3,12 @@
 import { Activity, BookA, BookOpen, CalendarRange, ClipboardCheck, FileText, Gauge, LayoutDashboard, SearchCheck, ShieldAlert, Target, Users } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { FITUR_FORMULIR } from '@/lib/fitur'
 
 export const MENU = [
   { href: '/', label: 'Ringkasan', ikon: LayoutDashboard },
   { href: '/kesiapan', label: 'Kesiapan Audit', ikon: ClipboardCheck },
-  { href: '/formulir', label: 'Formulir', ikon: FileText },
+  ...(FITUR_FORMULIR ? [{ href: '/formulir', label: 'Formulir', ikon: FileText }] : []),
   { href: '/energi', label: 'Data Energi', ikon: Gauge },
   { href: '/kinerja', label: 'Kinerja Energi', ikon: Activity },
   { href: '/sasaran', label: 'Sasaran & Aksi', ikon: Target },

@@ -55,6 +55,8 @@ export function PanelKesiapan({ rows, klausul, kini, kl, setKl, hanyaLewat, setH
   const lewat = rows.filter((d) => terlambat(d, kini)).length
   const kosongBukti = rows.filter((d) => !adaBukti(d)).length
   const adaEvidence = rows.length - kosongBukti
+  const wajib = rows.filter((d) => d.wajib_iso)
+  const wajibAda = wajib.filter(adaBukti).length
   const pekanIni = rows.filter((d) => d.tenggat && !adaBukti(d) && d.tenggat >= kini && selisihHari(d.tenggat, hari) <= 7).length
 
   const perKlausul = kesiapanPerKlausul(rows, klausul, kini)
@@ -71,7 +73,10 @@ export function PanelKesiapan({ rows, klausul, kini, kl, setKl, hanyaLewat, setH
           <div className="stackbar ks-ringkas-bar" role="img" aria-label={`Kesiapan ${fmt(skor, 1)}%`}>
             <span className="bg-good" style={{ width: `${Math.min(100, skor)}%` }} />
           </div>
-          <span className="muted small">Dokumen dihitung siap begitu minimal satu berkas evidence diunggah. Unggah lewat kolom Evidence di tabel.</span>
+          <span className="muted small">
+            Dokumen dihitung siap begitu minimal satu berkas evidence diunggah. Unggah lewat kolom Evidence di tabel.
+            {wajib.length > 0 && <> <b className="ink-2">Wajib ISO 50001: {wajibAda} dari {wajib.length} ada evidence.</b></>}
+          </span>
         </div>
       </div>
 

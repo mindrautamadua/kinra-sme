@@ -16,6 +16,8 @@ export type Dokumen = {
   tanggal_terima: string | null
   keterangan: string | null
   diubah_at: string
+  /** Informasi terdokumentasi wajib ISO 50001:2018 (migrasi 0015); undefined bila kolom belum ada */
+  wajib_iso?: boolean
   /** Jumlah berkas evidence di Storage; tidak ada bila migrasi 0010 belum dijalankan */
   jumlah_berkas?: number
 }

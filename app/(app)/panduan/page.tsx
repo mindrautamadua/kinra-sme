@@ -1,4 +1,5 @@
 import { Activity, BookOpen, Bot, CalendarRange, CircleCheck, ClipboardCheck, FileText, Gauge, KeyRound, LayoutDashboard, Minus, SearchCheck, ShieldAlert, Target, Users } from 'lucide-react'
+import { FITUR_FORMULIR } from '@/lib/fitur'
 import Link from 'next/link'
 import { Chip } from '@/components/Chip'
 import { SectionHead } from '@/components/SectionHead'
@@ -21,7 +22,7 @@ const BAB = [
 const MODUL = [
   { href: '/', ikon: LayoutDashboard, nama: 'Ringkasan', klausul: 'Gambaran besar', isi: 'Skor kesiapan, tren & proyeksi menuju audit, insight prioritas, beban PIC, aktivitas terbaru, dan cuplikan kinerja energi.' },
   { href: '/kesiapan', ikon: ClipboardCheck, nama: 'Kesiapan Audit', klausul: 'Klausul 4–10', isi: 'Lembar monitoring semua dokumen dan rekaman yang akan diperiksa auditor: PIC, tenggat, lihat berkas evidence, unduh CSV.' },
-  { href: '/formulir', ikon: FileText, nama: 'Formulir', klausul: 'Klausul 4–10', isi: 'Semua formulir SMEn diisi langsung di aplikasi: buat isian, isi tabel, ajukan, setujui, lalu cetak atau simpan sebagai PDF.' },
+  ...(FITUR_FORMULIR ? [{ href: '/formulir', ikon: FileText, nama: 'Formulir', klausul: 'Klausul 4–10', isi: 'Semua formulir SMEn diisi langsung di aplikasi: buat isian, isi tabel, ajukan, setujui, lalu cetak atau simpan sebagai PDF.' }] : []),
   { href: '/energi', ikon: Gauge, nama: 'Data Energi', klausul: 'Klausul 6.3', isi: 'Input konsumsi bulanan per sumber (PLN, PLTBG, PLTS, BBM), aliran energi, peta panas, dan tren antar tahun dalam Terajoule.' },
   { href: '/kinerja', ikon: Activity, nama: 'Kinerja Energi', klausul: 'Klausul 6.4 & 6.5', isi: 'EnPI dan baseline energi (EnB): aktual vs harapan, CUSUM, uji kelayakan model, input variabel relevan bulanan.' },
   { href: '/sasaran', ikon: Target, nama: 'Sasaran & Aksi', klausul: 'Klausul 6.2', isi: 'Sasaran dan target energi yang terhubung ke EnPI, rencana aksi beserta PIC, tenggat, dan penghematan terverifikasi.' },
@@ -162,7 +163,7 @@ export default async function Panduan() {
             <p className="muted small">Frekuensi yang disarankan agar data tetap mutakhir</p>
             <div className="tl" style={{ marginTop: 18 }}>
               {[
-                { t: 'Setiap hari kerja', isi: 'Unggah berkas evidence di Kesiapan Audit begitu dokumen siap. Formulir yang diisi di aplikasi dicetak sebagai PDF lalu diunggah.' },
+                { t: 'Setiap hari kerja', isi: 'Unggah berkas evidence di Kesiapan Audit begitu dokumen siap.' + (FITUR_FORMULIR ? ' Formulir yang diisi di aplikasi dicetak sebagai PDF lalu diunggah.' : '') },
                 { t: 'Setiap minggu', isi: 'Cek halaman Ringkasan: dokumen terlambat, klausul terlemah, beban PIC. Tandai kegiatan timeline yang selesai.' },
                 { t: 'Awal bulan (maks. tgl 10)', isi: 'Input konsumsi energi bulan lalu dari tagihan/meter dan data variabel relevan, lalu cek EnPI di halaman Kinerja.' },
                 { t: 'Setiap triwulan', isi: 'Tinjau register isu & peluang, progres sasaran dan rencana aksi.' },
@@ -214,7 +215,7 @@ export default async function Panduan() {
                 {[
                   ['Melihat seberapa siap kita untuk audit', '/', 'Ringkasan'],
                   ['Mengunggah evidence dokumen', '/kesiapan', 'Kesiapan Audit → klik nama dokumen'],
-                  ['Mengisi formulir SMEn (isu, SEU, kompetensi, notulen RTM, dll.)', '/formulir', 'Formulir → pilih formulir → Buat isian'],
+                  ...(FITUR_FORMULIR ? [['Mengisi formulir SMEn (isu, SEU, kompetensi, notulen RTM, dll.)', '/formulir', 'Formulir → pilih formulir → Buat isian']] : []),
                   ['Mengisi konsumsi listrik/BBM bulanan', '/energi', 'Data Energi → tabel input'],
                   ['Mengisi data variabel relevan, mengubah EnPI atau baseline', '/kinerja', 'Kinerja Energi'],
                   ['Memperbarui progres rencana aksi', '/sasaran', 'Sasaran & Aksi'],

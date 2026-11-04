@@ -1,4 +1,5 @@
 import { ArrowLeft, FileText } from 'lucide-react'
+import { FITUR_FORMULIR } from '@/lib/fitur'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Chip } from '@/components/Chip'
@@ -71,7 +72,7 @@ export default async function HalamanDokumen({ params }: { params: Promise<{ id:
             </div>
             <EvidenceBerkas dokumenId={dok.id} berkas={berkas} migrasi={migrasi} />
           </div>
-          {templat.length > 0 && (
+          {FITUR_FORMULIR && templat.length > 0 && (
             <div className="card" id="formulir">
               <div className="row">
                 <div><h3>Formulir di aplikasi</h3><p className="muted small">Alat bantu mengisi formulir. Isian tidak otomatis menjadi evidence: cetak sebagai PDF lalu unggah di kartu Evidence.</p></div>
