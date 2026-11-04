@@ -189,7 +189,8 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal }: {
           </table>
         </div>
       </div>
-      <dialog ref={dlg} className="panel" onClose={() => setPanel(null)} aria-labelledby="judul-evidence">
+      {/* Event close dari dialog penampil berkas (bersarang) ikut "naik" lewat pohon React; abaikan agar panel tidak kosong tertinggal */}
+      <dialog ref={dlg} className="panel" onClose={(e) => { if (e.target === e.currentTarget) setPanel(null) }} aria-labelledby="judul-evidence">
         {panel && (
           <div className="card">
             <div className="row">

@@ -45,7 +45,7 @@ export function PenampilBerkas({ berkas, indeks, setIndeks, judul }: {
   }, [indeks])
 
   return (
-    <dialog ref={dlg} className="penampil" onClose={() => setIndeks(null)}
+    <dialog ref={dlg} className="penampil" onClose={(e) => { if (e.target === e.currentTarget) setIndeks(null) }}
       onKeyDown={(e) => {
         if (indeks === null) return
         if (e.key === 'ArrowRight' && indeks < berkas.length - 1) setIndeks(indeks + 1)
