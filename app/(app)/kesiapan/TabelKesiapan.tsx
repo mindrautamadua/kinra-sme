@@ -10,6 +10,7 @@ import { useBoleh } from '@/components/Peran'
 import { selisihHari, tanggal } from '@/lib/format'
 import { adaBukti, KELOMPOK, kesiapan, terlambat } from '@/lib/status'
 import type { BerkasTampil, Dokumen, KelompokDokumen, Klausul } from '@/lib/types'
+import { CatatanDokumen } from './CatatanDokumen'
 import { PanelKesiapan } from './PanelKesiapan'
 
 export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal }: {
@@ -62,7 +63,7 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal }: {
       .filter((d) => !hanyaLewat || terlambat(d, kini))
       .filter((d) => !tanpaBukti || !adaBukti(d))
       .filter((d) => !hanyaWajib || d.wajib_iso)
-      .filter((d) => !q || `${d.kode} ${d.nama} ${d.pic ?? ''} ${d.nomor_dokumen ?? ''} ${d.keterangan ?? ''}`.toLowerCase().includes(q))
+      .filter((d) => !q || `${d.kode} ${d.nama} ${d.pic ?? ''} ${d.nomor_dokumen ?? ''} ${d.keterangan ?? ''} ${d.posisi_draf ?? ''}`.toLowerCase().includes(q))
       .sort((a, b) => (judulKlausul[a.klausul_kode]?.urutan ?? 0) - (judulKlausul[b.klausul_kode]?.urutan ?? 0) || a.kode.localeCompare(b.kode))
   }, [rows, kelompok, kl, cari, hanyaLewat, tanpaBukti, hanyaWajib, kini, judulKlausul])
 
@@ -72,9 +73,9 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal }: {
   }
 
   function unduhCsv() {
-    const kolom = ['Kode', 'Klausul', 'Kelompok', 'Nama', 'Wajib ISO 50001', 'Nomor dokumen', 'PIC', 'Tenggat', 'Berkas evidence', 'Keterangan']
+    const kolom = ['Kode', 'Klausul', 'Kelompok', 'Nama', 'Wajib ISO 50001', 'Nomor dokumen', 'PIC', 'Tenggat', 'Berkas evidence', 'Draf ada di', 'Keterangan', 'Catatan diubah oleh', 'Catatan diubah pada']
     const esc = (v: unknown) => `"${String(v ?? '').replace(/"/g, '""')}"`
-    const isi = tersaring.map((d) => [d.kode, d.klausul_kode, KELOMPOK[d.kelompok], d.nama, d.wajib_iso ? 'Ya' : 'Tidak', d.nomor_dokumen, d.pic, d.tenggat, d.jumlah_berkas ?? 0, d.keterangan].map(esc).join(','))
+    const isi = tersaring.map((d) => [d.kode, d.klausul_kode, KELOMPOK[d.kelompok], d.nama, d.wajib_iso ? 'Ya' : 'Tidak', d.nomor_dokumen, d.pic, d.tenggat, d.jumlah_berkas ?? 0, d.posisi_draf, d.keterangan, d.catatan_oleh, d.catatan_at].map(esc).join(','))
     const blob = new Blob(['﻿' + [kolom.map(esc).join(','), ...isi].join('\n')], { type: 'text/csv;charset=utf-8' })
     const a = document.createElement('a')
     a.href = URL.createObjectURL(blob)
@@ -141,11 +142,11 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal }: {
           <table className="tbl">
             <thead>
               <tr>
-                <th>Kode</th><th>Dokumen / rekaman</th><th>PIC</th><th>Tenggat</th><th className="num">Evidence</th>
+                <th>Kode</th><th>Dokumen / rekaman</th><th>Keterangan</th><th>PIC</th><th>Tenggat</th><th className="num">Evidence</th>
               </tr>
             </thead>
             <tbody>
-              {tersaring.length === 0 && <tr className="kosong"><td colSpan={5}>Tidak ada dokumen yang cocok.</td></tr>}
+              {tersaring.length === 0 && <tr className="kosong"><td colSpan={6}>Tidak ada dokumen yang cocok.</td></tr>}
               {tersaring.map((d) => {
                 const grup = d.klausul_kode !== klausulTerakhir
                 klausulTerakhir = d.klausul_kode
@@ -156,7 +157,7 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal }: {
                 return [
                   grup && (
                     <tr key={`g-${d.klausul_kode}`} className="grup">
-                      <td colSpan={5}>
+                      <td colSpan={6}>
                         <span className="ks-grup">
                           <span>{d.klausul_kode === 'P' ? 'Persiapan awal' : `Klausul ${d.klausul_kode}`} · {k?.judul}</span>
                           <span className="ks-grup-bar" aria-hidden="true"><i style={{ width: `${pk}%` }} /></span>
@@ -170,8 +171,9 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal }: {
                     <td>
                       <Link className="judul" href={`/dokumen/${d.id}`}>{d.nama}</Link>
                       {d.wajib_iso && <> <Chip kode="info" label="Wajib ISO" /></>}
-                      <span className="upd">{KELOMPOK[d.kelompok]}{d.nomor_dokumen && ` · ${d.nomor_dokumen}`}{d.keterangan && ` · ${d.keterangan}`}</span>
+                      <span className="upd">{KELOMPOK[d.kelompok]}{d.nomor_dokumen && ` · ${d.nomor_dokumen}`}</span>
                     </td>
+                    <td className="small ks-kol-catatan"><CatatanDokumen d={d} bisaUbah={bisaUnggah} /></td>
                     <td className="small">{d.pic ?? <span className="muted">–</span>}</td>
                     <td className="small tnum" style={{ whiteSpace: 'nowrap' }}>
                       {tanggal(d.tenggat)}
@@ -195,7 +197,7 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal }: {
               })}
             </tbody>
             <tfoot>
-              <tr><td colSpan={5}>{tersaring.length} dari {rows.length} dokumen · kesiapan tampilan ini {Math.round(kesiapan(tersaring))}% · Sumber: Checklist Monev, Dokumen Implementasi SMEn, Timeline Rev.3</td></tr>
+              <tr><td colSpan={6}>{tersaring.length} dari {rows.length} dokumen · kesiapan tampilan ini {Math.round(kesiapan(tersaring))}% · Sumber: Checklist Monev, Dokumen Implementasi SMEn, Timeline Rev.3</td></tr>
             </tfoot>
           </table>
         </div>

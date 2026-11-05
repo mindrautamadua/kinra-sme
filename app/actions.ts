@@ -69,6 +69,18 @@ export async function simpanDokumen(id: string | null, f: FormData): Promise<Has
   return error || !row ? gagal(error) : { ok: true, id: row.id }
 }
 
+/** Catatan cepat dari lembar Kesiapan: posisi draf dan keterangan. Pengubah & waktu dicatat trigger 0018. */
+export async function simpanCatatanDokumen(id: string, posisiDraf: string, keterangan: string): Promise<Hasil> {
+  const t = await tolak('dokumen.ubah'); if (t) return t
+  const rapi = (v: string, maks: number) => v.trim().slice(0, maks) || null
+  const s = await db()
+  const { error } = await s.from('dokumen_audit')
+    .update({ posisi_draf: rapi(posisiDraf, 120), keterangan: rapi(keterangan, 1000) }).eq('id', id)
+  if (error?.code === 'PGRST204') return { ok: false, pesan: 'Kolom posisi draf belum ada. Jalankan migrasi 0018_catatan_kesiapan.sql terlebih dahulu.' }
+  revalidatePath('/', 'layout')
+  return gagal(error)
+}
+
 export async function hapusDokumen(id: string): Promise<Hasil> {
   const t = await tolak('dokumen.hapus'); if (t) return t
   const s = await db()

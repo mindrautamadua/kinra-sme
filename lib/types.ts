@@ -15,6 +15,11 @@ export type Dokumen = {
   tenggat: string | null
   tanggal_terima: string | null
   keterangan: string | null
+  /** Draf dokumen sedang ada di siapa (migrasi 0018); undefined bila kolom belum ada */
+  posisi_draf?: string | null
+  /** Siapa dan kapan terakhir mengubah posisi draf/keterangan (diisi trigger 0018) */
+  catatan_oleh?: string | null
+  catatan_at?: string | null
   diubah_at: string
   /** Informasi terdokumentasi wajib ISO 50001:2018 (migrasi 0015); undefined bila kolom belum ada */
   wajib_iso?: boolean

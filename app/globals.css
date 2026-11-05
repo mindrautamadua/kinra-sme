@@ -1301,3 +1301,19 @@ a.insight:hover h3 { color: var(--brand); }
   .ra-dok-kepala { flex-direction: column; }
   .ra-chips { justify-content: flex-start; }
 }
+
+/* Kolom Keterangan di lembar Kesiapan (posisi draf + catatan) */
+.tbl td.ks-kol-catatan { min-width: 200px; max-width: 300px; }
+.ks-catatan { display: flex; gap: 8px; align-items: flex-start; }
+.ks-catatan .grow { min-width: 0; flex: 1; }
+.ks-posisi { display: block; }
+.ks-posisi b { font-weight: 600; }
+.ks-ket { display: block; color: var(--ink-2); white-space: pre-line; overflow-wrap: anywhere; }
+.ks-catatan .btn-ikon { flex: none; opacity: .55; }
+.tbl tr:hover .ks-catatan .btn-ikon, .ks-catatan .btn-ikon:focus-visible { opacity: 1; }
+.ks-catatan-form { display: flex; flex-direction: column; gap: 8px; }
+.ks-catatan-form label { display: flex; flex-direction: column; gap: 4px; }
+.ks-catatan-form input { padding: 7px 10px; width: 100%; }
+.ks-catatan-form textarea { min-height: 64px; }
+.ks-catatan-aksi { display: flex; gap: 6px; justify-content: flex-end; }
+@media (hover: none) { .ks-catatan .btn-ikon { opacity: 1; } }
