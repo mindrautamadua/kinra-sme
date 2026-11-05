@@ -31,6 +31,10 @@ export const STATUS_DOKUMEN: Record<StatusDokumen, { label: string; chip: KodeCh
 }
 export const PILIHAN_STATUS: StatusDokumen[] = ['belum', 'draft', 'final']
 
+/** Grup untuk saringan status: Review ikut Draft, Disetujui ikut Final. */
+export type GrupStatus = 'belum' | 'draft' | 'final'
+export const grupStatus = (s: StatusDokumen): GrupStatus => (s === 'review' ? 'draft' : s === 'disetujui' ? 'final' : s)
+
 type DokBukti = Pick<Dokumen, 'jumlah_berkas'>
 
 /** Nilai satu dokumen dalam skor kesiapan: 1 bila sudah ada evidence, 0 bila belum. */

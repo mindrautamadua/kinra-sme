@@ -81,6 +81,16 @@ export async function simpanCatatanDokumen(id: string, posisiDraf: string, keter
   return gagal(error)
 }
 
+/** PIC dokumen dari lembar Kesiapan. Boleh diubah semua peran penulis (admin, konsultan, Tim KINRA). */
+export async function simpanPicDokumen(id: string, pic: string): Promise<Hasil> {
+  const t = await tolak('dokumen.ubah'); if (t) return t
+  const { data, error } = await (await db()).from('dokumen_audit')
+    .update({ pic: pic.trim().slice(0, 120) || null }).eq('id', id).select('id')
+  if (!error && !data?.length) return { ok: false, pesan: 'Dokumen tidak ditemukan atau Anda tidak berhak mengubahnya.' }
+  revalidatePath('/', 'layout')
+  return gagal(error)
+}
+
 /** Status dokumen dari lembar Kesiapan. Belum ada/Draft/Final untuk semua peran penulis; Disetujui hanya admin & konsultan. */
 export async function ubahStatusDokumen(id: string, status: StatusDokumen): Promise<Hasil> {
   if (!['belum', 'draft', 'review', 'disetujui', 'final'].includes(status)) return { ok: false, pesan: 'Status tidak dikenal.' }

@@ -8,10 +8,11 @@ import { Chip } from '@/components/Chip'
 import { EvidenceBerkas } from '@/components/EvidenceBerkas'
 import { useBoleh } from '@/components/Peran'
 import { selisihHari, tanggal } from '@/lib/format'
-import { adaBukti, KELOMPOK, kesiapan, STATUS_DOKUMEN, terlambat } from '@/lib/status'
+import { adaBukti, grupStatus, type GrupStatus, KELOMPOK, kesiapan, STATUS_DOKUMEN, terlambat } from '@/lib/status'
 import type { BerkasTampil, Dokumen, KelompokDokumen, Klausul } from '@/lib/types'
 import { CatatanDokumen } from './CatatanDokumen'
 import { PanelKesiapan } from './PanelKesiapan'
+import { PicDokumen } from './PicDokumen'
 import { StatusDokumenSel } from './StatusDokumenSel'
 
 export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal }: {
@@ -27,11 +28,14 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal }: {
   const tanpaBukti = bukti === 'belum'
   const setTanpaBukti = (v: boolean) => setBukti(v ? 'belum' : '')
   const [hanyaWajib, setHanyaWajib] = useState(false)
+  const [st, setSt] = useState<'' | GrupStatus>('')
   const adaKolomWajib = rows.some((d) => d.wajib_iso !== undefined)
   const [galat, setGalat] = useState<string | null>(null)
   const bisa = useBoleh()
   const bisaUnggah = bisa('dokumen.ubah')
   const bisaStatus = bisa('dokumen.status')
+  // Saran isian PIC dari nilai yang sudah dipakai dokumen lain
+  const saranPic = useMemo(() => [...new Set(rows.map((d) => d.pic?.trim()).filter((p): p is string => !!p))].sort(), [rows])
   // Panel evidence: satu-satunya tempat melihat, mengunggah, dan menghapus berkas evidence
   const dlg = useRef<HTMLDialogElement>(null)
   const [panel, setPanel] = useState<{ d: Dokumen; berkas: BerkasTampil[] } | null>(null)
@@ -68,13 +72,14 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal }: {
       .filter((d) => !hanyaLewat || terlambat(d, kini))
       .filter((d) => !bukti || (bukti === 'ada') === adaBukti(d))
       .filter((d) => !hanyaWajib || d.wajib_iso)
+      .filter((d) => !st || grupStatus(d.status) === st)
       .filter((d) => !q || `${d.kode} ${d.nama} ${d.pic ?? ''} ${d.nomor_dokumen ?? ''} ${d.keterangan ?? ''} ${d.posisi_draf ?? ''} ${STATUS_DOKUMEN[d.status]?.label ?? ''}`.toLowerCase().includes(q))
       .sort((a, b) => (judulKlausul[a.klausul_kode]?.urutan ?? 0) - (judulKlausul[b.klausul_kode]?.urutan ?? 0) || a.kode.localeCompare(b.kode))
-  }, [rows, kelompok, kl, cari, hanyaLewat, bukti, hanyaWajib, kini, judulKlausul])
+  }, [rows, kelompok, kl, cari, hanyaLewat, bukti, hanyaWajib, st, kini, judulKlausul])
 
-  const adaSaring = !!(kelompok || kl || cari || hanyaLewat || bukti || hanyaWajib)
+  const adaSaring = !!(kelompok || kl || cari || hanyaLewat || bukti || hanyaWajib || st)
   function reset() {
-    setKelompok(''); setKl(''); setCari(''); setHanyaLewat(false); setBukti(''); setHanyaWajib(false)
+    setKelompok(''); setKl(''); setCari(''); setHanyaLewat(false); setBukti(''); setHanyaWajib(false); setSt('')
   }
 
   function unduhCsv() {
@@ -121,6 +126,15 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal }: {
             <select value={kl} onChange={(e) => setKl(e.target.value)}>
               <option value="">Semua klausul</option>
               {klausul.map((k) => <option key={k.kode} value={k.kode}>{k.kode === 'P' ? 'Persiapan' : k.kode} · {k.judul}</option>)}
+            </select>
+          </label>
+          <label>
+            <span className="sr-only">Status dokumen</span>
+            <select value={st} onChange={(e) => setSt(e.target.value as '' | GrupStatus)} style={st ? { borderColor: 'var(--brand)' } : undefined}>
+              <option value="">Semua status</option>
+              {(['belum', 'draft', 'final'] as GrupStatus[]).map((g) => (
+                <option key={g} value={g}>{STATUS_DOKUMEN[g].label} ({rows.filter((d) => grupStatus(d.status) === g).length})</option>
+              ))}
             </select>
           </label>
           <button type="button" className="btn" aria-pressed={hanyaLewat} onClick={() => setHanyaLewat(!hanyaLewat)}
@@ -185,7 +199,7 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal }: {
                     </td>
                     <td className="small"><StatusDokumenSel key={`${d.id}-${d.status}`} d={d} bisaUbah={bisaStatus} /></td>
                     <td className="small ks-kol-catatan"><CatatanDokumen d={d} bisaUbah={bisaUnggah} /></td>
-                    <td className="small">{d.pic ?? <span className="muted">–</span>}</td>
+                    <td className="small"><PicDokumen key={`${d.id}-${d.pic ?? ''}`} d={d} bisaUbah={bisaUnggah} saran={saranPic} /></td>
                     <td className="small tnum" style={{ whiteSpace: 'nowrap' }}>
                       {tanggal(d.tenggat)}
                       {h !== null && !adaBukti(d) && (
