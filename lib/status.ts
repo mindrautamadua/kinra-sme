@@ -1,4 +1,4 @@
-import type { Dokumen, JejakBukti, Kegiatan, KelompokDokumen, Klausul } from './types'
+import type { Dokumen, StatusDokumen, JejakBukti, Kegiatan, KelompokDokumen, Klausul } from './types'
 
 export type KodeChip = 'good' | 'warn' | 'serious' | 'crit' | 'na' | 'info'
 
@@ -20,6 +20,16 @@ export const INDUK_KLAUSUL: Record<string, string> = {
   '9': 'Evaluasi kinerja',
   '10': 'Peningkatan',
 }
+
+/** Label status dokumen. Pilihan di lembar Kesiapan: Belum ada, Draft, Final; Review & Disetujui dari data lama tetap ditampilkan. */
+export const STATUS_DOKUMEN: Record<StatusDokumen, { label: string; chip: KodeChip }> = {
+  belum: { label: 'Belum ada', chip: 'na' },
+  draft: { label: 'Draft', chip: 'warn' },
+  review: { label: 'Review', chip: 'warn' },
+  disetujui: { label: 'Disetujui', chip: 'good' },
+  final: { label: 'Final', chip: 'good' },
+}
+export const PILIHAN_STATUS: StatusDokumen[] = ['belum', 'draft', 'final']
 
 type DokBukti = Pick<Dokumen, 'jumlah_berkas'>
 

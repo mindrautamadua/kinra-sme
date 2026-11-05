@@ -9,7 +9,7 @@ import { ambilBerkas } from '@/lib/data'
 import { cekAkses } from '@/lib/sesi'
 import { COOKIE_SESI, db } from '@/lib/supabase'
 import { BUCKET_BUKTI, UKURAN_MAKS_BUKTI } from '@/lib/status'
-import type { BerkasTampil, StatusAksi, StatusKegiatan } from '@/lib/types'
+import type { BerkasTampil, StatusAksi, StatusDokumen, StatusKegiatan } from '@/lib/types'
 import { ambilIsian, ambilTemplat } from '@/lib/formulir/data'
 import { isiAwal, selaraskan } from '@/lib/formulir/isi'
 import { tabelDariData } from '@/lib/formulir/sumber-data'
@@ -77,6 +77,17 @@ export async function simpanCatatanDokumen(id: string, posisiDraf: string, keter
   const { error } = await s.from('dokumen_audit')
     .update({ posisi_draf: rapi(posisiDraf, 120), keterangan: rapi(keterangan, 1000) }).eq('id', id)
   if (error?.code === 'PGRST204') return { ok: false, pesan: 'Kolom posisi draf belum ada. Jalankan migrasi 0018_catatan_kesiapan.sql terlebih dahulu.' }
+  revalidatePath('/', 'layout')
+  return gagal(error)
+}
+
+/** Status dokumen dari lembar Kesiapan. Belum ada/Draft/Final untuk semua peran penulis; Disetujui hanya admin & konsultan. */
+export async function ubahStatusDokumen(id: string, status: StatusDokumen): Promise<Hasil> {
+  if (!['belum', 'draft', 'review', 'disetujui', 'final'].includes(status)) return { ok: false, pesan: 'Status tidak dikenal.' }
+  const t = await tolak(status === 'disetujui' ? 'dokumen.setujui' : 'dokumen.status'); if (t) return t
+  const { data, error } = await (await db()).from('dokumen_audit').update({ status }).eq('id', id).select('id')
+  if (error?.code === '42501' && status === 'final') return { ok: false, pesan: 'Database belum mengizinkan Tim KINRA menetapkan Final. Jalankan migrasi 0019_status_final_tim_kinra.sql.' }
+  if (!error && !data?.length) return { ok: false, pesan: 'Dokumen tidak ditemukan atau Anda tidak berhak mengubahnya.' }
   revalidatePath('/', 'layout')
   return gagal(error)
 }
