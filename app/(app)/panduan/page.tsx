@@ -1,4 +1,4 @@
-import { Activity, BookOpen, Bot, CalendarRange, CircleCheck, ClipboardCheck, FileText, Gauge, KeyRound, LayoutDashboard, Minus, Network, ScanSearch, SearchCheck, ShieldAlert, Target, Users } from 'lucide-react'
+import { Activity, BookOpen, MessagesSquare, Bot, CalendarRange, CircleCheck, ClipboardCheck, FileText, Gauge, KeyRound, LayoutDashboard, Minus, Network, ScanSearch, SearchCheck, ShieldAlert, Target, Users } from 'lucide-react'
 import { FITUR_FORMULIR } from '@/lib/fitur'
 import Link from 'next/link'
 import { Chip } from '@/components/Chip'
@@ -25,6 +25,7 @@ const MODUL = [
   { href: '/dependensi', ikon: Network, nama: 'Peta Evidence', klausul: 'Klausul 4–10', isi: 'Diagram hubungan antardokumen: dokumen mana yang menjadi masukan bagi dokumen lain, status evidence masing-masing, dan dokumen yang tertahan karena masukannya belum lengkap.' },
   { href: '/auditor', ikon: ScanSearch, nama: 'Ruang Auditor', klausul: 'Klausul 9.2 · Stage 1', isi: 'Tampilan hanya-baca per klausul untuk auditor internal dan TÜV: dokumen wajib di atas, berkas evidence langsung dibuka, temuan terbuka, dan dokumen yang menjadi dasarnya.' },
   ...(FITUR_FORMULIR ? [{ href: '/formulir', ikon: FileText, nama: 'Formulir', klausul: 'Klausul 4–10', isi: 'Semua formulir SMEn diisi langsung di aplikasi: buat isian, isi tabel, ajukan, setujui, lalu cetak atau simpan sebagai PDF.' }] : []),
+  { href: '/tanya-jawab', ikon: MessagesSquare, nama: 'Tanya Jawab Audit', klausul: 'Klausul 4–10', isi: '65 contoh pertanyaan auditor internal per unit kerja, lengkap dengan jawaban, bukti objektif, dan indikator. Jawaban disembunyikan untuk latihan.' },
   { href: '/energi', ikon: Gauge, nama: 'Data Energi', klausul: 'Klausul 6.3', isi: 'Input konsumsi bulanan per sumber (PLN, PLTBG, PLTS, BBM), aliran energi, peta panas, dan tren antar tahun dalam Terajoule.' },
   { href: '/kinerja', ikon: Activity, nama: 'Kinerja Energi', klausul: 'Klausul 6.4 & 6.5', isi: 'EnPI dan baseline energi (EnB): aktual vs harapan, CUSUM, uji kelayakan model, input variabel relevan bulanan.' },
   { href: '/sasaran', ikon: Target, nama: 'Sasaran & Aksi', klausul: 'Klausul 6.2', isi: 'Sasaran dan target energi yang terhubung ke EnPI, rencana aksi beserta PIC, tenggat, dan penghematan terverifikasi.' },

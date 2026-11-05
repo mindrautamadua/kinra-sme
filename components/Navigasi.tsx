@@ -1,6 +1,6 @@
 'use client'
 
-import { Activity, BookA, BookOpen, CalendarRange, ClipboardCheck, FileText, Gauge, LayoutDashboard, Network, ScanSearch, SearchCheck, ShieldAlert, Target, Users } from 'lucide-react'
+import { Activity, BookA, BookOpen, MessagesSquare, CalendarRange, ClipboardCheck, FileText, Gauge, LayoutDashboard, Network, ScanSearch, SearchCheck, ShieldAlert, Target, Users } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { FITUR_FORMULIR } from '@/lib/fitur'
@@ -10,6 +10,7 @@ export const MENU = [
   { href: '/kesiapan', label: 'Kesiapan Audit', ikon: ClipboardCheck },
   { href: '/dependensi', label: 'Peta Evidence', ikon: Network },
   { href: '/auditor', label: 'Ruang Auditor', ikon: ScanSearch },
+  { href: '/tanya-jawab', label: 'Tanya Jawab Audit', ikon: MessagesSquare },
   ...(FITUR_FORMULIR ? [{ href: '/formulir', label: 'Formulir', ikon: FileText }] : []),
   { href: '/energi', label: 'Data Energi', ikon: Gauge },
   { href: '/kinerja', label: 'Kinerja Energi', ikon: Activity },

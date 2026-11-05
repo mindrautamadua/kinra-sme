@@ -136,6 +136,37 @@ export async function lihatBerkas(dokumenId: string): Promise<Hasil & { berkas?:
 }
 
 /** Langkah 1 unggah: server membuat signed upload URL; browser lalu mengunggah langsung ke Storage (tidak lewat server Next). */
+export type EvidenceDokumen = { id: string; kode: string; nama: string; wajib: boolean; status: StatusDokumen; posisiDraf: string | null; berkas: BerkasTampil[] }
+
+/** Daftar dokumen satu klausul beserta berkas evidence-nya (signed URL 1 jam). Dipakai modal di halaman Tanya Jawab. */
+export async function evidenceKlausul(kode: string): Promise<Hasil & { judul?: string; dokumen?: EvidenceDokumen[] }> {
+  try {
+    const s = await db()
+    const [k, d] = await Promise.all([
+      s.from('klausul').select('judul').eq('kode', kode).maybeSingle<{ judul: string }>(),
+      // select('*') agar tetap jalan bila kolom migrasi 0015/0018 belum ada
+      s.from('dokumen_audit').select('*').eq('klausul_kode', kode).order('kode'),
+    ])
+    if (d.error) return { ok: false, pesan: d.error.message }
+    const docs = (d.data ?? []) as { id: string; kode: string; nama: string; status: StatusDokumen; wajib_iso?: boolean; posisi_draf?: string | null }[]
+    if (!docs.length) return { ok: true, judul: k.data?.judul, dokumen: [] }
+    const b = await s.from('berkas').select('*').in('dokumen_id', docs.map((x) => x.id)).order('diunggah_at')
+    if (b.error) return { ok: false, pesan: b.error.message }
+    const daftar = (b.data ?? []) as BerkasTampil[]
+    const { data: tanda } = daftar.length ? await s.storage.from(BUCKET_BUKTI).createSignedUrls(daftar.map((x) => x.path), 3600) : { data: [] }
+    const url = new Map((tanda ?? []).map((t) => [t.path, t.signedUrl]))
+    return {
+      ok: true, judul: k.data?.judul,
+      dokumen: docs.map((x) => ({
+        id: x.id, kode: x.kode, nama: x.nama, wajib: !!x.wajib_iso, status: x.status, posisiDraf: x.posisi_draf ?? null,
+        berkas: daftar.filter((f) => f.dokumen_id === x.id).map((f) => ({ ...f, url: url.get(f.path) ?? null })),
+      })),
+    }
+  } catch (e) {
+    return { ok: false, pesan: e instanceof Error ? e.message : 'Gagal memuat evidence.' }
+  }
+}
+
 export async function siapkanUnggah(dokumenId: string, nama: string, ukuran: number): Promise<Hasil & { path?: string; token?: string }> {
   const t = await tolak('dokumen.ubah'); if (t) return t
   if (ukuran > UKURAN_MAKS_BUKTI) return { ok: false, pesan: `${nama} melebihi batas ${UKURAN_MAKS_BUKTI / 1024 / 1024} MB.` }
