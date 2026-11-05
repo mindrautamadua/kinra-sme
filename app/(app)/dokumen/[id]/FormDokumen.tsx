@@ -46,8 +46,8 @@ export function FormDokumen({ dokumen, klausul }: { dokumen: Dokumen | null; kla
         <label className="field"><span>Tanggal diterima</span><input type="date" name="tanggal_terima" defaultValue={d?.tanggal_terima ?? ''} /></label>
         <label className="field full" style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
           <input type="hidden" name="wajib_iso_ada" value="1" />
-          <input type="checkbox" name="wajib_iso" defaultChecked={d?.wajib_iso ?? false} disabled={!bisa('dokumen.tambah')} style={{ width: 18, height: 18 }} />
-          <span style={{ textTransform: 'none', letterSpacing: 0 }}>Informasi terdokumentasi wajib ISO 50001:2018{!bisa('dokumen.tambah') && ' (diubah oleh admin atau konsultan)'}</span>
+          <input type="checkbox" name="wajib_iso" defaultChecked={d?.wajib_iso ?? false} disabled={!bisa('dokumen.wajib')} style={{ width: 18, height: 18 }} />
+          <span style={{ textTransform: 'none', letterSpacing: 0 }}>Informasi terdokumentasi wajib ISO 50001:2018{!bisa('dokumen.wajib') && ' (diubah oleh admin atau konsultan)'}</span>
         </label>
         <label className="field full"><span>Keterangan</span><textarea name="keterangan" defaultValue={d?.keterangan ?? ''} /></label>
       </div>
