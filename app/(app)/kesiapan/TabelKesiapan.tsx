@@ -1,6 +1,6 @@
 'use client'
 
-import { Download, Eye, Search, Upload, X } from 'lucide-react'
+import { Download, Eye, Search, Trash2, Upload, X } from 'lucide-react'
 import Link from 'next/link'
 import { useMemo, useRef, useState } from 'react'
 import { lihatBerkas } from '@/app/actions'
@@ -11,6 +11,7 @@ import { selisihHari, tanggal } from '@/lib/format'
 import { adaBukti, grupStatus, type GrupStatus, KELOMPOK, kesiapan, STATUS_DOKUMEN, terlambat } from '@/lib/status'
 import type { BerkasTampil, Dokumen, KelompokDokumen, Klausul } from '@/lib/types'
 import { CatatanDokumen } from './CatatanDokumen'
+import { HapusDokumenDialog } from './HapusDokumenDialog'
 import { PanelKesiapan } from './PanelKesiapan'
 import { PicDokumen } from './PicDokumen'
 import { StatusDokumenSel } from './StatusDokumenSel'
@@ -34,6 +35,8 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal }: {
   const bisa = useBoleh()
   const bisaUnggah = bisa('dokumen.ubah')
   const bisaStatus = bisa('dokumen.status')
+  const bisaHapus = bisa('dokumen.hapus')
+  const [hapus, setHapus] = useState<Dokumen | null>(null)
   // Saran isian PIC dari nilai yang sudah dipakai dokumen lain
   const saranPic = useMemo(() => [...new Set(rows.map((d) => d.pic?.trim()).filter((p): p is string => !!p))].sort(), [rows])
   // Panel evidence: satu-satunya tempat melihat, mengunggah, dan menghapus berkas evidence
@@ -207,6 +210,7 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal }: {
                       )}
                     </td>
                     <td className="num">
+                      <span className="ks-aksi-baris">
                       {(d.jumlah_berkas ?? 0) > 0
                         ? <button type="button" className="btn kecil" disabled={memuat === d.id} onClick={() => bukaPanel(d)} aria-label={`Lihat ${d.jumlah_berkas} berkas evidence ${d.kode}`}>
                             <Eye aria-hidden="true" /> {memuat === d.id ? 'Memuat…' : `${d.jumlah_berkas} berkas`}
@@ -216,6 +220,12 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal }: {
                               <Upload aria-hidden="true" /> {memuat === d.id ? 'Memuat…' : 'Unggah'}
                             </button>
                           : <span className="txt-bad small">belum ada</span>}
+                      {bisaHapus && (
+                        <button type="button" className="btn btn-ikon kecil bahaya" onClick={() => setHapus(d)} aria-label={`Hapus ${d.kode}`} title="Hapus item">
+                          <Trash2 aria-hidden="true" />
+                        </button>
+                      )}
+                      </span>
                     </td>
                   </tr>,
                 ]
@@ -243,6 +253,7 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal }: {
           </div>
         )}
       </dialog>
+      <HapusDokumenDialog d={hapus} onTutup={() => setHapus(null)} />
     </>
   )
 }

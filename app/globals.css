@@ -1324,3 +1324,16 @@ a.insight:hover h3 { color: var(--brand); }
 .ks-status.s-belum { color: var(--muted); }
 .ks-status.s-draft, .ks-status.s-review { color: var(--warn); border-color: color-mix(in srgb, var(--warn) 45%, transparent); }
 .ks-status.s-final, .ks-status.s-disetujui { color: var(--good, var(--brand)); border-color: color-mix(in srgb, var(--good, var(--brand)) 45%, transparent); }
+
+/* Hapus item di lembar Kesiapan */
+.ks-aksi-baris { display: inline-flex; gap: 6px; align-items: center; justify-content: flex-end; }
+.ks-aksi-baris .btn.bahaya { opacity: .5; }
+.tbl tr:hover .ks-aksi-baris .btn.bahaya, .ks-aksi-baris .btn.bahaya:focus-visible { opacity: 1; }
+@media (hover: none) { .ks-aksi-baris .btn.bahaya { opacity: 1; } }
+dialog.ks-hapus { max-width: min(520px, calc(100vw - 32px)); }
+dialog.ks-hapus .card { display: flex; flex-direction: column; gap: 14px; }
+.ks-hapus-peringatan { display: flex; gap: 10px; align-items: flex-start; }
+.ks-hapus-peringatan > svg { width: 18px; height: 18px; flex: none; color: var(--txt-bad); margin-top: 1px; }
+.ks-hapus-peringatan ul { margin: 6px 0 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
+.btn.hapus-tegas { background: var(--crit); border-color: transparent; color: #fff; }
+.btn.hapus-tegas:hover { filter: brightness(1.08); background: var(--crit); }

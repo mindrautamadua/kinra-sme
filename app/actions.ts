@@ -106,7 +106,9 @@ export async function hapusDokumen(id: string): Promise<Hasil> {
   const t = await tolak('dokumen.hapus'); if (t) return t
   const s = await db()
   const { data: berkas } = await s.from('berkas').select('path').eq('dokumen_id', id)
-  const { error } = await s.from('dokumen_audit').delete().eq('id', id)
+  const { data: terhapus, error } = await s.from('dokumen_audit').delete().eq('id', id).select('id')
+  // RLS menolak delete secara diam-diam (0 baris); untuk Tim KINRA berarti migrasi 0020 belum dijalankan
+  if (!error && !terhapus?.length) return { ok: false, pesan: 'Dokumen tidak terhapus. Bila Anda Tim KINRA, jalankan migrasi 0020_tim_kinra_hapus_dokumen.sql terlebih dahulu.' }
   // Berkas evidence ikut dibersihkan agar tidak jadi objek yatim di bucket
   if (!error && berkas?.length) {
     const paths = berkas.map((b) => b.path)

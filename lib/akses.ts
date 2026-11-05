@@ -1,4 +1,4 @@
-/** Matriks hak akses. Sinkron dengan policy RLS di supabase/migrations/0006_login_peran.sql, 0007, 0009, 0011, 0014, dan 0019. */
+/** Matriks hak akses. Sinkron dengan policy RLS di supabase/migrations/0006_login_peran.sql, 0007, 0009, 0011, 0014, 0019, dan 0020. */
 export type Peran = 'admin' | 'konsultan' | 'tim_kinra' | 'pembaca'
 
 export const LABEL_PERAN: Record<Peran, string> = { admin: 'Admin', konsultan: 'Konsultan', tim_kinra: 'Tim KINRA', pembaca: 'Pembaca' }
@@ -13,7 +13,7 @@ export const AKSES = {
   'dokumen.ubah': SEMUA,
   'dokumen.status': SEMUA,                      // status Belum ada / Draft / Final (migrasi 0019)
   'dokumen.setujui': ['admin', 'konsultan'],   // status Disetujui
-  'dokumen.hapus': ['admin'],
+  'dokumen.hapus': ['admin', 'tim_kinra'],      // migrasi 0020
   'energi.ubah': ['admin', 'tim_kinra'],        // termasuk data bulanan variabel relevan
   'enpi.tambah': ['admin', 'konsultan'],        // definisi variabel relevan & EnPI baru
   'enpi.ubah': SEMUA,                           // ubah variabel relevan, EnPI & baseline
