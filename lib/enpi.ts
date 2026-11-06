@@ -170,6 +170,15 @@ export function hitungEnpi(enpi: Enpi, sumber: SumberEnergi[], energi: EnergiBul
   if (m.n < AMBANG.nMin) peringatan.push(`Baseline hanya ${m.n} bulan; ISO 50006 menyarankan minimal ${AMBANG.nMin} titik data.`)
   if (m.r2 !== null && m.r2 < AMBANG.r2) peringatan.push(`R² ${m.r2.toFixed(2)} di bawah ${AMBANG.r2}: variabel belum menjelaskan konsumsi dengan baik. Pertimbangkan variabel lain.`)
   if (m.cvrmse !== null && m.cvrmse > AMBANG.cvrmse) peringatan.push(`CV(RMSE) ${m.cvrmse.toFixed(1)}% di atas ${AMBANG.cvrmse}%: ketidakpastian model tinggi.`)
+  // Model hanya sahih di dalam rentang variabel baseline (ISO 50006); di luar itu harapan adalah ekstrapolasi
+  if (enpi.metode === 'regresi' || enpi.metode === 'rasio') {
+    variabel.forEach((v, i) => {
+      const xs = latih.map((t) => t.x[i]!)
+      const min = Math.min(...xs), maks = Math.max(...xs), lebar = maks - min
+      const luar = laporan.filter((t) => t.x[i] !== null && (t.x[i]! > maks + 0.1 * lebar || t.x[i]! < min - 0.1 * lebar))
+      if (luar.length) peringatan.push(`${luar.length} bulan pelaporan memiliki ${v.nama} di luar rentang baseline (${min.toLocaleString('id-ID')}–${maks.toLocaleString('id-ID')} ${v.satuan}). Harapan bulan tersebut adalah ekstrapolasi; penghematan belum dapat diklaim. Pertimbangkan baseline baru bila kondisi operasi berubah besar (ISO 50001 6.5).`)
+    })
+  }
   const kosongVar = laporan.filter((t) => t.aktual !== null && t.harapan === null).length
   if (kosongVar) peringatan.push(`${kosongVar} bulan pelaporan belum punya data variabel, sehingga belum bisa dinormalisasi.`)
   return hasil
