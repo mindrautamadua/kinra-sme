@@ -172,3 +172,65 @@ export type RencanaAksi = {
   tanggal_verifikasi: string | null
   catatan: string | null
 }
+
+/** Aset gedung/fasilitas KINRA (migrasi 0022). */
+export type Aset = {
+  kode: string
+  no_urut: number
+  nama: string
+  area: string | null
+  luas_m2: number | null
+  jumlah_lantai: number | null
+  jumlah_ruangan: number | null
+  tahun_bangun: number | null
+  tanggal_bangun: string | null
+  fungsi: string | null
+  kondisi: string | null
+  luas_ac_m2: number | null
+  kwh_bulan: number | null
+  biaya_bulan: number | null
+  jam_operasi: string | null
+  pic: string | null
+  catatan: string | null
+}
+
+/** Register induk meter energi (migrasi 0022). */
+export type MeterEnergi = {
+  kode: string
+  no_urut: number
+  no_meter: string | null
+  jenis: string | null
+  sumber_kode: string | null
+  lokasi: string | null
+  area_dilayani: string | null
+  aset_kode: string | null
+  beban_diukur: string | null
+  pic_area: string | null
+  pic_data: string | null
+  satuan: string
+  faktor_kali: number
+  kapasitas: string | null
+  kelas_akurasi: string | null
+  interval_pembacaan: string | null
+  frekuensi_pencatatan: string | null
+  status: string | null
+  kalibrasi_terakhir: string | null
+  kalibrasi_berikutnya: string | null
+  metode_pengiriman: string | null
+  penyimpanan_data: string | null
+  kandidat_seu: string | null
+  bukti_pendukung: string | null
+  catatan: string | null
+}
+
+/** Bacaan stand meter per bulan. Konsumsi = (stand_akhir - stand_awal) x faktor_kali. */
+export type PembacaanMeter = {
+  meter_kode: string
+  tahun: number
+  bulan: number
+  stand_awal: number | null
+  stand_akhir: number | null
+  catatan: string | null
+  diubah_oleh: string | null
+  diubah_at: string
+}

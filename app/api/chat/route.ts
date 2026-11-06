@@ -1,4 +1,4 @@
-import { instruksiKira } from '@/lib/kira'
+import { butuhTanyaJawab, instruksiKira } from '@/lib/kira'
 import { konteksDashboard } from '@/lib/konteks-ai'
 import { penggunaSaya } from '@/lib/sesi'
 
@@ -23,9 +23,11 @@ export async function POST(req: Request) {
     .slice(-MAKS_PESAN)
   if (!riwayat.length || riwayat.at(-1)!.peran !== 'user') return Response.json({ pesan: 'Pertanyaan kosong.' }, { status: 400 })
 
+  // Materi tanya jawab audit (~9 ribu token) hanya dikirim bila pertanyaan relevan
+  const materi = butuhTanyaJawab(riwayat)
   let data: string
   try {
-    data = await konteksDashboard()
+    data = await konteksDashboard({ tanyaJawab: materi })
   } catch (e) {
     data = `(Data dashboard gagal dimuat: ${(e as Error).message})`
   }
@@ -34,7 +36,7 @@ export async function POST(req: Request) {
     method: 'POST',
     headers: { 'content-type': 'application/json', 'x-goog-api-key': KEY },
     body: JSON.stringify({
-      systemInstruction: { parts: [{ text: instruksiKira('teks', saya, data) }] },
+      systemInstruction: { parts: [{ text: instruksiKira('teks', saya, data, materi) }] },
       contents: riwayat.map((p) => ({ role: p.peran, parts: [{ text: p.teks.slice(0, MAKS_KARAKTER) }] })),
       generationConfig: { temperature: 0.3, maxOutputTokens: 2048 },
     }),

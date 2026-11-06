@@ -2,7 +2,7 @@ import 'server-only'
 import { hitungEnpi } from './enpi'
 import { BUCKET_BUKTI } from './status'
 import { db } from './supabase'
-import type { Berkas, BerkasTampil, Dokumen, EnergiBulanan, Enpi, Isu, JejakBukti, Kegiatan, Klausul, Peluang, RencanaAksi, Sasaran, SumberEnergi, Temuan, VariabelBulanan, VariabelRelevan } from './types'
+import type { Aset, MeterEnergi, PembacaanMeter, Berkas, BerkasTampil, Dokumen, EnergiBulanan, Enpi, Isu, JejakBukti, Kegiatan, Klausul, Peluang, RencanaAksi, Sasaran, SumberEnergi, Temuan, VariabelBulanan, VariabelRelevan } from './types'
 
 /** Tabel belum ada (PGRST205) dianggap kosong; layout menampilkan panduan migrasi. Galat lain dilempar. */
 function cek<T>(r: { data: T | null; error: { message: string; code?: string } | null }, tabel: string): T {
@@ -55,6 +55,25 @@ export async function ambilEnergi(): Promise<{ sumber: SumberEnergi[]; data: Ene
   return {
     sumber: cek(a, 'sumber_energi'),
     data: cek<EnergiBulanan[]>(b, 'energi_bulanan').map((r) => ({ ...r, nilai: Number(r.nilai) })),
+  }
+}
+
+const angkaAtauNull = (v: unknown) => (v === null || v === undefined ? null : Number(v))
+
+/** Aset, meter, dan seluruh bacaan stand (migrasi 0022). `siap` false bila tabel belum ada. */
+export async function ambilAsetMeter(): Promise<{ aset: Aset[]; meter: MeterEnergi[]; bacaan: PembacaanMeter[]; siap: boolean }> {
+  const s = await db()
+  const [a, m, p] = await Promise.all([
+    s.from('aset').select('*').order('no_urut'),
+    s.from('meter_energi').select('*').order('no_urut'),
+    s.from('pembacaan_meter').select('*').order('tahun').order('bulan'),
+  ])
+  const siap = a.error?.code !== 'PGRST205'
+  return {
+    siap,
+    aset: cek<Aset[]>(a, 'aset').map((r) => ({ ...r, luas_m2: angkaAtauNull(r.luas_m2), luas_ac_m2: angkaAtauNull(r.luas_ac_m2), kwh_bulan: angkaAtauNull(r.kwh_bulan), biaya_bulan: angkaAtauNull(r.biaya_bulan) })),
+    meter: cek<MeterEnergi[]>(m, 'meter_energi').map((r) => ({ ...r, faktor_kali: Number(r.faktor_kali) })),
+    bacaan: cek<PembacaanMeter[]>(p, 'pembacaan_meter').map((r) => ({ ...r, stand_awal: angkaAtauNull(r.stand_awal), stand_akhir: angkaAtauNull(r.stand_akhir) })),
   }
 }
 

@@ -3,9 +3,11 @@ import { ambilDokumen, ambilIsu, ambilKegiatan, ambilKinerja, ambilKlausul, ambi
 import { LABEL_METODE, ringkas } from './enpi'
 import { angka, hariIni, persen, tanggal } from './format'
 import { adaBukti, kesiapan, terlambat, tingkatRisiko, tonggakDari } from './status'
+import { LANGKAH_TINDAK_LANJUT, SUMBER_TANYA_JAWAB, UNIT_AUDIT, URUTAN_PEMERIKSAAN } from './tanya-jawab'
 
 /** Ringkasan data dashboard dalam teks ringkas untuk instruksi sistem chatbot. Dibaca dengan sesi pengguna (RLS berlaku). */
-export async function konteksDashboard(): Promise<string> {
+/** `tanyaJawab`: sertakan materi tanya jawab audit (~9 ribu token). Chat teks hanya menyertakannya bila pertanyaan relevan. */
+export async function konteksDashboard({ tanyaJawab = true }: { tanyaJawab?: boolean } = {}): Promise<string> {
   const [dokumen, klausul, temuan, kegiatan, isu, peluang, { sasaran, aksi }, kinerja] = await Promise.all([
     ambilDokumen(), ambilKlausul(), ambilTemuan(), ambilKegiatan(), ambilIsu(), ambilPeluang(), ambilSasaran(), ambilKinerja(),
   ])
@@ -16,7 +18,7 @@ export async function konteksDashboard(): Promise<string> {
   for (const t of tonggakDari(kegiatan)) b.push(`- ${t.nama}: ${tanggal(t.tanggal, 'panjang')}`)
 
   const siap = dokumen.filter(adaBukti).length
-  b.push(`\n## Kesiapan dokumen\nSkor ${persen(kesiapan(dokumen))} = persentase dokumen yang sudah punya evidence (berkas terunggah di Kesiapan Audit; isian formulir tidak dihitung); ${siap} dari ${dokumen.length} dokumen ada evidence. Dokumen tidak memakai status tahapan.`)
+  b.push(`\n## Kesiapan dokumen\nSkor ${persen(kesiapan(dokumen))} = persentase dokumen yang sudah punya evidence (berkas terunggah di Kesiapan Audit; isian formulir tidak dihitung); ${siap} dari ${dokumen.length} dokumen ada evidence. Status Draft/Final per dokumen hanya informasi posisi, tidak memengaruhi skor.`)
   for (const k of klausul) {
     const ds = dokumen.filter((d) => d.klausul_kode === k.kode)
     if (ds.length) b.push(`- Klausul ${k.kode} ${k.judul}: ${persen(kesiapan(ds))} (${ds.length} dokumen)`)
@@ -59,5 +61,24 @@ export async function konteksDashboard(): Promise<string> {
   b.push('\n## Kegiatan pendampingan')
   for (const k of kegiatan) b.push(`- ${k.no}. ${k.nama} | ${k.status ?? '–'} | sesi: ${k.sesi.map((s) => tanggal(s.tanggal)).join(', ') || '–'}`)
 
+  if (tanyaJawab) b.push('\n' + konteksTanyaJawab())
+
+  return b.join('\n')
+}
+
+/** Seluruh materi tanya jawab audit internal (menu Tanya Jawab Audit) dalam format ringkas untuk KIRA. */
+export function konteksTanyaJawab(): string {
+  const b: string[] = [
+    `## Materi tanya jawab audit internal (${SUMBER_TANYA_JAWAB})`,
+    'Contoh pertanyaan auditor internal per unit kerja beserta jawaban yang diharapkan, bukti objektif, dan indikator. Jawaban adalah contoh, bukan pernyataan bahwa KINRA sudah memenuhi persyaratan. Rujukan klausul 8.4 di materi sumber sudah dikoreksi menjadi 8.3 (pengadaan).',
+    `Urutan pemeriksaan: ${URUTAN_PEMERIKSAAN}`,
+  ]
+  for (const u of UNIT_AUDIT) {
+    b.push(`\n### Unit ${u.no} ${u.nama} (${u.kelompok}; klausul ${u.klausul}) — ${u.ringkas}`)
+    for (const t of u.tanya) {
+      b.push(`U${u.no}Q${t.no} [${t.klausul.join(', ')}] ${t.tanya}\nJawaban: ${t.jawab.join(' ')}\nBukti: ${t.bukti} Indikator: ${t.indikator}`)
+    }
+  }
+  b.push(`\nTindak lanjut hasil audit: ${LANGKAH_TINDAK_LANJUT.map((l, i) => `${i + 1}) ${l.judul}: ${l.isi}`).join(' ')}`)
   return b.join('\n')
 }

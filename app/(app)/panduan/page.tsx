@@ -1,4 +1,4 @@
-import { Activity, BookOpen, MessagesSquare, Bot, CalendarRange, CircleCheck, ClipboardCheck, FileText, Gauge, KeyRound, LayoutDashboard, Minus, Network, ScanSearch, SearchCheck, ShieldAlert, Target, Users } from 'lucide-react'
+import { Activity, BookOpen, MessagesSquare, Bot, CalendarRange, CircleCheck, ClipboardCheck, FileText, Gauge, KeyRound, LayoutDashboard, Minus, Network, ScanSearch, SearchCheck, ShieldAlert, Target, Users, Building2 } from 'lucide-react'
 import { FITUR_FORMULIR } from '@/lib/fitur'
 import Link from 'next/link'
 import { Chip } from '@/components/Chip'
@@ -27,6 +27,7 @@ const MODUL = [
   ...(FITUR_FORMULIR ? [{ href: '/formulir', ikon: FileText, nama: 'Formulir', klausul: 'Klausul 4–10', isi: 'Semua formulir SMEn diisi langsung di aplikasi: buat isian, isi tabel, ajukan, setujui, lalu cetak atau simpan sebagai PDF.' }] : []),
   { href: '/tanya-jawab', ikon: MessagesSquare, nama: 'Tanya Jawab Audit', klausul: 'Klausul 4–10', isi: '65 contoh pertanyaan auditor internal per unit kerja, lengkap dengan jawaban, bukti objektif, dan indikator. Jawaban disembunyikan untuk latihan.' },
   { href: '/energi', ikon: Gauge, nama: 'Data Energi', klausul: 'Klausul 6.3', isi: 'Input konsumsi bulanan per sumber (PLN, PLTBG, PLTS, BBM), aliran energi, peta panas, dan tren antar tahun dalam Terajoule.' },
+  { href: '/aset', ikon: Building2, nama: 'Aset & Meter', klausul: 'Klausul 6.3, 6.6, 9.1', isi: 'Register aset gedung/fasilitas dan meter energi, bacaan stand bulanan dengan faktor kali, serta jadwal kalibrasi meter.' },
   { href: '/kinerja', ikon: Activity, nama: 'Kinerja Energi', klausul: 'Klausul 6.4 & 6.5', isi: 'EnPI dan baseline energi (EnB): aktual vs harapan, CUSUM, uji kelayakan model, input variabel relevan bulanan.' },
   { href: '/sasaran', ikon: Target, nama: 'Sasaran & Aksi', klausul: 'Klausul 6.2', isi: 'Sasaran dan target energi yang terhubung ke EnPI, rencana aksi beserta PIC, tenggat, dan penghematan terverifikasi.' },
   { href: '/register', ikon: ShieldAlert, nama: 'Isu & Peluang', klausul: 'Klausul 4.1, 6.1', isi: 'Register isu internal/eksternal dengan matriks risiko 5×5 dan daftar peluang peningkatan kinerja energi.' },

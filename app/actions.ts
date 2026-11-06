@@ -209,6 +209,123 @@ export async function simpanEnergi(tahun: number, bulan: number, sumber_kode: st
   return gagal(error)
 }
 
+// ---------- Aset, meter energi & bacaan stand (migrasi 0022) ----------
+
+const bulat = (f: FormData, k: string) => { const n = bil(f, k); return n === null ? null : Math.round(n) }
+
+/** Pesan ramah bila migrasi 0022 belum dijalankan. */
+function gagalAset(e: { message: string; code?: string } | null): Hasil {
+  if (e?.code === 'PGRST205' || e?.code === '42P01') return { ok: false, pesan: 'Tabel aset/meter belum ada. Jalankan migrasi 0022_aset_meter.sql di Supabase.' }
+  if (e?.code === '23505') return { ok: false, pesan: 'Kode tersebut sudah dipakai. Gunakan kode lain.' }
+  return gagal(e)
+}
+
+function revalidasiAset() {
+  revalidatePath('/aset')
+}
+
+export async function simpanAset(kodeLama: string | null, f: FormData): Promise<Hasil> {
+  const t = await tolak('aset.ubah'); if (t) return t
+  const data = {
+    kode: teks(f, 'kode')?.toUpperCase() ?? null,
+    no_urut: bulat(f, 'no_urut') ?? 0,
+    nama: teks(f, 'nama'),
+    area: teks(f, 'area'),
+    luas_m2: bil(f, 'luas_m2'),
+    jumlah_lantai: bulat(f, 'jumlah_lantai'),
+    jumlah_ruangan: bulat(f, 'jumlah_ruangan'),
+    tahun_bangun: bulat(f, 'tahun_bangun'),
+    tanggal_bangun: teks(f, 'tanggal_bangun'),
+    fungsi: teks(f, 'fungsi'),
+    kondisi: teks(f, 'kondisi'),
+    luas_ac_m2: bil(f, 'luas_ac_m2'),
+    kwh_bulan: bil(f, 'kwh_bulan'),
+    biaya_bulan: bil(f, 'biaya_bulan'),
+    jam_operasi: teks(f, 'jam_operasi'),
+    pic: teks(f, 'pic'),
+    catatan: teks(f, 'catatan'),
+    diubah_at: new Date().toISOString(),
+  }
+  if (!data.kode || !data.nama) return { ok: false, pesan: 'Kode dan nama aset wajib diisi.' }
+  if (!/^[A-Z0-9-]+$/.test(data.kode)) return { ok: false, pesan: 'Kode hanya boleh huruf, angka, dan tanda hubung (mis. KINRA-AST-041).' }
+  const s = await db()
+  const { error } = kodeLama
+    ? await s.from('aset').update(data).eq('kode', kodeLama)
+    : await s.from('aset').insert(data)
+  revalidasiAset()
+  return gagalAset(error)
+}
+
+export async function hapusAset(kode: string): Promise<Hasil> {
+  const t = await tolak('aset.hapus'); if (t) return t
+  const { data, error } = await (await db()).from('aset').delete().eq('kode', kode).select('kode')
+  revalidasiAset()
+  if (!error && !data?.length) return { ok: false, pesan: 'Aset tidak terhapus. Peran Anda mungkin belum diizinkan oleh database.' }
+  return gagalAset(error)
+}
+
+export async function simpanMeter(kodeLama: string | null, f: FormData): Promise<Hasil> {
+  const t = await tolak('aset.ubah'); if (t) return t
+  const faktor = bil(f, 'faktor_kali')
+  const data = {
+    kode: teks(f, 'kode')?.toUpperCase() ?? null,
+    no_urut: bulat(f, 'no_urut') ?? 0,
+    no_meter: teks(f, 'no_meter'),
+    jenis: teks(f, 'jenis'),
+    sumber_kode: teks(f, 'sumber_kode'),
+    lokasi: teks(f, 'lokasi'),
+    area_dilayani: teks(f, 'area_dilayani'),
+    aset_kode: teks(f, 'aset_kode'),
+    beban_diukur: teks(f, 'beban_diukur'),
+    pic_area: teks(f, 'pic_area'),
+    pic_data: teks(f, 'pic_data'),
+    satuan: teks(f, 'satuan') ?? 'kWh',
+    faktor_kali: faktor ?? 1,
+    kapasitas: teks(f, 'kapasitas'),
+    kelas_akurasi: teks(f, 'kelas_akurasi'),
+    interval_pembacaan: teks(f, 'interval_pembacaan'),
+    frekuensi_pencatatan: teks(f, 'frekuensi_pencatatan'),
+    status: teks(f, 'status'),
+    kalibrasi_terakhir: teks(f, 'kalibrasi_terakhir'),
+    kalibrasi_berikutnya: teks(f, 'kalibrasi_berikutnya'),
+    metode_pengiriman: teks(f, 'metode_pengiriman'),
+    penyimpanan_data: teks(f, 'penyimpanan_data'),
+    kandidat_seu: teks(f, 'kandidat_seu'),
+    bukti_pendukung: teks(f, 'bukti_pendukung'),
+    catatan: teks(f, 'catatan'),
+    diubah_at: new Date().toISOString(),
+  }
+  if (!data.kode) return { ok: false, pesan: 'Kode meter wajib diisi.' }
+  if (!/^[A-Z0-9-]+$/.test(data.kode)) return { ok: false, pesan: 'Kode hanya boleh huruf, angka, dan tanda hubung (mis. KINRA-MTR-008).' }
+  if (data.faktor_kali <= 0) return { ok: false, pesan: 'Faktor kali harus lebih dari 0.' }
+  const s = await db()
+  const { error } = kodeLama
+    ? await s.from('meter_energi').update(data).eq('kode', kodeLama)
+    : await s.from('meter_energi').insert(data)
+  revalidasiAset()
+  return gagalAset(error)
+}
+
+export async function hapusMeter(kode: string): Promise<Hasil> {
+  const t = await tolak('aset.hapus'); if (t) return t
+  const { data, error } = await (await db()).from('meter_energi').delete().eq('kode', kode).select('kode')
+  revalidasiAset()
+  if (!error && !data?.length) return { ok: false, pesan: 'Meter tidak terhapus. Peran Anda mungkin belum diizinkan oleh database.' }
+  return gagalAset(error)
+}
+
+/** Simpan stand awal/akhir satu meter pada satu bulan. Keduanya kosong = hapus bacaan. */
+export async function simpanBacaan(meter_kode: string, tahun: number, bulan: number, stand_awal: number | null, stand_akhir: number | null): Promise<Hasil> {
+  const t = await tolak('aset.ubah'); if (t) return t
+  if ([stand_awal, stand_akhir].some((v) => v !== null && (!Number.isFinite(v) || v < 0))) return { ok: false, pesan: 'Stand meter harus angka 0 atau lebih.' }
+  const s = await db()
+  const { error } = stand_awal === null && stand_akhir === null
+    ? await s.from('pembacaan_meter').delete().match({ meter_kode, tahun, bulan })
+    : await s.from('pembacaan_meter').upsert({ meter_kode, tahun, bulan, stand_awal, stand_akhir })
+  revalidasiAset()
+  return gagalAset(error)
+}
+
 // ---------- Kinerja energi: variabel relevan & EnPI ----------
 
 const bulanKeTanggal = (v: string | null) => (v && /^\d{4}-\d{2}$/.test(v) ? `${v}-01` : v)
