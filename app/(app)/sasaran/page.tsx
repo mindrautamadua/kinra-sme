@@ -1,5 +1,6 @@
 import { SectionHead } from '@/components/SectionHead'
-import { ambilKinerja, ambilPeluang, ambilSasaran } from '@/lib/data'
+import { ambilKinerja, ambilParameter, ambilPeluang, ambilSasaran } from '@/lib/data'
+import { susunKonversi } from '@/lib/konversi'
 import { ringkas } from '@/lib/enpi'
 import { hariIni } from '@/lib/format'
 import { DaftarSasaran, type Capaian } from './DaftarSasaran'
@@ -7,7 +8,8 @@ import { DaftarSasaran, type Capaian } from './DaftarSasaran'
 export const dynamic = 'force-dynamic'
 
 export default async function SasaranPage() {
-  const [{ sasaran, aksi }, { hasil }, peluang] = await Promise.all([ambilSasaran(), ambilKinerja(), ambilPeluang()])
+  const [{ sasaran, aksi }, { hasil }, peluang, param] = await Promise.all([ambilSasaran(), ambilKinerja(), ambilPeluang(), ambilParameter()])
+  const kv = susunKonversi(param)
   const kini = hariIni()
 
   // Capaian: perbaikan EnPI pada tahun target dibanding target perbaikan sasaran
@@ -38,7 +40,7 @@ export default async function SasaranPage() {
           Penghematan aksi dicatat setelah diverifikasi dengan data meter, bukan dari estimasi.
         </p>
       </SectionHead>
-      <DaftarSasaran sasaran={sasaran} aksi={aksi} capaian={capaian} kini={kini}
+      <DaftarSasaran tarif={kv.tarifListrik} ef={kv.efListrik} sasaran={sasaran} aksi={aksi} capaian={capaian} kini={kini}
         enpi={hasil.map((h) => ({ kode: h.enpi.kode, nama: h.enpi.nama }))}
         peluang={peluang.map((p) => ({ kode: p.kode, uraian: p.uraian, status: p.status, estimasi_kwh: p.estimasi_kwh, pemilik: p.pemilik }))} />
     </section>

@@ -18,9 +18,10 @@ Jalankan di SQL Editor Supabase sesuai urutan. Semua migrasi aman dijalankan ula
 - [x] `0027_tinjauan_energi_seu.sql`: tabel tinjauan energi dan register SEU; data awal SEU-01 WTP dan SEU-02 WWTP (status Kandidat)
 - [x] `0028_deviasi.sql`: register deviasi signifikan kinerja energi (klausul 9.1)
 - [x] `0029_simulasi_audit.sql`: riwayat simulasi audit bersama KIRA
+- [x] `0030_parameter_energi.sql`: tarif listrik dan faktor emisi untuk tampilan rupiah dan CO₂
 - [ ] **Cek urutan migrasi.** Bila EnPI-03 muncul di kelompok "Lingkup SMEn KINRA" di halaman Kinerja, jalankan ulang `0026_lingkup_kinra.sql`.
 
-Migrasi 0018–0029 sudah dijalankan di Supabase (6 November 2026). File 0027–0029 dan perubahan aplikasi terkait belum di-commit ke repositori.
+Migrasi 0018–0030 sudah dijalankan di Supabase (6 November 2026). File 0027–0030 dan perubahan aplikasi terkait belum di-commit ke repositori.
 
 ## 2. Pengumpulan data rutin
 
@@ -106,6 +107,11 @@ Titik di bawah adalah rancangan umum. Cocokkan dulu dengan diagram satu garis (s
 - [ ] Tuangkan kedua tabel di atas ke dokumen Rencana Pengumpulan Data Energi (klausul 6.6), lengkap dengan PIC, tanggal target per tahap, dan frekuensi pembacaan. Auditor menerima rencana yang jelas walaupun meter belum semua terpasang.
 
 ## 6. Keputusan Tim SMEn dan konsultan
+
+- [ ] **Nilai ulang skor risiko.** Seluruh 18 risiko di register dinilai sama (dampak 3 × kemungkinan 2 = 6, rendah). Penilaian seragam mudah dipertanyakan auditor (klausul 6.1). Nilai ulang bersama pemilik risiko, termasuk risiko baru menjelang audit (SEU belum ditetapkan, EnPI lingkup KINRA belum punya data).
+- [ ] **Nilai peluang peningkatan.** Isi skor energi, skor ROI, dan estimasi kWh untuk P-01 s.d. P-10 agar muncul di matriks prioritas; mulai dari yang terkait SEU (P-03 pompa, P-04 submeter).
+
+- [ ] **Verifikasi parameter rupiah dan CO₂** (halaman Data Energi, bagian 03): faktor emisi listrik grid Sumatera dari KESDM, harga Dexlite dari tagihan pemasok, dan faktor emisi solar. Saat ini berstatus Asumsi; tarif listrik Rp1.122,08/kWh berasal dari data inventaris.
 
 - [ ] **Deviasi BBM 2026.** EnPI-01 (BBM kendaraan) memunculkan 9 deviasi bulanan ke arah boros (+20% s.d. +82% terhadap bulan yang sama 2025) dan 1 deviasi tren. Selidiki penyebabnya (penambahan armada, jam operasi, pencatatan) di halaman Kinerja Energi sebelum audit internal.
 - [ ] **Latihan simulasi audit.** Setiap unit auditee menjalankan minimal satu simulasi Stage 2 bersama KIRA sebelum TÜV Stage 1 (20 November 2026), dimulai dari Manajemen Puncak, MR, dan Manajer Energi.

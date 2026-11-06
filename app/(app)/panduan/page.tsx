@@ -1,4 +1,4 @@
-import { Activity, BookOpen, MessagesSquare, Bot, CalendarRange, CircleCheck, ClipboardCheck, FileText, Gauge, KeyRound, LayoutDashboard, Minus, Network, ScanSearch, SearchCheck, ShieldAlert, Target, Users, Building2, Crosshair, Map as IkonPeta } from 'lucide-react'
+import { Activity, BookOpen, MessagesSquare, Bot, CalendarRange, CircleCheck, ClipboardCheck, FileText, Gauge, KeyRound, LayoutDashboard, Minus, Network, ScanSearch, SearchCheck, ShieldAlert, Target, Users, Building2, Crosshair, Map as IkonPeta, Presentation } from 'lucide-react'
 import { FITUR_FORMULIR } from '@/lib/fitur'
 import Link from 'next/link'
 import { Chip } from '@/components/Chip'
@@ -21,6 +21,7 @@ const BAB = [
 
 const MODUL = [
   { href: '/', ikon: LayoutDashboard, nama: 'Ringkasan', klausul: 'Gambaran besar', isi: 'Skor kesiapan, tren & proyeksi menuju audit, insight prioritas, beban PIC, aktivitas terbaru, dan cuplikan kinerja energi.' },
+  { href: '/direksi', ikon: Presentation, nama: 'Ringkasan Direksi', klausul: 'Klausul 5.1, 7.4, 9.3', isi: 'Satu halaman siap cetak untuk direksi: angka kunci (termasuk rupiah dan CO₂), perubahan terbesar bulan ini, keputusan yang dibutuhkan, dan status menuju sertifikasi.' },
   { href: '/peta', ikon: IkonPeta, nama: 'Peta SMEn', klausul: 'Klausul 4–10', isi: 'Mulai di sini bila baru mengenal SMEn: 12 langkah siklus PDCA dengan penjelasan awam, kondisi KINRA saat ini, pertanyaan auditor, dan langkah berikutnya.' },
   { href: '/kesiapan', ikon: ClipboardCheck, nama: 'Kesiapan Audit', klausul: 'Klausul 4–10', isi: 'Lembar monitoring semua dokumen dan rekaman yang akan diperiksa auditor: PIC, tenggat, lihat berkas evidence, unduh CSV.' },
   { href: '/dependensi', ikon: Network, nama: 'Peta Evidence', klausul: 'Klausul 4–10', isi: 'Diagram hubungan antardokumen: dokumen mana yang menjadi masukan bagi dokumen lain, status evidence masing-masing, dan dokumen yang tertahan karena masukannya belum lengkap.' },

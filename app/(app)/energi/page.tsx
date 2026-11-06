@@ -4,7 +4,12 @@ import { AngkaNaik } from '@/components/AngkaNaik'
 import { Grafik } from '@/components/charts/Grafik'
 import { Chip } from '@/components/Chip'
 import { SectionHead } from '@/components/SectionHead'
-import { ambilAsetMeter, ambilEnergi, rekapEnergi } from '@/lib/data'
+import { ambilAsetMeter, ambilEnergi, ambilParameter, rekapEnergi } from '@/lib/data'
+import { Istilah } from '@/components/Istilah'
+import { Sankey } from '@/components/Sankey'
+import { nilaiEnergi, rupiahRingkas, susunKonversi, tonCo2 } from '@/lib/konversi'
+import { penggunaEnergi } from '@/lib/tinjauan'
+import { FormParameter } from './FormParameter'
 import { pemakaianMeter } from '@/lib/enpi'
 import { angka, BULAN, BULAN_PANJANG, delta, energiListrik, persen } from '@/lib/format'
 import { TabelEnergi } from './TabelEnergi'
@@ -15,7 +20,8 @@ const WARNA = { pln: 's3', pltbg: 's1', plts: 'jingga', dexlite: 's2' } as const
 const IKON = { pln: Zap, pltbg: Leaf, plts: Sun, dexlite: Flame } as const
 
 export default async function Energi({ searchParams }: { searchParams: Promise<{ tahun?: string }> }) {
-  const [{ sumber, data }, { aset, meter, bacaan }] = await Promise.all([ambilEnergi(), ambilAsetMeter()])
+  const [{ sumber, data }, { aset, meter, bacaan }, param] = await Promise.all([ambilEnergi(), ambilAsetMeter(), ambilParameter()])
+  const kv = susunKonversi(param)
   const { tahun: daftarTahun, tj } = rekapEnergi(sumber, data)
   const sp = await searchParams
   const tahun = Number(sp.tahun) || daftarTahun.at(-1) || new Date().getFullYear()
@@ -70,6 +76,22 @@ export default async function Energi({ searchParams }: { searchParams: Promise<{
     return { bulan: i, kwh: r?.kwh ?? null, terbaca: r?.terbaca ?? 0, pln: p, porsi: r && p ? (r.kwh / p) * 100 : null }
   })
 
+  // Aliran energi per bulan (rata-rata tahun terpilih): kawasan → tenant / KINRA, lalu KINRA → aset & kendaraan
+  const bulanAda = [...new Set(data.filter((d) => d.tahun === tahun && d.sumber_kode === 'pln').map((d) => d.bulan))]
+  const rataBulan = (k: string) => bulanAda.length ? bulanAda.reduce((t, b) => t + (nilai(tahun, b, k) ?? 0), 0) / bulanAda.length : 0
+  const pakai = penggunaEnergi({ aset, meter, bacaan, sumber, energi: data, seu: [], ambangPersen: 10, ambangKumulatif: 80 })
+  const asetKinra = pakai.daftar.filter((p) => p.id.startsWith('aset:'))
+  const bbmKinra = pakai.daftar.find((p) => p.id === 'sumber:dexlite')
+  const listrikKinra = asetKinra.reduce((t, p) => t + p.kwh, 0)
+  const kawasanBulan = listrik.reduce((t, s) => t + rataBulan(s.kode), 0)
+  const bbmLiter = data.filter((d) => d.sumber_kode === 'dexlite').slice(-12)
+  const literBulan = bbmLiter.length ? bbmLiter.reduce((t, d) => t + d.nilai, 0) / bbmLiter.length : 0
+  const nKinraListrik = nilaiEnergi(kv, listrikKinra, 'kWh')
+  const nKinraBbm = nilaiEnergi(kv, literBulan, 'liter')
+  const nKawasan = nilaiEnergi(kv, kawasanBulan, 'kWh')
+  const asetUtama = asetKinra.slice(0, 3)
+  const asetLain = asetKinra.slice(3).reduce((t, p) => t + p.kwh, 0)
+
   // Peta panas bulan x tahun
   const peta = daftarTahun.map((t) => ({ t, v: totalBulan(t) }))
   const maksPeta = Math.max(0, ...peta.flatMap((r) => r.v.map((v) => v ?? 0)))
@@ -100,6 +122,8 @@ export default async function Energi({ searchParams }: { searchParams: Promise<{
             <div><span>Listrik PLN kawasan</span><b className="tnum">{energiListrik(plnAcuan)}</b></div>
             <div><span>Pemakaian sendiri KINRA{acuan.sumberKinra === 'inventaris' ? ' (perkiraan)' : ''}</span><b className="tnum">{energiListrik(acuan.kinra)}</b></div>
             <div><span>Disalurkan ke tenant & lainnya</span><b className="tnum">{plnAcuan !== null ? energiListrik(Math.max(0, plnAcuan - acuan.kinra)) : '–'}</b></div>
+            <div><span>Biaya listrik KINRA</span><b className="tnum">{rupiahRingkas(nilaiEnergi(kv, acuan.kinra, 'kWh').rupiah)}</b></div>
+            <div><span>Emisi listrik KINRA</span><b className="tnum">{tonCo2(nilaiEnergi(kv, acuan.kinra, 'kWh').kgCo2)}</b></div>
           </div>
           {porsiKinra !== null && (
             <div className="pg" role="img" aria-label={`Pemakaian sendiri KINRA ${persen(porsiKinra)} dari listrik PLN kawasan`}>
@@ -209,6 +233,57 @@ export default async function Energi({ searchParams }: { searchParams: Promise<{
       </section>
 
       <section>
+        <SectionHead no="00" eyebrow="Aliran energi · rata-rata per bulan" judul={<>Dari setiap 100 kWh listrik kawasan, hanya <span className="ks-sorot">{kawasanBulan ? angka((listrikKinra / kawasanBulan) * 100, 1) : '–'} kWh</span> dipakai KINRA sendiri</>}>
+          <p className="muted">
+            Kiri: seluruh listrik kawasan {tahun}, termasuk yang disalurkan ke tenant (di luar lingkup SMEn). Kanan: energi dalam lingkup KINRA, diperbesar, dipecah ke pengguna terbesarnya (kandidat <Istilah kata="SEU" />).
+            Arahkan kursor ke pita untuk melihat angkanya.
+          </p>
+        </SectionHead>
+        <div className="sk-dua">
+          <div className="card">
+            <h3>Kawasan (termasuk tenant)</h3>
+            <p className="muted small">{energiListrik(kawasanBulan)}/bulan · ±{rupiahRingkas(nKawasan.rupiah)} · {tonCo2(nKawasan.kgCo2)}</p>
+            <Sankey label={`Aliran listrik kawasan ${tahun}`} format={(v) => energiListrik(v)}
+              simpul={[
+                ...listrik.map((s) => ({ id: s.kode, label: s.nama.replace('Listrik ', ''), kolom: 0 as const, warna: `var(--${s.kode === 'pln' ? 's3' : s.kode === 'pltbg' ? 's1' : 'jingga'})` })),
+                { id: 'kawasan', label: 'Kawasan', kolom: 1, warna: 'var(--ink-2)' },
+                { id: 'tenant', label: 'Tenant & lainnya', kolom: 2, warna: 'var(--s3)', catatan: 'di luar lingkup' },
+                { id: 'kinra', label: 'KINRA', kolom: 2, warna: 'var(--good)', catatan: 'lingkup SMEn' },
+              ]}
+              tautan={[
+                ...listrik.map((s) => ({ dari: s.kode, ke: 'kawasan', nilai: rataBulan(s.kode) })),
+                { dari: 'kawasan', ke: 'tenant', nilai: Math.max(0, kawasanBulan - listrikKinra) },
+                { dari: 'kawasan', ke: 'kinra', nilai: listrikKinra, warna: 'var(--good)' },
+              ]} />
+          </div>
+          <div className="card">
+            <h3>Lingkup KINRA (diperbesar)</h3>
+            <p className="muted small">{energiListrik(listrikKinra + (bbmKinra?.kwh ?? 0))} setara/bulan · ±{rupiahRingkas(nKinraListrik.rupiah + nKinraBbm.rupiah)} · {tonCo2(nKinraListrik.kgCo2 + nKinraBbm.kgCo2)}</p>
+            <Sankey label="Aliran energi lingkup KINRA" format={(v) => energiListrik(v)}
+              simpul={[
+                { id: 'listrik', label: 'Listrik', kolom: 0, warna: 'var(--s3)' },
+                ...(bbmKinra ? [{ id: 'bbm', label: 'BBM Dexlite', kolom: 0 as const, warna: 'var(--s2)', catatan: `${angka(literBulan, 0)} L` }] : []),
+                { id: 'kinra', label: 'KINRA', kolom: 1, warna: 'var(--good)' },
+                ...asetUtama.map((p) => ({ id: p.id, label: p.nama, kolom: 2 as const, warna: 'var(--s1)', catatan: p.dasar === 'inventaris' ? 'perkiraan' : undefined })),
+                ...(asetLain > 0 ? [{ id: 'lain', label: `${asetKinra.length - 3} aset lain`, kolom: 2 as const, warna: 'var(--s3)' }] : []),
+                ...(bbmKinra ? [{ id: 'kendaraan', label: 'Kendaraan operasional', kolom: 2 as const, warna: 'var(--s2)' }] : []),
+              ]}
+              tautan={[
+                { dari: 'listrik', ke: 'kinra', nilai: listrikKinra },
+                ...(bbmKinra ? [{ dari: 'bbm', ke: 'kinra', nilai: bbmKinra.kwh }] : []),
+                ...asetUtama.map((p) => ({ dari: 'kinra', ke: p.id, nilai: p.kwh, warna: 'var(--s1)' })),
+                ...(asetLain > 0 ? [{ dari: 'kinra', ke: 'lain', nilai: asetLain }] : []),
+                ...(bbmKinra ? [{ dari: 'kinra', ke: 'kendaraan', nilai: bbmKinra.kwh, warna: 'var(--s2)' }] : []),
+              ]} />
+          </div>
+        </div>
+        <p className="sumber">
+          Kawasan: rata-rata bulanan data energi {tahun}. KINRA: {pakai.porsiMeter > 0 ? 'bacaan meter dan' : ''} data inventaris aset, ditambah BBM dikonversi ke kWh setara (36 MJ/liter).
+          Rupiah dan CO₂ memakai parameter di bagian 03{kv.asumsi.length ? ` (masih asumsi: ${kv.asumsi.join(', ')})` : ''}.
+        </p>
+      </section>
+
+      <section>
         <SectionHead no="01" eyebrow="Tren antar tahun" judul={`Total ${daftarTahun.map((t) => `${t} ${angka(tj((d) => d.tahun === t), 1)} TJ`).join(' · ')}`}>
           <p className="muted">Bahan baseline energi (EnB) dan EnPI. Tahun dasar pada pelacak konsumsi: 2025.</p>
         </SectionHead>
@@ -290,7 +365,14 @@ export default async function Energi({ searchParams }: { searchParams: Promise<{
       </section>
 
       <section>
-        <SectionHead no="03" eyebrow="Input data" judul={`Isi data ${tahun} per bulan`}>
+        <SectionHead no="03" eyebrow="Konversi rupiah & emisi" judul="Tarif dan faktor emisi">
+          <p className="muted">Angka rupiah dan CO₂ di aplikasi dihitung dari parameter berikut. {kv.asumsi.length ? `Masih asumsi: ${kv.asumsi.join(', ')}.` : 'Semua parameter sudah terverifikasi.'}</p>
+        </SectionHead>
+        <FormParameter param={param} />
+      </section>
+
+      <section>
+        <SectionHead no="04" eyebrow="Input data" judul={`Isi data ${tahun} per bulan`}>
           <p className="muted">Ketik angka lalu pindah kolom (Tab) untuk menyimpan. Kosongkan sel untuk menghapus. Gunakan data meter/tagihan aktual, bukan perkiraan. Data PLN di sini adalah total kawasan termasuk tenant.</p>
         </SectionHead>
         <TabelEnergi tahun={tahun} sumber={sumber} data={data.filter((d) => d.tahun === tahun)} />

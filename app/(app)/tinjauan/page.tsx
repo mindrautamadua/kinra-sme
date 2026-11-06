@@ -2,7 +2,9 @@ import { AlertTriangle, Gauge, Layers, Target, Zap } from 'lucide-react'
 import Link from 'next/link'
 import { Chip } from '@/components/Chip'
 import { SectionHead } from '@/components/SectionHead'
-import { ambilAsetMeter, ambilKinerja, ambilSeu } from '@/lib/data'
+import { Istilah } from '@/components/Istilah'
+import { ambilAsetMeter, ambilKinerja, ambilParameter, ambilSeu } from '@/lib/data'
+import { nilaiEnergi, rupiahRingkas, susunKonversi, tonCo2 } from '@/lib/konversi'
 import { angka, energiListrik, persen, tanggal } from '@/lib/format'
 import { penggunaEnergi } from '@/lib/tinjauan'
 import { FormTinjauan } from './FormTinjauan'
@@ -12,7 +14,10 @@ import { RegisterSeu } from './RegisterSeu'
 export const dynamic = 'force-dynamic'
 
 export default async function TinjauanPage() {
-  const [{ seu, tinjauan, siap }, { aset, meter, bacaan }, { sumber, energi, variabel, enpi }] = await Promise.all([ambilSeu(), ambilAsetMeter(), ambilKinerja()])
+  const [{ seu, tinjauan, siap }, { aset, meter, bacaan }, { sumber, energi, variabel, enpi }, param] = await Promise.all([ambilSeu(), ambilAsetMeter(), ambilKinerja(), ambilParameter()])
+  const kv = susunKonversi(param)
+  // Rupiah & CO₂ per pengguna: BBM dihitung dari liter (kWh setara ÷ 10 kWh/liter, 36 MJ/liter)
+  const nilaiP = (id: string, kwh: number) => nilaiEnergi(kv, id === 'sumber:dexlite' ? kwh / 10 : kwh, id === 'sumber:dexlite' ? 'liter' : 'kWh')
 
   if (!siap) {
     return (
@@ -30,12 +35,13 @@ export default async function TinjauanPage() {
   const tercakup = daftar.filter((p) => p.seu && p.seu.status !== 'Dicabut').reduce((t, p) => t + p.porsi, 0)
   const kandidatTanpaSeu = daftar.filter((p) => p.kandidat && !p.seu)
   const maks = Math.max(1, ...daftar.map((p) => p.kwh))
+  const totalNilai = daftar.reduce((t, p) => { const n = nilaiP(p.id, p.kwh); return { rupiah: t.rupiah + n.rupiah, kgCo2: t.kgCo2 + n.kgCo2 } }, { rupiah: 0, kgCo2: 0 })
   const asetBesarTanpaData = [...tanpaData].sort((a, b) => (b.luas_m2 ?? 0) - (a.luas_m2 ?? 0))
 
   return (
     <>
       <section>
-        <SectionHead hero eyebrow="Klausul 6.3 · Tinjauan energi & penggunaan energi signifikan (SEU)"
+        <SectionHead hero eyebrow={<>Klausul 6.3 · <Istilah kata="Tinjauan energi" /> & penggunaan energi signifikan (<Istilah kata="SEU" />)</>}
           judul={<>{daftar.slice(0, 2).map((p) => p.nama.replace(/\s*\(.*\)$/, '')).join(' dan ')} memakai <span className="ks-sorot">{persen(daftar.slice(0, 2).reduce((t, p) => t + p.porsi, 0), 0)}</span> energi KINRA</>}>
           <p className="muted">
             Tinjauan energi menjawab tiga hal: di mana energi dipakai, mana yang signifikan (SEU), dan siapa yang mengendalikannya.
@@ -45,7 +51,7 @@ export default async function TinjauanPage() {
         <div className="tiles">
           <div className="tile"><div className="tile-head"><span className="tile-ikon"><Zap aria-hidden="true" /></span><span className="label">Energi KINRA per bulan</span></div>
             <div className="nilai tnum">{angka(total / 1000, 1)}<small>MWh setara</small></div>
-            <div className="meta">{daftar.length} pengguna energi dengan data</div></div>
+            <div className="meta">±{rupiahRingkas(totalNilai.rupiah)}/bulan · {tonCo2(totalNilai.kgCo2)}/bulan</div></div>
           <div className="tile"><div className="tile-head"><span className="tile-ikon"><Gauge aria-hidden="true" /></span><span className="label">Terukur dari meter</span></div>
             <div className="nilai tnum">{angka(porsiMeter, 0)}<small>%</small></div>
             <div className="meta">{porsiMeter < 100 ? 'Sisanya perkiraan inventaris atau data BBM' : 'Seluruhnya dari bacaan meter'}</div></div>
@@ -80,7 +86,7 @@ export default async function TinjauanPage() {
                 </div>
                 <div className="te-pareto-angka tnum">
                   <b>{persen(p.porsi)}</b>
-                  <span className="muted small">{energiListrik(p.kwh)}/bln · kum. {persen(p.kumulatif, 0)}</span>
+                  <span className="muted small">{energiListrik(p.kwh)}/bln · ±{rupiahRingkas(nilaiP(p.id, p.kwh).rupiah)} · kum. {persen(p.kumulatif, 0)}</span>
                 </div>
                 <div className="te-pareto-status">
                   {p.seu

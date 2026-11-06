@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 
-export function SectionHead({ no, eyebrow, judul, children, hero }: { no?: string; eyebrow: string; judul: ReactNode; children?: ReactNode; hero?: boolean }) {
+export function SectionHead({ no, eyebrow, judul, children, hero }: { no?: string; eyebrow: ReactNode; judul: ReactNode; children?: ReactNode; hero?: boolean }) {
   const Tag = hero ? 'h1' : 'h2'
   return (
     <header className="section-head">

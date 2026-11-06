@@ -7,6 +7,7 @@ import { hapusAksi, hapusSasaran, simpanAksi, simpanSasaran, ubahStatusAksi } fr
 import { Chip } from '@/components/Chip'
 import { useBoleh } from '@/components/Peran'
 import { angka, tanggal } from '@/lib/format'
+import { rupiahRingkas, tonCo2 } from '@/lib/konversi'
 import type { KodeChip } from '@/lib/status'
 import type { RencanaAksi, Sasaran, StatusAksi, StatusSasaran } from '@/lib/types'
 
@@ -30,7 +31,8 @@ const CHIP_A: Record<StatusAksi, KodeChip> = { Rencana: 'na', Berjalan: 'info', 
 const kodeBerikut = (prefiks: string, daftar: { kode: string }[]) =>
   `${prefiks}-${String(Math.max(0, ...daftar.map((x) => Number(x.kode.replace(/\D/g, '')) || 0)) + 1).padStart(2, '0')}`
 
-export function DaftarSasaran({ sasaran, aksi, capaian, enpi, peluang, kini }: {
+export function DaftarSasaran({ sasaran, aksi, capaian, enpi, peluang, kini, tarif, ef }: {
+  tarif: number; ef: number
   sasaran: Sasaran[]; aksi: RencanaAksi[]; capaian: Record<number, Capaian>
   enpi: { kode: string; nama: string }[]; peluang: PeluangRingkas[]; kini: string
 }) {
@@ -100,10 +102,10 @@ export function DaftarSasaran({ sasaran, aksi, capaian, enpi, peluang, kini }: {
           <div className="meta">{hidup.filter((a) => a.status === 'Berjalan').length} berjalan · {aksi.filter(lewat).length} lewat tenggat</div></div>
         <div className="tile"><div className="tile-head"><span className="label">Estimasi penghematan</span></div>
           <div className="nilai tnum">{angka(estimasi / 1000, 1)}<small>MWh/tahun</small></div>
-          <div className="meta">Dari rencana aksi yang tidak dibatalkan</div></div>
+          <div className="meta">±{rupiahRingkas(estimasi * tarif)}/tahun · {tonCo2(estimasi * ef)}/tahun</div></div>
         <div className="tile"><div className="tile-head"><span className="label">Penghematan terverifikasi</span>{estimasi > 0 && <Chip capaian={(terverifikasi / estimasi) * 100} />}</div>
           <div className="nilai tnum">{angka(terverifikasi / 1000, 1)}<small>MWh</small></div>
-          <div className="meta">{estimasi > 0 ? `${angka((terverifikasi / estimasi) * 100, 0)}% dari estimasi` : 'Belum ada estimasi'}</div></div>
+          <div className="meta">{rupiahRingkas(terverifikasi * tarif)} · {estimasi > 0 ? `${angka((terverifikasi / estimasi) * 100, 0)}% dari estimasi` : 'Belum ada estimasi'}</div></div>
       </div>
 
       <div className="toolbar">

@@ -1,6 +1,6 @@
 'use client'
 
-import { Pencil, Plus, Trash2, X } from 'lucide-react'
+import { Pencil, Plus, Search, Trash2, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useRef, useState, useTransition } from 'react'
 import { hapusIsu, simpanIsu } from '@/app/actions'
@@ -15,47 +15,151 @@ export function RegisterIsu({ isu }: { isu: Isu[] }) {
   const dlg = useRef<HTMLDialogElement>(null)
   const [edit, setEdit] = useState<Isu | null>(null)
   const [filter, setFilter] = useState<'' | 'Risiko' | 'Peluang'>('')
+  const [status, setStatus] = useState<'' | 'tanpa-tindakan' | 'belum-evaluasi'>('')
+  const [cari, setCari] = useState('')
   const [sel, setSel] = useState<[number, number] | null>(null)
+  const [sorot, setSorot] = useState<number | null>(null)
   const [galat, setGalat] = useState<string | null>(null)
   const [menunggu, mulai] = useTransition()
 
+  // Label ringkas: R1.. untuk risiko (skor tertinggi dulu), O1.. untuk peluang
+  const label = new Map<number, string>()
+  ;[...isu].filter((i) => i.jenis === 'Risiko').sort((a, b) => b.skor - a.skor || a.id - b.id).forEach((i, n) => label.set(i.id, `R${n + 1}`))
+  ;[...isu].filter((i) => i.jenis === 'Peluang').sort((a, b) => b.skor - a.skor || a.id - b.id).forEach((i, n) => label.set(i.id, `O${n + 1}`))
+
   const risiko = isu.filter((i) => i.jenis === 'Risiko')
-  const sel5 = (d: number, k: number) => risiko.filter((i) => i.dampak === d && i.kemungkinan === k).length
-  const tampil = isu.filter((i) => (!filter || i.jenis === filter) && (!sel || (i.jenis === 'Risiko' && i.dampak === sel[0] && i.kemungkinan === sel[1])))
+  const diPeta = isu.filter((i) => !filter || i.jenis === filter)
+  const q = cari.trim().toLowerCase()
+  const tampil = isu
+    .filter((i) => (!filter || i.jenis === filter)
+      && (!sel || (i.dampak === sel[0] && i.kemungkinan === sel[1]))
+      && (status !== 'tanpa-tindakan' || !i.tindakan)
+      && (status !== 'belum-evaluasi' || !i.evaluasi)
+      && (!q || [i.uraian, i.tindakan, i.pic, i.asal].some((v) => v?.toLowerCase().includes(q))))
+    .sort((a, b) => b.skor - a.skor)
+  const prioritas = [...risiko].sort((a, b) => b.skor - a.skor).slice(0, 5)
+  const pct = (n: number) => (isu.length ? (n / isu.length) * 100 : 0)
+  const kelengkapan = [
+    { label: 'Punya tindakan', n: isu.filter((i) => i.tindakan).length },
+    { label: 'Efektivitas dievaluasi', n: isu.filter((i) => i.evaluasi).length },
+    { label: 'Punya PIC', n: isu.filter((i) => i.pic).length },
+  ]
+  // Catatan analis: pola yang biasanya ditanyakan auditor
+  const catatan: { kode: 'crit' | 'warn' | 'info'; teks: string }[] = []
+  const pola = new Map<string, number>()
+  for (const i of risiko) pola.set(`${i.dampak}×${i.kemungkinan}`, (pola.get(`${i.dampak}×${i.kemungkinan}`) ?? 0) + 1)
+  const [polaUtama, nPola] = [...pola.entries()].sort((a, b) => b[1] - a[1])[0] ?? ['', 0]
+  if (risiko.length >= 5 && nPola / risiko.length >= 0.6) catatan.push({ kode: 'crit', teks: `${nPola} dari ${risiko.length} risiko dinilai sama (${polaUtama}). Penilaian yang seragam menandakan risiko belum dinilai satu per satu; auditor dapat menanyakan dasar penilaiannya. Nilai ulang dampak dan kemungkinan bersama pemilik risiko.` })
+  const tanpaTindakan = isu.filter((i) => !i.tindakan).length
+  if (tanpaTindakan) catatan.push({ kode: 'warn', teks: `${tanpaTindakan} isu belum punya tindakan. Klausul 6.1 meminta tindakan untuk menangani risiko dan peluang, terintegrasi ke proses SMEn.` })
+  const tanpaEvaluasi = isu.filter((i) => i.tindakan && !i.evaluasi).length
+  if (tanpaEvaluasi) catatan.push({ kode: 'warn', teks: `${tanpaEvaluasi} isu sudah punya tindakan tetapi belum ada cara mengevaluasi efektivitasnya.` })
+  const eksternal = isu.filter((i) => i.asal === 'Eksternal').length
+  if (isu.length && eksternal / isu.length < 0.25) catatan.push({ kode: 'info', teks: `Hanya ${eksternal} isu eksternal. Pertimbangkan regulasi konservasi energi, tarif, pasokan PLTBG/PLTS, dan kebutuhan tenant (klausul 4.1–4.2).` })
+  if (!risiko.some((i) => i.skor >= 15) && risiko.length) catatan.push({ kode: 'info', teks: 'Tidak ada risiko tinggi. Pastikan ini hasil penilaian nyata, misalnya risiko SEU belum ditetapkan atau EnPI belum punya data menjelang audit.' })
+
+  const zona = (d: number, k: number) => (d * k >= 15 ? 'z-tinggi' : d * k >= 8 ? 'z-sedang' : 'z-rendah')
 
   function buka(i: Isu | null) { setEdit(i); setGalat(null); dlg.current?.showModal() }
+  function pilihTitik(i: Isu) {
+    setSorot(i.id)
+    document.getElementById(`isu-${i.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  }
 
   return (
-    <div className="grid-1-2">
-      <div className="card">
-        <h3>Peta risiko</h3>
-        <p className="muted small" style={{ marginBottom: 12 }}>Jumlah risiko per sel. Klik sel untuk menyaring.</p>
-        <div className="risk" role="grid" aria-label="Matriks dampak terhadap kemungkinan">
-          {[5, 4, 3, 2, 1].map((d) => [
-            <span key={`a${d}`} className="ax">{d}</span>,
-            ...[1, 2, 3, 4, 5].map((k) => {
-              const n = sel5(d, k)
-              const aktif = sel?.[0] === d && sel?.[1] === k
-              return (
-                <button key={`${d}-${k}`} type="button" className="c r" aria-pressed={aktif}
-                  aria-label={`Dampak ${d}, kemungkinan ${k}: ${n} risiko`}
-                  onClick={() => setSel(aktif ? null : [d, k])}
-                  style={{ '--f': `${Math.min(90, ((d * k) / 25) * 90)}%`, outline: aktif ? '2px solid var(--brand)' : undefined, color: 'var(--ink)', cursor: 'pointer', font: 'inherit' } as React.CSSProperties}>
-                  {n || ''}
-                </button>
-              )
-            }),
-          ])}
-          <span />
-          {[1, 2, 3, 4, 5].map((k) => <span key={`b${k}`} className="ax">{k}</span>)}
+    <>
+      {catatan.length > 0 && (
+        <div className="card rg-catatan">
+          <span className="eyebrow">Catatan analis · terdeteksi otomatis</span>
+          <ul>{catatan.map((c) => <li key={c.teks} className={c.kode}>{c.teks}</li>)}</ul>
         </div>
-        <p className="muted small" style={{ marginTop: 8 }}>Vertikal: dampak · Horizontal: kemungkinan</p>
+      )}
+      <div className="rg-atas">
+        <div className="card">
+          <div className="row">
+            <h3>Peta risiko</h3>
+            <div className="seg" role="group" aria-label="Jenis isu">
+              {(['', 'Risiko', 'Peluang'] as const).map((j) => <button key={j} type="button" aria-pressed={filter === j} onClick={() => setFilter(j)}>{j || 'Semua'}<span className="n">{j ? isu.filter((i) => i.jenis === j).length : isu.length}</span></button>)}
+            </div>
+          </div>
+          <div className="rg-matriks" role="grid" aria-label="Matriks dampak terhadap kemungkinan">
+            <span className="rg-sumbu-y" aria-hidden="true">Dampak →</span>
+            {[5, 4, 3, 2, 1].map((d) => (
+              <div key={d} className="rg-baris" role="row">
+                <span className="rg-ax">{d}</span>
+                {[1, 2, 3, 4, 5].map((k) => {
+                  const isi = diPeta.filter((i) => i.dampak === d && i.kemungkinan === k)
+                  const aktif = sel?.[0] === d && sel?.[1] === k
+                  return (
+                    <div key={k} role="gridcell" className={`rg-sel ${zona(d, k)}${aktif ? ' aktif' : ''}`}
+                      onClick={() => setSel(aktif ? null : [d, k])} title={`Dampak ${d} × kemungkinan ${k} = ${d * k}`}>
+                      <span className="rg-skor">{d * k}</span>
+                      <span className="rg-titik-wrap">
+                        {isi.map((i) => (
+                          <button key={i.id} type="button" className={`rg-titik ${i.jenis === 'Peluang' ? 'peluang' : ''}${sorot === i.id ? ' sorot' : ''}`}
+                            aria-label={`${label.get(i.id)}: ${i.uraian}`} title={`${label.get(i.id)} · ${i.uraian}`}
+                            onClick={(e) => { e.stopPropagation(); pilihTitik(i) }}>{label.get(i.id)}</button>
+                        ))}
+                      </span>
+                    </div>
+                  )
+                })}
+              </div>
+            ))}
+            <div className="rg-baris rg-bawah" aria-hidden="true"><span className="rg-ax" />{[1, 2, 3, 4, 5].map((k) => <span key={k} className="rg-ax">{k}</span>)}</div>
+            <span className="rg-sumbu-x" aria-hidden="true">Kemungkinan →</span>
+          </div>
+          <div className="rg-legenda"><span><i className="rg-dot" />Risiko</span><span><i className="rg-dot peluang" />Peluang</span><span><i className="rg-zona z-rendah" />Rendah</span><span><i className="rg-zona z-sedang" />Sedang</span><span><i className="rg-zona z-tinggi" />Tinggi</span></div>
+        </div>
+
+        <div className="rg-kanan">
+          <div className="card">
+            <h3>Prioritas penanganan</h3>
+            <p className="muted small">Lima risiko dengan skor tertinggi beserta kesiapan penanganannya.</p>
+            <ol className="rg-prioritas">
+              {prioritas.map((i) => {
+                const t = tingkatRisiko(i.skor)
+                return (
+                  <li key={i.id}>
+                    <button type="button" onClick={() => pilihTitik(i)}>
+                      <span className={`rg-lencana ${t.chip}`}>{label.get(i.id)}</span>
+                      <span className="rg-prio-isi">
+                        <b>{i.uraian}</b>
+                        <span className="muted small">Skor {i.skor} · {i.asal}{i.pic ? ` · ${i.pic}` : ''}</span>
+                      </span>
+                      <span className="rg-prio-status">
+                        {!i.tindakan ? <Chip kode="crit" label="Tanpa tindakan" /> : !i.evaluasi ? <Chip kode="warn" label="Belum dievaluasi" /> : <Chip kode="good" label="Siklus lengkap" />}
+                      </span>
+                    </button>
+                  </li>
+                )
+              })}
+            </ol>
+          </div>
+          <div className="card">
+            <h3>Kelengkapan siklus klausul 6.1</h3>
+            <p className="muted small">Auditor menanyakan tindakan dan bagaimana efektivitasnya dievaluasi, bukan hanya daftar risiko.</p>
+            <div className="rg-lengkap">
+              {kelengkapan.map((k) => (
+                <div key={k.label}>
+                  <div className="row"><span className="small">{k.label}</span><b className="tnum small">{k.n}/{isu.length}</b></div>
+                  <div className="pg" style={{ marginTop: 4 }}><div className="track"><b className={pct(k.n) >= 100 ? 'bg-good' : pct(k.n) >= 60 ? '' : 'bg-warn'} style={{ width: `${pct(k.n)}%` }} /></div></div>
+                </div>
+              ))}
+            </div>
+            <p className="muted small" style={{ marginTop: 10 }}>{isu.filter((i) => i.asal === 'Internal').length} isu internal · {isu.filter((i) => i.asal === 'Eksternal').length} isu eksternal</p>
+          </div>
+        </div>
       </div>
 
-      <div className="card">
+      <div className="card" style={{ marginTop: 16 }}>
         <div className="toolbar">
-          <div className="seg" role="group" aria-label="Jenis isu">
-            {(['', 'Risiko', 'Peluang'] as const).map((j) => <button key={j} type="button" aria-pressed={filter === j} onClick={() => setFilter(j)}>{j || 'Semua'}<span className="n">{j ? isu.filter((i) => i.jenis === j).length : isu.length}</span></button>)}
+          <label className="cari"><Search aria-hidden="true" /><span className="sr-only">Cari isu</span>
+            <input type="search" placeholder="Cari isu, tindakan, PIC…" value={cari} onChange={(e) => setCari(e.target.value)} /></label>
+          <div className="seg" role="group" aria-label="Status penanganan">
+            <button type="button" aria-pressed={status === ''} onClick={() => setStatus('')}>Semua</button>
+            <button type="button" aria-pressed={status === 'tanpa-tindakan'} onClick={() => setStatus('tanpa-tindakan')}>Tanpa tindakan<span className="n">{isu.filter((i) => !i.tindakan).length}</span></button>
+            <button type="button" aria-pressed={status === 'belum-evaluasi'} onClick={() => setStatus('belum-evaluasi')}>Belum dievaluasi<span className="n">{isu.filter((i) => !i.evaluasi).length}</span></button>
           </div>
           {sel && <button type="button" className="btn kecil" onClick={() => setSel(null)}><X aria-hidden="true" /> Sel {sel[0]}×{sel[1]}</button>}
           <span style={{ flex: 1 }} />
@@ -63,23 +167,27 @@ export function RegisterIsu({ isu }: { isu: Isu[] }) {
         </div>
         <div className="table-wrap tall">
           <table className="tbl">
-            <thead><tr><th>Isu</th><th className="num">D×K</th><th>Tingkat</th><th>Tindakan</th><th /></tr></thead>
+            <thead><tr><th>#</th><th>Isu</th><th className="num">D×K</th><th>Tingkat</th><th>Tindakan & evaluasi</th><th /></tr></thead>
             <tbody>
-              {tampil.length === 0 && <tr className="kosong"><td colSpan={5}>Tidak ada isu yang cocok.</td></tr>}
+              {tampil.length === 0 && <tr className="kosong"><td colSpan={6}>Tidak ada isu yang cocok.</td></tr>}
               {tampil.map((i) => {
                 const t = tingkatRisiko(i.skor)
                 return (
-                  <tr key={i.id}>
-                    <td style={{ maxWidth: 320 }}>{i.uraian}<span className="upd">{i.asal} · {i.jenis}{i.pic && ` · ${i.pic}`}</span></td>
+                  <tr key={i.id} id={`isu-${i.id}`} className={sorot === i.id ? 'rg-sorot' : undefined}>
+                    <td><span className={`rg-lencana ${i.jenis === 'Peluang' ? 'info' : t.chip}`}>{label.get(i.id)}</span></td>
+                    <td style={{ maxWidth: 340 }}>{i.uraian}<span className="upd">{i.asal} · {i.jenis}{i.pic && ` · ${i.pic}`}</span></td>
                     <td className="num">{i.dampak}×{i.kemungkinan}<span className="upd">{i.skor}</span></td>
                     <td>{i.jenis === 'Risiko' ? <Chip kode={t.chip} label={t.label} /> : <Chip kode="info" label="Peluang" />}</td>
-                    <td className="small" style={{ maxWidth: 360 }}>{i.tindakan}<span className="upd">Evaluasi: {i.evaluasi ?? '–'}</span></td>
-                    <td>{bisa('register.ubah') && <button type="button" className="btn btn-ikon" aria-label={`Ubah isu ${i.id}`} onClick={() => buka(i)}><Pencil aria-hidden="true" /></button>}</td>
+                    <td className="small" style={{ maxWidth: 380 }}>
+                      {i.tindakan ?? <span className="txt-bad">Belum ada tindakan</span>}
+                      <span className="upd">Evaluasi: {i.evaluasi ?? <span className="txt-bad">belum</span>}</span>
+                    </td>
+                    <td>{bisa('register.ubah') && <button type="button" className="btn btn-ikon" aria-label={`Ubah isu ${label.get(i.id)}`} onClick={() => buka(i)}><Pencil aria-hidden="true" /></button>}</td>
                   </tr>
                 )
               })}
             </tbody>
-            <tfoot><tr><td colSpan={5}>{tampil.length} dari {isu.length} isu</td></tr></tfoot>
+            <tfoot><tr><td colSpan={6}>{tampil.length} dari {isu.length} isu · urut skor tertinggi</td></tr></tfoot>
           </table>
         </div>
       </div>
@@ -112,6 +220,6 @@ export function RegisterIsu({ isu }: { isu: Isu[] }) {
           </div>
         </form>
       </dialog>
-    </div>
+    </>
   )
 }

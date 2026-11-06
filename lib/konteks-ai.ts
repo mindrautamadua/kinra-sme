@@ -1,8 +1,9 @@
 import 'server-only'
-import { ambilAsetMeter, ambilDeviasi, ambilDokumen, ambilIsu, ambilSeu, ambilKegiatan, ambilKinerja, ambilKlausul, ambilPeluang, ambilSasaran, ambilTemuan, rekapEnergi } from './data'
+import { ambilAsetMeter, ambilDeviasi, ambilDokumen, ambilParameter, ambilIsu, ambilSeu, ambilKegiatan, ambilKinerja, ambilKlausul, ambilPeluang, ambilSasaran, ambilTemuan, rekapEnergi } from './data'
 import { LABEL_METODE, ringkas } from './enpi'
 import { angka, hariIni, persen, tanggal } from './format'
 import { penggunaEnergi } from './tinjauan'
+import { susunKonversi } from './konversi'
 import { deteksiDeviasi, gabungDeviasi, terbuka as deviasiTerbuka } from './deviasi'
 import { adaBukti, kesiapan, terlambat, tingkatRisiko, tonggakDari } from './status'
 import { LANGKAH_TINDAK_LANJUT, SUMBER_TANYA_JAWAB, UNIT_AUDIT, URUTAN_PEMERIKSAAN } from './tanya-jawab'
@@ -10,8 +11,8 @@ import { LANGKAH_TINDAK_LANJUT, SUMBER_TANYA_JAWAB, UNIT_AUDIT, URUTAN_PEMERIKSA
 /** Ringkasan data dashboard dalam teks ringkas untuk instruksi sistem chatbot. Dibaca dengan sesi pengguna (RLS berlaku). */
 /** `tanyaJawab`: sertakan materi tanya jawab audit (~9 ribu token). Chat teks hanya menyertakannya bila pertanyaan relevan. */
 export async function konteksDashboard({ tanyaJawab = true }: { tanyaJawab?: boolean } = {}): Promise<string> {
-  const [dokumen, klausul, temuan, kegiatan, isu, peluang, { sasaran, aksi }, kinerja, { seu, tinjauan }, { aset }, registerDeviasi] = await Promise.all([
-    ambilDokumen(), ambilKlausul(), ambilTemuan(), ambilKegiatan(), ambilIsu(), ambilPeluang(), ambilSasaran(), ambilKinerja(), ambilSeu(), ambilAsetMeter(), ambilDeviasi(),
+  const [dokumen, klausul, temuan, kegiatan, isu, peluang, { sasaran, aksi }, kinerja, { seu, tinjauan }, { aset }, registerDeviasi, param] = await Promise.all([
+    ambilDokumen(), ambilKlausul(), ambilTemuan(), ambilKegiatan(), ambilIsu(), ambilPeluang(), ambilSasaran(), ambilKinerja(), ambilSeu(), ambilAsetMeter(), ambilDeviasi(), ambilParameter(),
   ])
   const kini = hariIni()
   const b: string[] = [`Tanggal hari ini: ${tanggal(kini, 'panjang')}.`]
@@ -45,6 +46,8 @@ export async function konteksDashboard({ tanyaJawab = true }: { tanyaJawab?: boo
   for (const p of pareto.daftar) b.push(`- ${p.nama}: ${persen(p.porsi)} (${p.dasar})${p.seu ? ` → ${p.seu.kode} ${p.seu.status}` : p.kandidat ? ' → kandidat SEU, belum di register' : ''}`)
   for (const x of seu) b.push(`- ${x.kode} ${x.nama} [${x.status}] EnPI ${x.enpi_kode ?? '–'}, PIC ${x.pic ?? '–'}, personel ${x.personel ?? '–'}`)
 
+  const kv = susunKonversi(param)
+  b.push(`\n## Konversi rupiah & emisi\nTarif listrik Rp${angka(kv.tarifListrik, 2)}/kWh; faktor emisi listrik ${angka(kv.efListrik, 2)} kg CO2/kWh; Dexlite Rp${angka(kv.hargaDexlite, 0)}/liter, ${angka(kv.efDexlite, 2)} kg CO2/liter.${kv.asumsi.length ? ` Masih asumsi (sebutkan bila mengutip): ${kv.asumsi.join(', ')}.` : ''}`)
   b.push('\n## EnPI')
   b.push('Batas lingkup: data PLN di energi bulanan adalah total kawasan TERMASUK listrik tenant (di luar lingkup SMEn). Kinerja SMEn KINRA hanya diklaim dari EnPI lingkup KINRA (bacaan meter aset KINRA, BBM kendaraan). EnPI lingkup kawasan hanya konteks.')
   for (const h of kinerja.hasil) {

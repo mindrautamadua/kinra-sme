@@ -4,7 +4,9 @@ import { AngkaNaik } from '@/components/AngkaNaik'
 import { Chip } from '@/components/Chip'
 import { Grafik } from '@/components/charts/Grafik'
 import { SectionHead } from '@/components/SectionHead'
-import { ambilDeviasi, ambilKinerja, ambilSasaran } from '@/lib/data'
+import { Istilah } from '@/components/Istilah'
+import { ambilDeviasi, ambilKinerja, ambilParameter, ambilSasaran } from '@/lib/data'
+import { nilaiEnergi, rupiahRingkas, susunKonversi, tonCo2 } from '@/lib/konversi'
 import { deteksiDeviasi, gabungDeviasi, hariSejak, terbuka as deviasiTerbuka } from '@/lib/deviasi'
 import { hariIni } from '@/lib/format'
 import { AMBANG, cusum, type HasilEnpi, LABEL_METODE, type Model, pasangan, pilihEnpiUtama, ringkas, rumus } from '@/lib/enpi'
@@ -60,7 +62,9 @@ function SparkHemat({ h, tinggi = 40 }: { h: HasilEnpi; tinggi?: number }) {
 }
 
 export default async function Kinerja({ searchParams }: { searchParams: Promise<{ tahun?: string }> }) {
-  const [{ sumber, energi, variabel, dataVariabel, enpi, hasil, meter }, register, { aksi }] = await Promise.all([ambilKinerja(), ambilDeviasi(), ambilSasaran()])
+  const [{ sumber, energi, variabel, dataVariabel, enpi, hasil, meter }, register, { aksi }, param] = await Promise.all([ambilKinerja(), ambilDeviasi(), ambilSasaran(), ambilParameter()])
+  const kv = susunKonversi(param)
+  const nilaiHemat = (h: HasilEnpi, v: number) => (h.satuan === 'TJ' ? null : nilaiEnergi(kv, Math.abs(v), h.satuan))
   const kini = hariIni()
   const { baris: barisDeviasi, sisa: sisaDeviasi } = gabungDeviasi(deteksiDeviasi(hasil), register)
   const deviasiBuka = barisDeviasi.filter((b) => deviasiTerbuka(b.r))
@@ -104,7 +108,7 @@ export default async function Kinerja({ searchParams }: { searchParams: Promise<
   return (
     <>
       <section>
-        <SectionHead hero eyebrow="Klausul 6.4 & 6.5 · EnPI dan baseline energi (EnB)"
+        <SectionHead hero eyebrow={<>Klausul 6.4 & 6.5 · <Istilah kata="EnPI" /> dan baseline energi (<Istilah kata="EnB" />)</>}
           judul={utama && ru?.perbaikan != null && ekstra > 0
             ? <>{utama.enpi.nama}: <span className="kj-sorot-buruk">penghematan belum dapat diklaim</span>, {ekstra} bulan pelaporan di luar rentang baseline</>
             : utama && ru?.perbaikan != null
@@ -153,19 +157,23 @@ export default async function Kinerja({ searchParams }: { searchParams: Promise<
                 {m && <Chip kode={layak(m) ? 'good' : 'warn'} label={layak(m) ? 'Model layak' : 'Perlu ditinjau'} />}
               </div>
               {[
-                { label: 'R²', nilai: m?.r2 ?? null, teks: m?.r2 != null ? angka(m.r2, 2) : '–', p: (m?.r2 ?? 0) * 100, batas: AMBANG.r2 * 100, ok: m?.r2 == null ? null : m.r2 >= AMBANG.r2, ket: `≥ ${angka(AMBANG.r2, 2)}` },
-                { label: 'CV(RMSE)', nilai: m?.cvrmse ?? null, teks: m?.cvrmse != null ? `${angka(m.cvrmse, 1)}%` : '–', p: ((m?.cvrmse ?? 0) / 30) * 100, batas: (AMBANG.cvrmse / 30) * 100, ok: m?.cvrmse == null ? null : m.cvrmse <= AMBANG.cvrmse, ket: `≤ ${AMBANG.cvrmse}%` },
-                { label: 'Titik baseline', nilai: m?.n ?? null, teks: m ? `${m.n} bulan` : '–', p: ((m?.n ?? 0) / 24) * 100, batas: (AMBANG.nMin / 24) * 100, ok: m ? m.n >= AMBANG.nMin : null, ket: `≥ ${AMBANG.nMin} bulan` },
+                { label: 'R²', nilai: m?.r2 ?? null, teks: m?.r2 != null ? angka(m.r2, 2) : '–', p: (m?.r2 ?? 0) * 100, batas: AMBANG.r2 * 100, ok: m?.r2 == null ? null : m.r2 >= AMBANG.r2, ket: `≥ ${angka(AMBANG.r2, 2)}`,
+                  artinya: m?.r2 != null ? `Artinya ${angka(m.r2 * 100, 0)}% naik-turunnya konsumsi dijelaskan oleh variabel relevan.` : 'Metode absolut tidak memakai model, sehingga R² tidak berlaku.' },
+                { label: 'CV(RMSE)', nilai: m?.cvrmse ?? null, teks: m?.cvrmse != null ? `${angka(m.cvrmse, 1)}%` : '–', p: ((m?.cvrmse ?? 0) / 30) * 100, batas: (AMBANG.cvrmse / 30) * 100, ok: m?.cvrmse == null ? null : m.cvrmse <= AMBANG.cvrmse, ket: `≤ ${AMBANG.cvrmse}%`,
+                  artinya: m?.cvrmse != null ? `Artinya perkiraan model rata-rata meleset sekitar ${angka(m.cvrmse, 0)}% dari konsumsi aktual.` : 'Berlaku untuk EnPI rasio atau regresi.' },
+                { label: 'Titik baseline', nilai: m?.n ?? null, teks: m ? `${m.n} bulan` : '–', p: ((m?.n ?? 0) / 24) * 100, batas: (AMBANG.nMin / 24) * 100, ok: m ? m.n >= AMBANG.nMin : null, ket: `≥ ${AMBANG.nMin} bulan`,
+                  artinya: m ? `Model dibentuk dari ${m.n} bulan data; minimal 12 agar pola musiman tertangkap.` : 'Belum ada data baseline.' },
               ].map((u) => (
                 <div key={u.label} className="kj-meter">
                   <div className="kj-meter-head">
-                    <span>{u.label}</span>
+                    <span><Istilah kata={u.label === 'Titik baseline' ? 'EnB' : u.label}>{u.label}</Istilah></span>
                     <b className="tnum">{u.teks}</b>
                     <span className={`chip ${u.ok === null ? 'na' : u.ok ? 'good' : 'warn'}`}>{u.ok === null ? 'Tidak berlaku' : u.ok ? 'Lolos' : 'Belum'} · {u.ket}</span>
                   </div>
                   <div className="pg" role="img" aria-label={`${u.label} ${u.teks}, ambang ${u.ket}`}>
                     <div className="track"><b className={u.ok === null ? 'bg-na' : u.ok ? 'bg-good' : 'bg-warn'} style={{ width: `${Math.min(100, Math.max(0, u.p))}%` }} /><u style={{ left: `${u.batas}%` }} /></div>
                   </div>
+                  <p className="kj-artinya">{u.artinya}</p>
                 </div>
               ))}
             </div>
@@ -208,7 +216,7 @@ export default async function Kinerja({ searchParams }: { searchParams: Promise<
                       {jumlahDeviasi(h.enpi.kode) > 0 && <Chip kode="crit" label={`${jumlahDeviasi(h.enpi.kode)} deviasi terbuka`} />}
                     </span>
                   )}
-                  <span className="muted small">{h.galat ? (h.enpi.meter_kode?.length ? 'Menunggu bacaan meter' : 'Model belum terbentuk') : `${rr.bulan} bulan · ${rr.hemat >= 0 ? 'hemat' : 'boros'} ${angka(Math.abs(rr.hemat), desimal(h.satuan))} ${h.satuan}`}</span>
+                  <span className="muted small">{h.galat ? (h.enpi.meter_kode?.length ? 'Menunggu bacaan meter' : 'Model belum terbentuk') : `${rr.bulan} bulan · ${rr.hemat >= 0 ? 'hemat' : 'boros'} ${angka(Math.abs(rr.hemat), desimal(h.satuan))} ${h.satuan}${nilaiHemat(h, rr.hemat) ? ` · ${rupiahRingkas(nilaiHemat(h, rr.hemat)!.rupiah)} · ${tonCo2(nilaiHemat(h, rr.hemat)!.kgCo2)}` : ''}`}</span>
                 </a>
               )
             })}

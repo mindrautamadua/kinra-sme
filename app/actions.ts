@@ -443,6 +443,19 @@ export async function simpanDeviasi(id: number | null, asal: { enpi_kode: string
   return gagalDeviasi(error)
 }
 
+// ---------- Parameter konversi rupiah & CO₂ (migrasi 0030) ----------
+
+export async function simpanParameter(kode: string, nilai: number, status: 'Data' | 'Asumsi', sumber: string): Promise<Hasil> {
+  const t = await tolak('parameter.ubah'); if (t) return t
+  if (!Number.isFinite(nilai) || nilai < 0) return { ok: false, pesan: 'Nilai harus angka 0 atau lebih.' }
+  const { data, error } = await (await db()).from('parameter_energi')
+    .update({ nilai, status, sumber: sumber.trim() || null, diubah_at: new Date().toISOString() }).eq('kode', kode).select('kode')
+  revalidatePath('/', 'layout')
+  if (error?.code === 'PGRST205') return { ok: false, pesan: 'Tabel parameter belum ada. Jalankan migrasi 0030_parameter_energi.sql di Supabase.' }
+  if (!error && !data?.length) return { ok: false, pesan: 'Parameter tidak ditemukan atau peran Anda belum diizinkan oleh database.' }
+  return gagal(error)
+}
+
 // ---------- Kinerja energi: variabel relevan & EnPI ----------
 
 const bulanKeTanggal = (v: string | null) => (v && /^\d{4}-\d{2}$/.test(v) ? `${v}-01` : v)

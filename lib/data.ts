@@ -1,6 +1,7 @@
 import 'server-only'
 import { hitungEnpi } from './enpi'
 import { BUCKET_BUKTI } from './status'
+import { BAWAAN, type ParameterEnergi } from './konversi'
 import { db } from './supabase'
 import type { Deviasi, Seu, TinjauanEnergi, Aset, MeterEnergi, PembacaanMeter, Berkas, BerkasTampil, Dokumen, EnergiBulanan, Enpi, Isu, JejakBukti, Kegiatan, Klausul, Peluang, RencanaAksi, Sasaran, SumberEnergi, Temuan, VariabelBulanan, VariabelRelevan } from './types'
 
@@ -110,6 +111,13 @@ export type SimulasiTersimpan = {
 export async function ambilRiwayatSimulasi(): Promise<SimulasiTersimpan[]> {
   const r = await (await db()).from('simulasi_audit').select('id, unit_no, unit_nama, mode, jumlah, skor, skor_maks, prediksi, oleh, dibuat_at').order('dibuat_at', { ascending: false }).limit(30)
   return cek<SimulasiTersimpan[]>(r, 'simulasi_audit')
+}
+
+/** Parameter konversi rupiah & CO₂ (migrasi 0030); bawaan bila tabel belum ada. */
+export async function ambilParameter(): Promise<ParameterEnergi[]> {
+  const r = await (await db()).from('parameter_energi').select('*').order('urutan')
+  const data = cek<ParameterEnergi[]>(r, 'parameter_energi').map((x) => ({ ...x, nilai: Number(x.nilai) }))
+  return data.length ? data : BAWAAN
 }
 
 export async function ambilKegiatan(): Promise<Kegiatan[]> {

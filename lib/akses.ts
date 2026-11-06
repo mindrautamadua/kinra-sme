@@ -1,4 +1,4 @@
-/** Matriks hak akses. Sinkron dengan policy RLS di supabase/migrations/0006_login_peran.sql, 0007, 0009, 0011, 0014, 0019, 0020, 0021, 0022, 0027, dan 0028. */
+/** Matriks hak akses. Sinkron dengan policy RLS di supabase/migrations/0006_login_peran.sql, 0007, 0009, 0011, 0014, 0019, 0020, 0021, 0022, 0027, 0028, dan 0030. */
 export type Peran = 'admin' | 'konsultan' | 'tim_kinra' | 'pembaca'
 
 export const LABEL_PERAN: Record<Peran, string> = { admin: 'Admin', konsultan: 'Konsultan', tim_kinra: 'Tim KINRA', pembaca: 'Pembaca' }
@@ -23,6 +23,7 @@ export const AKSES = {
   'seu.hapus': ['admin'],
   'deviasi.ubah': SEMUA,                        // selidiki & tanggapi deviasi signifikan (migrasi 0028)
   'deviasi.tutup': ['admin', 'konsultan'],      // verifikasi: tutup / bukan deviasi
+  'parameter.ubah': ['admin', 'konsultan'],     // tarif & faktor emisi (migrasi 0030)
   'enpi.tambah': ['admin', 'konsultan'],        // definisi variabel relevan & EnPI baru
   'enpi.ubah': SEMUA,                           // ubah variabel relevan, EnPI & baseline
   'enpi.hapus': ['admin'],
@@ -51,6 +52,7 @@ export const LABEL_AKSI: Record<Aksi, string> = {
   'dokumen.hapus': 'Hapus dokumen', 'energi.ubah': 'Input data energi & variabel relevan',
   'aset.ubah': 'Ubah aset, meter & bacaan stand', 'aset.hapus': 'Hapus aset & meter',
   'deviasi.ubah': 'Selidiki & tanggapi deviasi', 'deviasi.tutup': 'Tutup deviasi (verifikasi)',
+  'parameter.ubah': 'Ubah tarif & faktor emisi',
   'seu.ubah': 'Usulkan & isi SEU', 'seu.tetapkan': 'Tetapkan SEU & setujui tinjauan energi', 'seu.hapus': 'Hapus SEU',
   'enpi.tambah': 'Tambah EnPI & variabel relevan', 'enpi.ubah': 'Ubah EnPI, baseline & variabel', 'enpi.hapus': 'Hapus EnPI & variabel',
   'sasaran.tambah': 'Tambah sasaran energi', 'sasaran.ubah': 'Ubah sasaran energi', 'aksi.ubah': 'Isi rencana aksi', 'sasaran.hapus': 'Hapus sasaran & aksi', 'kegiatan.ubah': 'Tandai kegiatan timeline',
