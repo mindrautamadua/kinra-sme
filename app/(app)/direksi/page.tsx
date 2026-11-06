@@ -11,7 +11,7 @@ import { pilihEnpiUtama, ringkas } from '@/lib/enpi'
 import { angka, BULAN_PANJANG, energiListrik, hariIni, persen, selisihHari, tanggal } from '@/lib/format'
 import { nilaiEnergi, rupiahRingkas, susunKonversi, tonCo2 } from '@/lib/konversi'
 import { LABEL_STATUS, susunPeta } from '@/lib/peta-smen'
-import { kesiapan, tonggakDari } from '@/lib/status'
+import { grupStatus, kesiapan, tonggakDari } from '@/lib/status'
 import { penggunaEnergi } from '@/lib/tinjauan'
 
 export const dynamic = 'force-dynamic'
@@ -64,6 +64,8 @@ export default async function RingkasanDireksi() {
   const keputusan: { teks: string; ket: string; href: string }[] = []
   const kandidatSeu = seu.filter((s) => s.status === 'Kandidat')
   if (kandidatSeu.length) keputusan.push({ teks: `Tetapkan ${kandidatSeu.map((s) => s.kode).join(' dan ')} sebagai SEU`, ket: `${kandidatSeu.map((s) => s.nama.replace(/\s*\(.*\)$/, '')).join(', ')} menyerap sebagian besar energi KINRA. Tanpa SEU yang ditetapkan, auditor berpotensi mengeluarkan temuan mayor klausul 6.3.`, href: '/tinjauan' })
+  const belumSah = dokumen.filter((d) => (d.jumlah_berkas ?? 0) > 0 && !(grupStatus(d.status) === 'final' && (d.jumlah_sah ?? 0) > 0))
+  if (belumSah.length) keputusan.push({ teks: `Sahkan ${belumSah.length} dokumen yang evidence-nya masih draf`, ket: `Berkas sudah ada tetapi belum Final atau belum ada versi sah${belumSah.some((d) => d.wajib_iso) ? `, termasuk ${belumSah.filter((d) => d.wajib_iso).length} dokumen wajib ISO` : ''}. Stage 1 menilai kecukupan dokumen yang sudah ditetapkan (klausul 7.5).`, href: '/kesiapan' })
   if (tinjauan && tinjauan.status !== 'Disetujui') keputusan.push({ teks: 'Setujui catatan tinjauan energi', ket: 'Tinjauan energi masih draft; persetujuan menjadi bukti klausul 6.3.', href: '/tinjauan' })
   const kinraTanpaData = hasil.filter((h) => h.enpi.aktif && (h.enpi.lingkup ?? 'kinra') === 'kinra' && h.enpi.meter_kode?.length && (h.galat || !h.model))
   const stage2 = tonggakDari(kegiatan).find((t) => /stage 2/i.test(t.nama))
@@ -88,7 +90,7 @@ export default async function RingkasanDireksi() {
       <section>
         <h2 className="dr-judul">1 · Angka kunci</h2>
         <div className="dr-angka">
-          <div className="tile"><span className="label">Kesiapan audit</span><div className="nilai tnum">{angka(skorSiap, 0)}<small>%</small></div><div className="meta">Dokumen dengan evidence</div></div>
+          <div className="tile"><span className="label">Kesiapan audit</span><div className="nilai tnum">{angka(skorSiap, 0)}<small>%</small></div><div className="meta">Final + berkas sah · {dokumen.filter((d) => grupStatus(d.status) !== 'final' && (d.jumlah_berkas ?? 0) > 0).length} masih draf</div></div>
           <div className="tile"><span className="label">Energi KINRA per bulan</span><div className="nilai tnum">{angka(pakai.total / 1000, 0)}<small>MWh</small></div><div className="meta">±{rupiahRingkas(biayaKinra.rupiah)} · {tonCo2(biayaKinra.kgCo2)}</div></div>
           <div className="tile"><span className="label">EnPI utama</span>
             <div className="nilai tnum">{ru?.perbaikan == null ? '–' : utama!.ekstrapolasi ? '?' : `${ru.perbaikan >= 0 ? '+' : '−'}${angka(Math.abs(ru.perbaikan), 1)}%`}</div>

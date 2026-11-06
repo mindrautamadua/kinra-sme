@@ -4,7 +4,7 @@
  */
 import { AMBANG, type HasilEnpi } from './enpi'
 import { keadaan } from './kegiatan'
-import { adaBukti, INDUK_KLAUSUL, kesiapan, nilaiKesiapan, terlambat, tonggakDari } from './status'
+import { adaBukti, INDUK_KLAUSUL, kesiapan, siapAudit, nilaiKesiapan, terlambat, tonggakDari } from './status'
 import type { Dokumen, Isu, Kegiatan, Klausul, RencanaAksi, Sasaran, Temuan } from './types'
 
 export type Rag = 'hijau' | 'kuning' | 'merah'
@@ -69,8 +69,10 @@ export function susunLaporan(m: {
   const nBukti = dokumen.filter(adaBukti).length
   const cakupanBukti = dokumen.length ? (nBukti / dokumen.length) * 100 : 0
   const nLewat = dokumen.filter((d) => terlambat(d, kini)).length
+  const nSiap = dokumen.filter(siapAudit).length
   const sebaranBukti = [
-    { s: 'final', label: 'Ada evidence', n: nBukti },
+    { s: 'final', label: 'Siap audit (Final + berkas sah)', n: nSiap },
+    { s: 'review', label: 'Ada evidence, belum final/sah', n: nBukti - nSiap },
     { s: 'belum', label: 'Belum ada evidence', n: dokumen.length - nBukti },
   ]
 
@@ -118,6 +120,7 @@ export function susunLaporan(m: {
   gerbang.push(
     { kriteria: 'Tidak ada ketidaksesuaian mayor terbuka', acuan: 'Kl. 10.1', hasil: mayorTerbuka.length ? 'gagal' : 'lulus', bukti: `${mayorTerbuka.length} mayor, ${minorTerbuka.length} minor terbuka` },
     { kriteria: 'Cakupan evidence ≥ 90% dokumen', acuan: 'Kl. 7.5', hasil: cakupanBukti >= 90 ? 'lulus' : cakupanBukti >= 60 ? 'parsial' : 'gagal', bukti: `${nBukti}/${dokumen.length} dokumen (${Math.round(cakupanBukti)}%)` },
+    { kriteria: 'Dokumen terkendali: Final dengan berkas versi sah ≥ 90%', acuan: 'Kl. 7.5.2–7.5.3', hasil: skor >= 90 ? 'lulus' : skor >= 60 ? 'parsial' : 'gagal', bukti: `${nSiap}/${dokumen.length} dokumen siap audit (${Math.round(skor)}%)` },
     {
       kriteria: 'Model EnPI valid secara statistik', acuan: 'Kl. 6.4–6.5 · ISO 50006',
       hasil: !enpiAktif.length ? 'gagal' : enpiValid.length === enpiAktif.length ? 'lulus' : enpiValid.length ? 'parsial' : 'gagal',
@@ -187,6 +190,7 @@ export function susunLaporan(m: {
     rek.push({ prioritas: 'P1', tindakan: `Lengkapi informasi terdokumentasi wajib: ${g.kriteria.toLowerCase()} (${g.bukti.toLowerCase()}).`, acuan: g.acuan, pemilik: pics.join(', ') || 'Tim KINRA', batas: batasP1 })
   }
   const nTanpaBukti = dokumen.length - nBukti
+  if (nBukti - nSiap > 0) rek.push({ prioritas: 'P1', tindakan: `Sahkan ${nBukti - nSiap} dokumen yang evidence-nya masih draf: tetapkan status Final dan tandai berkas versi sah (bernomor, berrevisi, bertanggal berlaku, ditandatangani).`, acuan: 'Kl. 7.5.2', pemilik: 'Dokumen Kontrol & PIC dokumen', batas: batasP1 })
   if (nTanpaBukti) rek.push({ prioritas: cakupanBukti < 60 ? 'P1' : 'P2', tindakan: `Unggah evidence untuk ${nTanpaBukti} dokumen yang belum memiliki berkas; auditor hanya menilai bukti yang dapat diperiksa.`, acuan: 'Kl. 7.5', pemilik: 'Seluruh PIC dokumen', batas: batasP1 })
   if (nLewat) rek.push({ prioritas: 'P2', tindakan: `Eskalasi ${nLewat} dokumen lewat tenggat ke PIC: ${bebanPic.filter((b) => b.lewat).slice(0, 4).map((b) => `${b.pic} (${b.lewat})`).join(', ')}.`, acuan: 'Kl. 5.3', pemilik: 'Wakil manajemen', batas: batasP1 })
   if (enpiAktif.length > enpiValid.length) rek.push({ prioritas: 'P2', tindakan: `Perbaiki ${enpiAktif.length - enpiValid.length} model EnPI yang belum memenuhi ambang validitas (tambah variabel relevan, perpanjang periode baseline, atau ganti metode).`, acuan: 'Kl. 6.4–6.5', pemilik: 'Tim energi', batas: batasP2 })

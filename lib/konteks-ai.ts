@@ -5,7 +5,7 @@ import { angka, hariIni, persen, tanggal } from './format'
 import { penggunaEnergi } from './tinjauan'
 import { susunKonversi } from './konversi'
 import { deteksiDeviasi, gabungDeviasi, terbuka as deviasiTerbuka } from './deviasi'
-import { adaBukti, kesiapan, terlambat, tingkatRisiko, tonggakDari } from './status'
+import { adaBukti, kemajuan, kesiapan, siapAudit, terlambat, tingkatRisiko, tonggakDari } from './status'
 import { LANGKAH_TINDAK_LANJUT, SUMBER_TANYA_JAWAB, UNIT_AUDIT, URUTAN_PEMERIKSAAN } from './tanya-jawab'
 
 /** Ringkasan data dashboard dalam teks ringkas untuk instruksi sistem chatbot. Dibaca dengan sesi pengguna (RLS berlaku). */
@@ -21,10 +21,10 @@ export async function konteksDashboard({ tanyaJawab = true }: { tanyaJawab?: boo
   for (const t of tonggakDari(kegiatan)) b.push(`- ${t.nama}: ${tanggal(t.tanggal, 'panjang')}`)
 
   const siap = dokumen.filter(adaBukti).length
-  b.push(`\n## Kesiapan dokumen\nSkor ${persen(kesiapan(dokumen))} = persentase dokumen yang sudah punya evidence (berkas terunggah di Kesiapan Audit; isian formulir tidak dihitung); ${siap} dari ${dokumen.length} dokumen ada evidence. Status Draft/Final per dokumen hanya informasi posisi, tidak memengaruhi skor.`)
+  b.push(`\n## Kesiapan dokumen\nSkor siap audit ${persen(kesiapan(dokumen))} = persentase dokumen berstatus Final DAN punya minimal satu berkas bertanda versi sah; ${dokumen.filter(siapAudit).length} dari ${dokumen.length} siap audit. Kemajuan evidence (berkas apa pun termasuk draf) ${persen(kemajuan(dokumen))}: ${siap} dokumen. Dokumen yang ada evidence tetapi belum Final/sah belum dianggap siap.`)
   for (const k of klausul) {
     const ds = dokumen.filter((d) => d.klausul_kode === k.kode)
-    if (ds.length) b.push(`- Klausul ${k.kode} ${k.judul}: ${persen(kesiapan(ds))} (${ds.length} dokumen)`)
+    if (ds.length) b.push(`- Klausul ${k.kode} ${k.judul}: siap audit ${persen(kesiapan(ds))}, evidence ${persen(kemajuan(ds))} (${ds.length} dokumen)`)
   }
   b.push('\nDokumen belum ada evidence (kode | nama | PIC | tenggat):')
   for (const d of dokumen.filter((d) => !adaBukti(d))) {

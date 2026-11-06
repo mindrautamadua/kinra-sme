@@ -19,7 +19,7 @@ export default async function Auditor() {
       .map((d) => ({
         id: d.id, kode: d.kode, nama: d.nama, kelompok: d.kelompok, nomor: d.nomor_dokumen, pic: d.pic, keterangan: d.keterangan,
         wajib: !!d.wajib_iso, bukti: adaBukti(d), masukan: masukan(d.kode),
-        berkas: berkas.filter((b) => b.dokumen_id === d.id).map((b) => ({ id: b.id, nama: b.nama_file, mime: b.mime, ukuran: b.ukuran, at: b.diunggah_at, oleh: b.diunggah_oleh })),
+        berkas: berkas.filter((b) => b.dokumen_id === d.id).sort((a, b) => Number(!!b.sah) - Number(!!a.sah)).map((b) => ({ id: b.id, nama: b.nama_file, mime: b.mime, ukuran: b.ukuran, at: b.diunggah_at, oleh: b.diunggah_oleh, sah: !!b.sah })),
       }))
     const tm = temuan.filter((t) => t.klausul_kode === k.kode && t.status !== 'Tertutup')
     return { kode: k.kode, judul: k.judul, induk: k.induk, dokumen: ds, temuanBuka: tm.map((t) => ({ nomor: t.nomor, kategori: t.kategori, uraian: t.uraian })) }

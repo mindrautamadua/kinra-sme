@@ -9,7 +9,7 @@ import { LABEL_STATUS, susunPeta } from '@/lib/peta-smen'
 import { BATAS_HARI_TANGGAPAN, deteksiDeviasi, gabungDeviasi, hariSejak, terbuka as deviasiTerbuka } from '@/lib/deviasi'
 import { LABEL_METODE, pilihEnpiUtama, ringkas } from '@/lib/enpi'
 import { angka, BULAN, delta, hariIni, persen, selisihHari, tanggal, waktu } from '@/lib/format'
-import { adaBukti, hariWib, kesiapan, kesiapanPerKlausul, KELOMPOK, terlambat, tonggakDari, trenKesiapan } from '@/lib/status'
+import { adaBukti, hariWib, kemajuan, kesiapan, kesiapanPerKlausul, siapAudit, KELOMPOK, terlambat, tonggakDari, trenKesiapan } from '@/lib/status'
 
 export const dynamic = 'force-dynamic'
 
@@ -23,15 +23,20 @@ export default async function Ringkasan() {
   const deviasiTelat = deviasiBuka.filter((b) => !b.r && hariSejak(b.d.tahun, b.d.bulan, kini) > BATAS_HARI_TANGGAPAN)
   const peta = susunPeta({ dokumen, isu, peluang, seu, tinjauan, hasil: kinerja.hasil, sasaran, aksi, temuan, meter: kinerja.meter, bacaan: kinerja.bacaan, kini, deviasiBuka: deviasiBuka.length })
 
+  // Skor utama = siap audit (Final + berkas versi sah); tren & proyeksi memakai kemajuan evidence
+  // karena hanya riwayat unggahan berkas yang dapat direkonstruksi per hari
   const skor = kesiapan(dokumen)
+  const progres = kemajuan(dokumen)
   const siap = dokumen.filter(adaBukti).length
+  const nSiap = dokumen.filter(siapAudit).length
   const lewat = dokumen.filter((d) => terlambat(d, kini))
   const temuanBuka = temuan.filter((t) => t.status !== 'Tertutup')
   const tonggak = tonggakDari(kegiatan).filter((t) => t.tanggal >= kini)
   const berikut = tonggak[0]
 
   const perStatus = [
-    { s: 'ada', label: 'Ada evidence', chip: 'good', n: siap },
+    { s: 'siap', label: 'Siap audit (Final + sah)', chip: 'good', n: nSiap },
+    { s: 'proses', label: 'Ada evidence, belum final/sah', chip: 'warn', n: siap - nSiap },
     { s: 'belum', label: 'Belum ada evidence', chip: 'crit', n: dokumen.length - siap },
   ]
   let kumulatif = 0
@@ -76,13 +81,13 @@ export default async function Ringkasan() {
   const hariLalu: string[] = []
   for (let h = mulai; h <= kini; h = tambahHari(h, 1)) hariLalu.push(h)
   const tren = trenKesiapan(dokumen, jejak, hariLalu)
-  tren[tren.length - 1] = skor
+  tren[tren.length - 1] = progres
   const jendela = Math.min(14, hariLalu.length - 1)
-  const laju = jendela > 0 ? (skor - tren[tren.length - 1 - jendela]) / jendela : null
-  const hariKe100 = skor >= 100 ? 0 : laju && laju > 0 ? Math.ceil((100 - skor) / laju) : null
+  const laju = jendela > 0 ? (progres - tren[tren.length - 1 - jendela]) / jendela : null
+  const hariKe100 = progres >= 100 ? 0 : laju && laju > 0 ? Math.ceil((100 - progres) / laju) : null
   const tgl100 = hariKe100 === null ? null : tambahHari(kini, hariKe100)
   const hBerikut = berikut ? selisihHari(berikut.tanggal) : 0
-  const lajuPerlu = berikut && hBerikut > 0 ? (100 - skor) / hBerikut : null
+  const lajuPerlu = berikut && hBerikut > 0 ? (100 - progres) / hBerikut : null
   const keburu = tgl100 !== null && !!berikut && tgl100 <= berikut.tanggal
   const hariDepan: string[] = []
   if (berikut) for (let h = tambahHari(kini, 1); h <= berikut.tanggal; h = tambahHari(h, 1)) hariDepan.push(h)
@@ -139,7 +144,7 @@ export default async function Ringkasan() {
 
       <section>
         <div className="ks-kepala">
-          <SectionHead hero eyebrow="Kesiapan audit ISO 50001:2018" judul={<>Kesiapan dokumen <span className="ks-sorot">{persen(skor)}</span>: {siap} dari {dokumen.length} dokumen siap diaudit</>}>
+          <SectionHead hero eyebrow="Kesiapan audit ISO 50001:2018" judul={<>Siap audit <span className="ks-sorot">{persen(skor)}</span>: {nSiap} dari {dokumen.length} dokumen Final dengan berkas sah, {siap - nSiap} masih draf/belum sah</>}>
             <p className="muted">
               Persentase dokumen dan rekaman yang sudah punya berkas evidence terunggah di Kesiapan Audit.
               {berikut && <> {berikut.nama} dijadwalkan {tanggal(berikut.tanggal, 'panjang')}, {hBerikut} hari lagi.</>}
@@ -149,7 +154,7 @@ export default async function Ringkasan() {
         </div>
 
         <div className="ks-hero">
-          <div className="card ks-skor">
+          <div className="card ks-progres">
             <div className="ks-cincin" role="img" aria-label={`Kesiapan ${persen(skor)}. ${perStatus.map((x) => `${x.label} ${x.n}`).join(', ')}`}>
               <svg viewBox="0 0 220 220" aria-hidden="true">
                 <defs>
@@ -166,9 +171,9 @@ export default async function Ringkasan() {
                 <circle cx="110" cy="110" r="84" pathLength={100} className="ks-isi" style={{ strokeDasharray: `${skor} 100` }} />
               </svg>
               <div className="ks-tengah">
-                <span className="eyebrow">Kesiapan</span>
+                <span className="eyebrow">Siap audit</span>
                 <b className="tnum"><AngkaNaik nilai={skor} desimal={1} /><small>%</small></b>
-                <span className="muted small">{siap} dari {dokumen.length} ada evidence</span>
+                <span className="muted small">{nSiap} dari {dokumen.length} Final + sah · evidence {persen(progres, 0)}</span>
               </div>
             </div>
             <div className="ks-legenda">
@@ -188,7 +193,7 @@ export default async function Ringkasan() {
                 <div className="ks-hari tnum">{berikut ? <AngkaNaik nilai={hBerikut} /> : '–'}<small>hari lagi</small></div>
                 <p className="muted small">
                   {berikut ? tanggal(berikut.tanggal, 'panjang') : 'Semua tonggak sudah lewat'}
-                  {lajuPerlu !== null && skor < 100 && <> · perlu <b className="ink-2">+{angka(lajuPerlu, 1)} poin/hari</b> agar 100% tepat waktu</>}
+                  {lajuPerlu !== null && progres < 100 && <> · perlu <b className="ink-2">+{angka(lajuPerlu, 1)} poin/hari</b> agar 100% tepat waktu</>}
                 </p>
               </div>
               {tonggak.length > 0 && (
@@ -212,19 +217,19 @@ export default async function Ringkasan() {
 
             <div className="card hm-proyeksi">
               <div className="row">
-                <div><h3>Tren & proyeksi kesiapan</h3><p className="muted small">Direkonstruksi dari tanggal evidence pertama tiap dokumen · {hariLalu.length} hari terakhir{berikut && ` sampai ${berikut.nama}`}</p></div>
+                <div><h3>Tren & proyeksi kemajuan evidence</h3><p className="muted small">Direkonstruksi dari tanggal evidence pertama tiap dokumen · {hariLalu.length} hari terakhir{berikut && ` sampai ${berikut.nama}`}</p></div>
                 <div className="mini-stats">
                   <div><span>Laju {jendela} hari</span><b className={`tnum ${laju !== null && laju > 0 ? 'txt-good' : ''}`}>{laju === null ? '–' : `${laju >= 0 ? '+' : '−'}${angka(Math.abs(laju), 2)}`}<small className="muted"> poin/hari</small></b></div>
                   <div><span>Proyeksi 100%</span><b className={`tnum ${tgl100 === null ? 'txt-bad' : keburu ? 'txt-good' : 'txt-bad'}`}>{tgl100 ? tanggal(tgl100) : 'Tidak bergerak'}</b></div>
                 </div>
               </div>
-              <Grafik tinggi={220} label={`Kesiapan ${persen(tren[0])} pada ${labelHari(hariLalu[0])} menjadi ${persen(skor)} hari ini; proyeksi 100% ${tgl100 ? tanggal(tgl100) : 'belum dapat dihitung'}`}
+              <Grafik tinggi={220} label={`Kesiapan ${persen(tren[0])} pada ${labelHari(hariLalu[0])} menjadi ${persen(progres)} hari ini; proyeksi 100% ${tgl100 ? tanggal(tgl100) : 'belum dapat dihitung'}`}
                 spek={{
                   jenis: 'garis', satuan: '%', kategori: [...hariLalu, ...hariDepan].map(labelHari),
                   seri: [
                     { nama: 'Aktual', warna: 's1', data: [...tren.map(r1), ...hariDepan.map(() => null)] },
-                    { nama: 'Proyeksi laju sekarang', warna: 's3', putus: true, data: [...hariLalu.map((_, i) => (i === akhir ? r1(skor) : null)), ...hariDepan.map((_, i) => (laju === null ? null : r1(Math.min(100, Math.max(0, skor + laju * (i + 1))))))] },
-                    { nama: `Jalur ideal ke ${berikut?.nama ?? 'audit'}`, warna: 'jingga', putus: true, data: [...hariLalu.map((_, i) => (i === akhir ? r1(skor) : null)), ...hariDepan.map((_, i) => r1(skor + ((100 - skor) * (i + 1)) / hariDepan.length))] },
+                    { nama: 'Proyeksi laju sekarang', warna: 's3', putus: true, data: [...hariLalu.map((_, i) => (i === akhir ? r1(progres) : null)), ...hariDepan.map((_, i) => (laju === null ? null : r1(Math.min(100, Math.max(0, progres + laju * (i + 1))))))] },
+                    { nama: `Jalur ideal ke ${berikut?.nama ?? 'audit'}`, warna: 'jingga', putus: true, data: [...hariLalu.map((_, i) => (i === akhir ? r1(progres) : null)), ...hariDepan.map((_, i) => r1(progres + ((100 - progres) * (i + 1)) / hariDepan.length))] },
                   ],
                 }} />
               <p className="sumber">{gerakPekan.length} evidence masuk dalam 7 hari terakhir, untuk {dokPekan} dokumen.</p>
@@ -233,17 +238,17 @@ export default async function Ringkasan() {
         </div>
 
         <div className="insights hm-insights">
-          <Link href="/kesiapan" className={`insight ${skor >= 100 || keburu ? 'positif' : 'kritis'}`}>
+          <Link href="/kesiapan" className={`insight ${progres >= 100 || keburu ? 'positif' : 'kritis'}`}>
             <span className="area"><TrendingUp aria-hidden="true" />Proyeksi</span>
-            <div className="angka tnum">{skor >= 100 ? 'Tuntas' : tgl100 ? tanggal(tgl100) : 'Mandek'}</div>
-            <h3>{skor >= 100 ? 'Semua dokumen siap' : tgl100 === null ? 'Skor tidak naik 14 hari terakhir' : keburu ? `Tuntas sebelum ${berikut?.nama}` : `${berikut ? selisihHari(tgl100) - hBerikut : 0} hari setelah ${berikut?.nama ?? 'audit'}`}</h3>
-            <p>{lajuPerlu !== null && skor < 100 ? `Butuh +${angka(lajuPerlu, 1)} poin/hari; laju sekarang ${laju === null ? '–' : `${angka(laju, 2)}`} poin/hari.` : 'Jaga evidence tetap lengkap dan mutakhir.'}</p>
+            <div className="angka tnum">{progres >= 100 ? 'Tuntas' : tgl100 ? tanggal(tgl100) : 'Mandek'}</div>
+            <h3>{progres >= 100 ? 'Semua dokumen punya evidence' : tgl100 === null ? 'Skor tidak naik 14 hari terakhir' : keburu ? `Tuntas sebelum ${berikut?.nama}` : `${berikut ? selisihHari(tgl100) - hBerikut : 0} hari setelah ${berikut?.nama ?? 'audit'}`}</h3>
+            <p>{lajuPerlu !== null && progres < 100 ? `Butuh +${angka(lajuPerlu, 1)} poin/hari; laju sekarang ${laju === null ? '–' : `${angka(laju, 2)}`} poin/hari.` : 'Jaga evidence tetap lengkap dan mutakhir.'}</p>
           </Link>
           <Link href="/kesiapan" className="insight positif">
             <span className="area"><Zap aria-hidden="true" />Quick win</span>
             <div className="angka tnum">+{angka(naikMendesak, 1)} poin</div>
             <h3>{nMendesak} dokumen mendesak tanpa evidence</h3>
-            <p>{nMendesak ? `Tenggatnya lewat atau jatuh dalam 7 hari. Mengunggah evidence-nya menaikkan skor ke ${persen(Math.min(100, skor + naikMendesak))}.` : 'Tidak ada dokumen mendesak yang belum punya evidence.'}</p>
+            <p>{nMendesak ? `Tenggatnya lewat atau jatuh dalam 7 hari. Mengunggah evidence-nya menaikkan progres ke ${persen(Math.min(100, progres + naikMendesak))}.` : 'Tidak ada dokumen mendesak yang belum punya evidence.'}</p>
           </Link>
           {terlemah[0] && (
             <Link href={`/kesiapan?klausul=${encodeURIComponent(terlemah[0].kode)}`} className="insight kritis">

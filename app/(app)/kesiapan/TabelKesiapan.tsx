@@ -1,6 +1,6 @@
 'use client'
 
-import { Download, Eye, Search, Trash2, Upload, X } from 'lucide-react'
+import { Download, Eye, Search, Trash2, Upload, X, BadgeCheck } from 'lucide-react'
 import Link from 'next/link'
 import { useMemo, useRef, useState } from 'react'
 import { lihatBerkas } from '@/app/actions'
@@ -8,7 +8,7 @@ import { Chip } from '@/components/Chip'
 import { EvidenceBerkas } from '@/components/EvidenceBerkas'
 import { useBoleh } from '@/components/Peran'
 import { selisihHari, tanggal } from '@/lib/format'
-import { adaBukti, grupStatus, type GrupStatus, KELOMPOK, kesiapan, STATUS_DOKUMEN, terlambat } from '@/lib/status'
+import { adaBukti, siapAudit, tahapSiap, grupStatus, type GrupStatus, KELOMPOK, kesiapan, STATUS_DOKUMEN, terlambat } from '@/lib/status'
 import type { BerkasTampil, Dokumen, KelompokDokumen, Klausul } from '@/lib/types'
 import { CatatanDokumen } from './CatatanDokumen'
 import { HapusDokumenDialog } from './HapusDokumenDialog'
@@ -25,7 +25,7 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal }: {
   const [cari, setCari] = useState('')
   const [hanyaLewat, setHanyaLewat] = useState(false)
   // Saringan evidence: '' semua, 'belum' belum ada berkas, 'ada' sudah ada berkas
-  const [bukti, setBukti] = useState<'' | 'belum' | 'ada'>('')
+  const [bukti, setBukti] = useState<'' | 'belum' | 'ada' | 'proses' | 'siap'>('')
   const tanpaBukti = bukti === 'belum'
   const setTanpaBukti = (v: boolean) => setBukti(v ? 'belum' : '')
   const [hanyaWajib, setHanyaWajib] = useState(false)
@@ -73,7 +73,7 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal }: {
     return rows
       .filter((d) => (!kelompok || d.kelompok === kelompok) && (!kl || d.klausul_kode === kl))
       .filter((d) => !hanyaLewat || terlambat(d, kini))
-      .filter((d) => !bukti || (bukti === 'ada') === adaBukti(d))
+      .filter((d) => !bukti || (bukti === 'belum' ? !adaBukti(d) : bukti === 'ada' ? adaBukti(d) : tahapSiap(d) === bukti))
       .filter((d) => !hanyaWajib || d.wajib_iso)
       .filter((d) => !st || grupStatus(d.status) === st)
       .filter((d) => !q || `${d.kode} ${d.nama} ${d.pic ?? ''} ${d.nomor_dokumen ?? ''} ${d.keterangan ?? ''} ${d.posisi_draf ?? ''} ${STATUS_DOKUMEN[d.status]?.label ?? ''}`.toLowerCase().includes(q))
@@ -86,9 +86,9 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal }: {
   }
 
   function unduhCsv() {
-    const kolom = ['Kode', 'Klausul', 'Kelompok', 'Nama', 'Wajib ISO 50001', 'Status', 'Nomor dokumen', 'PIC', 'Tenggat', 'Berkas evidence', 'Draf ada di', 'Keterangan', 'Catatan diubah oleh', 'Catatan diubah pada']
+    const kolom = ['Kode', 'Klausul', 'Kelompok', 'Nama', 'Wajib ISO 50001', 'Status', 'Nomor dokumen', 'PIC', 'Tenggat', 'Berkas evidence', 'Berkas versi sah', 'Siap audit', 'Draf ada di', 'Keterangan', 'Catatan diubah oleh', 'Catatan diubah pada']
     const esc = (v: unknown) => `"${String(v ?? '').replace(/"/g, '""')}"`
-    const isi = tersaring.map((d) => [d.kode, d.klausul_kode, KELOMPOK[d.kelompok], d.nama, d.wajib_iso ? 'Ya' : 'Tidak', STATUS_DOKUMEN[d.status]?.label ?? d.status, d.nomor_dokumen, d.pic, d.tenggat, d.jumlah_berkas ?? 0, d.posisi_draf, d.keterangan, d.catatan_oleh, d.catatan_at].map(esc).join(','))
+    const isi = tersaring.map((d) => [d.kode, d.klausul_kode, KELOMPOK[d.kelompok], d.nama, d.wajib_iso ? 'Ya' : 'Tidak', STATUS_DOKUMEN[d.status]?.label ?? d.status, d.nomor_dokumen, d.pic, d.tenggat, d.jumlah_berkas ?? 0, d.jumlah_sah ?? 0, siapAudit(d) ? 'Ya' : 'Tidak', d.posisi_draf, d.keterangan, d.catatan_oleh, d.catatan_at].map(esc).join(','))
     const blob = new Blob(['﻿' + [kolom.map(esc).join(','), ...isi].join('\n')], { type: 'text/csv;charset=utf-8' })
     const a = document.createElement('a')
     a.href = URL.createObjectURL(blob)
@@ -149,8 +149,11 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal }: {
             <button type="button" aria-pressed={bukti === 'belum'} onClick={() => setBukti('belum')}>
               Belum ada evidence<span className="n">{rows.filter((d) => !adaBukti(d)).length}</span>
             </button>
-            <button type="button" aria-pressed={bukti === 'ada'} onClick={() => setBukti('ada')}>
-              Sudah ada<span className="n">{rows.filter(adaBukti).length}</span>
+            <button type="button" aria-pressed={bukti === 'proses'} onClick={() => setBukti('proses')} title="Ada berkas, tetapi belum Final atau belum ada berkas versi sah">
+              Belum final/sah<span className="n">{rows.filter((d) => tahapSiap(d) === 'proses').length}</span>
+            </button>
+            <button type="button" aria-pressed={bukti === 'siap'} onClick={() => setBukti('siap')} title="Final dan punya berkas versi sah">
+              Siap audit<span className="n">{rows.filter(siapAudit).length}</span>
             </button>
           </div>
           {adaKolomWajib && (
@@ -188,7 +191,7 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal }: {
                         <span className="ks-grup">
                           <span>{d.klausul_kode === 'P' ? 'Persiapan awal' : `Klausul ${d.klausul_kode}`} · {k?.judul}</span>
                           <span className="ks-grup-bar" aria-hidden="true"><i style={{ width: `${pk}%` }} /></span>
-                          <span className="muted tnum" style={{ fontWeight: 400 }}>kesiapan {Math.round(pk)}%</span>
+                          <span className="muted tnum" style={{ fontWeight: 400 }}>siap audit {Math.round(pk)}%</span>
                         </span>
                       </td>
                     </tr>
@@ -214,6 +217,7 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal }: {
                       {(d.jumlah_berkas ?? 0) > 0
                         ? <button type="button" className="btn kecil" disabled={memuat === d.id} onClick={() => bukaPanel(d)} aria-label={`Lihat ${d.jumlah_berkas} berkas evidence ${d.kode}`}>
                             <Eye aria-hidden="true" /> {memuat === d.id ? 'Memuat…' : `${d.jumlah_berkas} berkas`}
+                            {(d.jumlah_sah ?? 0) > 0 ? <BadgeCheck aria-label="ada versi sah" className="txt-good" /> : null}
                           </button>
                         : bisaUnggah
                           ? <button type="button" className="btn kecil utama" disabled={memuat === d.id} onClick={() => bukaPanel(d)} aria-label={`Unggah evidence ${d.kode}`}>

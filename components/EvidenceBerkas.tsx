@@ -1,9 +1,9 @@
 'use client'
 
-import { CircleAlert, CircleCheck, Download, LoaderCircle, RotateCw, Trash2, Upload, X } from 'lucide-react'
+import { CircleAlert, CircleCheck, Download, LoaderCircle, RotateCw, Trash2, Upload, X, BadgeCheck } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useRef, useState, useTransition } from 'react'
-import { catatBerkas, hapusBerkas, siapkanUnggah } from '@/app/actions'
+import { catatBerkas, hapusBerkas, siapkanUnggah, tandaiSah } from '@/app/actions'
 import { IkonBerkas, PenampilBerkas, ukuranBerkas, unduhUrl } from '@/components/PenampilBerkas'
 import { useBoleh } from '@/components/Peran'
 import { waktu } from '@/lib/format'
@@ -101,6 +101,18 @@ export function EvidenceBerkas({ dokumenId, berkas, migrasi = false, onBerubah, 
     antrekan([it])
   }
 
+  const [info, setInfo] = useState<string | null>(null)
+  function sah(b: BerkasTampil) {
+    setGalat(null); setInfo(null)
+    mulai(async () => {
+      const h = await tandaiSah(b.id, !b.sah)
+      if (!h.ok) return setGalat(h.pesan)
+      if ('peringatan' in h && h.peringatan) setInfo(h.peringatan)
+      onBerubah?.()
+      router.refresh()
+    })
+  }
+
   function hapus(b: BerkasTampil) {
     if (!confirm(`Hapus berkas ${b.nama_file}? Berkas akan terhapus permanen dari penyimpanan aplikasi.`)) return
     mulai(async () => {
@@ -126,14 +138,20 @@ export function EvidenceBerkas({ dokumenId, berkas, migrasi = false, onBerubah, 
       {berkas.length > 0 ? (
         <div className="berkas-list">
           {berkas.map((b, i) => (
-            <div key={b.id} className={`berkas-item${baru.has(b.path) ? ' baru' : ''}`}>
+            <div key={b.id} className={`berkas-item${baru.has(b.path) ? ' baru' : ''}${b.sah ? ' sah' : ''}`}>
               <button type="button" className="berkas-buka" onClick={() => setBuka(i)} disabled={!b.url} aria-label={`Lihat ${b.nama_file}`}>
                 <span className="berkas-ikon"><IkonBerkas b={b} /></span>
                 <span className="grow">
-                  <b>{b.nama_file}</b>
+                  <b>{b.nama_file}{b.sah ? <span className="berkas-sah" title={b.sah_oleh ? `Ditandai: ${b.sah_oleh}` : undefined}><BadgeCheck aria-hidden="true" />Versi sah{b.sah_oleh?.startsWith('Otomatis') ? ' · otomatis' : ''}</span> : berkas.some((x) => x.sah) ? <span className="berkas-draf">Draf / pendukung</span> : null}</b>
                   <span className="muted small">{ukuranBerkas(b.ukuran)} · {waktu(b.diunggah_at)}{b.diunggah_oleh && ` · ${b.diunggah_oleh}`}</span>
                 </span>
               </button>
+              {bisaUbah && (
+                <button type="button" className={`btn kecil berkas-tanda${b.sah ? ' aktif' : ''}`} disabled={menunggu} onClick={() => sah(b)}
+                  aria-pressed={!!b.sah} title={b.sah ? 'Lepas penanda versi sah' : 'Tandai sebagai versi sah yang ditunjukkan ke auditor'}>
+                  <BadgeCheck aria-hidden="true" /><span className="teks">{b.sah ? 'Sah' : 'Tandai sah'}</span>
+                </button>
+              )}
               {b.url && <a className="btn btn-ikon kecil" href={unduhUrl(b)!} aria-label={`Unduh ${b.nama_file}`} title="Unduh"><Download aria-hidden="true" /></a>}
               {bisaUbah && <button type="button" className="btn btn-ikon kecil bahaya" disabled={menunggu} onClick={() => hapus(b)} aria-label={`Hapus ${b.nama_file}`} title="Hapus"><Trash2 aria-hidden="true" /></button>}
             </div>
@@ -142,6 +160,10 @@ export function EvidenceBerkas({ dokumenId, berkas, migrasi = false, onBerubah, 
       ) : (
         <p className="muted small" style={{ margin: '0 0 12px' }}>Belum ada berkas evidence yang diunggah.</p>
       )}
+      {berkas.length > 0 && !berkas.some((x) => x.sah) && (
+        <p className="pesan small" style={{ margin: '0 0 12px' }}>Belum ada berkas bertanda <b>versi sah</b>. Tandai PDF yang sudah disahkan/ditandatangani (atau rekaman yang lengkap) agar item dapat berstatus Final dan dihitung siap audit.</p>
+      )}
+      {info && <p className="pesan small" role="status" style={{ margin: '0 0 12px' }}>{info}</p>}
 
       {bisaUbah && (
         <label

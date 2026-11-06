@@ -25,6 +25,8 @@ export type Dokumen = {
   wajib_iso?: boolean
   /** Jumlah berkas evidence di Storage; tidak ada bila migrasi 0010 belum dijalankan */
   jumlah_berkas?: number
+  /** Jumlah berkas bertanda versi sah (migrasi 0031) */
+  jumlah_sah?: number
 }
 
 export type Berkas = {
@@ -36,6 +38,9 @@ export type Berkas = {
   ukuran: number | null
   diunggah_oleh: string | null
   diunggah_at: string
+  /** Versi sah yang ditunjukkan ke auditor (migrasi 0031) */
+  sah?: boolean
+  sah_oleh?: string | null
 }
 
 /** Berkas dengan signed URL (berlaku 1 jam) untuk ditampilkan */

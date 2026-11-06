@@ -97,6 +97,12 @@ export async function simpanPicDokumen(id: string, pic: string): Promise<Hasil> 
 export async function ubahStatusDokumen(id: string, status: StatusDokumen): Promise<Hasil> {
   if (!['belum', 'draft', 'review', 'disetujui', 'final'].includes(status)) return { ok: false, pesan: 'Status tidak dikenal.' }
   const t = await tolak(status === 'disetujui' ? 'dokumen.setujui' : 'dokumen.status'); if (t) return t
+  // Final hanya bila ada berkas versi sah: yang ditunjukkan ke auditor harus dokumen yang sudah sah
+  if (status === 'final' || status === 'disetujui') {
+    const { count, error: e } = await (await db()).from('berkas').select('id', { count: 'exact', head: true }).eq('dokumen_id', id).eq('sah', true)
+    if (e?.code === '42703') return { ok: false, pesan: 'Kolom penanda versi sah belum ada. Jalankan migrasi 0031_berkas_sah.sql di Supabase.' }
+    if (!e && !count) return { ok: false, pesan: 'Tandai dulu minimal satu berkas evidence sebagai "Versi sah" (PDF bertanda tangan/disahkan, atau rekaman lengkap), baru status dapat diubah menjadi Final.' }
+  }
   const { data, error } = await (await db()).from('dokumen_audit').update({ status }).eq('id', id).select('id')
   if (error?.code === '42501' && status === 'final') return { ok: false, pesan: 'Database belum mengizinkan Tim KINRA menetapkan Final. Jalankan migrasi 0019_status_final_tim_kinra.sql.' }
   if (!error && !data?.length) return { ok: false, pesan: 'Dokumen tidak ditemukan atau Anda tidak berhak mengubahnya.' }
@@ -160,7 +166,7 @@ export async function evidenceKlausul(kode: string): Promise<Hasil & { judul?: s
       ok: true, judul: k.data?.judul,
       dokumen: docs.map((x) => ({
         id: x.id, kode: x.kode, nama: x.nama, wajib: !!x.wajib_iso, status: x.status, posisiDraf: x.posisi_draf ?? null,
-        berkas: daftar.filter((f) => f.dokumen_id === x.id).map((f) => ({ ...f, url: url.get(f.path) ?? null })),
+        berkas: daftar.filter((f) => f.dokumen_id === x.id).sort((a, b) => Number(!!b.sah) - Number(!!a.sah)).map((f) => ({ ...f, url: url.get(f.path) ?? null })),
       })),
     }
   } catch (e) {
@@ -183,6 +189,27 @@ export async function catatBerkas(dokumenId: string, b: { path: string; nama_fil
   const { error } = await (await db()).from('berkas').insert({ dokumen_id: dokumenId, path: b.path, nama_file: b.nama_file, mime: b.mime || null, ukuran: b.ukuran, folder: 'Evidence' })
   revalidatePath('/', 'layout')
   return gagal(error)
+}
+
+/** Tandai atau lepas penanda "versi sah" pada satu berkas evidence (migrasi 0031). */
+export async function tandaiSah(id: string, sah: boolean): Promise<Hasil & { peringatan?: string }> {
+  const t = await tolak('dokumen.ubah'); if (t) return t
+  const s = await db()
+  const { data, error } = await s.from('berkas').update({ sah }).eq('id', id).select('dokumen_id')
+  if (error?.code === '42703' || error?.code === 'PGRST204') return { ok: false, pesan: 'Kolom penanda versi sah belum ada. Jalankan migrasi 0031_berkas_sah.sql di Supabase.' }
+  if (error?.code === '42501') return { ok: false, pesan: 'Database belum mengizinkan perubahan penanda. Jalankan migrasi 0031_berkas_sah.sql.' }
+  if (!error && !data?.length) return { ok: false, pesan: 'Berkas tidak ditemukan atau Anda tidak berhak mengubahnya.' }
+  revalidatePath('/', 'layout')
+  if (error) return gagal(error)
+  // Melepas penanda terakhir pada item Final: item tidak lagi dihitung siap audit
+  if (!sah && data?.[0]?.dokumen_id) {
+    const [{ count }, { data: dok }] = await Promise.all([
+      s.from('berkas').select('id', { count: 'exact', head: true }).eq('dokumen_id', data[0].dokumen_id).eq('sah', true),
+      s.from('dokumen_audit').select('status').eq('id', data[0].dokumen_id).maybeSingle(),
+    ])
+    if (!count && (dok?.status === 'final' || dok?.status === 'disetujui')) return { ok: true, peringatan: 'Item ini berstatus Final tetapi tidak lagi punya berkas sah, sehingga tidak dihitung siap audit.' }
+  }
+  return { ok: true }
 }
 
 export async function hapusBerkas(id: string): Promise<Hasil> {

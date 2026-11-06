@@ -21,7 +21,11 @@ export async function ambilDokumen(): Promise<Dokumen[]> {
   const r = await s.from('dokumen_audit').select('*, berkas(count)').order('kode')
   // Relasi berkas belum ada (migrasi 0010 belum dijalankan): baca tanpa jumlah berkas
   if (r.error?.code === 'PGRST200') return cek<Dokumen[]>(await s.from('dokumen_audit').select('*').order('kode'), 'dokumen_audit')
-  return cek(r, 'dokumen_audit').map(({ berkas, ...d }: Dokumen & { berkas?: { count: number }[] }) => ({ ...d, jumlah_berkas: berkas?.[0]?.count ?? 0 }))
+  // Berkas bertanda versi sah per dokumen (migrasi 0031); kolom belum ada = 0
+  const sah = await s.from('berkas').select('dokumen_id').eq('sah', true)
+  const nSah = new Map<string, number>()
+  for (const x of (sah.error ? [] : sah.data ?? []) as { dokumen_id: string | null }[]) if (x.dokumen_id) nSah.set(x.dokumen_id, (nSah.get(x.dokumen_id) ?? 0) + 1)
+  return cek(r, 'dokumen_audit').map(({ berkas, ...d }: Dokumen & { berkas?: { count: number }[] }) => ({ ...d, jumlah_berkas: berkas?.[0]?.count ?? 0, jumlah_sah: nSah.get(d.id) ?? 0 }))
 }
 
 /** Berkas evidence satu dokumen beserta signed URL (bucket privat, berlaku 1 jam). `migrasi` true bila tabel berkas belum ada. */
@@ -31,7 +35,9 @@ export async function ambilBerkas(dokumenId: string): Promise<{ berkas: BerkasTa
   if (r.error?.code === 'PGRST205') return { berkas: [], migrasi: true }
   const daftar = cek(r, 'berkas')
   const { data: tanda } = daftar.length ? await s.storage.from(BUCKET_BUKTI).createSignedUrls(daftar.map((b) => b.path), 3600) : { data: [] }
-  return { berkas: daftar.map((b) => ({ ...b, url: tanda?.find((t) => t.path === b.path)?.signedUrl ?? null })), migrasi: false }
+  // Versi sah lebih dulu agar yang ditunjukkan ke auditor adalah dokumen yang benar
+  const urut = [...daftar].sort((a, b) => Number(!!b.sah) - Number(!!a.sah))
+  return { berkas: urut.map((b) => ({ ...b, url: tanda?.find((t) => t.path === b.path)?.signedUrl ?? null })), migrasi: false }
 }
 
 /** Metadata semua berkas evidence (tanpa signed URL; URL dibuat saat berkas dibuka). */

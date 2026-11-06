@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import { useState, useTransition } from 'react'
 import { ubahStatusDokumen } from '@/app/actions'
 import { Chip } from '@/components/Chip'
-import { PILIHAN_STATUS, STATUS_DOKUMEN } from '@/lib/status'
+import { adaSah, grupStatus, PILIHAN_STATUS, STATUS_DOKUMEN } from '@/lib/status'
 import type { Dokumen, StatusDokumen } from '@/lib/types'
 
 /** Sel "Status" di lembar Kesiapan: Belum ada / Draft / Final. Tersimpan langsung saat dipilih. */
@@ -34,9 +34,14 @@ export function StatusDokumenSel({ d, bisaUbah }: { d: Dokumen; bisaUbah: boolea
     <>
       <select className={`ks-status s-${nilai}`} value={nilai} disabled={sibuk} onChange={(e) => ganti(e.target.value as StatusDokumen)}
         aria-label={`Status ${d.kode}`}>
-        {pilihan.map((s) => <option key={s} value={s}>{STATUS_DOKUMEN[s].label}</option>)}
+        {pilihan.map((s) => {
+          // Final hanya bila ada berkas versi sah (diperiksa juga di server)
+          const kunci = (s === 'final' || s === 'disetujui') && !adaSah(d) && nilai !== s
+          return <option key={s} value={s} disabled={kunci}>{STATUS_DOKUMEN[s].label}{kunci ? ' (tandai berkas sah dulu)' : ''}</option>
+        })}
       </select>
       {galat && <span className="upd txt-bad" role="alert">{galat}</span>}
+      {!galat && grupStatus(nilai) === 'final' && !adaSah(d) && <span className="upd txt-bad">Final tanpa berkas sah: belum dihitung siap audit</span>}
     </>
   )
 }

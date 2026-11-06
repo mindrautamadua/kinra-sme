@@ -61,7 +61,7 @@ export function ModalEvidence({ kode, onTutup }: { kode: string | null; onTutup:
                     <Link href={`/dokumen/${d.id}`} className="tj-ev-nama">{d.nama}</Link>
                     {d.wajib && <Chip kode="info" label="Wajib ISO" />}
                     <Chip kode={(STATUS_DOKUMEN[d.status] ?? STATUS_DOKUMEN.belum).chip} label={`Status: ${(STATUS_DOKUMEN[d.status] ?? STATUS_DOKUMEN.belum).label}`} />
-                    <Chip kode={d.berkas.length ? 'good' : 'crit'} label={d.berkas.length ? `${d.berkas.length} berkas` : 'Belum ada evidence'} />
+                    <Chip kode={d.berkas.length ? (d.berkas.some((y) => y.sah) ? 'good' : 'warn') : 'crit'} label={d.berkas.length ? `${d.berkas.length} berkas${d.berkas.some((y) => y.sah) ? '' : ' · belum ada versi sah'}` : 'Belum ada evidence'} />
                   </div>
                   {d.posisiDraf && <p className="tj-ev-posisi small muted">Draf ada di: <b>{d.posisiDraf}</b></p>}
                   {d.berkas.length > 0 && (
@@ -71,6 +71,7 @@ export function ModalEvidence({ kode, onTutup }: { kode: string | null; onTutup:
                           <button type="button" onClick={() => setLihat({ d, indeks: i })} disabled={!b.url} title={b.url ? 'Buka berkas' : 'Tautan berkas gagal dibuat'}>
                             <span className="berkas-ikon"><IkonBerkas b={b} /></span>
                             <span className="grow potong">{b.nama_file}</span>
+                            {b.sah ? <span className="berkas-sah">Versi sah</span> : d.berkas.some((y) => y.sah) ? <span className="berkas-draf">Draf</span> : null}
                             <span className="muted small tnum">{ukuranBerkas(b.ukuran)} · {tanggal(b.diunggah_at)}</span>
                           </button>
                         </li>

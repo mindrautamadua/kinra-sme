@@ -10,7 +10,7 @@ import { waktu } from '@/lib/format'
 import { INDUK_KLAUSUL, KELOMPOK } from '@/lib/status'
 import type { Berkas, BerkasTampil, KelompokDokumen } from '@/lib/types'
 
-type BerkasRingkas = { id: string; nama: string; mime: string | null; ukuran: number | null; at: string; oleh: string | null }
+type BerkasRingkas = { id: string; nama: string; mime: string | null; ukuran: number | null; at: string; oleh: string | null; sah?: boolean }
 type DokAuditor = {
   id: string; kode: string; nama: string; kelompok: KelompokDokumen; nomor: string | null; pic: string | null; keterangan: string | null
   wajib: boolean; bukti: boolean; masukan: string[]; berkas: BerkasRingkas[]
@@ -140,11 +140,11 @@ export function RuangAuditor({ klausul }: { klausul: KlausulAuditor[] }) {
             {d.berkas.length > 0 ? (
               <div className="berkas-list" style={{ margin: 0 }}>
                 {d.berkas.map((b) => (
-                  <div key={b.id} className="berkas-item">
+                  <div key={b.id} className={`berkas-item${b.sah ? ' sah' : ''}`}>
                     <button type="button" className="berkas-buka" disabled={memuat === b.id} onClick={() => buka(d, b.id)} aria-label={`Lihat ${b.nama}`}>
                       <span className="berkas-ikon"><IkonBerkas b={{ nama_file: b.nama, mime: b.mime } as Berkas} /></span>
                       <span className="grow">
-                        <b>{b.nama}</b>
+                        <b>{b.nama}{b.sah ? <span className="berkas-sah">Versi sah</span> : d.berkas.some((x) => x.sah) ? <span className="berkas-draf">Draf / pendukung</span> : null}</b>
                         <span className="muted small">{memuat === b.id ? 'Membuka…' : `${ukuranBerkas(b.ukuran)} · ${waktu(b.at)}${b.oleh ? ` · ${b.oleh}` : ''}`}</span>
                       </span>
                     </button>

@@ -4,7 +4,7 @@
  */
 import type { DeviasiTerdeteksi } from './deviasi'
 import type { HasilEnpi } from './enpi'
-import { adaBukti } from './status'
+import { adaBukti, siapAudit } from './status'
 import { UNIT_AUDIT } from './tanya-jawab'
 import type { Deviasi, Dokumen, Isu, MeterEnergi, PembacaanMeter, Sasaran, Seu, Temuan } from './types'
 
@@ -44,6 +44,12 @@ export function susunCelah(d: {
   for (const x of d.dokumen) if (x.klausul_kode && x.klausul_kode !== 'P') perKlausul.set(x.klausul_kode, [...(perKlausul.get(x.klausul_kode) ?? []), x])
   for (const [k, ds] of perKlausul) {
     const kosong = ds.filter((x) => !adaBukti(x))
+    const draf = ds.filter((x) => adaBukti(x) && !siapAudit(x))
+    if (!kosong.length && draf.length) c.push({
+      klausul: k, keparahan: draf.some((x) => x.wajib_iso) ? 'Minor' : 'OFI', tahap: 'dokumen',
+      fakta: `Klausul ${k}: ${draf.length} dokumen sudah ada berkas tetapi belum Final atau belum ada versi sah (${draf.slice(0, 3).map((x) => x.nama).join('; ')}).`,
+      tanya: `Dokumen ${draf[0].nama.toLowerCase()} yang Anda tunjukkan: apakah ini versi yang sudah disahkan dan berlaku? Siapa yang mengesahkan, kapan berlaku, dan bagaimana distribusinya dikendalikan?`,
+    })
     if (!kosong.length) continue
     c.push({
       klausul: k, keparahan: kosong.length === ds.length ? 'Mayor' : 'Minor', tahap: 'dokumen',

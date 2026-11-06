@@ -4,7 +4,7 @@
  */
 import { modelLayak, type HasilEnpi } from './enpi'
 import { angka, persen } from './format'
-import { kesiapan } from './status'
+import { kemajuan, kesiapan } from './status'
 import type { Dokumen, Isu, MeterEnergi, PembacaanMeter, Peluang, RencanaAksi, Sasaran, Seu, Temuan, TinjauanEnergi } from './types'
 
 export type StatusTahap = 'selesai' | 'berjalan' | 'menunggu' | 'belum'
@@ -43,8 +43,9 @@ type Masukan = {
 function dariDokumen(dokumen: Dokumen[], awalan: string[]) {
   const ds = dokumen.filter((d) => d.klausul_kode && awalan.some((a) => d.klausul_kode === a || d.klausul_kode!.startsWith(`${a}.`)))
   const p = kesiapan(ds)
-  const status: StatusTahap = !ds.length ? 'belum' : p >= 100 ? 'selesai' : p > 0 ? 'berjalan' : 'belum'
-  return { status, teks: ds.length ? `${persen(p, 0)} dokumen klausul ${awalan.join(', ')} sudah ada evidence (${ds.length} dokumen)` : `Belum ada dokumen klausul ${awalan.join(', ')} di lembar Kesiapan`, p }
+  const b = kemajuan(ds)
+  const status: StatusTahap = !ds.length ? 'belum' : p >= 100 ? 'selesai' : p > 0 || b > 0 ? 'berjalan' : 'belum'
+  return { status, teks: ds.length ? `${persen(p, 0)} dokumen klausul ${awalan.join(', ')} siap audit (Final + berkas sah), evidence ${persen(b, 0)} (${ds.length} dokumen)` : `Belum ada dokumen klausul ${awalan.join(', ')} di lembar Kesiapan`, p }
 }
 
 export function susunPeta(m: Masukan): Tahap[] {

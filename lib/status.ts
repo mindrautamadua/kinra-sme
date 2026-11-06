@@ -35,13 +35,31 @@ export const PILIHAN_STATUS: StatusDokumen[] = ['belum', 'draft', 'final']
 export type GrupStatus = 'belum' | 'draft' | 'final'
 export const grupStatus = (s: StatusDokumen): GrupStatus => (s === 'review' ? 'draft' : s === 'disetujui' ? 'final' : s)
 
-type DokBukti = Pick<Dokumen, 'jumlah_berkas'>
+type DokBukti = Pick<Dokumen, 'jumlah_berkas' | 'status' | 'jumlah_sah'>
 
-/** Nilai satu dokumen dalam skor kesiapan: 1 bila sudah ada evidence, 0 bila belum. */
-export const nilaiKesiapan = (d: DokBukti) => (adaBukti(d) ? 1 : 0)
+/** Status Final (status lama "Disetujui" disetarakan dengan Final). */
+export const sudahFinal = (d: Pick<Dokumen, 'status'>) => grupStatus(d.status) === 'final'
+/** Punya minimal satu berkas bertanda versi sah. */
+export const adaSah = (d: Pick<Dokumen, 'jumlah_sah'>) => (d.jumlah_sah ?? 0) > 0
+/** Siap audit: berstatus Final dan punya berkas versi sah. Inilah yang dihitung skor kesiapan. */
+export const siapAudit = (d: DokBukti) => sudahFinal(d) && adaSah(d)
 
-/** Kesiapan 0–100: persentase dokumen yang sudah punya berkas evidence terunggah. */
+/** Tahap kesiapan satu item, untuk batang tiga warna dan saringan. */
+export type TahapSiap = 'siap' | 'proses' | 'belum'
+export const tahapSiap = (d: DokBukti): TahapSiap => (siapAudit(d) ? 'siap' : adaBukti(d) ? 'proses' : 'belum')
+export const LABEL_TAHAP_SIAP: Record<TahapSiap, string> = { siap: 'Siap audit', proses: 'Ada evidence, belum final/sah', belum: 'Belum ada evidence' }
+
+/** Nilai satu dokumen dalam skor kesiapan: 1 bila siap audit (Final + berkas sah), 0 bila belum. */
+export const nilaiKesiapan = (d: DokBukti) => (siapAudit(d) ? 1 : 0)
+
+/** Kesiapan 0–100: persentase dokumen yang siap audit (Final + berkas versi sah). */
 export function kesiapan(dokumen: DokBukti[]): number {
+  if (!dokumen.length) return 0
+  return (dokumen.filter(siapAudit).length / dokumen.length) * 100
+}
+
+/** Kemajuan evidence 0–100: persentase dokumen yang sudah punya berkas apa pun (termasuk draf). */
+export function kemajuan(dokumen: Pick<Dokumen, 'jumlah_berkas'>[]): number {
   if (!dokumen.length) return 0
   return (dokumen.filter(adaBukti).length / dokumen.length) * 100
 }
@@ -130,7 +148,11 @@ export function tonggakDari(kegiatan: Kegiatan[]): Tonggak[] {
 export function kesiapanPerKlausul(dokumen: Dokumen[], klausul: Klausul[], kini: string) {
   return klausul.map((k) => {
     const ds = dokumen.filter((d) => d.klausul_kode === k.kode)
-    return { ...k, n: ds.length, p: kesiapan(ds), lewat: ds.filter((d) => terlambat(d, kini)).length }
+    return {
+      ...k, n: ds.length, p: kesiapan(ds), lewat: ds.filter((d) => terlambat(d, kini)).length,
+      /** kemajuan evidence & jumlah per tahap untuk batang tiga warna */
+      bukti: kemajuan(ds), nSiap: ds.filter(siapAudit).length, nProses: ds.filter((d) => tahapSiap(d) === 'proses').length,
+    }
   }).filter((k) => k.n > 0)
 }
 

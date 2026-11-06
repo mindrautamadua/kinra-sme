@@ -19,6 +19,8 @@ Jalankan di SQL Editor Supabase sesuai urutan. Semua migrasi aman dijalankan ula
 - [x] `0028_deviasi.sql`: register deviasi signifikan kinerja energi (klausul 9.1)
 - [x] `0029_simulasi_audit.sql`: riwayat simulasi audit bersama KIRA
 - [x] `0030_parameter_energi.sql`: tarif listrik dan faktor emisi untuk tampilan rupiah dan CO₂
+- [ ] `0031_berkas_sah.sql`: penanda versi sah per berkas evidence; skor kesiapan menjadi "siap audit" (Final + berkas sah)
+- [ ] `0032_isi_sah_final.sql`: tandai otomatis berkas versi sah untuk item yang sudah Final (PDF bila ada, selain itu semua berkas)
 - [ ] **Cek urutan migrasi.** Bila EnPI-03 muncul di kelompok "Lingkup SMEn KINRA" di halaman Kinerja, jalankan ulang `0026_lingkup_kinra.sql`.
 
 Migrasi 0018–0030 sudah dijalankan di Supabase (6 November 2026). File 0027–0030 dan perubahan aplikasi terkait belum di-commit ke repositori.
@@ -107,6 +109,8 @@ Titik di bawah adalah rancangan umum. Cocokkan dulu dengan diagram satu garis (s
 - [ ] Tuangkan kedua tabel di atas ke dokumen Rencana Pengumpulan Data Energi (klausul 6.6), lengkap dengan PIC, tanggal target per tahap, dan frekuensi pembacaan. Auditor menerima rencana yang jelas walaupun meter belum semua terpasang.
 
 ## 6. Keputusan Tim SMEn dan konsultan
+
+- [ ] **Tandai berkas versi sah dan sahkan dokumen.** Skor kesiapan kini dihitung dari dokumen berstatus Final yang punya berkas bertanda versi sah, sehingga angkanya akan turun dibanding skor lama (yang hanya menghitung ada berkas). Untuk setiap item: tandai PDF yang sudah disahkan/ditandatangani (atau rekaman yang lengkap) sebagai versi sah, lalu ubah status menjadi Final. Prioritaskan dokumen wajib ISO sebelum TÜV Stage 1 (20 November 2026). Komunikasikan ke tim bahwa penurunan angka adalah perubahan cara hitung, bukan kemunduran.
 
 - [ ] **Nilai ulang skor risiko.** Seluruh 18 risiko di register dinilai sama (dampak 3 × kemungkinan 2 = 6, rendah). Penilaian seragam mudah dipertanyakan auditor (klausul 6.1). Nilai ulang bersama pemilik risiko, termasuk risiko baru menjelang audit (SEU belum ditetapkan, EnPI lingkup KINRA belum punya data).
 - [ ] **Nilai peluang peningkatan.** Isi skor energi, skor ROI, dan estimasi kWh untuk P-01 s.d. P-10 agar muncul di matriks prioritas; mulai dari yang terkait SEU (P-03 pompa, P-04 submeter).
