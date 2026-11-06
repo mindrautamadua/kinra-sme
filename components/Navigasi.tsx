@@ -1,12 +1,13 @@
 'use client'
 
-import { Activity, BookA, Building2, BookOpen, MessagesSquare, CalendarRange, ClipboardCheck, FileText, Gauge, LayoutDashboard, Network, ScanSearch, SearchCheck, ShieldAlert, Target, Users } from 'lucide-react'
+import { Activity, BookA, Building2, Crosshair, Map as IkonPeta, BookOpen, MessagesSquare, CalendarRange, ClipboardCheck, FileText, Gauge, LayoutDashboard, Network, ScanSearch, SearchCheck, ShieldAlert, Target, Users } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { FITUR_FORMULIR } from '@/lib/fitur'
 
 export const MENU = [
   { href: '/', label: 'Ringkasan', ikon: LayoutDashboard },
+  { href: '/peta', label: 'Peta SMEn', ikon: IkonPeta },
   { href: '/kesiapan', label: 'Kesiapan Audit', ikon: ClipboardCheck },
   { href: '/dependensi', label: 'Peta Evidence', ikon: Network },
   { href: '/auditor', label: 'Ruang Auditor', ikon: ScanSearch },
@@ -14,6 +15,7 @@ export const MENU = [
   ...(FITUR_FORMULIR ? [{ href: '/formulir', label: 'Formulir', ikon: FileText }] : []),
   { href: '/energi', label: 'Data Energi', ikon: Gauge },
   { href: '/aset', label: 'Aset & Meter', ikon: Building2 },
+  { href: '/tinjauan', label: 'Tinjauan Energi & SEU', ikon: Crosshair },
   { href: '/kinerja', label: 'Kinerja Energi', ikon: Activity },
   { href: '/sasaran', label: 'Sasaran & Aksi', ikon: Target },
   { href: '/register', label: 'Isu & Peluang', ikon: ShieldAlert },

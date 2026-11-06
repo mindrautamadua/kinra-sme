@@ -1,4 +1,4 @@
-/** Matriks hak akses. Sinkron dengan policy RLS di supabase/migrations/0006_login_peran.sql, 0007, 0009, 0011, 0014, 0019, 0020, 0021, dan 0022. */
+/** Matriks hak akses. Sinkron dengan policy RLS di supabase/migrations/0006_login_peran.sql, 0007, 0009, 0011, 0014, 0019, 0020, 0021, 0022, dan 0027. */
 export type Peran = 'admin' | 'konsultan' | 'tim_kinra' | 'pembaca'
 
 export const LABEL_PERAN: Record<Peran, string> = { admin: 'Admin', konsultan: 'Konsultan', tim_kinra: 'Tim KINRA', pembaca: 'Pembaca' }
@@ -18,6 +18,9 @@ export const AKSES = {
   'energi.ubah': ['admin', 'tim_kinra'],        // termasuk data bulanan variabel relevan
   'aset.ubah': SEMUA,                           // aset, meter & bacaan stand (migrasi 0022)
   'aset.hapus': ['admin', 'tim_kinra'],
+  'seu.ubah': SEMUA,                            // usulkan kandidat SEU & isi detail (migrasi 0027)
+  'seu.tetapkan': ['admin', 'konsultan'],       // tetapkan/cabut SEU, setujui tinjauan energi
+  'seu.hapus': ['admin'],
   'enpi.tambah': ['admin', 'konsultan'],        // definisi variabel relevan & EnPI baru
   'enpi.ubah': SEMUA,                           // ubah variabel relevan, EnPI & baseline
   'enpi.hapus': ['admin'],
@@ -45,6 +48,7 @@ export const LABEL_AKSI: Record<Aksi, string> = {
   'dokumen.tambah': 'Tambah dokumen', 'dokumen.wajib': 'Tandai dokumen wajib ISO', 'dokumen.ubah': 'Ubah dokumen & evidence', 'dokumen.status': 'Ubah status dokumen (Draft/Final)', 'dokumen.setujui': 'Setujui dokumen (Disetujui)',
   'dokumen.hapus': 'Hapus dokumen', 'energi.ubah': 'Input data energi & variabel relevan',
   'aset.ubah': 'Ubah aset, meter & bacaan stand', 'aset.hapus': 'Hapus aset & meter',
+  'seu.ubah': 'Usulkan & isi SEU', 'seu.tetapkan': 'Tetapkan SEU & setujui tinjauan energi', 'seu.hapus': 'Hapus SEU',
   'enpi.tambah': 'Tambah EnPI & variabel relevan', 'enpi.ubah': 'Ubah EnPI, baseline & variabel', 'enpi.hapus': 'Hapus EnPI & variabel',
   'sasaran.tambah': 'Tambah sasaran energi', 'sasaran.ubah': 'Ubah sasaran energi', 'aksi.ubah': 'Isi rencana aksi', 'sasaran.hapus': 'Hapus sasaran & aksi', 'kegiatan.ubah': 'Tandai kegiatan timeline',
   'register.ubah': 'Isi isu & peluang', 'register.hapus': 'Hapus isu', 'temuan.tambah': 'Catat temuan',

@@ -326,6 +326,87 @@ export async function simpanBacaan(meter_kode: string, tahun: number, bulan: num
   return gagalAset(error)
 }
 
+// ---------- Tinjauan energi & register SEU (migrasi 0027) ----------
+
+function gagalSeu(e: { message: string; code?: string } | null): Hasil {
+  if (e?.code === 'PGRST205' || e?.code === '42P01') return { ok: false, pesan: 'Tabel SEU belum ada. Jalankan migrasi 0027_tinjauan_energi_seu.sql di Supabase.' }
+  if (e?.code === '23505') return { ok: false, pesan: 'Kode SEU sudah dipakai.' }
+  return gagal(e)
+}
+
+function revalidasiSeu() {
+  revalidatePath('/tinjauan')
+  revalidatePath('/peta')
+  revalidatePath('/')
+}
+
+export async function simpanSeu(kodeLama: string | null, f: FormData): Promise<Hasil> {
+  const t = await tolak('seu.ubah'); if (t) return t
+  const status = teks(f, 'status') ?? 'Kandidat'
+  const data = {
+    kode: teks(f, 'kode')?.toUpperCase() ?? null,
+    nama: teks(f, 'nama'),
+    deskripsi: teks(f, 'deskripsi'),
+    aset_kode: daftar(f, 'aset_kode'),
+    meter_kode: daftar(f, 'meter_kode'),
+    sumber_kode: daftar(f, 'sumber_kode'),
+    kriteria: daftar(f, 'kriteria'),
+    status,
+    variabel_kode: daftar(f, 'variabel_kode'),
+    enpi_kode: teks(f, 'enpi_kode'),
+    pic: teks(f, 'pic'),
+    personel: teks(f, 'personel'),
+    alasan: teks(f, 'alasan'),
+    tinjau_berikutnya: teks(f, 'tinjau_berikutnya'),
+    urutan: bulat(f, 'urutan') ?? 0,
+  }
+  if (!data.kode || !data.nama) return { ok: false, pesan: 'Kode dan nama SEU wajib diisi.' }
+  if (!/^[A-Z0-9-]+$/.test(data.kode)) return { ok: false, pesan: 'Kode hanya boleh huruf, angka, dan tanda hubung (mis. SEU-03).' }
+  if (!data.aset_kode.length && !data.sumber_kode.length) return { ok: false, pesan: 'Pilih minimal satu aset atau sumber energi yang membentuk SEU ini.' }
+  if (!data.kriteria.length) return { ok: false, pesan: 'Pilih minimal satu kriteria penetapan SEU.' }
+  if (status === 'Ditetapkan' && !data.alasan) return { ok: false, pesan: 'Tuliskan alasan penetapan SEU; auditor akan menanyakannya.' }
+  const s = await db()
+  // Perubahan status hanya untuk admin/konsultan (trigger di database tetap menjadi penjaga utama)
+  const { data: lama } = kodeLama ? await s.from('seu').select('status').eq('kode', kodeLama).maybeSingle() : { data: null }
+  if ((lama ? lama.status !== status : status !== 'Kandidat')) { const t2 = await tolak('seu.tetapkan'); if (t2) return { ok: false, pesan: 'Hanya admin atau konsultan yang dapat menetapkan atau mencabut SEU. Simpan sebagai Kandidat.' } }
+  const { error } = kodeLama
+    ? await s.from('seu').update(data).eq('kode', kodeLama)
+    : await s.from('seu').insert(data)
+  revalidasiSeu()
+  return gagalSeu(error)
+}
+
+export async function hapusSeu(kode: string): Promise<Hasil> {
+  const t = await tolak('seu.hapus'); if (t) return t
+  const { data, error } = await (await db()).from('seu').delete().eq('kode', kode).select('kode')
+  revalidasiSeu()
+  if (!error && !data?.length) return { ok: false, pesan: 'SEU tidak terhapus. Peran Anda mungkin belum diizinkan oleh database.' }
+  return gagalSeu(error)
+}
+
+export async function simpanTinjauan(id: number | null, f: FormData): Promise<Hasil> {
+  const t = await tolak('seu.ubah'); if (t) return t
+  const status = teks(f, 'status') === 'Disetujui' ? 'Disetujui' : 'Draft'
+  const data = {
+    periode_mulai: teks(f, 'periode_mulai'),
+    periode_selesai: teks(f, 'periode_selesai'),
+    ambang_persen: bil(f, 'ambang_persen') ?? 10,
+    ambang_kumulatif: bil(f, 'ambang_kumulatif') ?? 80,
+    ringkasan: teks(f, 'ringkasan'),
+    status,
+  }
+  if (!data.periode_mulai || !data.periode_selesai) return { ok: false, pesan: 'Periode tinjauan wajib diisi.' }
+  if (data.periode_selesai < data.periode_mulai) return { ok: false, pesan: 'Akhir periode harus sesudah awal periode.' }
+  const s = await db()
+  const { data: lama } = id ? await s.from('tinjauan_energi').select('status').eq('id', id).maybeSingle() : { data: null }
+  if ((lama ? lama.status !== status : status !== 'Draft')) { const t2 = await tolak('seu.tetapkan'); if (t2) return { ok: false, pesan: 'Hanya admin atau konsultan yang dapat menyetujui tinjauan energi.' } }
+  const { error } = id
+    ? await s.from('tinjauan_energi').update(data).eq('id', id)
+    : await s.from('tinjauan_energi').insert(data)
+  revalidasiSeu()
+  return gagalSeu(error)
+}
+
 // ---------- Kinerja energi: variabel relevan & EnPI ----------
 
 const bulanKeTanggal = (v: string | null) => (v && /^\d{4}-\d{2}$/.test(v) ? `${v}-01` : v)

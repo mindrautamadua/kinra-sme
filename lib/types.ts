@@ -242,3 +242,42 @@ export type PembacaanMeter = {
   diubah_oleh: string | null
   diubah_at: string
 }
+
+export type StatusSeu = 'Kandidat' | 'Ditetapkan' | 'Dicabut'
+export type KriteriaSeu = 'porsi' | 'potensi' | 'regulasi'
+
+/** Register penggunaan energi signifikan (migrasi 0027). */
+export type Seu = {
+  kode: string
+  nama: string
+  deskripsi: string | null
+  aset_kode: string[]
+  meter_kode: string[]
+  sumber_kode: string[]
+  kriteria: KriteriaSeu[]
+  status: StatusSeu
+  variabel_kode: string[]
+  enpi_kode: string | null
+  pic: string | null
+  personel: string | null
+  alasan: string | null
+  ditetapkan_oleh: string | null
+  ditetapkan_at: string | null
+  tinjau_berikutnya: string | null
+  urutan: number
+  diubah_at: string
+}
+
+/** Catatan tinjauan energi berkala beserta kriteria SEU (migrasi 0027). */
+export type TinjauanEnergi = {
+  id: number
+  periode_mulai: string
+  periode_selesai: string
+  ambang_persen: number
+  ambang_kumulatif: number
+  ringkasan: string | null
+  status: 'Draft' | 'Disetujui'
+  disetujui_oleh: string | null
+  disetujui_at: string | null
+  diubah_at: string
+}

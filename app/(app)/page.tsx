@@ -4,7 +4,8 @@ import { AngkaNaik } from '@/components/AngkaNaik'
 import { Grafik } from '@/components/charts/Grafik'
 import { Chip } from '@/components/Chip'
 import { SectionHead } from '@/components/SectionHead'
-import { ambilDokumen, ambilJejakBukti, ambilKegiatan, ambilKinerja, ambilKlausul, ambilTemuan, rekapEnergi } from '@/lib/data'
+import { ambilDokumen, ambilIsu, ambilJejakBukti, ambilKegiatan, ambilKinerja, ambilKlausul, ambilPeluang, ambilSasaran, ambilSeu, ambilTemuan, rekapEnergi } from '@/lib/data'
+import { LABEL_STATUS, susunPeta } from '@/lib/peta-smen'
 import { LABEL_METODE, pilihEnpiUtama, ringkas } from '@/lib/enpi'
 import { angka, BULAN, delta, hariIni, persen, selisihHari, tanggal, waktu } from '@/lib/format'
 import { adaBukti, hariWib, kesiapan, kesiapanPerKlausul, KELOMPOK, terlambat, tonggakDari, trenKesiapan } from '@/lib/status'
@@ -12,9 +13,12 @@ import { adaBukti, hariWib, kesiapan, kesiapanPerKlausul, KELOMPOK, terlambat, t
 export const dynamic = 'force-dynamic'
 
 export default async function Ringkasan() {
-  const [dokumen, klausul, temuan, kegiatan, kinerja, jejak] = await Promise.all([ambilDokumen(), ambilKlausul(), ambilTemuan(), ambilKegiatan(), ambilKinerja(), ambilJejakBukti()])
+  const [dokumen, klausul, temuan, kegiatan, kinerja, jejak, isu, peluang, { seu, tinjauan }, { sasaran, aksi }] = await Promise.all([
+    ambilDokumen(), ambilKlausul(), ambilTemuan(), ambilKegiatan(), ambilKinerja(), ambilJejakBukti(), ambilIsu(), ambilPeluang(), ambilSeu(), ambilSasaran(),
+  ])
   const energi = { sumber: kinerja.sumber, data: kinerja.energi }
   const kini = hariIni()
+  const peta = susunPeta({ dokumen, isu, peluang, seu, tinjauan, hasil: kinerja.hasil, sasaran, aksi, temuan, meter: kinerja.meter, bacaan: kinerja.bacaan, kini })
 
   const skor = kesiapan(dokumen)
   const siap = dokumen.filter(adaBukti).length
@@ -109,6 +113,22 @@ export default async function Ringkasan() {
 
   return (
     <>
+      <nav className="card pt-strip" aria-label="Peta SMEn: status 12 langkah">
+        <div className="row">
+          <div><span className="eyebrow">Peta SMEn · siklus PDCA</span><h3>{peta.filter((t) => t.status === 'selesai').length} dari 12 langkah sudah berjalan penuh</h3></div>
+          <Link className="btn kecil" href="/peta">Buka peta</Link>
+        </div>
+        <ol>
+          {peta.map((t) => (
+            <li key={t.no}>
+              <Link href={`/peta?tahap=${t.no}`} className={`pt-titik s-${t.status}`} title={`${t.no}. ${t.nama}: ${LABEL_STATUS[t.status]}`}>
+                <b>{t.no}</b><span>{t.nama}</span>
+              </Link>
+            </li>
+          ))}
+        </ol>
+      </nav>
+
       <section>
         <div className="ks-kepala">
           <SectionHead hero eyebrow="Kesiapan audit ISO 50001:2018" judul={<>Kesiapan dokumen <span className="ks-sorot">{persen(skor)}</span>: {siap} dari {dokumen.length} dokumen siap diaudit</>}>

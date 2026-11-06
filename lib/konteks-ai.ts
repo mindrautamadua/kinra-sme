@@ -1,15 +1,16 @@
 import 'server-only'
-import { ambilDokumen, ambilIsu, ambilKegiatan, ambilKinerja, ambilKlausul, ambilPeluang, ambilSasaran, ambilTemuan, rekapEnergi } from './data'
+import { ambilAsetMeter, ambilDokumen, ambilIsu, ambilSeu, ambilKegiatan, ambilKinerja, ambilKlausul, ambilPeluang, ambilSasaran, ambilTemuan, rekapEnergi } from './data'
 import { LABEL_METODE, ringkas } from './enpi'
 import { angka, hariIni, persen, tanggal } from './format'
+import { penggunaEnergi } from './tinjauan'
 import { adaBukti, kesiapan, terlambat, tingkatRisiko, tonggakDari } from './status'
 import { LANGKAH_TINDAK_LANJUT, SUMBER_TANYA_JAWAB, UNIT_AUDIT, URUTAN_PEMERIKSAAN } from './tanya-jawab'
 
 /** Ringkasan data dashboard dalam teks ringkas untuk instruksi sistem chatbot. Dibaca dengan sesi pengguna (RLS berlaku). */
 /** `tanyaJawab`: sertakan materi tanya jawab audit (~9 ribu token). Chat teks hanya menyertakannya bila pertanyaan relevan. */
 export async function konteksDashboard({ tanyaJawab = true }: { tanyaJawab?: boolean } = {}): Promise<string> {
-  const [dokumen, klausul, temuan, kegiatan, isu, peluang, { sasaran, aksi }, kinerja] = await Promise.all([
-    ambilDokumen(), ambilKlausul(), ambilTemuan(), ambilKegiatan(), ambilIsu(), ambilPeluang(), ambilSasaran(), ambilKinerja(),
+  const [dokumen, klausul, temuan, kegiatan, isu, peluang, { sasaran, aksi }, kinerja, { seu, tinjauan }, { aset }] = await Promise.all([
+    ambilDokumen(), ambilKlausul(), ambilTemuan(), ambilKegiatan(), ambilIsu(), ambilPeluang(), ambilSasaran(), ambilKinerja(), ambilSeu(), ambilAsetMeter(),
   ])
   const kini = hariIni()
   const b: string[] = [`Tanggal hari ini: ${tanggal(kini, 'panjang')}.`]
@@ -36,6 +37,12 @@ export async function konteksDashboard({ tanyaJawab = true }: { tanyaJawab?: boo
     b.push(`- ${t} (s.d. bulan ${bln}): total ${angka(tj((d) => d.tahun === t), 3)} TJ; ${rinci}`)
   }
   b.push(`Sumber energi: ${kinerja.sumber.map((s) => `${s.nama} (${s.satuan}, ${s.terbarukan ? 'terbarukan' : 'tak terbarukan'})`).join('; ')}.`)
+
+  const pareto = penggunaEnergi({ aset, meter: kinerja.meter, bacaan: kinerja.bacaan, sumber: kinerja.sumber, energi: kinerja.energi, seu,
+    ambangPersen: tinjauan?.ambang_persen ?? 10, ambangKumulatif: tinjauan?.ambang_kumulatif ?? 80 })
+  b.push(`\n## Tinjauan energi & SEU (lingkup KINRA, tanpa tenant)\nEnergi KINRA ±${angka(pareto.total, 0)} kWh setara/bulan; ${persen(pareto.porsiMeter, 0)} terukur meter, sisanya perkiraan inventaris/data BBM. ${pareto.tanpaData.length} aset belum punya data energi. Tinjauan ${tinjauan ? `${tanggal(tinjauan.periode_mulai)}–${tanggal(tinjauan.periode_selesai)} status ${tinjauan.status}` : 'belum dicatat'}.`)
+  for (const p of pareto.daftar) b.push(`- ${p.nama}: ${persen(p.porsi)} (${p.dasar})${p.seu ? ` → ${p.seu.kode} ${p.seu.status}` : p.kandidat ? ' → kandidat SEU, belum di register' : ''}`)
+  for (const x of seu) b.push(`- ${x.kode} ${x.nama} [${x.status}] EnPI ${x.enpi_kode ?? '–'}, PIC ${x.pic ?? '–'}, personel ${x.personel ?? '–'}`)
 
   b.push('\n## EnPI')
   b.push('Batas lingkup: data PLN di energi bulanan adalah total kawasan TERMASUK listrik tenant (di luar lingkup SMEn). Kinerja SMEn KINRA hanya diklaim dari EnPI lingkup KINRA (bacaan meter aset KINRA, BBM kendaraan). EnPI lingkup kawasan hanya konteks.')

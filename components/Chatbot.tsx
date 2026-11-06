@@ -149,6 +149,20 @@ export function Chatbot() {
     }
   }
 
+  // Halaman lain dapat membuka KIRA dengan pertanyaan siap kirim: window.dispatchEvent(new CustomEvent('kira:tanya', { detail: '...' }))
+  const kirimTerbaru = useRef(kirim)
+  kirimTerbaru.current = kirim
+  useEffect(() => {
+    const dengar = (e: Event) => {
+      const q = (e as CustomEvent<string>).detail
+      if (typeof q !== 'string' || !q.trim()) return
+      setBuka(true)
+      void kirimTerbaru.current(q)
+    }
+    window.addEventListener('kira:tanya', dengar)
+    return () => window.removeEventListener('kira:tanya', dengar)
+  }, [])
+
   function kirimForm(e: FormEvent) {
     e.preventDefault()
     void kirim(input)

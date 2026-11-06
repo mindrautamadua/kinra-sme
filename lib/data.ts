@@ -2,7 +2,7 @@ import 'server-only'
 import { hitungEnpi } from './enpi'
 import { BUCKET_BUKTI } from './status'
 import { db } from './supabase'
-import type { Aset, MeterEnergi, PembacaanMeter, Berkas, BerkasTampil, Dokumen, EnergiBulanan, Enpi, Isu, JejakBukti, Kegiatan, Klausul, Peluang, RencanaAksi, Sasaran, SumberEnergi, Temuan, VariabelBulanan, VariabelRelevan } from './types'
+import type { Seu, TinjauanEnergi, Aset, MeterEnergi, PembacaanMeter, Berkas, BerkasTampil, Dokumen, EnergiBulanan, Enpi, Isu, JejakBukti, Kegiatan, Klausul, Peluang, RencanaAksi, Sasaran, SumberEnergi, Temuan, VariabelBulanan, VariabelRelevan } from './types'
 
 /** Tabel belum ada (PGRST205) dianggap kosong; layout menampilkan panduan migrasi. Galat lain dilempar. */
 function cek<T>(r: { data: T | null; error: { message: string; code?: string } | null }, tabel: string): T {
@@ -74,6 +74,21 @@ export async function ambilAsetMeter(): Promise<{ aset: Aset[]; meter: MeterEner
     aset: cek<Aset[]>(a, 'aset').map((r) => ({ ...r, luas_m2: angkaAtauNull(r.luas_m2), luas_ac_m2: angkaAtauNull(r.luas_ac_m2), kwh_bulan: angkaAtauNull(r.kwh_bulan), biaya_bulan: angkaAtauNull(r.biaya_bulan) })),
     meter: cek<MeterEnergi[]>(m, 'meter_energi').map((r) => ({ ...r, faktor_kali: Number(r.faktor_kali) })),
     bacaan: cek<PembacaanMeter[]>(p, 'pembacaan_meter').map((r) => ({ ...r, stand_awal: angkaAtauNull(r.stand_awal), stand_akhir: angkaAtauNull(r.stand_akhir) })),
+  }
+}
+
+/** Register SEU dan tinjauan energi terbaru (migrasi 0027). `siap` false bila tabel belum ada. */
+export async function ambilSeu(): Promise<{ seu: Seu[]; tinjauan: TinjauanEnergi | null; siap: boolean }> {
+  const s = await db()
+  const [a, b] = await Promise.all([
+    s.from('seu').select('*').order('urutan').order('kode'),
+    s.from('tinjauan_energi').select('*').order('periode_mulai', { ascending: false }).limit(1),
+  ])
+  const t = cek<TinjauanEnergi[]>(b, 'tinjauan_energi')[0] ?? null
+  return {
+    siap: a.error?.code !== 'PGRST205',
+    seu: cek<Seu[]>(a, 'seu'),
+    tinjauan: t && { ...t, ambang_persen: Number(t.ambang_persen), ambang_kumulatif: Number(t.ambang_kumulatif) },
   }
 }
 
