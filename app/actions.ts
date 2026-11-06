@@ -366,19 +366,30 @@ export async function hapusVariabel(kode: string): Promise<Hasil> {
   return gagal(error)
 }
 
+/** Kolom enpi.utama sudah ada (migrasi 0025)? */
+async function adaKolomUtama(s: Awaited<ReturnType<typeof db>>) {
+  const { error } = await s.from('enpi').select('utama').limit(1)
+  return !error
+}
+
 export async function simpanEnpi(kodeLama: string | null, f: FormData): Promise<Hasil> {
   const t = await tolak(kodeLama ? 'enpi.ubah' : 'enpi.tambah'); if (t) return t
   const metode = teks(f, 'metode')
   const data = {
     kode: teks(f, 'kode')?.toUpperCase(), nama: teks(f, 'nama'), metode,
     sumber_kode: daftar(f, 'sumber_kode'),
+    meter_kode: daftar(f, 'meter_kode'),
+    lingkup: teks(f, 'lingkup') === 'kawasan' ? 'kawasan' : 'kinra',
     variabel_kode: metode === 'absolut' ? [] : daftar(f, 'variabel_kode'),
     baseline_mulai: bulanKeTanggal(teks(f, 'baseline_mulai')), baseline_selesai: bulanKeTanggal(teks(f, 'baseline_selesai')),
     alasan_baseline: teks(f, 'alasan_baseline'), catatan: teks(f, 'catatan'),
-    aktif: f.get('aktif') === 'on', urutan: bil(f, 'urutan') ?? 0, diubah_at: new Date().toISOString(),
+    aktif: f.get('aktif') === 'on', utama: f.get('utama') === 'on', urutan: bil(f, 'urutan') ?? 0, diubah_at: new Date().toISOString(),
   }
   if (!data.kode || !data.nama || !data.metode || !data.baseline_mulai || !data.baseline_selesai) return { ok: false, pesan: 'Kode, nama, metode, dan periode baseline wajib diisi.' }
   if (!data.sumber_kode.length) return { ok: false, pesan: 'Pilih minimal satu sumber energi dalam ruang lingkup.' }
+  if (teks(f, 'dasar') === 'meter' && !data.meter_kode.length) return { ok: false, pesan: 'Pilih minimal satu meter dalam ruang lingkup EnPI.' }
+  if (teks(f, 'dasar') !== 'meter') data.meter_kode = []
+  if (data.utama && data.lingkup !== 'kinra') return { ok: false, pesan: 'EnPI utama harus berlingkup KINRA. EnPI kawasan mencakup listrik tenant.' }
   if (data.baseline_selesai < data.baseline_mulai) return { ok: false, pesan: 'Akhir baseline harus sesudah awal baseline.' }
   if (metode === 'rasio' && data.variabel_kode.length !== 1) return { ok: false, pesan: 'Metode rasio memakai tepat satu variabel relevan.' }
   if (metode === 'regresi' && !data.variabel_kode.length) return { ok: false, pesan: 'Metode regresi butuh minimal satu variabel relevan.' }
@@ -388,10 +399,21 @@ export async function simpanEnpi(kodeLama: string | null, f: FormData): Promise<
     const berubah = lama && (lama.baseline_mulai !== data.baseline_mulai || lama.baseline_selesai !== data.baseline_selesai || lama.metode !== data.metode)
     if (berubah && (data.alasan_baseline ?? '') === (lama.alasan_baseline ?? '')) return { ok: false, pesan: 'Periode atau metode baseline berubah: perbarui alasan baseline untuk mencatat penyesuaian (klausul 6.5).' }
   }
+  if (data.utama && !data.aktif) return { ok: false, pesan: 'EnPI utama harus aktif dipantau.' }
+  const s = await db()
+  // Hanya satu EnPI utama: lepaskan penanda dari EnPI lain lebih dulu (indeks unik di migrasi 0025)
+  if (data.utama) {
+    const { error: e } = await s.from('enpi').update({ utama: false }).eq('utama', true).neq('kode', kodeLama ?? data.kode)
+    if (e) return { ok: false, pesan: e.code === 'PGRST204' || e.code === '42703' ? 'Kolom EnPI utama belum ada. Jalankan migrasi 0025_enpi_utama.sql di Supabase.' : e.message }
+  }
+  // Sebelum migrasi 0025, kolom utama belum ada: simpan tanpa kolom itu bila tidak dicentang
+  const isi: Record<string, unknown> = { ...data }
+  if (!data.utama) delete isi.utama
   const { error } = kodeLama
-    ? await (await db()).from('enpi').update(data).eq('kode', kodeLama)
-    : await (await db()).from('enpi').insert(data)
+    ? await s.from('enpi').update(data.utama ? isi : { ...isi, ...(await adaKolomUtama(s) ? { utama: false } : {}) }).eq('kode', kodeLama)
+    : await s.from('enpi').insert(isi)
   revalidasiKinerja()
+  if (error?.code === 'PGRST204') return { ok: false, pesan: 'Kolom EnPI baru belum ada. Jalankan migrasi 0025_enpi_utama.sql dan 0026_lingkup_kinra.sql di Supabase.' }
   return gagal(error && { message: /duplicate key/.test(error.message) ? 'Kode EnPI sudah dipakai.' : error.message })
 }
 

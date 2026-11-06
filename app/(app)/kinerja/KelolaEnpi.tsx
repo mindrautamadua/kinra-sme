@@ -7,11 +7,11 @@ import { hapusEnpi, hapusVariabel, simpanEnpi, simpanVariabel } from '@/app/acti
 import { Chip } from '@/components/Chip'
 import { useBoleh } from '@/components/Peran'
 import { LABEL_METODE } from '@/lib/enpi'
-import type { Enpi, MetodeEnpi, SumberEnergi, VariabelRelevan } from '@/lib/types'
+import type { Enpi, LingkupEnpi, MeterEnergi, MetodeEnpi, SumberEnergi, VariabelRelevan } from '@/lib/types'
 
 const bulanIso = (d: string) => d.slice(0, 7)
 
-export function DaftarEnpi({ enpi, sumber, variabel }: { enpi: Enpi[]; sumber: SumberEnergi[]; variabel: VariabelRelevan[] }) {
+export function DaftarEnpi({ enpi, sumber, variabel, meter }: { enpi: Enpi[]; sumber: SumberEnergi[]; variabel: VariabelRelevan[]; meter: MeterEnergi[] }) {
   const router = useRouter()
   const bisa = useBoleh()
   const dlg = useRef<HTMLDialogElement>(null)
@@ -37,10 +37,11 @@ export function DaftarEnpi({ enpi, sumber, variabel }: { enpi: Enpi[]; sumber: S
               <tr key={e.kode}>
                 <td className="kode">{e.kode}</td>
                 <td style={{ maxWidth: 280 }}><b>{e.nama}</b>{e.alasan_baseline && <span className="upd">{e.alasan_baseline}</span>}</td>
-                <td className="small">{e.sumber_kode.map((k) => k.toUpperCase()).join(' + ')}</td>
+                <td className="small">{e.meter_kode?.length ? `${e.meter_kode.length} meter aset` : e.sumber_kode.map((k) => k.toUpperCase()).join(' + ')}
+                  <span className="upd"><Chip kode={(e.lingkup ?? 'kinra') === 'kinra' ? 'good' : 'na'} label={(e.lingkup ?? 'kinra') === 'kinra' ? 'Lingkup KINRA' : 'Kawasan + tenant'} /></span></td>
                 <td className="small">{LABEL_METODE[e.metode]}{e.variabel_kode.length > 0 && <span className="upd">{e.variabel_kode.map((k) => namaVar[k] ?? k).join(', ')}</span>}</td>
                 <td className="small tnum" style={{ whiteSpace: 'nowrap' }}>{bulanIso(e.baseline_mulai)} s.d. {bulanIso(e.baseline_selesai)}</td>
-                <td><Chip kode={e.aktif ? 'good' : 'na'} label={e.aktif ? 'Aktif' : 'Nonaktif'} /></td>
+                <td><Chip kode={e.aktif ? 'good' : 'na'} label={e.aktif ? 'Aktif' : 'Nonaktif'} />{e.utama && <span className="upd"><Chip kode="info" label="EnPI utama" /></span>}</td>
                 <td>{bisa('enpi.ubah') && <button type="button" className="btn btn-ikon" aria-label={`Ubah ${e.kode}`} onClick={() => buka(e)}><Pencil aria-hidden="true" /></button>}</td>
               </tr>
             ))}
@@ -49,7 +50,7 @@ export function DaftarEnpi({ enpi, sumber, variabel }: { enpi: Enpi[]; sumber: S
       </div>
 
       <dialog ref={dlg} className="panel" onClose={() => setEdit(null)}>
-        <FormEnpi key={edit?.kode ?? 'baru'} edit={edit} kodeBaru={kodeBaru} sumber={sumber} variabel={variabel} galat={galat} menunggu={menunggu}
+        <FormEnpi key={edit?.kode ?? 'baru'} edit={edit} kodeBaru={kodeBaru} sumber={sumber} variabel={variabel} meter={meter} galat={galat} menunggu={menunggu}
           tutup={() => dlg.current?.close()}
           simpan={(f) => mulai(async () => { const h = await simpanEnpi(edit?.kode ?? null, f); if (!h.ok) return setGalat(h.pesan); dlg.current?.close(); router.refresh() })}
           hapus={edit && bisa('enpi.hapus') ? () => { if (!confirm(`Hapus ${edit.kode}? Sasaran yang terkait akan kehilangan tautan EnPI.`)) return; mulai(async () => { const h = await hapusEnpi(edit.kode); if (!h.ok) return setGalat(h.pesan); dlg.current?.close(); router.refresh() }) } : undefined} />
@@ -58,11 +59,12 @@ export function DaftarEnpi({ enpi, sumber, variabel }: { enpi: Enpi[]; sumber: S
   )
 }
 
-function FormEnpi({ edit, kodeBaru, sumber, variabel, galat, menunggu, tutup, simpan, hapus }: {
-  edit: Enpi | null; kodeBaru: string; sumber: SumberEnergi[]; variabel: VariabelRelevan[]
+function FormEnpi({ edit, kodeBaru, sumber, variabel, meter, galat, menunggu, tutup, simpan, hapus }: {
+  edit: Enpi | null; kodeBaru: string; sumber: SumberEnergi[]; variabel: VariabelRelevan[]; meter: MeterEnergi[]
   galat: string | null; menunggu: boolean; tutup: () => void; simpan: (f: FormData) => void; hapus?: () => void
 }) {
   const [metode, setMetode] = useState<MetodeEnpi>(edit?.metode ?? 'regresi')
+  const [dasar, setDasar] = useState<'sumber' | 'meter'>(edit?.meter_kode?.length ? 'meter' : 'sumber')
   return (
     <form className="card" action={simpan}>
       <div className="row"><h3>{edit ? `Ubah ${edit.kode}` : 'EnPI baru'}</h3><button type="button" className="btn btn-ikon" aria-label="Tutup" onClick={tutup}><X aria-hidden="true" /></button></div>
@@ -70,16 +72,47 @@ function FormEnpi({ edit, kodeBaru, sumber, variabel, galat, menunggu, tutup, si
         <label className="field"><span>Kode</span><input name="kode" required defaultValue={edit?.kode ?? kodeBaru} readOnly={!!edit} /></label>
         <label className="field"><span>Urutan tampil</span><input type="number" name="urutan" defaultValue={edit?.urutan ?? 0} /></label>
         <label className="field full"><span>Nama EnPI</span><input name="nama" required defaultValue={edit?.nama ?? ''} placeholder="mis. Intensitas energi WTP per m³ air olahan" /></label>
-        <fieldset className="field full" style={{ border: 0, padding: 0, margin: 0 }}>
-          <span>Ruang lingkup sumber energi</span>
-          <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-            {sumber.map((s) => (
-              <label key={s.kode} style={{ display: 'inline-flex', gap: 6, alignItems: 'center' }}>
-                <input type="checkbox" name="sumber_kode" value={s.kode} defaultChecked={edit ? edit.sumber_kode.includes(s.kode) : s.satuan === 'kWh'} style={{ height: 'auto' }} />{s.nama}
-              </label>
-            ))}
-          </div>
-        </fieldset>
+        <label className="field"><span>Lingkup</span>
+          <select name="lingkup" defaultValue={edit?.lingkup ?? 'kinra'}>
+            <option value="kinra">KINRA (dalam kendali, dasar klaim kinerja)</option>
+            <option value="kawasan">Kawasan termasuk tenant (konteks)</option>
+          </select>
+        </label>
+        <input type="hidden" name="dasar" value={dasar} />
+        <label className="field"><span>Data energi dari</span>
+          <select value={dasar} onChange={(e) => setDasar(e.target.value as 'sumber' | 'meter')}>
+            <option value="meter">Bacaan meter aset KINRA</option>
+            <option value="sumber">Data energi bulanan (sumber kawasan)</option>
+          </select>
+        </label>
+        {dasar === 'meter' ? (
+          <fieldset className="field full" style={{ border: 0, padding: 0, margin: 0 }}>
+            <span>Meter dalam lingkup</span>
+            {meter.length === 0 ? <p className="muted small">Belum ada meter. Tambahkan di halaman Aset & Meter.</p> : (
+              <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+                {meter.map((m) => (
+                  <label key={m.kode} style={{ display: 'inline-flex', gap: 6, alignItems: 'center' }}>
+                    <input type="checkbox" name="meter_kode" value={m.kode} defaultChecked={edit?.meter_kode?.includes(m.kode)} style={{ height: 'auto' }} />
+                    {m.lokasi ?? m.kode} <span className="muted small">({m.kode})</span>
+                  </label>
+                ))}
+              </div>
+            )}
+            <input type="hidden" name="sumber_kode" value="pln" />
+          </fieldset>
+        ) : (
+          <fieldset className="field full" style={{ border: 0, padding: 0, margin: 0 }}>
+            <span>Ruang lingkup sumber energi</span>
+            <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+              {sumber.map((s) => (
+                <label key={s.kode} style={{ display: 'inline-flex', gap: 6, alignItems: 'center' }}>
+                  <input type="checkbox" name="sumber_kode" value={s.kode} defaultChecked={edit ? edit.sumber_kode.includes(s.kode) : s.satuan === 'kWh'} style={{ height: 'auto' }} />{s.nama}
+                </label>
+              ))}
+            </div>
+            <p className="muted small">Data PLN mencakup listrik tenant. EnPI yang memuat PLN kawasan sebaiknya berlingkup &ldquo;Kawasan&rdquo;.</p>
+          </fieldset>
+        )}
         <label className="field"><span>Metode</span>
           <select name="metode" value={metode} onChange={(e) => setMetode(e.target.value as MetodeEnpi)}>
             {(Object.keys(LABEL_METODE) as MetodeEnpi[]).map((m) => <option key={m} value={m}>{LABEL_METODE[m]}</option>)}
@@ -88,6 +121,11 @@ function FormEnpi({ edit, kodeBaru, sumber, variabel, galat, menunggu, tutup, si
         <label className="field"><span>Status</span>
           <span style={{ display: 'inline-flex', gap: 6, alignItems: 'center', height: 36, textTransform: 'none', letterSpacing: 0, fontFamily: 'inherit', fontSize: 13, color: 'var(--ink)' }}>
             <input type="checkbox" name="aktif" defaultChecked={edit?.aktif ?? true} style={{ height: 'auto' }} />Aktif dipantau
+          </span>
+        </label>
+        <label className="field"><span>EnPI utama</span>
+          <span style={{ display: 'inline-flex', gap: 6, alignItems: 'center', height: 36, textTransform: 'none', letterSpacing: 0, fontFamily: 'inherit', fontSize: 13, color: 'var(--ink)' }}>
+            <input type="checkbox" name="utama" defaultChecked={edit?.utama ?? false} style={{ height: 'auto' }} />Tampilkan di judul Ringkasan & Kinerja
           </span>
         </label>
         {metode !== 'absolut' && (

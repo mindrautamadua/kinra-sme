@@ -38,10 +38,11 @@ export async function konteksDashboard({ tanyaJawab = true }: { tanyaJawab?: boo
   b.push(`Sumber energi: ${kinerja.sumber.map((s) => `${s.nama} (${s.satuan}, ${s.terbarukan ? 'terbarukan' : 'tak terbarukan'})`).join('; ')}.`)
 
   b.push('\n## EnPI')
+  b.push('Batas lingkup: data PLN di energi bulanan adalah total kawasan TERMASUK listrik tenant (di luar lingkup SMEn). Kinerja SMEn KINRA hanya diklaim dari EnPI lingkup KINRA (bacaan meter aset KINRA, BBM kendaraan). EnPI lingkup kawasan hanya konteks.')
   for (const h of kinerja.hasil) {
     const r = ringkas(h.laporan)
     const model = h.model ? `R² ${angka(h.model.r2, 3)}, CV(RMSE) ${persen(h.model.cvrmse)}` : (h.galat ?? 'model belum terbentuk')
-    b.push(`- ${h.enpi.kode} ${h.enpi.nama} [${LABEL_METODE[h.enpi.metode]}], baseline ${tanggal(h.enpi.baseline_mulai)}–${tanggal(h.enpi.baseline_selesai)}: ${model}; ${r.bulan} bulan pelaporan, perbaikan ${persen(r.perbaikan)}, hemat ${angka(r.hemat, 2)} ${h.satuan}`)
+    b.push(`- ${h.enpi.kode} ${h.enpi.nama} [${LABEL_METODE[h.enpi.metode]}], baseline ${tanggal(h.enpi.baseline_mulai)}–${tanggal(h.enpi.baseline_selesai)}: ${model}; ${r.bulan} bulan pelaporan, perbaikan ${persen(r.perbaikan)}, hemat ${angka(r.hemat, 2)} ${h.satuan}${h.enpi.utama ? '; EnPI UTAMA' : ''}; lingkup ${(h.enpi.lingkup ?? 'kinra') === 'kinra' ? 'KINRA' : 'kawasan termasuk tenant'}${h.enpi.aktif ? '' : '; NONAKTIF'}${h.ekstrapolasi ? `; PERINGATAN: ${h.ekstrapolasi} bulan pelaporan di luar rentang baseline, harapan = ekstrapolasi, penghematan belum boleh diklaim` : ''}`)
   }
 
   b.push('\n## Sasaran & rencana aksi')

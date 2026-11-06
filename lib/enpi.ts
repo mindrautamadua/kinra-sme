@@ -5,7 +5,7 @@
  * dengan periode baseline. Penghematan = harapan − aktual; CUSUM = Σ(aktual − harapan), turun berarti hemat.
  */
 import { BULAN } from './format'
-import type { EnergiBulanan, Enpi, SumberEnergi, VariabelBulanan, VariabelRelevan } from './types'
+import type { EnergiBulanan, Enpi, MeterEnergi, PembacaanMeter, SumberEnergi, VariabelBulanan, VariabelRelevan } from './types'
 
 export type Titik = {
   tahun: number
@@ -34,6 +34,8 @@ export type HasilEnpi = {
   /** Pesan bila model tidak bisa dibentuk (data kurang, variabel kosong, dsb.) */
   galat: string | null
   peringatan: string[]
+  /** Jumlah bulan pelaporan dengan variabel di luar rentang baseline (harapan = ekstrapolasi) */
+  ekstrapolasi: number
 }
 
 /** Ambang validitas model bulanan (ISO 50006 & ASHRAE Guideline 14). */
@@ -88,14 +90,40 @@ function statistik(aktual: number[], harapan: number[], parameter: number): Pick
   }
 }
 
-export function hitungEnpi(enpi: Enpi, sumber: SumberEnergi[], energi: EnergiBulanan[], variabelDef: VariabelRelevan[], variabelData: VariabelBulanan[]): HasilEnpi {
-  const lingkup = sumber.filter((s) => enpi.sumber_kode.includes(s.kode))
+/** Konsumsi satu meter pada satu bacaan: (stand akhir − stand awal) × faktor kali. */
+export const konsumsiBacaan = (b: PembacaanMeter, m: MeterEnergi) =>
+  b.stand_awal !== null && b.stand_akhir !== null ? (b.stand_akhir - b.stand_awal) * m.faktor_kali : null
+
+/**
+ * Pemakaian sendiri KINRA per bulan dari bacaan meter: kunci `tahun*12+bulan-1` → { kwh, terbaca }.
+ * `terbaca` = jumlah meter yang punya stand awal & akhir pada bulan itu.
+ */
+export function pemakaianMeter(meter: MeterEnergi[], bacaan: PembacaanMeter[], kodeMeter?: string[]) {
+  const pilih = kodeMeter?.length ? meter.filter((m) => kodeMeter.includes(m.kode)) : meter
+  const hasil = new Map<number, { kwh: number; terbaca: number }>()
+  for (const b of bacaan) {
+    const m = pilih.find((x) => x.kode === b.meter_kode)
+    const v = m && konsumsiBacaan(b, m)
+    if (v === null || v === undefined) continue
+    const k = b.tahun * 12 + (b.bulan - 1)
+    const r = hasil.get(k) ?? { kwh: 0, terbaca: 0 }
+    hasil.set(k, { kwh: r.kwh + v, terbaca: r.terbaca + 1 })
+  }
+  return { hasil, jumlahMeter: pilih.length }
+}
+
+export function hitungEnpi(enpi: Enpi, sumber: SumberEnergi[], energi: EnergiBulanan[], variabelDef: VariabelRelevan[], variabelData: VariabelBulanan[],
+  meterData?: { meter: MeterEnergi[]; bacaan: PembacaanMeter[] }): HasilEnpi {
+  const pakaiMeter = (enpi.meter_kode?.length ?? 0) > 0
+  const lingkup = pakaiMeter ? [] : sumber.filter((s) => enpi.sumber_kode.includes(s.kode))
   const satuanSama = lingkup.length > 0 && lingkup.every((s) => s.satuan === lingkup[0].satuan)
-  const satuan = satuanSama ? lingkup[0].satuan : 'TJ'
+  const satuan = pakaiMeter ? 'kWh' : satuanSama ? lingkup[0].satuan : 'TJ'
   const faktor = Object.fromEntries(lingkup.map((s) => [s.kode, satuanSama ? 1 : Number(s.faktor_tj)]))
   const variabel = enpi.variabel_kode.map((k) => variabelDef.find((v) => v.kode === k)).filter((v): v is VariabelRelevan => !!v)
   const peringatan: string[] = []
-  if (lingkup.length < enpi.sumber_kode.length) peringatan.push('Sebagian sumber energi pada ruang lingkup tidak ditemukan di tabel sumber_energi.')
+  if (!pakaiMeter && lingkup.length < enpi.sumber_kode.length) peringatan.push('Sebagian sumber energi pada ruang lingkup tidak ditemukan di tabel sumber_energi.')
+  if (pakaiMeter && meterData && meterData.meter.filter((m) => enpi.meter_kode!.includes(m.kode)).length < enpi.meter_kode!.length)
+    peringatan.push('Sebagian meter pada ruang lingkup EnPI tidak ditemukan di register meter.')
 
   // Energi per bulan: hanya bulan dengan data lengkap untuk semua sumber dalam lingkup
   const perBulan = new Map<number, Map<string, number>>()
@@ -105,7 +133,13 @@ export function hitungEnpi(enpi: Enpi, sumber: SumberEnergi[], energi: EnergiBul
     if (!perBulan.has(k)) perBulan.set(k, new Map())
     perBulan.get(k)!.set(d.sumber_kode, d.nilai)
   }
+  // Mode meter: hanya bulan dengan bacaan lengkap untuk semua meter dalam lingkup
+  const dariMeter = pakaiMeter ? pemakaianMeter(meterData?.meter ?? [], meterData?.bacaan ?? [], enpi.meter_kode) : null
   const energiBulan = (k: number) => {
+    if (dariMeter) {
+      const r = dariMeter.hasil.get(k)
+      return r && r.terbaca >= enpi.meter_kode!.length ? r.kwh : null
+    }
     const m = perBulan.get(k)
     if (!m || lingkup.some((s) => !m.has(s.kode))) return null
     return lingkup.reduce((t, s) => t + m.get(s.kode)! * faktor[s.kode], 0)
@@ -115,7 +149,7 @@ export function hitungEnpi(enpi: Enpi, sumber: SumberEnergi[], energi: EnergiBul
 
   const kMulai = kunciTanggal(enpi.baseline_mulai)
   const kSelesai = kunciTanggal(enpi.baseline_selesai)
-  const semua = [...perBulan.keys()]
+  const semua = dariMeter ? [...dariMeter.hasil.keys()] : [...perBulan.keys()]
   const kAkhir = semua.length ? Math.max(...semua) : kSelesai
   const titik = (k: number): Titik => {
     const { tahun, bulan } = dariKunci(k)
@@ -128,7 +162,7 @@ export function hitungEnpi(enpi: Enpi, sumber: SumberEnergi[], energi: EnergiBul
 
   const lengkap = (t: Titik) => t.aktual !== null && t.x.every((v) => v !== null)
   const latih = baseline.filter(lengkap)
-  const hasil: HasilEnpi = { enpi, satuan, variabel, baseline, laporan, model: null, galat: null, peringatan }
+  const hasil: HasilEnpi = { enpi, satuan, variabel, baseline, laporan, model: null, galat: null, peringatan, ekstrapolasi: 0 }
 
   if (enpi.metode !== 'absolut' && variabel.length < enpi.variabel_kode.length) {
     hasil.galat = 'Variabel relevan pada definisi EnPI tidak ditemukan. Periksa daftar variabel.'
@@ -176,12 +210,29 @@ export function hitungEnpi(enpi: Enpi, sumber: SumberEnergi[], energi: EnergiBul
       const xs = latih.map((t) => t.x[i]!)
       const min = Math.min(...xs), maks = Math.max(...xs), lebar = maks - min
       const luar = laporan.filter((t) => t.x[i] !== null && (t.x[i]! > maks + 0.1 * lebar || t.x[i]! < min - 0.1 * lebar))
+      hasil.ekstrapolasi = Math.max(hasil.ekstrapolasi, luar.length)
       if (luar.length) peringatan.push(`${luar.length} bulan pelaporan memiliki ${v.nama} di luar rentang baseline (${min.toLocaleString('id-ID')}–${maks.toLocaleString('id-ID')} ${v.satuan}). Harapan bulan tersebut adalah ekstrapolasi; penghematan belum dapat diklaim. Pertimbangkan baseline baru bila kondisi operasi berubah besar (ISO 50001 6.5).`)
     })
   }
   const kosongVar = laporan.filter((t) => t.aktual !== null && t.harapan === null).length
   if (kosongVar) peringatan.push(`${kosongVar} bulan pelaporan belum punya data variabel, sehingga belum bisa dinormalisasi.`)
   return hasil
+}
+
+/** Model memenuhi ambang ISO 50006 (hanya EnPI rasio/regresi). */
+export const modelLayak = (m: Model | null) => !!m && m.r2 !== null && m.cvrmse !== null && m.r2 >= AMBANG.r2 && m.cvrmse <= AMBANG.cvrmse && m.n >= AMBANG.nMin
+
+/**
+ * EnPI utama untuk judul halaman Ringkasan & Kinerja, hanya dari lingkup KINRA (EnPI kawasan mencakup tenant):
+ * yang ditandai "utama" di definisi EnPI;
+ * bila tidak ada, EnPI ternormalisasi dengan model layak; terakhir EnPI aktif pertama yang punya data pelaporan.
+ */
+export function pilihEnpiUtama(hasil: HasilEnpi[]): HasilEnpi | undefined {
+  const siap = hasil.filter((h) => h.enpi.aktif && (h.enpi.lingkup ?? 'kinra') === 'kinra' && !h.galat && h.model && h.laporan.some((t) => t.aktual !== null && t.harapan !== null))
+  return siap.find((h) => h.enpi.utama)
+    ?? siap.find((h) => h.enpi.metode !== 'absolut' && modelLayak(h.model))
+    ?? siap.find((h) => h.enpi.metode !== 'absolut')
+    ?? siap[0]
 }
 
 /** Bulan yang punya aktual & harapan. */

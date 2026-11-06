@@ -4,7 +4,8 @@ import { AngkaNaik } from '@/components/AngkaNaik'
 import { Grafik } from '@/components/charts/Grafik'
 import { Chip } from '@/components/Chip'
 import { SectionHead } from '@/components/SectionHead'
-import { ambilEnergi, rekapEnergi } from '@/lib/data'
+import { ambilAsetMeter, ambilEnergi, rekapEnergi } from '@/lib/data'
+import { pemakaianMeter } from '@/lib/enpi'
 import { angka, BULAN, BULAN_PANJANG, delta, energiListrik, persen } from '@/lib/format'
 import { TabelEnergi } from './TabelEnergi'
 
@@ -14,7 +15,7 @@ const WARNA = { pln: 's3', pltbg: 's1', plts: 'jingga', dexlite: 's2' } as const
 const IKON = { pln: Zap, pltbg: Leaf, plts: Sun, dexlite: Flame } as const
 
 export default async function Energi({ searchParams }: { searchParams: Promise<{ tahun?: string }> }) {
-  const { sumber, data } = await ambilEnergi()
+  const [{ sumber, data }, { aset, meter, bacaan }] = await Promise.all([ambilEnergi(), ambilAsetMeter()])
   const { tahun: daftarTahun, tj } = rekapEnergi(sumber, data)
   const sp = await searchParams
   const tahun = Number(sp.tahun) || daftarTahun.at(-1) || new Date().getFullYear()
@@ -55,6 +56,20 @@ export default async function Energi({ searchParams }: { searchParams: Promise<{
   const akhirIni = blnAkhir ? bulanIni[blnAkhir - 1] : null
   const akhirLalu = blnAkhir ? totalBulan(tahun - 1)[blnAkhir - 1] : null
 
+  // Batas lingkup SMEn: PLN kawasan memuat listrik tenant; pemakaian sendiri KINRA diukur dari meter aset
+  const { hasil: perMeter, jumlahMeter } = pemakaianMeter(meter.filter((m) => m.sumber_kode === 'pln'), bacaan)
+  const kunciTerakhir = Math.max(-1, ...[...perMeter.keys()].filter((k) => nilai(Math.floor(k / 12), (k % 12) + 1, 'pln') !== null))
+  const acuan = kunciTerakhir >= 0
+    ? { tahun: Math.floor(kunciTerakhir / 12), bulan: (kunciTerakhir % 12) + 1, kinra: perMeter.get(kunciTerakhir)!.kwh, terbaca: perMeter.get(kunciTerakhir)!.terbaca, sumberKinra: 'meter' as const }
+    : { tahun, bulan: blnAkhir, kinra: aset.reduce((t, a) => t + (a.kwh_bulan ?? 0), 0), terbaca: 0, sumberKinra: 'inventaris' as const }
+  const plnAcuan = acuan.bulan ? nilai(acuan.tahun, acuan.bulan, 'pln') : null
+  const porsiKinra = plnAcuan ? Math.min(100, (acuan.kinra / plnAcuan) * 100) : null
+  const rekapKinra = BULAN_PANJANG.map((_, i) => {
+    const r = perMeter.get(tahun * 12 + i)
+    const p = nilai(tahun, i + 1, 'pln')
+    return { bulan: i, kwh: r?.kwh ?? null, terbaca: r?.terbaca ?? 0, pln: p, porsi: r && p ? (r.kwh / p) * 100 : null }
+  })
+
   // Peta panas bulan x tahun
   const peta = daftarTahun.map((t) => ({ t, v: totalBulan(t) }))
   const maksPeta = Math.max(0, ...peta.flatMap((r) => r.v.map((v) => v ?? 0)))
@@ -64,13 +79,39 @@ export default async function Energi({ searchParams }: { searchParams: Promise<{
     <>
       <section>
         <div className="ks-kepala">
-          <SectionHead hero eyebrow="Data energi KEK Sei Mangkei"
+          <SectionHead hero eyebrow="Data energi kawasan KEK Sei Mangkei · termasuk tenant"
             judul={<>{tahun}: <span className="ks-sorot">{energiListrik(kwhTahun)}</span> listrik dalam {blnAkhir} bulan, {delta(naik)} dibanding {tahun - 1}</>}>
-            <p className="muted">Energi terbarukan (PLTBG + PLTS) menyumbang {persen(pangsaEbt)} listrik. Rata-rata {energiListrik(rata)} per bulan. Konversi: 1 kWh = 3,6 × 10⁻⁶ TJ.</p>
+            <p className="muted">Angka kawasan mencakup listrik tenant, sehingga tidak menjadi dasar klaim kinerja SMEn KINRA; lihat pemisahan lingkup di bawah. Energi terbarukan (PLTBG + PLTS) menyumbang {persen(pangsaEbt)} listrik. Rata-rata {energiListrik(rata)} per bulan. Konversi: 1 kWh = 3,6 × 10⁻⁶ TJ.</p>
           </SectionHead>
           <nav className="seg en-tahun" aria-label="Tahun">
             {daftarTahun.map((t) => <Link key={t} href={`/energi?tahun=${t}`} aria-current={t === tahun ? 'true' : undefined}>{t}</Link>)}
           </nav>
+        </div>
+
+        <div className="card" style={{ marginBottom: 16 }}>
+          <div className="row">
+            <div>
+              <h3>Batas lingkup SMEn · {acuan.bulan ? `${BULAN_PANJANG[acuan.bulan - 1]} ${acuan.tahun}` : '–'}</h3>
+              <p className="muted small">Ruang Lingkup & Batasan EnMS: fasilitas dan proses produksi tenant tidak otomatis termasuk lingkup. Kinerja SMEn diukur dari pemakaian sendiri KINRA.</p>
+            </div>
+            <Link className="btn kecil" href="/aset">Aset & Meter</Link>
+          </div>
+          <div className="mini-stats" style={{ margin: '12px 0' }}>
+            <div><span>Listrik PLN kawasan</span><b className="tnum">{energiListrik(plnAcuan)}</b></div>
+            <div><span>Pemakaian sendiri KINRA{acuan.sumberKinra === 'inventaris' ? ' (perkiraan)' : ''}</span><b className="tnum">{energiListrik(acuan.kinra)}</b></div>
+            <div><span>Disalurkan ke tenant & lainnya</span><b className="tnum">{plnAcuan !== null ? energiListrik(Math.max(0, plnAcuan - acuan.kinra)) : '–'}</b></div>
+          </div>
+          {porsiKinra !== null && (
+            <div className="pg" role="img" aria-label={`Pemakaian sendiri KINRA ${persen(porsiKinra)} dari listrik PLN kawasan`}>
+              <div className="track"><b className="bg-good" style={{ width: `${Math.max(porsiKinra, 0.5)}%` }} /></div>
+            </div>
+          )}
+          <p className="sumber">
+            {acuan.sumberKinra === 'meter'
+              ? `Pemakaian sendiri dari bacaan ${acuan.terbaca} dari ${jumlahMeter} meter PLN aset KINRA (${persen(porsiKinra)} dari PLN kawasan).`
+              : `Belum ada bacaan stand meter; pemakaian sendiri diperkirakan dari data inventaris aset (${persen(porsiKinra)} dari PLN kawasan ${BULAN_PANJANG[acuan.bulan - 1] ?? ''} ${acuan.tahun}). Isi bacaan bulanan di halaman Aset & Meter.`}
+            {' '}PLTBG dan PLTS dicatat sebagai pasokan kawasan; kepemilikan dan alokasinya perlu ditetapkan dalam tinjauan energi.
+          </p>
         </div>
 
         <div className="card en-aliran">
@@ -224,8 +265,33 @@ export default async function Energi({ searchParams }: { searchParams: Promise<{
       </section>
 
       <section>
-        <SectionHead no="02" eyebrow="Input data" judul={`Isi data ${tahun} per bulan`}>
-          <p className="muted">Ketik angka lalu pindah kolom (Tab) untuk menyimpan. Kosongkan sel untuk menghapus. Gunakan data meter/tagihan aktual, bukan perkiraan.</p>
+        <SectionHead no="02" eyebrow="Lingkup SMEn KINRA" judul={`Pemakaian sendiri KINRA ${tahun}`}>
+          <p className="muted">Jumlah konsumsi meter PLN aset KINRA per bulan (dari bacaan stand × faktor kali). Inilah dasar EnPI lingkup KINRA, bukan total PLN kawasan.</p>
+        </SectionHead>
+        <div className="card">
+          <div className="table-wrap">
+            <table className="tbl">
+              <thead><tr><th>Bulan</th><th className="num">Pemakaian KINRA</th><th className="num">Meter terbaca</th><th className="num">PLN kawasan</th><th className="num">Porsi KINRA</th></tr></thead>
+              <tbody>
+                {rekapKinra.map((r) => (
+                  <tr key={r.bulan}>
+                    <td>{BULAN_PANJANG[r.bulan]}</td>
+                    <td className="num">{r.kwh === null ? '–' : `${angka(r.kwh, 0)} kWh`}</td>
+                    <td className="num">{r.terbaca ? `${r.terbaca}/${jumlahMeter}` : '–'}</td>
+                    <td className="num">{r.pln === null ? '–' : `${angka(r.pln, 0)} kWh`}</td>
+                    <td className="num">{r.porsi === null ? '–' : persen(r.porsi)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="sumber">{rekapKinra.some((r) => r.kwh !== null) ? 'Bulan dengan meter terbaca kurang dari jumlah meter belum lengkap.' : `Belum ada bacaan meter untuk ${tahun}. Isi stand awal dan akhir tiap meter di halaman Aset & Meter.`}</p>
+        </div>
+      </section>
+
+      <section>
+        <SectionHead no="03" eyebrow="Input data" judul={`Isi data ${tahun} per bulan`}>
+          <p className="muted">Ketik angka lalu pindah kolom (Tab) untuk menyimpan. Kosongkan sel untuk menghapus. Gunakan data meter/tagihan aktual, bukan perkiraan. Data PLN di sini adalah total kawasan termasuk tenant.</p>
         </SectionHead>
         <TabelEnergi tahun={tahun} sumber={sumber} data={data.filter((d) => d.tahun === tahun)} />
       </section>

@@ -5,7 +5,7 @@ import { Chip } from '@/components/Chip'
 import { Grafik } from '@/components/charts/Grafik'
 import { SectionHead } from '@/components/SectionHead'
 import { ambilKinerja } from '@/lib/data'
-import { AMBANG, cusum, type HasilEnpi, LABEL_METODE, type Model, pasangan, ringkas, rumus } from '@/lib/enpi'
+import { AMBANG, cusum, type HasilEnpi, LABEL_METODE, type Model, pasangan, pilihEnpiUtama, ringkas, rumus } from '@/lib/enpi'
 import { angka } from '@/lib/format'
 import { DaftarEnpi, DaftarVariabel } from './KelolaEnpi'
 import { TabelVariabel } from './TabelVariabel'
@@ -57,34 +57,57 @@ function SparkHemat({ h, tinggi = 40 }: { h: HasilEnpi; tinggi?: number }) {
 }
 
 export default async function Kinerja({ searchParams }: { searchParams: Promise<{ tahun?: string }> }) {
-  const { sumber, energi, variabel, dataVariabel, enpi, hasil } = await ambilKinerja()
+  const { sumber, energi, variabel, dataVariabel, enpi, hasil, meter } = await ambilKinerja()
   const aktif = hasil.filter((h) => h.enpi.aktif)
+  // Lingkup KINRA = dasar klaim kinerja; lingkup kawasan memuat listrik tenant dan hanya konteks
+  const kinra = (h: HasilEnpi) => (h.enpi.lingkup ?? 'kinra') === 'kinra'
+  const aktifKinra = aktif.filter(kinra)
+  const aktifKawasan = aktif.filter((h) => !kinra(h))
   const sp = await searchParams
   const daftarTahun = [...new Set([...energi.map((d) => d.tahun), new Date().getFullYear()])].sort()
   const tahun = Number(sp.tahun) || daftarTahun.at(-1)!
-  const utama = aktif.find((h) => h.model && ringkas(h.laporan).bulan > 0)
+  const utama = pilihEnpiUtama(hasil)
+  const ekstra = utama?.ekstrapolasi ?? 0
+
+  // EnPI absolut yang "boros" padahal ada EnPI ternormalisasi untuk lingkup yang sama: jelaskan penyebabnya
+  const samaLingkup = (a: HasilEnpi, b: HasilEnpi) => a.enpi.sumber_kode.length === b.enpi.sumber_kode.length && a.enpi.sumber_kode.every((k) => b.enpi.sumber_kode.includes(k))
+  const tenant = variabel.find((v) => v.kode === 'tenant')
+  const nilaiTenant = (th: number, bl: number) => dataVariabel.find((d) => d.variabel_kode === 'tenant' && d.tahun === th && d.bulan === bl)?.nilai
+  const catatanAbsolut = aktif.filter((h) => h.enpi.metode === 'absolut' && (ringkas(h.laporan).perbaikan ?? 0) < 0)
+    .map((h) => {
+      const pasangannya = aktif.find((x) => x !== h && x.enpi.metode !== 'absolut' && samaLingkup(x, h))
+      if (!pasangannya) return null
+      const awal = h.baseline.find((t) => nilaiTenant(t.tahun, t.bulan) !== undefined)
+      const akhir = [...h.laporan].reverse().find((t) => t.aktual !== null && nilaiTenant(t.tahun, t.bulan) !== undefined)
+      const tumbuh = tenant && awal && akhir ? ` Jumlah tenant naik dari ${angka(nilaiTenant(awal.tahun, awal.bulan))} (${awal.label}) menjadi ${angka(nilaiTenant(akhir.tahun, akhir.bulan))} (${akhir.label}).` : ''
+      return { kode: h.enpi.kode, teks: `${h.enpi.kode} memakai metode absolut: konsumsi dibandingkan langsung dengan bulan yang sama pada baseline tanpa memperhitungkan perubahan kondisi operasi, sehingga kenaikan akibat pertumbuhan tenant ikut terbaca sebagai boros.${tumbuh} Untuk menilai efisiensi kawasan, lihat ${pasangannya.enpi.kode} yang dinormalisasi variabel relevan. Keduanya berlingkup kawasan (data PLN termasuk tenant), jadi bukan dasar klaim kinerja SMEn KINRA.` }
+    }).filter((x): x is { kode: string; teks: string } => !!x)
   const ru = utama && ringkas(utama.laporan)
   const terpakai: Record<string, string[]> = {}
   for (const e of enpi) for (const v of e.variabel_kode) (terpakai[v] ??= []).push(e.kode)
-  const ternormalisasi = aktif.filter((h) => h.enpi.metode !== 'absolut').length
+  const ternormalisasi = aktifKinra.filter((h) => h.enpi.metode !== 'absolut').length
   const m = utama?.model ?? null
   const cek = [
-    { ok: aktif.length > 0, judul: 'EnPI aktif dipantau', ket: `${aktif.length} dari ${enpi.length} EnPI` },
+    { ok: aktifKinra.length > 0, judul: 'EnPI lingkup KINRA dipantau', ket: `${aktifKinra.length} lingkup KINRA, ${aktifKawasan.length} konteks kawasan` },
     { ok: ternormalisasi > 0, judul: 'Ada EnPI ternormalisasi', ket: ternormalisasi ? `${ternormalisasi} rasio/regresi` : 'Baru EnPI absolut' },
-    { ok: aktif.some((h) => h.enpi.metode !== 'absolut' && layak(h.model)), judul: 'Model baseline layak', ket: `R² ≥ ${angka(AMBANG.r2, 2)}, CV(RMSE) ≤ ${AMBANG.cvrmse}%, n ≥ ${AMBANG.nMin}` },
-    { ok: aktif.length > 0 && aktif.every((h) => !h.laporan.some((t) => t.aktual !== null && t.harapan === null)), judul: 'Pelaporan terbandingkan', ket: 'Setiap bulan pelaporan punya nilai harapan' },
+    { ok: aktifKinra.some((h) => h.enpi.metode !== 'absolut' && layak(h.model)), judul: 'Model baseline layak', ket: `R² ≥ ${angka(AMBANG.r2, 2)}, CV(RMSE) ≤ ${AMBANG.cvrmse}%, n ≥ ${AMBANG.nMin}` },
+    { ok: aktifKinra.length > 0 && aktifKinra.every((h) => !h.laporan.some((t) => t.aktual !== null && t.harapan === null)), judul: 'Pelaporan terbandingkan', ket: 'Setiap bulan pelaporan punya nilai harapan' },
   ]
 
   return (
     <>
       <section>
         <SectionHead hero eyebrow="Klausul 6.4 & 6.5 · EnPI dan baseline energi (EnB)"
-          judul={utama && ru?.perbaikan != null
+          judul={utama && ru?.perbaikan != null && ekstra > 0
+            ? <>{utama.enpi.nama}: <span className="kj-sorot-buruk">penghematan belum dapat diklaim</span>, {ekstra} bulan pelaporan di luar rentang baseline</>
+            : utama && ru?.perbaikan != null
             ? <>{utama.enpi.nama}: <span className={ru.perbaikan >= 0 ? 'ks-sorot' : 'kj-sorot-buruk'}>{ru.perbaikan >= 0 ? 'lebih efisien' : 'lebih boros'} {angka(Math.abs(ru.perbaikan), 1)}%</span> dibanding baseline</>
-            : 'Kinerja energi belum dapat dihitung'}>
+            : aktifKinra.length ? 'EnPI lingkup KINRA menunggu data bacaan meter' : 'Kinerja energi belum dapat dihitung'}>
           <p className="muted">
             {ru && utama ? `${ru.bulan} bulan pelaporan sejak baseline berakhir, setara ${ru.hemat >= 0 ? 'penghematan' : 'kelebihan'} ${angka(Math.abs(ru.hemat), desimal(utama.satuan))} ${utama.satuan}. ` : ''}
             Perbaikan = (konsumsi harapan − aktual) ÷ harapan. Konsumsi harapan dihitung dari model baseline pada kondisi bulan berjalan, sehingga perubahan beban operasi tidak terbaca sebagai penghematan.
+            {ekstra > 0 && <b> Angka di bawah adalah hasil ekstrapolasi model; kondisi operasi berubah besar sejak baseline, pertimbangkan penyesuaian baseline (6.5).</b>}
+            {!utama && aktifKinra.length > 0 && <b> EnPI lingkup KINRA ({aktifKinra.map((h) => h.enpi.kode).join(', ')}) diukur dari bacaan stand meter aset di halaman Aset & Meter; baseline terbentuk setelah 12 bulan bacaan. EnPI kawasan di bawah memuat listrik tenant sehingga hanya menjadi konteks.</b>}
             {' '}{ternormalisasi === 0 && <b>Belum ada EnPI ternormalisasi (rasio/regresi): isi data variabel relevan lalu tambahkan EnPI per SEU.</b>}
           </p>
         </SectionHead>
@@ -154,9 +177,14 @@ export default async function Kinerja({ searchParams }: { searchParams: Promise<
           </div>
         </div>
 
-        {aktif.length > 0 && (
-          <div className="kj-papan" role="list" aria-label="Papan skor EnPI aktif">
-            {aktif.map((h, i) => {
+        {[
+          { daftar: aktifKinra, judul: 'Lingkup SMEn KINRA', ket: 'Dasar klaim kinerja energi: aset dan fasilitas dalam kendali KINRA' },
+          { daftar: aktifKawasan, judul: 'Konteks kawasan (termasuk tenant)', ket: 'Bukan dasar klaim kinerja SMEn; bahan koordinasi dengan tenant' },
+        ].filter((g) => g.daftar.length > 0).map(({ daftar, judul, ket }) => (
+          <div key={judul} style={{ marginBottom: 16 }}>
+            <div className="row" style={{ marginBottom: 8 }}><div><span className="eyebrow">{judul}</span><p className="muted small">{ket}</p></div></div>
+            <div className="kj-papan" role="list" aria-label={`Papan skor EnPI ${judul}`}>
+            {daftar.map((h, i) => {
               const rr = ringkas(h.laporan)
               return (
                 <a key={h.enpi.kode} role="listitem" href={`#enpi-${h.enpi.kode}`} className="kj-skor" style={{ '--i': i } as React.CSSProperties}>
@@ -166,12 +194,21 @@ export default async function Kinerja({ searchParams }: { searchParams: Promise<
                     {rr.perbaikan === null ? '–' : `${rr.perbaikan < 0 ? '−' : '+'}${angka(Math.abs(rr.perbaikan), 1)}%`}
                   </span>
                   <SparkHemat h={h} />
-                  <span className="muted small">{h.galat ? 'Model belum terbentuk' : `${rr.bulan} bulan · ${rr.hemat >= 0 ? 'hemat' : 'boros'} ${angka(Math.abs(rr.hemat), desimal(h.satuan))} ${h.satuan}`}</span>
+                  {(h.ekstrapolasi > 0 || h.enpi.kode === utama?.enpi.kode) && (
+                    <span style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                      {h.enpi.kode === utama?.enpi.kode && <Chip kode="info" label="EnPI utama" />}
+                      {h.ekstrapolasi > 0 && <Chip kode="warn" label="Ekstrapolasi" />}
+                    </span>
+                  )}
+                  <span className="muted small">{h.galat ? (h.enpi.meter_kode?.length ? 'Menunggu bacaan meter' : 'Model belum terbentuk') : `${rr.bulan} bulan · ${rr.hemat >= 0 ? 'hemat' : 'boros'} ${angka(Math.abs(rr.hemat), desimal(h.satuan))} ${h.satuan}`}</span>
                 </a>
               )
             })}
+            </div>
           </div>
-        )}
+        ))}
+
+        {catatanAbsolut.map((c) => <p key={c.kode} className="pesan" style={{ marginBottom: 16 }}>{c.teks}</p>)}
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {aktif.length === 0 && <div className="card"><p className="muted">Belum ada EnPI aktif. Tambahkan di bagian definisi EnPI.</p></div>}
@@ -196,7 +233,7 @@ export default async function Kinerja({ searchParams }: { searchParams: Promise<
         <SectionHead no="02" eyebrow="Definisi EnPI & EnB" judul={`${enpi.length} EnPI terdefinisi, ${aktif.length} aktif dipantau`}>
           <p className="muted">Tetapkan EnPI untuk organisasi dan untuk tiap SEU. Baseline disesuaikan bila ruang lingkup, fasilitas, atau variabel statis berubah signifikan (6.5); catat alasannya di kolom catatan.</p>
         </SectionHead>
-        <DaftarEnpi enpi={enpi} sumber={sumber} variabel={variabel} />
+        <DaftarEnpi enpi={enpi} sumber={sumber} variabel={variabel} meter={meter} />
       </section>
     </>
   )
@@ -217,7 +254,7 @@ function KartuEnpi({ h }: { h: HasilEnpi }) {
     <div className="card kj-kartu" id={`enpi-${h.enpi.kode}`}>
       <div className="row">
         <div>
-          <span className="eyebrow">{h.enpi.kode} · {LABEL_METODE[h.enpi.metode]}</span>
+          <span className="eyebrow">{h.enpi.kode} · {LABEL_METODE[h.enpi.metode]} · {(h.enpi.lingkup ?? 'kinra') === 'kinra' ? (h.enpi.meter_kode?.length ? `lingkup KINRA, ${h.enpi.meter_kode.length} meter` : 'lingkup KINRA') : 'kawasan termasuk tenant'}</span>
           <h3>{h.enpi.nama}</h3>
           <p className="muted small">
             Lingkup {h.enpi.sumber_kode.map((k) => k.toUpperCase()).join(' + ')} · baseline {h.enpi.baseline_mulai.slice(0, 7)} s.d. {h.enpi.baseline_selesai.slice(0, 7)}

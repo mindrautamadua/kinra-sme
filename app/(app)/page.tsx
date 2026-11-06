@@ -5,7 +5,7 @@ import { Grafik } from '@/components/charts/Grafik'
 import { Chip } from '@/components/Chip'
 import { SectionHead } from '@/components/SectionHead'
 import { ambilDokumen, ambilJejakBukti, ambilKegiatan, ambilKinerja, ambilKlausul, ambilTemuan, rekapEnergi } from '@/lib/data'
-import { LABEL_METODE, ringkas } from '@/lib/enpi'
+import { LABEL_METODE, pilihEnpiUtama, ringkas } from '@/lib/enpi'
 import { angka, BULAN, delta, hariIni, persen, selisihHari, tanggal, waktu } from '@/lib/format'
 import { adaBukti, hariWib, kesiapan, kesiapanPerKlausul, KELOMPOK, terlambat, tonggakDari, trenKesiapan } from '@/lib/status'
 
@@ -55,10 +55,8 @@ export default async function Ringkasan() {
   const tjKini = tj((d) => d.tahun === thnAkhir && d.bulan <= blnAkhir)
   const tjLalu = tj((d) => d.tahun === thnAkhir - 1 && d.bulan <= blnAkhir)
   const terbarukan = energi.sumber.filter((s) => s.terbarukan).map((s) => s.kode)
-  // EnPI utama: utamakan yang ternormalisasi (rasio/regresi) dan sudah punya data pelaporan
-  const enpiUtama = kinerja.hasil
-    .filter((h) => h.enpi.aktif && !h.galat && ringkas(h.laporan).bulan > 0)
-    .sort((a, b) => Number(a.enpi.metode === 'absolut') - Number(b.enpi.metode === 'absolut'))[0]
+  // EnPI utama: sama dengan halaman Kinerja (penanda "utama", lalu ternormalisasi dengan model layak)
+  const enpiUtama = pilihEnpiUtama(kinerja.hasil)
   const ru = enpiUtama && ringkas(enpiUtama.laporan)
   const pangsaEbt = tjKini ? (tj((d) => d.tahun === thnAkhir && d.bulan <= blnAkhir && terbarukan.includes(d.sumber_kode)) / tjKini) * 100 : 0
 
@@ -329,11 +327,11 @@ export default async function Ringkasan() {
       <section>
         <SectionHead no="02" eyebrow="Kinerja energi"
           judul={`Konsumsi ${BULAN[0]}–${BULAN[blnAkhir - 1] ?? ''} ${thnAkhir}: ${angka(tjKini, 1)} TJ, ${delta(tjLalu ? ((tjKini - tjLalu) / tjLalu) * 100 : null)} dari ${thnAkhir - 1}`}>
-          <p className="muted">Pangsa energi terbarukan (PLTBG + PLTS) {persen(pangsaEbt)}. Kenaikan didorong beban PLN kawasan yang bertambah.</p>
+          <p className="muted">Angka kawasan termasuk listrik tenant, jadi bukan ukuran kinerja SMEn KINRA; kinerja SMEn dibaca dari EnPI lingkup KINRA (meter aset). Pangsa energi terbarukan (PLTBG + PLTS) {persen(pangsaEbt)}. Kenaikan didorong beban tenant yang bertambah.</p>
         </SectionHead>
         <div className="grid-3-1">
           <div className="card">
-            <div className="row"><div><h3>Total energi per tahun</h3><p className="muted small">Terajoule (TJ), seluruh sumber dalam lingkup SMEn</p></div><Link className="btn kecil" href="/energi">Detail energi</Link></div>
+            <div className="row"><div><h3>Total energi per tahun</h3><p className="muted small">Terajoule (TJ), seluruh sumber kawasan termasuk tenant</p></div><Link className="btn kecil" href="/energi">Detail energi</Link></div>
             <Grafik label={`Total energi per tahun: ${tahun.map((t) => `${t} ${angka(tj((d) => d.tahun === t), 1)} TJ`).join(', ')}`}
               tinggi={280}
               spek={{
@@ -351,14 +349,16 @@ export default async function Ringkasan() {
             <Link href="/kinerja" className="tile" style={{ textDecoration: 'none', color: 'inherit' }} aria-label="Buka kinerja energi (EnPI)">
               <div className="tile-head">
                 <span className="label">Perbaikan EnPI vs baseline</span>
-                {ru?.perbaikan != null && <Chip kode={ru.perbaikan >= 0 ? 'good' : 'crit'} label={ru.perbaikan >= 0 ? 'Lebih efisien' : 'Lebih boros'} />}
+                {ru?.perbaikan != null && (enpiUtama!.ekstrapolasi > 0
+                  ? <Chip kode="warn" label="Ekstrapolasi" />
+                  : <Chip kode={ru.perbaikan >= 0 ? 'good' : 'crit'} label={ru.perbaikan >= 0 ? 'Lebih efisien' : 'Lebih boros'} />)}
               </div>
               <div className={`nilai tnum ${ru?.perbaikan == null ? '' : ru.perbaikan >= 0 ? 'txt-good' : 'txt-bad'}`}>
                 {ru?.perbaikan == null ? '–' : <AngkaNaik nilai={Math.abs(ru.perbaikan)} desimal={1} awalan={ru.perbaikan < 0 ? '−' : ''} akhiran="%" />}
               </div>
               <div className="meta">
                 {enpiUtama && ru
-                  ? `${enpiUtama.enpi.kode} ${enpiUtama.enpi.nama} · ${ru.bulan} bulan · ${LABEL_METODE[enpiUtama.enpi.metode].toLowerCase()}${enpiUtama.enpi.metode === 'absolut' ? ', belum ternormalisasi' : ''}`
+                  ? `${enpiUtama.enpi.kode} ${enpiUtama.enpi.nama} · ${ru.bulan} bulan · ${LABEL_METODE[enpiUtama.enpi.metode].toLowerCase()}${enpiUtama.enpi.metode === 'absolut' ? ', belum ternormalisasi' : ''}${enpiUtama.ekstrapolasi > 0 ? ` · ${enpiUtama.ekstrapolasi} bulan di luar rentang baseline, belum dapat diklaim` : ''}`
                   : 'Belum ada EnPI dengan data pelaporan'}
               </div>
             </Link>

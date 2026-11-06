@@ -125,6 +125,8 @@ export type VariabelBulanan = { tahun: number; bulan: number; variabel_kode: str
 
 export type MetodeEnpi = 'absolut' | 'rasio' | 'regresi'
 
+export type LingkupEnpi = 'kinra' | 'kawasan'
+
 export type Enpi = {
   kode: string
   nama: string
@@ -136,6 +138,12 @@ export type Enpi = {
   alasan_baseline: string | null
   catatan: string | null
   aktif: boolean
+  /** Ditampilkan sebagai EnPI utama di Ringkasan & Kinerja (migrasi 0025). Hanya satu. */
+  utama?: boolean
+  /** 'kinra' = dalam kendali KINRA (dasar klaim kinerja); 'kawasan' = termasuk tenant, hanya konteks (migrasi 0026) */
+  lingkup?: LingkupEnpi
+  /** Bila terisi, energi diukur dari bacaan meter ini, bukan dari energi_bulanan (migrasi 0026) */
+  meter_kode?: string[]
   urutan: number
 }
 

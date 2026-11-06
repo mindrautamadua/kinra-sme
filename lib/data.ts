@@ -134,7 +134,7 @@ export function rekapEnergi(sumber: SumberEnergi[], data: EnergiBulanan[]) {
 
 /** Semua bahan kinerja energi + hasil perhitungan tiap EnPI. */
 export async function ambilKinerja() {
-  const [{ sumber, data: energi }, { variabel, data: dataVariabel }, enpi] = await Promise.all([ambilEnergi(), ambilVariabel(), ambilEnpi()])
-  const hasil = enpi.map((e) => hitungEnpi(e, sumber, energi, variabel, dataVariabel))
-  return { sumber, energi, variabel, dataVariabel, enpi, hasil }
+  const [{ sumber, data: energi }, { variabel, data: dataVariabel }, enpi, { meter, bacaan }] = await Promise.all([ambilEnergi(), ambilVariabel(), ambilEnpi(), ambilAsetMeter()])
+  const hasil = enpi.map((e) => hitungEnpi(e, sumber, energi, variabel, dataVariabel, { meter, bacaan }))
+  return { sumber, energi, variabel, dataVariabel, enpi, hasil, meter, bacaan }
 }
