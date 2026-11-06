@@ -126,6 +126,20 @@ export async function ambilParameter(): Promise<ParameterEnergi[]> {
   return data.length ? data : BAWAAN
 }
 
+export type PotretKesiapan = { tanggal: string; skor: number; kemajuan: number; n_siap: number; n_bukti: number; jumlah: number; gerbang_lulus: number; gerbang_total: number }
+
+/**
+ * Catat potret skor hari ini (upsert per tanggal), lalu kembalikan potret terakhir sebelum hari ini.
+ * Gagal diam-diam bila tabel belum ada (migrasi 0033) atau peran tidak berhak menulis.
+ */
+export async function catatPotret(p: PotretKesiapan): Promise<PotretKesiapan | null> {
+  const s = await db()
+  await s.from('potret_kesiapan').upsert({ ...p, diubah_at: new Date().toISOString() })
+  const r = await s.from('potret_kesiapan').select('*').lt('tanggal', p.tanggal).order('tanggal', { ascending: false }).limit(1)
+  const x = (r.error ? [] : r.data ?? [])[0] as PotretKesiapan | undefined
+  return x ? { ...x, skor: Number(x.skor), kemajuan: Number(x.kemajuan) } : null
+}
+
 export async function ambilKegiatan(): Promise<Kegiatan[]> {
   return cek(await (await db()).from('kegiatan').select('*').order('no'), 'kegiatan')
 }

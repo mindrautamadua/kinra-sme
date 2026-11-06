@@ -21,6 +21,7 @@ Jalankan di SQL Editor Supabase sesuai urutan. Semua migrasi aman dijalankan ula
 - [x] `0030_parameter_energi.sql`: tarif listrik dan faktor emisi untuk tampilan rupiah dan CO₂
 - [ ] `0031_berkas_sah.sql`: penanda versi sah per berkas evidence; skor kesiapan menjadi "siap audit" (Final + berkas sah)
 - [ ] `0032_isi_sah_final.sql`: tandai otomatis berkas versi sah untuk item yang sudah Final (PDF bila ada, selain itu semua berkas)
+- [ ] `0033_potret_kesiapan.sql`: potret skor harian untuk pembanding di laporan kesiapan
 - [ ] **Cek urutan migrasi.** Bila EnPI-03 muncul di kelompok "Lingkup SMEn KINRA" di halaman Kinerja, jalankan ulang `0026_lingkup_kinra.sql`.
 
 Migrasi 0018–0030 sudah dijalankan di Supabase (6 November 2026). File 0027–0030 dan perubahan aplikasi terkait belum di-commit ke repositori.

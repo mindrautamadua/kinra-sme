@@ -4,7 +4,7 @@
  */
 import { AMBANG, type HasilEnpi } from './enpi'
 import { keadaan } from './kegiatan'
-import { adaBukti, INDUK_KLAUSUL, kesiapan, siapAudit, nilaiKesiapan, terlambat, tonggakDari } from './status'
+import { adaBukti, INDUK_KLAUSUL, kesiapan, siapAudit, sudahFinal, nilaiKesiapan, terlambat, tonggakDari } from './status'
 import type { Dokumen, Isu, Kegiatan, Klausul, RencanaAksi, Sasaran, Temuan } from './types'
 
 export type Rag = 'hijau' | 'kuning' | 'merah'
@@ -39,7 +39,7 @@ export type Putusan = { kode: 'siap' | 'bersyarat' | 'belum'; label: string; rin
 
 export type BarisKlausul = {
   kode: string; judul: string; induk: string
-  jumlah: number; bukti: number; lewat: number
+  jumlah: number; bukti: number; siap: number; lewat: number
   skor: number; rag: Rag | null; kritis: boolean
 }
 
@@ -82,7 +82,7 @@ export function susunLaporan(m: {
     const s = kesiapan(ds)
     return {
       kode: k.kode, judul: k.judul, induk: INDUK_KLAUSUL[k.induk] ?? k.induk,
-      jumlah: ds.length, bukti: ds.filter(adaBukti).length,
+      jumlah: ds.length, bukti: ds.filter(adaBukti).length, siap: ds.filter(siapAudit).length,
       lewat: ds.filter((d) => terlambat(d, kini)).length,
       skor: s, rag: ds.length ? rag(s) : null, kritis: k.kode in KLAUSUL_KRITIS,
     }
@@ -103,9 +103,18 @@ export function susunLaporan(m: {
     kat, ...Object.fromEntries((['Terbuka', 'Proses', 'Verifikasi', 'Tertutup'] as const).map((st) => [st, temuan.filter((t) => t.kategori === kat && t.status === st).length])) as Record<Temuan['status'], number>,
   }))
 
-  // EnPI
-  const enpiAktif = hasil.filter((h) => h.enpi.aktif)
-  const enpiValid = enpiAktif.filter((h) => !h.galat && (h.enpi.metode !== 'regresi' || ((h.model?.r2 ?? 0) >= AMBANG.r2 && (h.model?.cvrmse ?? Infinity) <= AMBANG.cvrmse)))
+  // EnPI: hanya lingkup KINRA yang menjadi dasar penilaian; EnPI kawasan (termasuk tenant) hanya konteks.
+  // Valid = model terbentuk dengan data, tidak ekstrapolasi, dan (untuk regresi) memenuhi ambang ISO 50006.
+  const semuaAktif = hasil.filter((h) => h.enpi.aktif)
+  const enpiAktif = semuaAktif.filter((h) => (h.enpi.lingkup ?? 'kinra') === 'kinra')
+  const enpiKawasan = semuaAktif.filter((h) => (h.enpi.lingkup ?? 'kinra') !== 'kinra')
+  const statusEnpi = (h: HasilEnpi): { ok: boolean; ket: string } => {
+    if (h.galat || !h.model) return { ok: false, ket: h.enpi.meter_kode?.length ? 'Menunggu data meter untuk baseline' : (h.galat ?? 'Model belum terbentuk') }
+    if (h.ekstrapolasi) return { ok: false, ket: `${h.ekstrapolasi} bulan di luar rentang baseline (ekstrapolasi)` }
+    if (h.enpi.metode === 'regresi' && !((h.model.r2 ?? 0) >= AMBANG.r2 && (h.model.cvrmse ?? Infinity) <= AMBANG.cvrmse)) return { ok: false, ket: 'Model belum memenuhi ambang validitas' }
+    return { ok: true, ket: h.enpi.metode === 'absolut' ? 'Valid, belum ternormalisasi' : 'Valid' }
+  }
+  const enpiValid = enpiAktif.filter((h) => statusEnpi(h).ok)
 
   // Gerbang kesiapan
   const gerbang: Gerbang[] = Object.entries(KLAUSUL_KRITIS).map(([kode, nama]) => {
@@ -114,7 +123,7 @@ export function susunLaporan(m: {
     return {
       kriteria: nama, acuan: `Kl. ${kode}`,
       hasil: b.skor >= AMBANG_RAG.hijau ? 'lulus' : b.skor >= 50 ? 'parsial' : 'gagal',
-      bukti: `${b.bukti}/${b.jumlah} ber-evidence · skor ${Math.round(b.skor)}%`,
+      bukti: `${b.siap}/${b.jumlah} siap audit · ${b.bukti} ber-evidence · skor ${Math.round(b.skor)}%`,
     }
   })
   gerbang.push(
@@ -122,9 +131,9 @@ export function susunLaporan(m: {
     { kriteria: 'Cakupan evidence ≥ 90% dokumen', acuan: 'Kl. 7.5', hasil: cakupanBukti >= 90 ? 'lulus' : cakupanBukti >= 60 ? 'parsial' : 'gagal', bukti: `${nBukti}/${dokumen.length} dokumen (${Math.round(cakupanBukti)}%)` },
     { kriteria: 'Dokumen terkendali: Final dengan berkas versi sah ≥ 90%', acuan: 'Kl. 7.5.2–7.5.3', hasil: skor >= 90 ? 'lulus' : skor >= 60 ? 'parsial' : 'gagal', bukti: `${nSiap}/${dokumen.length} dokumen siap audit (${Math.round(skor)}%)` },
     {
-      kriteria: 'Model EnPI valid secara statistik', acuan: 'Kl. 6.4–6.5 · ISO 50006',
+      kriteria: 'EnPI lingkup KINRA valid dan berdata', acuan: 'Kl. 6.4–6.5 · ISO 50006',
       hasil: !enpiAktif.length ? 'gagal' : enpiValid.length === enpiAktif.length ? 'lulus' : enpiValid.length ? 'parsial' : 'gagal',
-      bukti: enpiAktif.length ? `${enpiValid.length}/${enpiAktif.length} EnPI memenuhi R² ≥ ${AMBANG.r2}, CV(RMSE) ≤ ${AMBANG.cvrmse}%` : 'Belum ada EnPI aktif',
+      bukti: enpiAktif.length ? `${enpiValid.length}/${enpiAktif.length} EnPI lingkup KINRA valid (berdata, tanpa ekstrapolasi, regresi R² ≥ ${AMBANG.r2} dan CV(RMSE) ≤ ${AMBANG.cvrmse}%)${enpiKawasan.length ? `; ${enpiKawasan.length} EnPI kawasan tidak dinilai` : ''}` : 'Belum ada EnPI lingkup KINRA aktif',
     },
     {
       kriteria: 'Sasaran energi ditetapkan dengan rencana aksi', acuan: 'Kl. 6.2',
@@ -142,14 +151,17 @@ export function susunLaporan(m: {
         ? { kode: 'bersyarat', label: 'Siap bersyarat', ringkas: `Audit dapat dilanjutkan dengan syarat ${gagalKritis.length} gerbang yang belum lulus ditutup sebelum Stage 1. Risiko temuan mayor masih ada bila kesenjangan kritis tidak diselesaikan.` }
         : { kode: 'belum', label: 'Belum siap', ringkas: `Kesenjangan material masih ada${mayorTerbuka.length ? `, termasuk ${mayorTerbuka.length} ketidaksesuaian mayor terbuka` : ''}. Pertimbangkan percepatan tindakan atau penjadwalan ulang Stage 1 bila kesenjangan kritis tidak dapat ditutup tepat waktu.` }
 
-  // Register kesenjangan
-  const gap: Gap[] = dokumen.filter((d) => !adaBukti(d)).map((d) => {
-    const alasan: string[] = ['Tanpa evidence']
+  // Register kesenjangan: semua dokumen yang belum siap audit (tanpa evidence, masih draf, atau tanpa berkas sah)
+  const gap: Gap[] = dokumen.filter((d) => !siapAudit(d)).map((d) => {
+    const alasan: string[] = []
+    if (!adaBukti(d)) alasan.push('Tanpa evidence')
+    else if (!sudahFinal(d)) alasan.push('Evidence masih draf (belum Final)')
+    else alasan.push('Final tanpa berkas versi sah')
     if (terlambat(d, kini)) alasan.push('Lewat tenggat')
     // Pakai penanda dokumen (migrasi 0015) bila ada; bila belum, pakai daftar klausul wajib
     const kritis = d.wajib_iso ?? d.klausul_kode in KLAUSUL_KRITIS
     if (kritis) alasan.push('Informasi terdokumentasi wajib')
-    const tingkat: Gap['tingkat'] = kritis ? 'Kritis' : terlambat(d, kini) ? 'Tinggi' : 'Sedang'
+    const tingkat: Gap['tingkat'] = kritis && !adaBukti(d) ? 'Kritis' : kritis || terlambat(d, kini) ? 'Tinggi' : 'Sedang'
     return { d, tingkat, alasan }
   }).sort((a, b) => URUT_TINGKAT[a.tingkat] - URUT_TINGKAT[b.tingkat] || (a.d.tenggat ?? '9999').localeCompare(b.d.tenggat ?? '9999') || a.d.kode.localeCompare(b.d.kode))
 
@@ -193,9 +205,9 @@ export function susunLaporan(m: {
   if (nBukti - nSiap > 0) rek.push({ prioritas: 'P1', tindakan: `Sahkan ${nBukti - nSiap} dokumen yang evidence-nya masih draf: tetapkan status Final dan tandai berkas versi sah (bernomor, berrevisi, bertanggal berlaku, ditandatangani).`, acuan: 'Kl. 7.5.2', pemilik: 'Dokumen Kontrol & PIC dokumen', batas: batasP1 })
   if (nTanpaBukti) rek.push({ prioritas: cakupanBukti < 60 ? 'P1' : 'P2', tindakan: `Unggah evidence untuk ${nTanpaBukti} dokumen yang belum memiliki berkas; auditor hanya menilai bukti yang dapat diperiksa.`, acuan: 'Kl. 7.5', pemilik: 'Seluruh PIC dokumen', batas: batasP1 })
   if (nLewat) rek.push({ prioritas: 'P2', tindakan: `Eskalasi ${nLewat} dokumen lewat tenggat ke PIC: ${bebanPic.filter((b) => b.lewat).slice(0, 4).map((b) => `${b.pic} (${b.lewat})`).join(', ')}.`, acuan: 'Kl. 5.3', pemilik: 'Wakil manajemen', batas: batasP1 })
-  if (enpiAktif.length > enpiValid.length) rek.push({ prioritas: 'P2', tindakan: `Perbaiki ${enpiAktif.length - enpiValid.length} model EnPI yang belum memenuhi ambang validitas (tambah variabel relevan, perpanjang periode baseline, atau ganti metode).`, acuan: 'Kl. 6.4–6.5', pemilik: 'Tim energi', batas: batasP2 })
+  if (enpiAktif.length > enpiValid.length) rek.push({ prioritas: 'P2', tindakan: `Lengkapi ${enpiAktif.length - enpiValid.length} EnPI lingkup KINRA yang belum valid (${enpiAktif.filter((h) => !statusEnpi(h).ok).map((h) => `${h.enpi.kode}: ${statusEnpi(h).ket.toLowerCase()}`).join('; ')}). Bila baseline belum terbentuk sebelum audit, siapkan rencana pengukuran sebagai bukti.`, acuan: 'Kl. 6.4–6.6', pemilik: 'Tim energi', batas: batasP2 })
   for (const k of terlemah.filter((x) => x.skor < AMBANG_RAG.hijau && !(x.kritis && gerbang.find((g) => g.acuan === `Kl. ${x.kode}`)?.hasil === 'gagal'))) {
-    rek.push({ prioritas: 'P2', tindakan: `Naikkan kesiapan klausul ${k.kode} ${k.judul.toLowerCase()} dari ${Math.round(k.skor)}%: ${k.jumlah - k.bukti} dokumen belum ada evidence.`, acuan: `Kl. ${k.kode}`, pemilik: 'PIC klausul', batas: batasP2 })
+    rek.push({ prioritas: 'P2', tindakan: `Naikkan kesiapan klausul ${k.kode} ${k.judul.toLowerCase()} dari ${Math.round(k.skor)}%: ${k.jumlah - k.siap} dokumen belum siap audit (${k.jumlah - k.bukti} tanpa evidence, ${k.bukti - k.siap} belum final/sah).`, acuan: `Kl. ${k.kode}`, pemilik: 'PIC klausul', batas: batasP2 })
   }
   if (temuanLewat.length) rek.push({ prioritas: 'P2', tindakan: `Tindak lanjuti ${temuanLewat.length} temuan yang melewati tenggat koreksi.`, acuan: 'Kl. 10.1', pemilik: 'PIC temuan', batas: batasP1 })
   if (minorTerbuka.length) rek.push({ prioritas: 'P3', tindakan: `Selesaikan ${minorTerbuka.length} ketidaksesuaian minor dan siapkan bukti verifikasi untuk auditor.`, acuan: 'Kl. 10.1', pemilik: 'PIC temuan', batas: stage2.tanggal })
@@ -204,10 +216,10 @@ export function susunLaporan(m: {
 
   return {
     skor, ragSkor: rag(skor), putusan,
-    jumlah: dokumen.length, nBukti, cakupanBukti, nLewat, sebaranBukti,
+    jumlah: dokumen.length, nBukti, nSiap, cakupanBukti, nLewat, sebaranBukti,
     perKlausul, perInduk, terlemah, tanpaDokumen,
     temuan: { total: temuan.length, terbuka, mayorTerbuka, minorTerbuka, temuanLewat, matriks: matriksTemuan },
-    enpi: { aktif: enpiAktif, valid: enpiValid },
+    enpi: { aktif: enpiAktif, valid: enpiValid, kawasan: enpiKawasan, status: statusEnpi },
     gerbang, gap, bebanPic, tonggak, stage1, stage2,
     program: { total: kegiatan.length, selesai: programSelesai, konfirmasi: programKonfirmasi },
     risikoUtama, rekomendasi: rek, sasaran, aksi,

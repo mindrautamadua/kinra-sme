@@ -2,12 +2,15 @@ import { ArrowLeft } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { TombolCetak } from '@/components/TombolCetak'
-import { ambilDokumen, ambilIsu, ambilKegiatan, ambilKinerja, ambilKlausul, ambilSasaran, ambilTemuan } from '@/lib/data'
+import { ambilAsetMeter, ambilDeviasi, ambilDokumen, ambilIsu, ambilKegiatan, ambilKinerja, ambilKlausul, ambilParameter, ambilRiwayatSimulasi, ambilSasaran, ambilSeu, ambilTemuan, catatPotret } from '@/lib/data'
+import { deteksiDeviasi, gabungDeviasi, terbuka as deviasiTerbuka } from '@/lib/deviasi'
+import { nilaiEnergi, rupiahRingkas, susunKonversi, tonCo2 } from '@/lib/konversi'
+import { penggunaEnergi } from '@/lib/tinjauan'
 import { AMBANG, LABEL_METODE } from '@/lib/enpi'
 import { angka, hariIni, persen, selisihHari, tanggal, waktu } from '@/lib/format'
 import { AMBANG_RAG, KLAUSUL_KRITIS, LABEL_RAG, type Rag, susunLaporan } from '@/lib/laporan'
 import { penggunaSaya } from '@/lib/sesi'
-import { adaBukti, INDUK_KLAUSUL, terlambat } from '@/lib/status'
+import { adaBukti, grupStatus, INDUK_KLAUSUL, kemajuan, siapAudit, terlambat } from '@/lib/status'
 
 export const dynamic = 'force-dynamic'
 export const metadata = { title: 'Laporan Kesiapan Audit ISO 50001' }
@@ -40,7 +43,7 @@ function Cincin({ p, rag }: { p: number; rag: Rag }) {
   )
 }
 
-function Bagian({ no, judul, acuan, children, baru }: { no: string; judul: string; acuan?: string; children: React.ReactNode; baru?: boolean }) {
+function Bagian({ no, judul, acuan, children, baru, pesan }: { no: string; judul: string; acuan?: string; children: React.ReactNode; baru?: boolean; pesan?: string }) {
   return (
     <section className={`lp-bagian${baru ? ' lp-baru' : ''}`}>
       <header className="lp-bagian-kepala">
@@ -48,17 +51,36 @@ function Bagian({ no, judul, acuan, children, baru }: { no: string; judul: strin
         <h2>{judul}</h2>
         {acuan && <span className="lp-acuan">{acuan}</span>}
       </header>
+      {pesan && <p className="lp-pesan">{pesan}</p>}
       {children}
     </section>
   )
 }
 
 export default async function CetakKesiapan() {
-  const [dokumen, klausul, temuan, isu, kegiatan, kinerja, { sasaran, aksi }, saya] = await Promise.all([
+  const [dokumen, klausul, temuan, isu, kegiatan, kinerja, { sasaran, aksi }, saya, { seu, tinjauan }, { aset }, register, param, simulasi] = await Promise.all([
     ambilDokumen(), ambilKlausul(), ambilTemuan(), ambilIsu(), ambilKegiatan(), ambilKinerja(), ambilSasaran(), penggunaSaya(),
+    ambilSeu(), ambilAsetMeter(), ambilDeviasi(), ambilParameter(), ambilRiwayatSimulasi(),
   ])
   const kini = hariIni()
   const L = susunLaporan({ dokumen, klausul, temuan, isu, kegiatan, hasil: kinerja.hasil, sasaran, aksi, kini })
+  const kv = susunKonversi(param)
+  const lulusGerbang = L.gerbang.filter((g) => g.hasil === 'lulus').length
+  // Potret harian untuk pembanding; potret sebelumnya = hari terakhir sebelum hari ini
+  const sebelum = await catatPotret({ tanggal: kini, skor: L.skor, kemajuan: kemajuan(dokumen), n_siap: L.nSiap, n_bukti: L.nBukti, jumlah: L.jumlah, gerbang_lulus: lulusGerbang, gerbang_total: L.gerbang.length }).catch(() => null)
+  const selisihSkor = sebelum ? L.skor - sebelum.skor : null
+
+  // Tinjauan energi, SEU, deviasi (lingkup KINRA)
+  const pakai = penggunaEnergi({ aset, meter: kinerja.meter, bacaan: kinerja.bacaan, sumber: kinerja.sumber, energi: kinerja.energi, seu, ambangPersen: tinjauan?.ambang_persen ?? 10, ambangKumulatif: tinjauan?.ambang_kumulatif ?? 80 })
+  const nilaiP = (id: string, kwh: number) => nilaiEnergi(kv, id === 'sumber:dexlite' ? kwh / 10 : kwh, id === 'sumber:dexlite' ? 'liter' : 'kWh')
+  const biayaKinra = pakai.daftar.reduce((t, p) => { const n = nilaiP(p.id, p.kwh); return { rupiah: t.rupiah + n.rupiah, kgCo2: t.kgCo2 + n.kgCo2 } }, { rupiah: 0, kgCo2: 0 })
+  const porsiSeu = (kode: string) => pakai.daftar.filter((p) => p.seu?.kode === kode).reduce((t, p) => t + p.porsi, 0)
+  const seuAktif = seu.filter((x) => x.status !== 'Dicabut')
+  const seuTetap = seu.filter((x) => x.status === 'Ditetapkan')
+  const dev = gabungDeviasi(deteksiDeviasi(kinerja.hasil), register).baris
+  const devBuka = dev.filter((x) => deviasiTerbuka(x.r))
+  // Simulasi audit: hasil terakhir per unit
+  const simTerakhir = [...new Map([...simulasi].reverse().map((x) => [x.unit_no, x])).values()].sort((a, b) => a.unit_no - b.unit_no)
   const nomor = `KINRA/SMEn/LKA/${kini.replaceAll('-', '')}`
   const dicetak = waktu(new Date().toISOString())
   const hariS1 = selisihHari(L.stage1.tanggal, new Date(`${kini}T00:00:00`))
@@ -109,30 +131,48 @@ export default async function CetakKesiapan() {
               {['Disusun', 'Ditinjau', 'Disetujui'].map((p) => <tr key={p}><th scope="row">{p}</th><td /><td /><td /><td /></tr>)}
             </tbody>
           </table>
+          <p className="lp-distribusi"><b>Distribusi:</b> Direksi · Wakil Manajemen / Steering Committee · Manajer Energi · Tim Energi KINRA · Konsultan pendamping</p>
         </div>
 
         {/* ── 1. Ringkasan eksekutif ─────────────────────────────── */}
-        <Bagian no="1" judul="Ringkasan eksekutif" baru>
+        <Bagian no="1" judul="Ringkasan eksekutif" baru
+          pesan={L.nBukti - L.nSiap > L.jumlah - L.nBukti
+            ? `Hambatan utama bukan ketersediaan dokumen, melainkan pengesahan: ${L.nBukti - L.nSiap} dokumen sudah ada berkasnya tetapi belum Final/sah.`
+            : `Hambatan utama adalah ketersediaan evidence: ${L.jumlah - L.nBukti} dokumen belum memiliki berkas.`}>
           <p className="lp-lead">
-            Per {tanggal(kini, 'panjang')}, skor kesiapan sistem manajemen energi KINRA adalah <b>{persen(L.skor)}</b>{' '}
-            ({LABEL_RAG[L.ragSkor].toLowerCase()}), dengan {L.nBukti} dari {L.jumlah} dokumen sudah memiliki evidence.{' '}
+            Per {tanggal(kini, 'panjang')}, skor siap audit sistem manajemen energi KINRA adalah <b>{persen(L.skor)}</b>{' '}
+            ({LABEL_RAG[L.ragSkor].toLowerCase()}): {L.nSiap} dari {L.jumlah} dokumen berstatus Final dengan berkas versi sah.
+            {L.nBukti > L.nSiap && <> Sebanyak {L.nBukti - L.nSiap} dokumen lain sudah memiliki berkas tetapi belum disahkan.</>}{' '}
             {lulus} dari {L.gerbang.length} gerbang kesiapan terpenuhi.{' '}
             {hariS1 > 0 ? <>{L.stage1.nama} dijadwalkan {hariS1} hari lagi.</> : hariS1 === 0 ? <>{L.stage1.nama} berlangsung hari ini.</> : <>{L.stage1.nama} telah lewat {-hariS1} hari.</>}{' '}
             Opini kesiapan: <b>{L.putusan.label.toLowerCase()}</b>.
+            {sebelum && selisihSkor !== null && <> Sejak potret {tanggal(sebelum.tanggal)}, skor siap audit {Math.abs(selisihSkor) < 0.05 ? 'tidak berubah' : `${selisihSkor > 0 ? 'naik' : 'turun'} ${angka(Math.abs(selisihSkor), 1)} poin`} ({sebelum.n_siap} → {L.nSiap} dokumen siap).</>}
           </p>
 
           <div className="lp-kpi">
-            <div><span>Skor kesiapan</span><b>{persen(L.skor)}</b><small>target ≥ {AMBANG_RAG.hijau}%</small></div>
-            <div><span>Dokumen ber-evidence</span><b>{L.nBukti}<em>/{L.jumlah}</em></b><small>berkas terunggah</small></div>
+            <div><span>Skor siap audit</span><b>{persen(L.skor)}</b><small>Final + berkas sah · target ≥ {AMBANG_RAG.hijau}%</small></div>
+            <div><span>Belum disahkan</span><b className={L.nBukti - L.nSiap ? 'buruk' : undefined}>{L.nBukti - L.nSiap}</b><small>ada berkas, belum final/sah</small></div>
             <div><span>Tanpa evidence</span><b className={L.jumlah - L.nBukti ? 'buruk' : undefined}>{L.jumlah - L.nBukti}</b><small>dokumen perlu dilengkapi</small></div>
             <div><span>Lewat tenggat</span><b className={L.nLewat ? 'buruk' : undefined}>{L.nLewat}</b><small>dokumen tanpa evidence</small></div>
             <div><span>NC mayor terbuka</span><b className={L.temuan.mayorTerbuka.length ? 'buruk' : undefined}>{L.temuan.mayorTerbuka.length}</b><small>{L.temuan.minorTerbuka.length} minor terbuka</small></div>
-            <div><span>EnPI valid</span><b>{L.enpi.valid.length}<em>/{L.enpi.aktif.length}</em></b><small>R² ≥ {AMBANG.r2} · CV ≤ {AMBANG.cvrmse}%</small></div>
+            <div><span>EnPI lingkup KINRA valid</span><b>{L.enpi.valid.length}<em>/{L.enpi.aktif.length}</em></b><small>berdata, tanpa ekstrapolasi</small></div>
           </div>
+
+          <h3 className="lp-h3">Peta kesiapan per klausul</h3>
+          <div className="lp-peta" role="img" aria-label={`Kesiapan per klausul: ${L.perKlausul.filter((k) => k.jumlah).map((k) => `${k.kode} ${Math.round(k.skor)}%`).join(', ')}`}>
+            {L.perKlausul.map((k) => (
+              <div key={k.kode} className={`lp-peta-sel ${k.rag ?? 'kosong'}`}>
+                <b>{k.kode}{k.kritis && '★'}</b>
+                <span className="lp-peta-bar">{k.jumlah > 0 && <><i className="siap" style={{ width: `${(k.siap / k.jumlah) * 100}%` }} /><i className="proses" style={{ width: `${((k.bukti - k.siap) / k.jumlah) * 100}%` }} /></>}</span>
+                <small>{k.jumlah ? `${k.siap}/${k.jumlah}` : '–'}</small>
+              </div>
+            ))}
+          </div>
+          <p className="lp-catatan">Hijau: siap audit · kuning: ada berkas belum final/sah · kosong: belum ada evidence. ★ informasi terdokumentasi wajib. Warna sel mengikuti penilaian klausul.</p>
 
           <div className="lp-dua">
             <div>
-              <h3 className="lp-h3">Sebaran evidence dokumen</h3>
+              <h3 className="lp-h3">Sebaran kesiapan dokumen</h3>
               <div className="lp-tumpuk" role="img" aria-label={L.sebaranBukti.map((x) => `${x.label} ${x.n}`).join(', ')}>
                 {L.sebaranBukti.filter((x) => x.n).map((x) => <i key={x.s} className={`st-${x.s}`} style={{ flexGrow: x.n }} />)}
               </div>
@@ -157,6 +197,7 @@ export default async function CetakKesiapan() {
               <ol className="lp-poin">
                 {L.temuan.mayorTerbuka.length > 0 && <li><b>{L.temuan.mayorTerbuka.length} ketidaksesuaian mayor terbuka.</b> Satu mayor terbuka saat Stage 2 menahan rekomendasi sertifikasi.</li>}
                 {L.gerbang.filter((g) => g.hasil === 'gagal').slice(0, 3).map((g) => <li key={g.kriteria}><b>{g.kriteria} ({g.acuan}) belum memadai.</b> {g.bukti}.</li>)}
+                {L.nBukti > L.nSiap && <li><b>{L.nBukti - L.nSiap} dokumen sudah ada berkas tetapi belum disahkan.</b> Draf atau dokumen tanpa versi sah belum dihitung siap: auditor memeriksa informasi terdokumentasi yang terkendali (Kl. 7.5).</li>}
                 {L.nBukti < L.jumlah && <li><b>{L.jumlah - L.nBukti} dokumen tanpa evidence.</b> Dokumen tanpa berkas bernilai nol dalam skor karena auditor menilai bukti, bukan klaim.</li>}
                 {L.nLewat > 0 && <li><b>{L.nLewat} dokumen lewat tenggat.</b> Beban terbesar pada {L.bebanPic.filter((b) => b.lewat).slice(0, 3).map((b) => b.pic).join(', ') || '–'}.</li>}
                 {L.terlemah.length > 0 && <li><b>Klausul terlemah:</b> {L.terlemah.map((k) => `${k.kode} (${Math.round(k.skor)}%)`).join(', ')}.</li>}
@@ -167,7 +208,8 @@ export default async function CetakKesiapan() {
         </Bagian>
 
         {/* ── 2. Gerbang kesiapan ────────────────────────────────── */}
-        <Bagian no="2" judul="Gerbang kesiapan audit" acuan="Informasi terdokumentasi wajib ISO 50001:2018">
+        <Bagian no="2" judul="Gerbang kesiapan audit" acuan="Informasi terdokumentasi wajib ISO 50001:2018"
+          pesan={`${lulusGerbang} dari ${L.gerbang.length} gerbang lulus; ${L.gerbang.filter((g) => g.hasil === 'gagal').length} gerbang belum lulus berpotensi menjadi temuan mayor pada ${L.stage1.nama}.`}>
           <p className="lp-p">Gerbang adalah syarat minimum yang lazim diperiksa lembaga sertifikasi pada Stage 1. Satu gerbang berstatus “Belum” berpotensi menjadi temuan mayor atau menunda Stage 2.</p>
           <table className="lp-tbl">
             <thead><tr><th scope="col" style={{ width: '4%' }}>#</th><th scope="col">Kriteria</th><th scope="col" style={{ width: '16%' }}>Acuan</th><th scope="col" style={{ width: '36%' }}>Bukti penilaian</th><th scope="col" style={{ width: '12%' }}>Hasil</th></tr></thead>
@@ -183,13 +225,14 @@ export default async function CetakKesiapan() {
         </Bagian>
 
         {/* ── 3. Kesiapan per klausul ────────────────────────────── */}
-        <Bagian no="3" judul="Kesiapan per klausul" acuan="Klausul 4–10" baru>
+        <Bagian no="3" judul="Kesiapan per klausul" acuan="Klausul 4–10" baru
+          pesan={L.terlemah.length ? `Klausul terlemah ${L.terlemah.map((k) => `${k.kode} (${Math.round(k.skor)}%)`).join(', ')}: prioritaskan pengesahan dokumen pada klausul ini.` : undefined}>
           <table className="lp-tbl">
             <thead>
               <tr>
                 <th scope="col" style={{ width: '7%' }}>Klausul</th><th scope="col">Persyaratan</th>
                 <th scope="col" className="angka" style={{ width: '7%' }}>Dok.</th>
-                <th scope="col" className="angka" style={{ width: '9%' }}>Evidence</th><th scope="col" className="angka" style={{ width: '7%' }}>Lewat</th>
+                <th scope="col" className="angka" style={{ width: '9%' }}>Siap / ber-evidence</th><th scope="col" className="angka" style={{ width: '7%' }}>Lewat</th>
                 <th scope="col" style={{ width: '20%' }}>Skor</th><th scope="col" style={{ width: '13%' }}>Penilaian</th>
               </tr>
             </thead>
@@ -203,12 +246,13 @@ export default async function CetakKesiapan() {
         </Bagian>
 
         {/* ── 4. Register kesenjangan ────────────────────────────── */}
-        <Bagian no="4" judul="Register kesenjangan" acuan={`${L.gap.length} butir`} baru>
+        <Bagian no="4" judul="Register kesenjangan" acuan={`${L.gap.length} butir`} baru
+          pesan={`${L.gap.filter((g) => g.tingkat === 'Kritis').length} kesenjangan kritis dan ${L.gap.filter((g) => g.tingkat === 'Tinggi').length} tinggi harus ditutup sebelum ${L.stage1.nama} (${tanggal(L.stage1.tanggal)}).`}>
           <p className="lp-p">
-            Semua dokumen yang belum memiliki berkas evidence, diurutkan menurut tingkat kesenjangan lalu tenggat.{' '}
-            <b>Kritis</b>: informasi terdokumentasi wajib ISO 50001. <b>Tinggi</b>: lewat tenggat. <b>Sedang</b>: lainnya.
+            Semua dokumen yang belum siap audit: tanpa evidence, evidence masih draf, atau Final tanpa berkas versi sah. Diurutkan menurut tingkat kesenjangan lalu tenggat.{' '}
+            <b>Kritis</b>: dokumen wajib ISO 50001 tanpa evidence. <b>Tinggi</b>: dokumen wajib yang belum disahkan, atau lewat tenggat. <b>Sedang</b>: lainnya.
           </p>
-          {L.gap.length === 0 ? <p className="lp-p"><b>Tidak ada kesenjangan.</b> Semua dokumen memiliki evidence.</p> : (
+          {L.gap.length === 0 ? <p className="lp-p"><b>Tidak ada kesenjangan.</b> Semua dokumen berstatus Final dengan berkas versi sah.</p> : (
             <table className="lp-tbl">
               <thead><tr><th scope="col" style={{ width: '10%' }}>Tingkat</th><th scope="col" style={{ width: '9%' }}>Kode</th><th scope="col">Dokumen</th><th scope="col" style={{ width: '7%' }}>Kl.</th><th scope="col" style={{ width: '13%' }}>PIC</th><th scope="col" style={{ width: '11%' }}>Tenggat</th><th scope="col" style={{ width: '20%' }}>Kesenjangan</th></tr></thead>
               <tbody>
@@ -232,7 +276,8 @@ export default async function CetakKesiapan() {
         </Bagian>
 
         {/* ── 5. Temuan audit ────────────────────────────────────── */}
-        <Bagian no="5" judul="Temuan audit dan tindakan korektif" acuan="Kl. 9.2 · 10.1" baru>
+        <Bagian no="5" judul="Temuan audit dan kesiapan auditee" acuan="Kl. 7.3 · 9.2 · 10.1" baru
+          pesan={L.temuan.mayorTerbuka.length ? `${L.temuan.mayorTerbuka.length} ketidaksesuaian mayor terbuka menahan rekomendasi sertifikasi.` : simTerakhir.length ? `Tidak ada mayor terbuka; ${simTerakhir.filter((x) => x.skor / x.skor_maks < 0.67).length} dari ${simTerakhir.length} unit yang berlatih masih di bawah 67% pada simulasi audit.` : 'Tidak ada ketidaksesuaian mayor terbuka. Belum ada unit yang menjalani simulasi audit.'}>
           <div className="lp-dua">
             <table className="lp-tbl">
               <thead><tr><th scope="col">Kategori</th><th scope="col" className="angka">Terbuka</th><th scope="col" className="angka">Proses</th><th scope="col" className="angka">Verifikasi</th><th scope="col" className="angka">Tertutup</th></tr></thead>
@@ -258,27 +303,82 @@ export default async function CetakKesiapan() {
               </tbody>
             </table>
           )}
-        </Bagian>
-
-        {/* ── 6. Kinerja energi ──────────────────────────────────── */}
-        <Bagian no="6" judul="Kinerja energi, EnPI, dan sasaran" acuan="Kl. 6.2 · 6.4 · 6.5 · 9.1">
-          {L.enpi.aktif.length === 0 ? <p className="lp-p">Belum ada EnPI aktif. Ini kesenjangan material: ISO 50001 mensyaratkan EnPI dan EnB untuk menunjukkan peningkatan kinerja energi.</p> : (
+          <h3 className="lp-h3">Kesiapan auditee: hasil simulasi audit terakhir per unit</h3>
+          {simTerakhir.length === 0 ? <p className="lp-p kecil">Belum ada simulasi audit tersimpan. Disarankan setiap unit auditee berlatih minimal satu kali sebelum {L.stage1.nama}.</p> : (
             <table className="lp-tbl">
-              <thead><tr><th scope="col" style={{ width: '9%' }}>Kode</th><th scope="col">EnPI</th><th scope="col" style={{ width: '18%' }}>Metode</th><th scope="col" style={{ width: '16%' }}>Baseline</th><th scope="col" className="angka" style={{ width: '7%' }}>R²</th><th scope="col" className="angka" style={{ width: '10%' }}>CV(RMSE)</th><th scope="col" style={{ width: '12%' }}>Validitas</th></tr></thead>
+              <thead><tr><th scope="col">Unit</th><th scope="col" style={{ width: '14%' }}>Tahap</th><th scope="col" style={{ width: '14%' }}>Tanggal</th><th scope="col" className="angka" style={{ width: '10%' }}>Skor</th><th scope="col" style={{ width: '30%' }}>Prediksi temuan</th></tr></thead>
               <tbody>
-                {L.enpi.aktif.map((h) => {
-                  const ok = L.enpi.valid.includes(h)
+                {simTerakhir.map((x) => {
+                  const pr = Math.round((x.skor / x.skor_maks) * 100)
                   return (
-                    <tr key={h.enpi.kode}>
-                      <td className="mono kecil">{h.enpi.kode}</td><td>{h.enpi.nama}{h.galat && <div className="kecil buruk">{h.galat}</div>}</td>
-                      <td className="kecil">{LABEL_METODE[h.enpi.metode]}</td><td className="kecil">{tanggal(h.enpi.baseline_mulai)} – {tanggal(h.enpi.baseline_selesai)}</td>
-                      <td className="angka">{h.model?.r2 == null ? '–' : angka(h.model.r2, 2)}</td><td className="angka">{h.model?.cvrmse == null ? '–' : persen(h.model.cvrmse)}</td>
-                      <td><Tanda rag={ok ? 'hijau' : 'merah'}>{ok ? 'Valid' : 'Perlu perbaikan'}</Tanda></td>
+                    <tr key={x.id}>
+                      <td>{x.unit_nama}</td><td className="kecil">{x.mode === 'stage1' ? 'Stage 1' : 'Stage 2'}</td><td className="kecil">{tanggal(x.dibuat_at)}</td>
+                      <td className={`angka${pr < 40 ? ' buruk' : ''}`}>{pr}%</td>
+                      <td className="kecil">{x.prediksi.length ? x.prediksi.map((p) => `${p.kategori} ${p.klausul}`).join(', ') : 'Tidak ada'}</td>
                     </tr>
                   )
                 })}
               </tbody>
             </table>
+          )}
+          <p className="lp-p kecil">{simTerakhir.length} dari 13 unit auditee sudah berlatih. Prediksi temuan simulasi adalah alat latihan, bukan keputusan auditor.</p>
+        </Bagian>
+
+        {/* ── 6. Kinerja energi ──────────────────────────────────── */}
+        <Bagian no="6" judul="Tinjauan energi, SEU, kinerja energi, dan sasaran" acuan="Kl. 6.2 · 6.3 · 6.4 · 6.5 · 9.1" baru
+          pesan={`${pakai.daftar.slice(0, 2).map((p) => p.nama).join(' dan ')} menyerap ${persen(pakai.daftar.slice(0, 2).reduce((t, p) => t + p.porsi, 0), 0)} energi KINRA; ${seuTetap.length ? `${seuTetap.length} SEU sudah ditetapkan` : 'SEU belum ditetapkan resmi'}, ${L.enpi.valid.length} dari ${L.enpi.aktif.length} EnPI lingkup KINRA valid${devBuka.length ? `, dan ${devBuka.length} deviasi signifikan belum ditutup` : ''}.`}>
+          <h3 className="lp-h3">Tinjauan energi dan SEU (lingkup KINRA, tanpa tenant)</h3>
+          <p className="lp-p">
+            Energi KINRA ±{angka(pakai.total / 1000, 0)} MWh setara per bulan (±{rupiahRingkas(biayaKinra.rupiah)} dan {tonCo2(biayaKinra.kgCo2)} per bulan);
+            {' '}{persen(pakai.porsiMeter, 0)} terukur meter, sisanya perkiraan inventaris. {pakai.tanpaData.length} dari {aset.length} aset belum memiliki data energi.
+            {kv.asumsi.length > 0 && <> Rupiah dan CO₂ memakai parameter yang sebagian masih asumsi ({kv.asumsi.join(', ')}).</>}
+          </p>
+          <table className="lp-tbl">
+            <thead><tr><th scope="col">Pengguna energi</th><th scope="col" className="angka" style={{ width: '12%' }}>Porsi</th><th scope="col" className="angka" style={{ width: '16%' }}>Biaya/bulan</th><th scope="col" style={{ width: '16%' }}>Dasar data</th><th scope="col" style={{ width: '18%' }}>Status SEU</th></tr></thead>
+            <tbody>
+              {pakai.daftar.slice(0, 6).map((p) => (
+                <tr key={p.id}>
+                  <td>{p.nama}</td><td className="angka">{persen(p.porsi)}</td><td className="angka">{rupiahRingkas(nilaiP(p.id, p.kwh).rupiah)}</td>
+                  <td className="kecil">{p.dasar === 'meter' ? 'Bacaan meter' : p.dasar === 'inventaris' ? 'Perkiraan inventaris' : 'Data BBM'}</td>
+                  <td>{p.seu ? <Tanda rag={p.seu.status === 'Ditetapkan' ? 'hijau' : 'kuning'}>{p.seu.kode} · {p.seu.status}</Tanda> : p.kandidat ? <Tanda rag="merah">Kandidat, belum di register</Tanda> : <span className="kecil">–</span>}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {seuAktif.length > 0 && (
+            <p className="lp-p kecil">
+              Register SEU: {seuAktif.map((x) => `${x.kode} ${x.nama} (${persen(porsiSeu(x.kode), 0)}, ${x.status}${x.enpi_kode ? `, ${x.enpi_kode}` : ', tanpa EnPI'}${x.personel ? '' : ', personel belum dicatat'})`).join('; ')}.
+              {' '}Tinjauan energi {tinjauan ? (tinjauan.status === 'Disetujui' ? `disetujui ${tinjauan.disetujui_oleh ?? ''}` : 'masih draft') : 'belum dicatat'}.
+            </p>
+          )}
+          <h3 className="lp-h3">Deviasi signifikan kinerja energi (Kl. 9.1)</h3>
+          <p className="lp-p">
+            {dev.length
+              ? <>{dev.length} deviasi terdeteksi pada EnPI lingkup KINRA; <b>{devBuka.length} belum ditutup</b>{devBuka.filter((x) => !x.r).length ? `, ${devBuka.filter((x) => !x.r).length} di antaranya belum diselidiki` : ''}. Contoh: {devBuka.slice(0, 3).map((x) => `${x.d.enpi_kode} ${x.d.label} (${x.d.selisih_persen !== null ? `${x.d.selisih_persen > 0 ? '+' : ''}${angka(x.d.selisih_persen, 0)}%` : 'data hilang'})`).join(', ')}.</>
+              : 'Tidak ada deviasi signifikan terdeteksi pada EnPI lingkup KINRA.'}
+          </p>
+          <h3 className="lp-h3">EnPI dan sasaran</h3>
+          <p className="lp-p">Penilaian hanya atas EnPI lingkup KINRA (aset dan fasilitas dalam kendali KINRA). Data listrik PLN kawasan mencakup tenant sehingga EnPI kawasan tidak dipakai untuk mengklaim peningkatan kinerja SMEn.</p>
+          {L.enpi.aktif.length === 0 ? <p className="lp-p">Belum ada EnPI lingkup KINRA aktif. Ini kesenjangan material: ISO 50001 mensyaratkan EnPI dan EnB untuk menunjukkan peningkatan kinerja energi.</p> : (
+            <table className="lp-tbl">
+              <thead><tr><th scope="col" style={{ width: '9%' }}>Kode</th><th scope="col">EnPI</th><th scope="col" style={{ width: '18%' }}>Metode</th><th scope="col" style={{ width: '16%' }}>Baseline</th><th scope="col" className="angka" style={{ width: '7%' }}>R²</th><th scope="col" className="angka" style={{ width: '10%' }}>CV(RMSE)</th><th scope="col" style={{ width: '12%' }}>Validitas</th></tr></thead>
+              <tbody>
+                {L.enpi.aktif.map((h) => {
+                  const st = L.enpi.status(h)
+                  return (
+                    <tr key={h.enpi.kode}>
+                      <td className="mono kecil">{h.enpi.kode}</td><td>{h.enpi.nama}{h.galat && <div className="kecil buruk">{h.galat}</div>}</td>
+                      <td className="kecil">{LABEL_METODE[h.enpi.metode]}</td><td className="kecil">{tanggal(h.enpi.baseline_mulai)} – {tanggal(h.enpi.baseline_selesai)}</td>
+                      <td className="angka">{h.model?.r2 == null ? '–' : angka(h.model.r2, 2)}</td><td className="angka">{h.model?.cvrmse == null ? '–' : persen(h.model.cvrmse)}</td>
+                      <td><Tanda rag={st.ok ? 'hijau' : 'merah'}>{st.ok ? 'Valid' : 'Belum valid'}</Tanda><div className="kecil">{st.ket}</div></td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          )}
+          {L.enpi.kawasan.length > 0 && (
+            <p className="lp-p kecil">Konteks kawasan (tidak dinilai): {L.enpi.kawasan.map((h) => `${h.enpi.kode} ${h.enpi.nama}${h.ekstrapolasi ? ' (ekstrapolasi)' : ''}`).join('; ')}.</p>
           )}
           {sasaran.length > 0 && (
             <table className="lp-tbl">
@@ -300,7 +400,8 @@ export default async function CetakKesiapan() {
         </Bagian>
 
         {/* ── 7. Risiko & jadwal ─────────────────────────────────── */}
-        <Bagian no="7" judul="Risiko utama dan jadwal sertifikasi" acuan="Kl. 6.1" baru>
+        <Bagian no="7" judul="Risiko utama dan jadwal sertifikasi" acuan="Kl. 6.1" baru
+          pesan={`${L.stage1.nama} ${hariS1 > 0 ? `${hariS1} hari lagi` : hariS1 === 0 ? 'hari ini' : 'telah lewat'}; ${L.risikoUtama.filter((r) => r.skor >= 15).length ? `${L.risikoUtama.filter((r) => r.skor >= 15).length} risiko tinggi perlu dipantau` : 'tidak ada risiko berskor tinggi di register, pastikan penilaian risiko mutakhir'}.`}>
           <div className="lp-dua">
             <div>
               <h3 className="lp-h3">Lima risiko SMEn tertinggi</h3>
@@ -330,7 +431,8 @@ export default async function CetakKesiapan() {
         </Bagian>
 
         {/* ── 8. Rekomendasi ─────────────────────────────────────── */}
-        <Bagian no="8" judul="Rekomendasi dan rencana tindak">
+        <Bagian no="8" judul="Rekomendasi dan rencana tindak"
+          pesan={`${L.rekomendasi.filter((r) => r.prioritas === 'P1').length} tindakan P1 harus selesai paling lambat ${tanggal(L.rekomendasi.find((r) => r.prioritas === 'P1')?.batas ?? L.stage1.tanggal)}.`}>
           <p className="lp-p"><b>P1</b> wajib selesai sebelum {L.stage1.nama}; <b>P2</b> menurunkan risiko temuan; <b>P3</b> memperkuat kesiapan wawancara dan bukti penerapan.</p>
           <table className="lp-tbl">
             <thead><tr><th scope="col" style={{ width: '4%' }}>#</th><th scope="col" style={{ width: '7%' }}>Prioritas</th><th scope="col">Tindakan</th><th scope="col" style={{ width: '11%' }}>Acuan</th><th scope="col" style={{ width: '17%' }}>Penanggung jawab</th><th scope="col" style={{ width: '12%' }}>Batas waktu</th></tr></thead>
@@ -354,7 +456,7 @@ export default async function CetakKesiapan() {
                 <tr key={d.id}>
                   <td title={judulKlausul[d.klausul_kode]}>{d.klausul_kode}</td><td className="mono">{d.kode}{d.wajib_iso && <span className="lp-bintang" title="Informasi terdokumentasi wajib ISO 50001"> ★</span>}</td><td>{d.nama}</td>
                   <td className="mono">{d.nomor_dokumen ?? '–'}</td><td>{d.pic ?? '–'}</td>
-                  <td className={`angka${adaBukti(d) ? '' : ' buruk'}`}>{adaBukti(d) ? `${d.jumlah_berkas} berkas` : 'Tidak ada'}</td>
+                  <td className={`angka${siapAudit(d) ? '' : ' buruk'}`}>{adaBukti(d) ? `${d.jumlah_berkas} berkas${(d.jumlah_sah ?? 0) ? ` · ${d.jumlah_sah} sah` : ''}` : 'Tidak ada'}{adaBukti(d) && !siapAudit(d) && <div className="kecil">{grupStatus(d.status) === 'final' ? 'tanpa berkas sah' : 'belum Final'}</div>}</td>
                   <td className={terlambat(d, kini) ? 'buruk' : undefined}>{tanggal(d.tenggat)}</td>
                 </tr>
               ))}
@@ -367,8 +469,10 @@ export default async function CetakKesiapan() {
         <Bagian no="B" judul="Lampiran B · Metodologi, definisi, dan batasan" baru>
           <h3 className="lp-h3">Metode penilaian</h3>
           <p className="lp-p">
-            Skor kesiapan adalah persentase dokumen dan rekaman yang akan diperiksa auditor yang sudah memiliki evidence:
-            minimal satu berkas terunggah di aplikasi. Dokumen tanpa evidence bernilai 0,
+            Skor kesiapan (siap audit) adalah persentase dokumen dan rekaman yang akan diperiksa auditor yang berstatus <b>Final</b>
+            dan memiliki minimal satu berkas bertanda <b>versi sah</b> (dokumen yang disahkan/ditandatangani, atau rekaman yang lengkap).
+            Dokumen yang baru berupa draf atau belum memiliki berkas versi sah bernilai 0, karena auditor memeriksa informasi terdokumentasi yang terkendali (Kl. 7.5).
+            Kemajuan evidence (berkas apa pun, termasuk draf) dilaporkan terpisah sebagai indikator proses. Dokumen tanpa evidence bernilai 0,
             karena auditor menilai bukti objektif yang dapat diperiksa.
             Skor klausul dan bab dihitung dengan cara yang sama atas dokumen yang dipetakan ke klausul tersebut.
           </p>
@@ -394,7 +498,8 @@ export default async function CetakKesiapan() {
           <p className="lp-p kecil">
             Laporan ini dibangkitkan otomatis dari data aplikasi SMEn KINRA pada {dicetak} WIB dan mencerminkan kondisi register pada saat itu.
             Penilaian bersifat internal dan tidak menggantikan audit internal, tinjauan manajemen, maupun keputusan lembaga sertifikasi.
-            Keberadaan berkas evidence dinilai dari jumlah berkas terunggah, bukan dari kecukupan isinya; kecukupan isi diverifikasi melalui audit internal.
+            Status Final dan penanda versi sah ditetapkan pengguna aplikasi; kecukupan isi dokumen tidak dinilai otomatis dan diverifikasi melalui audit internal.
+            Penilaian EnPI hanya mencakup EnPI lingkup KINRA; EnPI berlingkup kawasan (termasuk listrik tenant) ditampilkan sebagai konteks dan tidak menjadi dasar klaim kinerja.
           </p>
         </Bagian>
 
@@ -417,7 +522,7 @@ function Baris({ induk, nama, rows }: { induk: string; nama: string; rows: Retur
           <td>{k.kode}{k.kritis && <span className="lp-bintang" title="Informasi terdokumentasi wajib"> ★</span>}</td>
           <td>{k.judul}</td>
           <td className="angka">{k.jumlah}</td>
-          <td className={`angka${k.jumlah && k.bukti < k.jumlah ? ' buruk' : ''}`}>{k.jumlah ? `${k.bukti}/${k.jumlah}` : '–'}</td>
+          <td className={`angka${k.jumlah && k.siap < k.jumlah ? ' buruk' : ''}`}>{k.jumlah ? `${k.siap} / ${k.bukti}` : '–'}</td>
           <td className={`angka${k.lewat ? ' buruk' : ''}`}>{k.lewat}</td>
           <td><span className="lp-skor"><Batang p={k.skor} rag={k.rag} /><b>{k.jumlah ? `${Math.round(k.skor)}%` : '–'}</b></span></td>
           <td>{k.rag ? <Tanda rag={k.rag}>{LABEL_RAG[k.rag]}</Tanda> : <Tanda rag="merah">Belum dipetakan</Tanda>}</td>

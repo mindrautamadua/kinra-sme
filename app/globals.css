@@ -1793,3 +1793,18 @@ dialog.tj-ev-dlg { max-height: calc(100dvh - 32px); overflow-y: auto; overscroll
 .berkas-draf { margin-left: 8px; padding: 1px 7px; border-radius: 999px; font-size: 10.5px; font-weight: 600; color: var(--muted); background: rgba(var(--fg-rgb), 0.06); vertical-align: 1px; }
 .berkas-tanda svg { width: 14px; height: 14px; }
 .berkas-tanda.aktif { color: var(--good); border-color: color-mix(in srgb, var(--good) 60%, var(--line)); background: color-mix(in srgb, var(--good) 10%, var(--surface)); }
+
+/* ---------- Laporan cetak: judul-pesan, peta klausul, distribusi ---------- */
+.lp-pesan { margin: -1mm 0 4mm; padding: 2.5mm 4mm; border-left: 1.2mm solid var(--p-brand); background: var(--p-fill); font-size: 10pt; font-weight: 600; line-height: 1.5; color: var(--p-ink); }
+.lp-peta { display: grid; grid-template-columns: repeat(auto-fill, minmax(17mm, 1fr)); gap: 1.6mm; margin: 2mm 0 1mm; }
+.lp-peta-sel { display: flex; flex-direction: column; gap: 1mm; padding: 1.8mm 2mm; border-radius: 1.4mm; border: 0.25mm solid var(--p-line); background: #fff; break-inside: avoid; }
+.lp-peta-sel.hijau { background: var(--p-hijau-bg); border-color: color-mix(in srgb, var(--p-hijau) 40%, transparent); }
+.lp-peta-sel.kuning { background: var(--p-kuning-bg); border-color: color-mix(in srgb, var(--p-kuning) 35%, transparent); }
+.lp-peta-sel.merah { background: var(--p-merah-bg); border-color: color-mix(in srgb, var(--p-merah) 35%, transparent); }
+.lp-peta-sel.kosong { background: var(--p-netral-bg); }
+.lp-peta-sel b { font-size: 8.5pt; color: var(--p-ink); font-variant-numeric: tabular-nums; }
+.lp-peta-sel small { font-size: 7pt; color: var(--p-muted); font-variant-numeric: tabular-nums; }
+.lp-peta-bar { display: flex; height: 1.4mm; border-radius: 0.7mm; overflow: hidden; background: rgba(13, 34, 38, 0.1); }
+.lp-peta-bar i { display: block; height: 100%; }
+.lp-peta-bar i.siap { background: var(--p-hijau); } .lp-peta-bar i.proses { background: #d39a17; }
+.lp-distribusi { font-size: 8pt; color: var(--p-ink-2); margin-top: 3mm; }
