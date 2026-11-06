@@ -1,20 +1,22 @@
-import { AlertTriangle, Gauge, Layers, Target, Zap } from 'lucide-react'
+import { AlertTriangle, Crosshair, Gauge, Layers, Wallet } from 'lucide-react'
 import Link from 'next/link'
 import { Chip } from '@/components/Chip'
-import { SectionHead } from '@/components/SectionHead'
 import { Istilah } from '@/components/Istilah'
+import { SectionHead } from '@/components/SectionHead'
 import { ambilAsetMeter, ambilKinerja, ambilParameter, ambilSeu } from '@/lib/data'
+import { angka, energiListrik, hariIni, persen, tanggal } from '@/lib/format'
 import { nilaiEnergi, rupiahRingkas, susunKonversi, tonCo2 } from '@/lib/konversi'
-import { angka, energiListrik, persen, tanggal } from '@/lib/format'
 import { penggunaEnergi } from '@/lib/tinjauan'
-import { FormTinjauan } from './FormTinjauan'
 import { DiagramSubmeter } from './DiagramSubmeter'
+import { FormTinjauan } from './FormTinjauan'
+import { type BarisKesiapan, KesiapanSeu } from './KesiapanSeu'
+import { ParetoGrafik } from './ParetoGrafik'
 import { RegisterSeu } from './RegisterSeu'
 
 export const dynamic = 'force-dynamic'
 
 export default async function TinjauanPage() {
-  const [{ seu, tinjauan, siap }, { aset, meter, bacaan }, { sumber, energi, variabel, enpi }, param] = await Promise.all([ambilSeu(), ambilAsetMeter(), ambilKinerja(), ambilParameter()])
+  const [{ seu, tinjauan, siap }, { aset, meter, bacaan }, { sumber, energi, variabel, enpi, hasil }, param] = await Promise.all([ambilSeu(), ambilAsetMeter(), ambilKinerja(), ambilParameter()])
   const kv = susunKonversi(param)
   // Rupiah & CO₂ per pengguna: BBM dihitung dari liter (kWh setara ÷ 10 kWh/liter, 36 MJ/liter)
   const nilaiP = (id: string, kwh: number) => nilaiEnergi(kv, id === 'sumber:dexlite' ? kwh / 10 : kwh, id === 'sumber:dexlite' ? 'liter' : 'kWh')
@@ -28,90 +30,138 @@ export default async function TinjauanPage() {
     )
   }
 
+  const kini = hariIni()
   const ambangPersen = tinjauan?.ambang_persen ?? 10
   const ambangKumulatif = tinjauan?.ambang_kumulatif ?? 80
   const { daftar, total, tanpaData, porsiMeter } = penggunaEnergi({ aset, meter, bacaan, sumber, energi, seu, ambangPersen, ambangKumulatif })
+  const aktif = seu.filter((s) => s.status !== 'Dicabut')
   const ditetapkan = seu.filter((s) => s.status === 'Ditetapkan')
-  const tercakup = daftar.filter((p) => p.seu && p.seu.status !== 'Dicabut').reduce((t, p) => t + p.porsi, 0)
+  const porsiSeu = (kode: string) => daftar.filter((p) => p.seu?.kode === kode).reduce((t, p) => t + p.porsi, 0)
+  const tercakup = aktif.reduce((t, s) => t + porsiSeu(s.kode), 0)
   const kandidatTanpaSeu = daftar.filter((p) => p.kandidat && !p.seu)
-  const maks = Math.max(1, ...daftar.map((p) => p.kwh))
   const totalNilai = daftar.reduce((t, p) => { const n = nilaiP(p.id, p.kwh); return { rupiah: t.rupiah + n.rupiah, kgCo2: t.kgCo2 + n.kgCo2 } }, { rupiah: 0, kgCo2: 0 })
+  const nilaiSeuTahun = daftar.filter((p) => p.seu && p.seu.status !== 'Dicabut').reduce((t, p) => t + nilaiP(p.id, p.kwh).rupiah, 0) * 12
   const asetBesarTanpaData = [...tanpaData].sort((a, b) => (b.luas_m2 ?? 0) - (a.luas_m2 ?? 0))
+  const dua = daftar.slice(0, 2)
+  const porsiDua = dua.reduce((t, p) => t + p.porsi, 0)
+
+  // Kesiapan per SEU: daftar cek yang lazim ditanyakan auditor
+  const [th, bl] = [Number(kini.slice(0, 4)), Number(kini.slice(5, 7))]
+  const lalu = bl === 1 ? { t: th - 1, b: 12 } : { t: th, b: bl - 1 }
+  const terbaca = (kode: string) => bacaan.some((b) => b.meter_kode === kode && b.tahun === lalu.t && b.bulan === lalu.b && b.stand_akhir !== null)
+  const kesiapan: BarisKesiapan[] = aktif.map((s) => {
+    const h = hasil.find((x) => x.enpi.kode === s.enpi_kode)
+    const adaData = !!h && !h.galat && !!h.model
+    return {
+      kode: s.kode, nama: s.nama.replace(/\s*\(.*\)$/, ''), porsi: porsiSeu(s.kode),
+      cek: [
+        { label: 'Ditetapkan', ok: s.status === 'Ditetapkan', ket: s.status === 'Ditetapkan' ? `Ditetapkan ${tanggal(s.ditetapkan_at)}${s.ditetapkan_oleh ? ` oleh ${s.ditetapkan_oleh}` : ''}` : 'Masih kandidat; tetapkan oleh admin/konsultan' },
+        { label: 'Alasan & kriteria', ok: !!s.alasan && s.kriteria.length > 0, ket: s.alasan ? 'Alasan penetapan tercatat' : 'Tulis alasan penetapan' },
+        { label: 'Variabel relevan', ok: s.variabel_kode.length > 0, ket: s.variabel_kode.length ? s.variabel_kode.join(', ') : 'Tentukan faktor yang memengaruhi konsumsi' },
+        { label: 'EnPI', ok: !!s.enpi_kode, ket: s.enpi_kode ? `${s.enpi_kode}` : 'Hubungkan ke EnPI lingkup KINRA' },
+        { label: 'Data EnPI', ok: s.enpi_kode ? (adaData ? true : null) : false, ket: adaData ? 'Model EnPI terbentuk' : s.enpi_kode ? 'Menunggu bacaan meter untuk baseline' : 'Belum ada EnPI' },
+        { label: 'Personel', ok: !!s.personel, ket: s.personel ?? 'Catat personel yang pekerjaannya memengaruhi SEU (7.2)' },
+        { label: 'Meter terbaca', ok: s.meter_kode.length ? s.meter_kode.every(terbaca) : false, ket: s.meter_kode.length ? `${s.meter_kode.filter(terbaca).length}/${s.meter_kode.length} meter terbaca bulan lalu` : 'Belum ada meter' },
+        { label: 'Submeter', ok: s.meter_kode.length > 1, ket: s.meter_kode.length > 1 ? `${s.meter_kode.length} meter` : 'Baru meter utama; lihat rencana submeter' },
+      ],
+    }
+  })
+
+  // Intensitas energi bangunan (kWh/m²/tahun), hanya aset bangunan yang punya luas dan data energi
+  const intensitas = daftar
+    .filter((p) => p.id.startsWith('aset:'))
+    .map((p) => ({ p, a: aset.find((x) => `aset:${x.kode}` === p.id)! }))
+    .filter(({ a }) => a && (a.luas_m2 ?? 0) > 20 && !/^(WTP|WWTP)$/i.test(a.nama.trim()))
+    .map(({ p, a }) => ({ nama: a.nama, kode: a.kode, ike: (p.kwh * 12) / a.luas_m2!, luas: a.luas_m2!, ac: a.luas_ac_m2 ?? 0, dasar: p.dasar }))
+    .sort((a, b) => b.ike - a.ike)
+  const maksIke = Math.max(1, ...intensitas.map((x) => x.ike))
+  const rataIke = intensitas.length ? intensitas.reduce((t, x) => t + x.ike, 0) / intensitas.length : 0
+
+  // Catatan analis
+  const catatan: { kode: 'crit' | 'warn' | 'info'; teks: string }[] = []
+  if (dua.length === 2 && porsiDua >= 80) catatan.push({ kode: 'info', teks: `${dua.map((p) => p.nama).join(' dan ')} menyerap ${persen(porsiDua, 0)} energi KINRA. Fokus SMEn pada dua instalasi ini memberi dampak terbesar; penghematan 5% di keduanya setara ±${rupiahRingkas(dua.reduce((t, p) => t + nilaiP(p.id, p.kwh).rupiah, 0) * 12 * 0.05)} per tahun.` })
+  if (!ditetapkan.length) catatan.push({ kode: 'crit', teks: aktif.length ? `${aktif.length} SEU masih berstatus kandidat. Tanpa penetapan resmi, auditor dapat mengeluarkan temuan mayor klausul 6.3.` : 'Belum ada SEU di register.' })
+  if (porsiMeter < 50) catatan.push({ kode: 'warn', teks: `Hanya ${persen(porsiMeter, 0)} energi KINRA yang terukur dari meter; sisanya perkiraan inventaris. Tinjauan energi harus didasarkan pada data pengukuran (6.3a).` })
+  const boiler = tanpaData.find((a) => /boiler/i.test(a.nama))
+  if (tanpaData.length) catatan.push({ kode: 'warn', teks: `${tanpaData.length} dari ${aset.length} aset belum punya data energi${boiler ? `, termasuk ${boiler.nama} (${angka(boiler.luas_m2 ?? 0, 0)} m²) yang berpotensi menjadi SEU` : ''}.` })
+  if (kandidatTanpaSeu.length) catatan.push({ kode: 'warn', teks: `${kandidatTanpaSeu.map((p) => p.nama).join(', ')} memenuhi kriteria SEU tetapi belum ada di register.` })
+  if (intensitas.length >= 2 && intensitas[0].ike > rataIke * 1.5) catatan.push({ kode: 'info', teks: `${intensitas[0].nama} memiliki intensitas energi ${angka(intensitas[0].ike, 0)} kWh/m²/tahun, ${angka(intensitas[0].ike / rataIke, 1)}× rata-rata bangunan KINRA. Layak ditelusuri sebagai peluang penghematan.` })
+  if (tinjauan?.status !== 'Disetujui') catatan.push({ kode: 'info', teks: 'Catatan tinjauan energi masih draft. Persetujuan admin/konsultan menjadi bukti bahwa tinjauan dilakukan dan dikaji.' })
 
   return (
     <>
       <section>
         <SectionHead hero eyebrow={<>Klausul 6.3 · <Istilah kata="Tinjauan energi" /> & penggunaan energi signifikan (<Istilah kata="SEU" />)</>}
-          judul={<>{daftar.slice(0, 2).map((p) => p.nama.replace(/\s*\(.*\)$/, '')).join(' dan ')} memakai <span className="ks-sorot">{persen(daftar.slice(0, 2).reduce((t, p) => t + p.porsi, 0), 0)}</span> energi KINRA</>}>
+          judul={<>{dua.map((p) => p.nama.replace(/\s*\(.*\)$/, '')).join(' dan ')} memakai <span className="ks-sorot">{persen(porsiDua, 0)}</span> energi KINRA</>}>
           <p className="muted">
             Tinjauan energi menjawab tiga hal: di mana energi dipakai, mana yang signifikan (SEU), dan siapa yang mengendalikannya.
             SEU menjadi fokus EnPI, sasaran, pengendalian operasional, dan kompetensi personel. Lingkupnya hanya energi dalam kendali KINRA, tidak termasuk listrik tenant.
           </p>
         </SectionHead>
         <div className="tiles">
-          <div className="tile"><div className="tile-head"><span className="tile-ikon"><Zap aria-hidden="true" /></span><span className="label">Energi KINRA per bulan</span></div>
-            <div className="nilai tnum">{angka(total / 1000, 1)}<small>MWh setara</small></div>
-            <div className="meta">±{rupiahRingkas(totalNilai.rupiah)}/bulan · {tonCo2(totalNilai.kgCo2)}/bulan</div></div>
-          <div className="tile"><div className="tile-head"><span className="tile-ikon"><Gauge aria-hidden="true" /></span><span className="label">Terukur dari meter</span></div>
-            <div className="nilai tnum">{angka(porsiMeter, 0)}<small>%</small></div>
-            <div className="meta">{porsiMeter < 100 ? 'Sisanya perkiraan inventaris atau data BBM' : 'Seluruhnya dari bacaan meter'}</div></div>
-          <div className="tile"><div className="tile-head"><span className="tile-ikon"><Target aria-hidden="true" /></span><span className="label">SEU ditetapkan</span></div>
-            <div className="nilai tnum">{ditetapkan.length}<small>dari {seu.filter((s) => s.status !== 'Dicabut').length} di register</small></div>
-            <div className="meta">Mencakup {persen(tercakup, 0)} energi KINRA</div></div>
-          <div className="tile"><div className="tile-head"><span className="tile-ikon"><AlertTriangle aria-hidden="true" /></span><span className="label">Aset belum ada data energi</span></div>
-            <div className="nilai tnum">{tanpaData.length}<small>dari {aset.length}</small></div>
-            <div className="meta">Bisa menyembunyikan SEU yang belum diketahui</div></div>
+          <div className="tile"><div className="tile-head"><span className="tile-ikon"><Wallet aria-hidden="true" /></span><span className="label">Energi KINRA per bulan</span></div>
+            <div className="nilai tnum">{angka(total / 1000, 0)}<small>MWh</small></div>
+            <div className="meta">±{rupiahRingkas(totalNilai.rupiah)} · {tonCo2(totalNilai.kgCo2)} per bulan</div></div>
+          <div className="tile"><div className="tile-head"><span className="tile-ikon"><Crosshair aria-hidden="true" /></span><span className="label">Tercakup SEU</span></div>
+            <div className="nilai tnum">{angka(tercakup, 0)}<small>%</small></div>
+            <div className="meta">{ditetapkan.length} ditetapkan · {aktif.length - ditetapkan.length} kandidat</div></div>
+          <div className="tile"><div className="tile-head"><span className="tile-ikon"><Gauge aria-hidden="true" /></span><span className="label">Nilai 1% penghematan SEU</span></div>
+            <div className="nilai tnum">{rupiahRingkas(nilaiSeuTahun * 0.01).replace('Rp', '')}<small>per tahun</small></div>
+            <div className="meta">Dari biaya energi SEU ±{rupiahRingkas(nilaiSeuTahun)}/tahun</div></div>
+          <div className="tile"><div className="tile-head"><span className="tile-ikon"><AlertTriangle aria-hidden="true" /></span><span className="label">Kepercayaan data</span></div>
+            <div className="nilai tnum">{angka(porsiMeter, 0)}<small>% dari meter</small></div>
+            <div className="meta">{tanpaData.length} aset belum punya data energi</div></div>
         </div>
+        {catatan.length > 0 && (
+          <div className="card rg-catatan" style={{ marginTop: 16 }}>
+            <span className="eyebrow">Catatan analis · terdeteksi otomatis</span>
+            <ul>{catatan.map((c) => <li key={c.teks} className={c.kode}>{c.teks}</li>)}</ul>
+          </div>
+        )}
       </section>
 
       <section>
         <SectionHead no="01" eyebrow="Siapa memakai energi" judul="Pareto pengguna energi KINRA">
           <p className="muted">
-            Diurutkan dari pemakai terbesar. Kandidat SEU: porsi ≥ {angka(ambangPersen)}% atau termasuk kelompok teratas yang membentuk {angka(ambangKumulatif)}% konsumsi.
+            Batang biru adalah kandidat SEU: porsi ≥ {angka(ambangPersen)}% atau termasuk kelompok teratas yang membentuk {angka(ambangKumulatif)}% konsumsi. Garis menunjukkan porsi kumulatif.
             BBM dikonversi ke kWh setara agar dapat dibandingkan.
           </p>
         </SectionHead>
         <div className="card">
-          <ol className="te-pareto" aria-label="Pareto pengguna energi">
-            {daftar.map((p) => (
-              <li key={p.id} className={p.kandidat ? 'kandidat' : undefined}>
-                <div className="te-pareto-nama">
-                  <b>{p.nama}</b>
-                  <span className="muted small">
-                    {p.dasar === 'meter' ? `rata-rata ${p.bulanData} bulan bacaan meter` : p.dasar === 'inventaris' ? 'perkiraan inventaris' : `rata-rata ${p.bulanData} bulan data`}
-                  </span>
-                </div>
-                <div className="te-pareto-bar" aria-hidden="true">
-                  <i style={{ width: `${(p.kwh / maks) * 100}%` }} />
-                </div>
-                <div className="te-pareto-angka tnum">
-                  <b>{persen(p.porsi)}</b>
-                  <span className="muted small">{energiListrik(p.kwh)}/bln · ±{rupiahRingkas(nilaiP(p.id, p.kwh).rupiah)} · kum. {persen(p.kumulatif, 0)}</span>
-                </div>
-                <div className="te-pareto-status">
-                  {p.seu
-                    ? <Chip kode={p.seu.status === 'Ditetapkan' ? 'good' : p.seu.status === 'Dicabut' ? 'na' : 'info'} label={`${p.seu.kode} · ${p.seu.status}`} />
-                    : p.kandidat ? <Chip kode="warn" label="Kandidat SEU" /> : null}
-                </div>
-              </li>
-            ))}
-          </ol>
-          {kandidatTanpaSeu.length > 0 && (
-            <p className="pesan" style={{ marginTop: 12 }}>
-              {kandidatTanpaSeu.map((p) => p.nama).join(', ')} memenuhi kriteria kandidat SEU tetapi belum ada di register. Tambahkan sebagai kandidat atau catat alasan tidak dijadikan SEU.
-            </p>
-          )}
-          <p className="sumber">Sumber: bacaan stand meter (halaman Aset & Meter), data inventaris aset Bagian M/E, dan data BBM bulanan. Listrik tenant tidak termasuk.</p>
+          <ParetoGrafik daftar={daftar} ambangKumulatif={ambangKumulatif} />
+          <div className="table-wrap" style={{ marginTop: 8 }}>
+            <table className="tbl">
+              <thead><tr><th>Pengguna energi</th><th className="num">Per bulan</th><th className="num">Porsi · kumulatif</th><th className="num">Biaya · emisi per bulan</th><th>SEU</th></tr></thead>
+              <tbody>
+                {daftar.map((p) => {
+                  const n = nilaiP(p.id, p.kwh)
+                  return (
+                    <tr key={p.id}>
+                      <td><b>{p.nama}</b><span className="upd">{p.dasar === 'meter' ? `rata-rata ${p.bulanData} bulan bacaan meter` : p.dasar === 'inventaris' ? 'perkiraan inventaris' : `rata-rata ${p.bulanData} bulan data BBM`}</span></td>
+                      <td className="num">{energiListrik(p.kwh)}</td>
+                      <td className="num">{persen(p.porsi)}<span className="upd">{persen(p.kumulatif, 0)}</span></td>
+                      <td className="num">{rupiahRingkas(n.rupiah)}<span className="upd">{tonCo2(n.kgCo2)}</span></td>
+                      <td>{p.seu ? <Chip kode={p.seu.status === 'Ditetapkan' ? 'good' : p.seu.status === 'Dicabut' ? 'na' : 'info'} label={`${p.seu.kode} · ${p.seu.status}`} /> : p.kandidat ? <Chip kode="warn" label="Kandidat, belum di register" /> : <span className="muted small">–</span>}</td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+          <p className="sumber">Sumber: bacaan stand meter (Aset & Meter), data inventaris aset Bagian M/E, dan data BBM bulanan. Rupiah dan CO₂ memakai parameter di halaman Data Energi{kv.asumsi.length ? ' (sebagian masih asumsi)' : ''}.</p>
         </div>
       </section>
 
       <section>
-        <SectionHead no="02" eyebrow="Register SEU" judul={`${ditetapkan.length} SEU ditetapkan, ${seu.filter((s) => s.status === 'Kandidat').length} kandidat`}>
-          <p className="muted">Setiap SEU wajib punya alasan penetapan, variabel relevan, EnPI pengukur, PIC, dan personel yang pekerjaannya memengaruhinya. Penetapan dan pencabutan dilakukan admin atau konsultan; Tim KINRA dapat mengusulkan kandidat.</p>
+        <SectionHead no="02" eyebrow="Kesiapan SEU menghadapi audit" judul={`${aktif.length} SEU di register, ${ditetapkan.length} ditetapkan`}>
+          <p className="muted">Untuk setiap SEU, auditor memeriksa: penetapan dan alasannya, variabel relevan, EnPI beserta datanya, personel yang memengaruhinya, dan pengukurannya. Penetapan dan pencabutan dilakukan admin atau konsultan; Tim KINRA dapat mengusulkan kandidat.</p>
         </SectionHead>
-        <RegisterSeu seu={seu} aset={aset} meter={meter} sumber={sumber} variabel={variabel}
-          enpi={enpi.map((e) => ({ kode: e.kode, nama: e.nama, lingkup: e.lingkup ?? 'kinra' }))}
-          porsi={Object.fromEntries(seu.map((s) => [s.kode, daftar.filter((p) => p.seu?.kode === s.kode).reduce((t, p) => t + p.porsi, 0)]))} />
+        <KesiapanSeu baris={kesiapan} />
+        <div style={{ marginTop: 16 }}>
+          <RegisterSeu seu={seu} aset={aset} meter={meter} sumber={sumber} variabel={variabel}
+            enpi={enpi.map((e) => ({ kode: e.kode, nama: e.nama, lingkup: e.lingkup ?? 'kinra' }))}
+            porsi={Object.fromEntries(seu.map((s) => [s.kode, porsiSeu(s.kode)]))} />
+        </div>
       </section>
 
       <section>
@@ -124,8 +174,28 @@ export default async function TinjauanPage() {
         <DiagramSubmeter />
       </section>
 
+      {intensitas.length > 0 && (
+        <section>
+          <SectionHead no="04" eyebrow="Intensitas energi bangunan" judul="kWh per m² per tahun">
+            <p className="muted">Membandingkan bangunan dengan ukuran berbeda secara adil. Bangunan dengan intensitas jauh di atas rata-rata layak ditelusuri: jam operasi, beban AC, peralatan laboratorium, atau pemborosan.</p>
+          </SectionHead>
+          <div className="card">
+            <ul className="ti-daftar">
+              {intensitas.map((x, i) => (
+                <li key={x.kode} style={{ '--i': i } as React.CSSProperties}>
+                  <div className="ti-nama"><b>{x.nama}</b><span className="muted small">{angka(x.luas, 0)} m²{x.ac ? ` · ${angka(x.ac, 0)} m² ber-AC` : ''} · {x.dasar === 'meter' ? 'meter' : 'perkiraan'}</span></div>
+                  <div className="ti-bar"><i style={{ width: `${(x.ike / maksIke) * 100}%` }} className={x.ike > rataIke * 1.5 ? 'tinggi' : undefined} /></div>
+                  <b className="tnum ti-angka">{angka(x.ike, 0)}<small> kWh/m²</small></b>
+                </li>
+              ))}
+            </ul>
+            <p className="sumber">Rata-rata {angka(rataIke, 0)} kWh/m²/tahun dari {intensitas.length} bangunan. WTP dan WWTP tidak dibandingkan per m² karena bebannya proses, bukan bangunan. Pembanding standar intensitas energi bangunan perlu diverifikasi konsultan sebelum dikutip.</p>
+          </div>
+        </section>
+      )}
+
       <section>
-        <SectionHead no="04" eyebrow="Kualitas data tinjauan" judul={`${tanpaData.length} aset belum punya data energi`}>
+        <SectionHead no={intensitas.length ? '05' : '04'} eyebrow="Kualitas data tinjauan" judul={`${tanpaData.length} aset belum punya data energi`}>
           <p className="muted">Aset tanpa data bisa menyembunyikan SEU. Prioritaskan aset terluas dan yang punya peralatan besar (pompa, boiler, pendingin).</p>
         </SectionHead>
         <div className="card">
@@ -150,7 +220,7 @@ export default async function TinjauanPage() {
       </section>
 
       <section>
-        <SectionHead no="05" eyebrow="Catatan tinjauan" judul={tinjauan ? `Tinjauan ${tanggal(tinjauan.periode_mulai)} – ${tanggal(tinjauan.periode_selesai)}` : 'Belum ada catatan tinjauan'}>
+        <SectionHead no={intensitas.length ? '06' : '05'} eyebrow="Catatan tinjauan" judul={tinjauan ? `Tinjauan ${tanggal(tinjauan.periode_mulai)} – ${tanggal(tinjauan.periode_selesai)}` : 'Belum ada catatan tinjauan'}>
           <p className="muted">ISO 50001 meminta tinjauan energi didokumentasikan dan diperbarui secara berkala serta saat ada perubahan besar pada fasilitas, peralatan, atau proses.</p>
         </SectionHead>
         <div className="card">

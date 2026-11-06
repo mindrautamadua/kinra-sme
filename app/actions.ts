@@ -15,6 +15,7 @@ import { isiAwal, selaraskan } from '@/lib/formulir/isi'
 import { tabelDariData } from '@/lib/formulir/sumber-data'
 import { TABEL_TERTAUT } from '@/lib/formulir/tautan'
 import type { IsiFormulir, StatusFormulir } from '@/lib/formulir/tipe'
+import { POLA_KUNCI, tagUsulan } from '@/lib/usulan-sasaran'
 
 type Hasil = { ok: true } | { ok: false; pesan: string }
 
@@ -589,6 +590,15 @@ export async function simpanAksi(id: number | null, f: FormData): Promise<Hasil>
   }
   if (!data.kode || !data.uraian) return { ok: false, pesan: 'Kode dan uraian aksi wajib diisi.' }
   if (data.hemat_terverifikasi_kwh !== null && !data.tanggal_verifikasi) return { ok: false, pesan: 'Isi tanggal verifikasi untuk penghematan terverifikasi.' }
+  // Aksi dari usulan: tandai dengan [usulan:kode] dan tolak bila usulan yang sama sudah dipakai aksi lain
+  const usulan = teks(f, 'usulan')
+  if (usulan && POLA_KUNCI.test(usulan)) {
+    const tag = tagUsulan(usulan)
+    const { data: lain } = await (await db()).from('rencana_aksi').select('id, kode').like('catatan', `%${tag}%`)
+    const pakai = (lain ?? []).find((x) => x.id !== id)
+    if (pakai) return { ok: false, pesan: `Usulan ini sudah dipakai sebagai ${pakai.kode}. Ubah aksi tersebut alih-alih membuat yang baru.` }
+    if (!data.catatan?.includes(tag)) data.catatan = [data.catatan, tag].filter(Boolean).join(' ')
+  }
   const { error } = id ? await (await db()).from('rencana_aksi').update(data).eq('id', id) : await (await db()).from('rencana_aksi').insert(data)
   revalidasiKinerja()
   return gagal(error && { message: /duplicate key/.test(error.message) ? 'Kode aksi sudah dipakai.' : error.message })

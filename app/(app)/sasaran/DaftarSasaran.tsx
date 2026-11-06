@@ -1,6 +1,6 @@
 'use client'
 
-import { ArrowRight, Pencil, Plus, Trash2, X } from 'lucide-react'
+import { ArrowRight, Check, Pencil, Plus, Trash2, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useRef, useState, useTransition } from 'react'
 import { hapusAksi, hapusSasaran, simpanAksi, simpanSasaran, ubahStatusAksi } from '@/app/actions'
@@ -10,6 +10,7 @@ import { angka, tanggal } from '@/lib/format'
 import { rupiahRingkas, tonCo2 } from '@/lib/konversi'
 import type { KodeChip } from '@/lib/status'
 import type { RencanaAksi, Sasaran, StatusAksi, StatusSasaran } from '@/lib/types'
+import type { UsulanAksi, UsulanSasaran } from '@/lib/usulan-sasaran'
 
 export type Capaian = {
   enpi: string
@@ -31,8 +32,8 @@ const CHIP_A: Record<StatusAksi, KodeChip> = { Rencana: 'na', Berjalan: 'info', 
 const kodeBerikut = (prefiks: string, daftar: { kode: string }[]) =>
   `${prefiks}-${String(Math.max(0, ...daftar.map((x) => Number(x.kode.replace(/\D/g, '')) || 0)) + 1).padStart(2, '0')}`
 
-export function DaftarSasaran({ sasaran, aksi, capaian, enpi, peluang, kini, tarif, ef }: {
-  tarif: number; ef: number
+export function DaftarSasaran({ sasaran, aksi, capaian, enpi, peluang, kini, tarif, ef, usulanS = [], usulanA = [] }: {
+  tarif: number; ef: number; usulanS?: UsulanSasaran[]; usulanA?: UsulanAksi[]
   sasaran: Sasaran[]; aksi: RencanaAksi[]; capaian: Record<number, Capaian>
   enpi: { kode: string; nama: string }[]; peluang: PeluangRingkas[]; kini: string
 }) {
@@ -40,7 +41,7 @@ export function DaftarSasaran({ sasaran, aksi, capaian, enpi, peluang, kini, tar
   const bisa = useBoleh()
   const dlgS = useRef<HTMLDialogElement>(null)
   const dlgA = useRef<HTMLDialogElement>(null)
-  const [editS, setEditS] = useState<Sasaran | null>(null)
+  const [editS, setEditS] = useState<Partial<Sasaran> | null>(null)
   const [editA, setEditA] = useState<Partial<RencanaAksi> | null>(null)
   const [galat, setGalat] = useState<string | null>(null)
   const [menunggu, mulai] = useTransition()
@@ -53,8 +54,11 @@ export function DaftarSasaran({ sasaran, aksi, capaian, enpi, peluang, kini, tar
   const terverifikasi = aksi.reduce((t, a) => t + (a.hemat_terverifikasi_kwh ?? 0), 0)
   const lewat = (a: RencanaAksi) => !!a.tenggat && a.tenggat < kini && a.status !== 'Selesai' && a.status !== 'Batal'
 
-  function bukaS(s: Sasaran | null) { setEditS(s); setGalat(null); dlgS.current?.showModal() }
-  function bukaA(a: Partial<RencanaAksi> | null) { setEditA(a ?? {}); setGalat(null); dlgA.current?.showModal() }
+  function bukaS(s: Partial<Sasaran> | null) { setEditS(s); setGalat(null); dlgS.current?.showModal() }
+  const [usulanAktif, setUsulanAktif] = useState<string | null>(null)
+  function bukaA(a: Partial<RencanaAksi> | null, kunci: string | null = null) { setEditA(a ?? {}); setUsulanAktif(kunci); setGalat(null); dlgA.current?.showModal() }
+  const sisaS = usulanS.filter((u) => !u.dipakai)
+  const sisaA = usulanA.filter((u) => !u.dipakai)
   const ubahStatus = (a: RencanaAksi, status: StatusAksi) => mulai(async () => { const h = await ubahStatusAksi(a.id, status); if (!h.ok) alert(h.pesan); router.refresh() })
 
   const tabelAksi = (daftar: RencanaAksi[]) => (
@@ -93,6 +97,44 @@ export function DaftarSasaran({ sasaran, aksi, capaian, enpi, peluang, kini, tar
 
   return (
     <>
+      {(sisaS.length > 0 || sisaA.length > 0) && (bisa('sasaran.tambah') || bisa('aksi.ubah')) && (
+        <div className="card ss-usulan">
+          <div className="row">
+            <div>
+              <span className="eyebrow">Usulan dari data aplikasi · tinjau sebelum disimpan</span>
+              <h3>{sisaS.length} sasaran dan {sisaA.length} rencana aksi siap dipakai</h3>
+              <p className="muted small">Disusun dari SEU, EnPI lingkup KINRA, peluang, rencana submeter, dan deviasi. Klik Gunakan untuk membuka form yang sudah terisi; ubah target dan estimasi sesuai keputusan tim.</p>
+            </div>
+          </div>
+          <div className="ss-usulan-grid">
+            {usulanS.map((u) => (
+              <div key={u.uraian} className={`ss-kartu s${u.dipakai ? ' dipakai' : ''}`}>
+                <span className="eyebrow">Sasaran · {u.enpi_kode} · target {u.target_persen}% pada {u.tahun_target}</span>
+                <b>{u.uraian}</b>
+                <span className="muted small">{u.alasan}</span>
+                {u.dipakai ? <span className="ss-dipakai"><Check aria-hidden="true" />Sudah dipakai → {u.dipakai}</span>
+                  : bisa('sasaran.tambah') && <button type="button" className="btn kecil" onClick={() => bukaS({ uraian: u.uraian, enpi_kode: u.enpi_kode, target_persen: u.target_persen, tahun_target: u.tahun_target, pic: u.pic, catatan: u.catatan, status: 'Aktif' })}><Plus aria-hidden="true" />Gunakan</button>}
+              </div>
+            ))}
+            {usulanA.map((u) => (
+              <div key={u.kunci} className={`ss-kartu a${u.dipakai ? ' dipakai' : ''}`}>
+                <span className="eyebrow">Aksi{u.peluang_kode ? ` · dari ${u.peluang_kode}` : ''}{u.estimasi_hemat_kwh ? ` · ±${angka(u.estimasi_hemat_kwh)} kWh/thn · ±${rupiahRingkas(u.estimasi_hemat_kwh * tarif)}` : ''}</span>
+                <b>{u.uraian}</b>
+                <span className="muted small">{u.alasan} Tenggat {tanggal(u.tenggat)}.</span>
+                {u.dipakai ? <span className="ss-dipakai"><Check aria-hidden="true" />Sudah dipakai → {u.dipakai}</span>
+                  : bisa('aksi.ubah') && <button type="button" className="btn kecil" onClick={() => bukaA({
+                    uraian: u.uraian, peluang_kode: u.peluang_kode, pic: u.pic, sumber_daya: u.sumber_daya, mulai: u.mulai, tenggat: u.tenggat,
+                    estimasi_hemat_kwh: u.estimasi_hemat_kwh, metode_verifikasi: u.metode_verifikasi, catatan: u.catatan, status: 'Rencana',
+                    sasaran_id: sasaran.find((x) => x.enpi_kode === u.enpi)?.id ?? null,
+                  }, u.kunci)}><Plus aria-hidden="true" />Gunakan</button>}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {(sasaran.length > 0 || aksi.length > 0) && (
+        <>
       <div className="tiles" style={{ marginBottom: 16 }}>
         <div className="tile"><div className="tile-head"><span className="label">Sasaran aktif</span></div>
           <div className="nilai tnum">{sasaran.filter((s) => s.status === 'Aktif').length}<small>dari {sasaran.length}</small></div>
@@ -107,6 +149,8 @@ export function DaftarSasaran({ sasaran, aksi, capaian, enpi, peluang, kini, tar
           <div className="nilai tnum">{angka(terverifikasi / 1000, 1)}<small>MWh</small></div>
           <div className="meta">{rupiahRingkas(terverifikasi * tarif)} · {estimasi > 0 ? `${angka((terverifikasi / estimasi) * 100, 0)}% dari estimasi` : 'Belum ada estimasi'}</div></div>
       </div>
+        </>
+      )}
 
       <div className="toolbar">
         <span style={{ flex: 1 }} />
@@ -205,7 +249,7 @@ export function DaftarSasaran({ sasaran, aksi, capaian, enpi, peluang, kini, tar
           if (!h.ok) return setGalat(h.pesan)
           dlgS.current?.close(); router.refresh()
         })}>
-          <div className="row"><h3>{editS ? `Ubah ${editS.kode}` : 'Sasaran baru'}</h3><button type="button" className="btn btn-ikon" aria-label="Tutup" onClick={() => dlgS.current?.close()}><X aria-hidden="true" /></button></div>
+          <div className="row"><h3>{editS?.id ? `Ubah ${editS.kode}` : editS?.uraian ? 'Sasaran baru dari usulan' : 'Sasaran baru'}</h3><button type="button" className="btn btn-ikon" aria-label="Tutup" onClick={() => dlgS.current?.close()}><X aria-hidden="true" /></button></div>
           <div className="form-grid">
             <label className="field"><span>Kode</span><input name="kode" required defaultValue={editS?.kode ?? kodeBerikut('S', sasaran)} /></label>
             <label className="field"><span>Status</span><select name="status" defaultValue={editS?.status ?? 'Aktif'}>{STATUS_S.map((s) => <option key={s}>{s}</option>)}</select></label>
@@ -225,10 +269,10 @@ export function DaftarSasaran({ sasaran, aksi, capaian, enpi, peluang, kini, tar
           <div className="toolbar" style={{ marginTop: 16, marginBottom: 0 }}>
             <button className="btn utama" type="submit" disabled={menunggu}>{menunggu ? 'Menyimpan…' : 'Simpan'}</button>
             <span style={{ flex: 1 }} />
-            {editS && bisa('sasaran.hapus') && (
+            {editS?.id && bisa('sasaran.hapus') && (
               <button type="button" className="btn" onClick={() => {
                 if (!confirm(`Hapus sasaran ${editS.kode}? Rencana aksinya tetap ada tanpa sasaran.`)) return
-                mulai(async () => { const h = await hapusSasaran(editS.id); if (!h.ok) return setGalat(h.pesan); dlgS.current?.close(); router.refresh() })
+                mulai(async () => { const h = await hapusSasaran(editS.id!); if (!h.ok) return setGalat(h.pesan); dlgS.current?.close(); router.refresh() })
               }}><Trash2 aria-hidden="true" /><span className="teks">Hapus</span></button>
             )}
           </div>
@@ -267,6 +311,7 @@ export function DaftarSasaran({ sasaran, aksi, capaian, enpi, peluang, kini, tar
             <label className="field"><span>Hemat terverifikasi (kWh)</span><input type="number" name="hemat_terverifikasi_kwh" step="any" defaultValue={editA?.hemat_terverifikasi_kwh ?? ''} /></label>
             <label className="field"><span>Tanggal verifikasi</span><input type="date" name="tanggal_verifikasi" defaultValue={editA?.tanggal_verifikasi ?? ''} /></label>
             <label className="field full"><span>Catatan</span><textarea name="catatan" defaultValue={editA?.catatan ?? ''} /></label>
+            {usulanAktif && <input type="hidden" name="usulan" value={usulanAktif} />}
           </div>
           {galat && <p className="pesan galat" role="alert" style={{ marginTop: 12 }}>{galat}</p>}
           <div className="toolbar" style={{ marginTop: 16, marginBottom: 0 }}>
