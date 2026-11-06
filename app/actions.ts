@@ -407,6 +407,42 @@ export async function simpanTinjauan(id: number | null, f: FormData): Promise<Ha
   return gagalSeu(error)
 }
 
+// ---------- Deviasi signifikan (migrasi 0028) ----------
+
+function gagalDeviasi(e: { message: string; code?: string } | null): Hasil {
+  if (e?.code === 'PGRST205' || e?.code === '42P01') return { ok: false, pesan: 'Tabel deviasi belum ada. Jalankan migrasi 0028_deviasi.sql di Supabase.' }
+  if (e?.code === '23505') return { ok: false, pesan: 'Deviasi ini sudah mulai diselidiki. Muat ulang halaman.' }
+  if (e?.code === '42501') return { ok: false, pesan: 'Hanya admin atau konsultan yang dapat menutup atau membuka kembali deviasi.' }
+  return gagal(e)
+}
+
+const STATUS_DEVIASI = ['Diselidiki', 'Ditanggapi', 'Ditutup', 'Bukan deviasi'] as const
+const KATEGORI_DEVIASI = ['operasi', 'kerusakan', 'data', 'variabel', 'aksi', 'lainnya'] as const
+
+/** Simpan penyelidikan deviasi. `id` null = deviasi baru dari hasil deteksi (data deteksi dikirim di `asal`). */
+export async function simpanDeviasi(id: number | null, asal: { enpi_kode: string; tahun: number; bulan: number; jenis: string; arah: string; aktual: number | null; harapan: number | null; selisih_persen: number | null } | null, f: FormData): Promise<Hasil> {
+  const t = await tolak('deviasi.ubah'); if (t) return t
+  const status = teks(f, 'status') ?? 'Diselidiki'
+  const kategori = teks(f, 'kategori')
+  if (!STATUS_DEVIASI.includes(status as never)) return { ok: false, pesan: 'Status tidak dikenal.' }
+  if (kategori && !KATEGORI_DEVIASI.includes(kategori as never)) return { ok: false, pesan: 'Kategori penyebab tidak dikenal.' }
+  const isi = {
+    status, kategori, penyebab: teks(f, 'penyebab'), tindakan: teks(f, 'tindakan'), pic: teks(f, 'pic'),
+    tenggat: teks(f, 'tenggat'), aksi_kode: teks(f, 'aksi_kode'),
+  }
+  if (status !== 'Diselidiki' && (!isi.kategori || !isi.penyebab)) return { ok: false, pesan: 'Isi kategori dan uraian penyebab sebelum menanggapi atau menutup deviasi.' }
+  if (status === 'Ditanggapi' && !isi.tindakan) return { ok: false, pesan: 'Isi tindakan yang diambil.' }
+  if ((status === 'Ditutup' || status === 'Bukan deviasi')) { const t2 = await tolak('deviasi.tutup'); if (t2) return { ok: false, pesan: 'Hanya admin atau konsultan yang dapat menutup deviasi atau menyatakan bukan deviasi.' } }
+  const s = await db()
+  const { error } = id
+    ? await s.from('deviasi').update(isi).eq('id', id)
+    : asal ? await s.from('deviasi').insert({ ...asal, ...isi }) : { error: { message: 'Data deviasi tidak lengkap.' } }
+  revalidatePath('/kinerja')
+  revalidatePath('/peta')
+  revalidatePath('/')
+  return gagalDeviasi(error)
+}
+
 // ---------- Kinerja energi: variabel relevan & EnPI ----------
 
 const bulanKeTanggal = (v: string | null) => (v && /^\d{4}-\d{2}$/.test(v) ? `${v}-01` : v)

@@ -5,7 +5,8 @@ import { penggunaSaya } from '@/lib/sesi'
 export const dynamic = 'force-dynamic'
 
 const KEY = process.env.GEMINI_API_KEY
-const MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash'
+// gemini-2.5-flash ditolak API untuk kunci baru (Nov 2026); atur GEMINI_MODEL di .env.local untuk mengganti
+const MODEL = process.env.GEMINI_MODEL || 'gemini-3-flash-preview'
 const MAKS_PESAN = 20
 const MAKS_KARAKTER = 4000
 

@@ -15,10 +15,12 @@ Jalankan di SQL Editor Supabase sesuai urutan. Semua migrasi aman dijalankan ula
 - [x] `0024_variabel_tenant.sql`: jumlah tenant beroperasi per bulan
 - [x] `0025_enpi_utama.sql`: penanda EnPI utama; EnPI-01 diubah menjadi EnPI BBM kendaraan
 - [x] `0026_lingkup_kinra.sql`: pemisahan lingkup KINRA dan kawasan; EnPI-04 (listrik pemakaian sendiri) dan EnPI-05 (intensitas energi WTP)
-- [ ] `0027_tinjauan_energi_seu.sql`: tabel tinjauan energi dan register SEU; data awal SEU-01 WTP dan SEU-02 WWTP (status Kandidat)
+- [x] `0027_tinjauan_energi_seu.sql`: tabel tinjauan energi dan register SEU; data awal SEU-01 WTP dan SEU-02 WWTP (status Kandidat)
+- [x] `0028_deviasi.sql`: register deviasi signifikan kinerja energi (klausul 9.1)
+- [x] `0029_simulasi_audit.sql`: riwayat simulasi audit bersama KIRA
 - [ ] **Cek urutan migrasi.** Bila EnPI-03 muncul di kelompok "Lingkup SMEn KINRA" di halaman Kinerja, jalankan ulang `0026_lingkup_kinra.sql`.
 
-Migrasi 0018–0026 sudah dijalankan di Supabase (6 November 2026). File 0027 belum di-commit ke repositori.
+Migrasi 0018–0029 sudah dijalankan di Supabase (6 November 2026). File 0027–0029 dan perubahan aplikasi terkait belum di-commit ke repositori.
 
 ## 2. Pengumpulan data rutin
 
@@ -43,7 +45,70 @@ Migrasi 0018–0026 sudah dijalankan di Supabase (6 November 2026). File 0027 be
 - [ ] **Salah ketik nama aset.** Perbaiki "Pusat Inovasi Kelapa Sawi" dan "PT Sheel Oil".
 - [ ] **Kolom register meter yang masih kosong.** Lengkapi akurasi atau kelas, tanggal kalibrasi atau verifikasi terakhir dan berikutnya, PIC area, PIC data, dan bukti pendukung (klausul 7.1.5 dan 9.1).
 
-## 5. Keputusan Tim SMEn dan konsultan
+## 5. Rencana submeter SEU (rencana pengumpulan data energi, klausul 6.6 dan 9.1)
+
+Titik di bawah adalah rancangan umum. Cocokkan dulu dengan diagram satu garis (single line diagram) dan panel MCC di lapangan sebelum pengadaan. Setiap meter yang terpasang didaftarkan di halaman Aset & Meter (dengan faktor kali dan jadwal kalibrasi), lalu ditambahkan ke SEU terkait di halaman Tinjauan Energi & SEU.
+
+**Spesifikasi umum:** power meter multifungsi kelas 0,5S atau 1, dipasang dengan CT di panel. Meter mencatat kWh, kW, dan faktor daya, dan sebaiknya punya port komunikasi Modbus untuk pencatatan otomatis (AMR). Motor besar yang menjadi kandidat VSD diukur per motor, bukan per panel.
+
+### 5.1 WTP (SEU-01, meter utama KINRA-MTR-005)
+
+| Tahap | Titik ukur | Jenis | Kegunaan |
+|---|---|---|---|
+| Sudah ada | Meter utama WTP | kWh | Total WTP; dasar EnPI-05 |
+| 1 | Panel pompa distribusi (high-lift ke jaringan kawasan) | kWh | Biasanya beban terbesar; bergantung pada volume air dan tekanan jaringan |
+| 1 | Panel pompa air baku / intake | kWh | Beban terbesar kedua; bergantung pada volume air baku dan muka air sumber |
+| 1 | Flow meter air baku masuk | m³ | kWh/m³ pompa intake; kehilangan air (air baku dikurangi air terdistribusi) |
+| 1 | Pengukur tekanan header distribusi | bar | Tekanan berlebih adalah sumber pemborosan pompa paling umum |
+| 2 | Pompa backwash dan blower filter | kWh | Beban sesekali tetapi besar; frekuensi dan efisiensi pencucian filter |
+| 2 | Beban proses: mixer, flokulator, pompa dosing, scraper clarifier | kWh | Relatif tetap; mendeteksi alat menyala di luar jadwal |
+| 2 | Flow meter air backwash (opsional) | m³ | Porsi air terbuang saat pencucian |
+| 3 | Penunjang: kantor, laboratorium, penerangan, AC | kWh | Memisahkan beban bangunan agar EnPI proses bersih |
+
+**Indikator yang dimungkinkan:**
+- kWh per m³ air terdistribusi (EnPI-05)
+- kWh per m³ per tahap pompa
+- efisiensi pompa wire-to-water, dihitung dari flow, tekanan, dan kW
+- persentase kehilangan air
+
+- [ ] Konfirmasi konfigurasi pompa WTP: jumlah unit, daya motor, dan apakah sudah memakai VSD.
+- [ ] Konfirmasi apakah WTP II (BTM) dilayani panel atau meter yang sama dengan WTP I.
+- [ ] Pengadaan dan pemasangan submeter tahap 1, sebelum audit Stage 2 bila memungkinkan.
+- [ ] Pengadaan submeter tahap 2 dan 3, dijadwalkan dalam rencana aksi dan anggaran.
+
+### 5.2 WWTP (SEU-02, meter utama KINRA-MTR-004)
+
+| Tahap | Titik ukur | Jenis | Kegunaan |
+|---|---|---|---|
+| Sudah ada | Meter utama WWTP | kWh | Total WWTP; dasar EnPI WWTP yang akan dibentuk |
+| 1 | Panel blower / aerator kolam aerasi | kWh | Pada pengolahan biologis, aerasi umumnya beban terbesar dan sumber penghematan utama |
+| 1 | Flow meter air limbah masuk (influent) | m³ | Variabel relevan utama: kWh per m³ air limbah diolah |
+| 1 | Sensor oksigen terlarut (DO) di kolam aerasi | mg/L | Aerasi berlebih (DO terlalu tinggi) adalah pemborosan paling umum; dasar kontrol blower otomatis |
+| 2 | Pompa influent / lift station dan equalisasi | kWh | Beban kedua; bergantung pada debit masuk |
+| 2 | Pompa lumpur balik dan lumpur buang (RAS/WAS) | kWh | Beban kontinu; sering bisa dioptimalkan jadwalnya |
+| 2 | Pengolahan lumpur: dewatering (belt/screw press), pompa lumpur | kWh | Bergantung pada volume lumpur |
+| 2 | Data beban organik dari laboratorium (COD/BOD masuk dan keluar) | kg | Indikator kWh per kg COD tersisihkan, lebih adil bila kualitas limbah tenant berubah |
+| 3 | Mixer, pompa dosing kimia, penunjang (kantor WWTP, laboratorium, penerangan) | kWh | Beban relatif tetap; memisahkan beban bangunan |
+
+**Indikator yang dimungkinkan:**
+- kWh per m³ air limbah diolah (calon EnPI SEU-02)
+- kWh per kg COD tersisihkan
+- kWh blower per m³ udara
+- profil DO terhadap kebutuhan
+
+- [ ] Konfirmasi jenis proses WWTP (lumpur aktif, aerasi permukaan, atau difuser) beserta jumlah dan daya blower/aerator.
+- [ ] Pastikan ada flow meter influent dan data COD/BOD rutin dari laboratorium. Bila sudah ada, daftarkan debit air limbah sebagai variabel relevan SEU-02 dan bentuk EnPI WWTP.
+- [ ] Pengadaan dan pemasangan submeter blower/aerator dan sensor DO (tahap 1).
+- [ ] Pengadaan submeter tahap 2 dan 3, dijadwalkan dalam rencana aksi dan anggaran.
+
+### 5.3 Untuk audit
+
+- [ ] Tuangkan kedua tabel di atas ke dokumen Rencana Pengumpulan Data Energi (klausul 6.6), lengkap dengan PIC, tanggal target per tahap, dan frekuensi pembacaan. Auditor menerima rencana yang jelas walaupun meter belum semua terpasang.
+
+## 6. Keputusan Tim SMEn dan konsultan
+
+- [ ] **Deviasi BBM 2026.** EnPI-01 (BBM kendaraan) memunculkan 9 deviasi bulanan ke arah boros (+20% s.d. +82% terhadap bulan yang sama 2025) dan 1 deviasi tren. Selidiki penyebabnya (penambahan armada, jam operasi, pencatatan) di halaman Kinerja Energi sebelum audit internal.
+- [ ] **Latihan simulasi audit.** Setiap unit auditee menjalankan minimal satu simulasi Stage 2 bersama KIRA sebelum TÜV Stage 1 (20 November 2026), dimulai dari Manajemen Puncak, MR, dan Manajer Energi.
 
 - [ ] **Baseline baru.** Kondisi tenant 2026 jauh berbeda dari 2025. Selama baseline masih 2025, EnPI-02 akan selalu terbaca boros dan EnPI-03 selalu ekstrapolasi. Putuskan penyesuaian baseline sesuai klausul 6.5.
 - [ ] **Sasaran energi.** Pindahkan sasaran yang memakai EnPI-02 atau EnPI-03 (lingkup kawasan, termasuk tenant) ke EnPI-04 atau EnPI-05 (lingkup KINRA).
@@ -54,14 +119,14 @@ Migrasi 0018–0026 sudah dijalankan di Supabase (6 November 2026). File 0027 be
 - [ ] **Peta batas EnMS.** Lengkapi dokumen Ruang Lingkup & Batasan (F-4.3-01) dengan daftar aset, peta batas, dan diagram meter dari halaman Aset & Meter.
 - [ ] **Hak hapus dokumen.** Hapus dokumen di Kesiapan saat ini diizinkan untuk Admin dan Tim KINRA. Putuskan apakah Admin tetap diberi hak ini.
 
-## 6. Keputusan yang sudah diambil (6 November 2026)
+## 7. Keputusan yang sudah diambil (6 November 2026)
 
 - **Kriteria SEU.** Porsi konsumsi ≥ 10%, **atau** termasuk kelompok teratas yang membentuk 80% konsumsi, **atau** ditetapkan karena potensi perbaikan atau persyaratan hukum. Ambang dapat diubah di catatan tinjauan energi.
 - **Wewenang SEU.** Penetapan dan pencabutan SEU serta persetujuan tinjauan energi hanya oleh Admin dan Konsultan. Tim KINRA mengusulkan kandidat dan mengisi detail.
 - **BBM kendaraan.** Dihitung sebagai satu pengguna energi di Pareto (dikonversi ke kWh setara, sekitar 2,5% energi KINRA). Belum memenuhi kriteria SEU.
 - **Peta SMEn.** Dibuat sebagai halaman sendiri (menu kedua, setelah Ringkasan) ditambah strip 12 langkah di bagian atas Ringkasan.
 
-## 7. Usulan fitur yang belum diputuskan
+## 8. Usulan fitur yang belum diputuskan
 
 - [ ] Rupiah dan emisi CO₂ pada halaman Energi, Kinerja, dan Sasaran
 - [ ] Penjelasan istilah langsung di tempat (arahkan kursor ke istilah teknis) dan kalimat "artinya…" pada kartu angka

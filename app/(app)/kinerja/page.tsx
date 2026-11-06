@@ -4,9 +4,12 @@ import { AngkaNaik } from '@/components/AngkaNaik'
 import { Chip } from '@/components/Chip'
 import { Grafik } from '@/components/charts/Grafik'
 import { SectionHead } from '@/components/SectionHead'
-import { ambilKinerja } from '@/lib/data'
+import { ambilDeviasi, ambilKinerja, ambilSasaran } from '@/lib/data'
+import { deteksiDeviasi, gabungDeviasi, hariSejak, terbuka as deviasiTerbuka } from '@/lib/deviasi'
+import { hariIni } from '@/lib/format'
 import { AMBANG, cusum, type HasilEnpi, LABEL_METODE, type Model, pasangan, pilihEnpiUtama, ringkas, rumus } from '@/lib/enpi'
 import { angka } from '@/lib/format'
+import { DaftarDeviasi } from './DaftarDeviasi'
 import { DaftarEnpi, DaftarVariabel } from './KelolaEnpi'
 import { TabelVariabel } from './TabelVariabel'
 
@@ -57,7 +60,11 @@ function SparkHemat({ h, tinggi = 40 }: { h: HasilEnpi; tinggi?: number }) {
 }
 
 export default async function Kinerja({ searchParams }: { searchParams: Promise<{ tahun?: string }> }) {
-  const { sumber, energi, variabel, dataVariabel, enpi, hasil, meter } = await ambilKinerja()
+  const [{ sumber, energi, variabel, dataVariabel, enpi, hasil, meter }, register, { aksi }] = await Promise.all([ambilKinerja(), ambilDeviasi(), ambilSasaran()])
+  const kini = hariIni()
+  const { baris: barisDeviasi, sisa: sisaDeviasi } = gabungDeviasi(deteksiDeviasi(hasil), register)
+  const deviasiBuka = barisDeviasi.filter((b) => deviasiTerbuka(b.r))
+  const jumlahDeviasi = (kode: string) => deviasiBuka.filter((b) => b.d.enpi_kode === kode).length
   const aktif = hasil.filter((h) => h.enpi.aktif)
   // Lingkup KINRA = dasar klaim kinerja; lingkup kawasan memuat listrik tenant dan hanya konteks
   const kinra = (h: HasilEnpi) => (h.enpi.lingkup ?? 'kinra') === 'kinra'
@@ -194,10 +201,11 @@ export default async function Kinerja({ searchParams }: { searchParams: Promise<
                     {rr.perbaikan === null ? '–' : `${rr.perbaikan < 0 ? '−' : '+'}${angka(Math.abs(rr.perbaikan), 1)}%`}
                   </span>
                   <SparkHemat h={h} />
-                  {(h.ekstrapolasi > 0 || h.enpi.kode === utama?.enpi.kode) && (
+                  {(h.ekstrapolasi > 0 || h.enpi.kode === utama?.enpi.kode || jumlahDeviasi(h.enpi.kode) > 0) && (
                     <span style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                       {h.enpi.kode === utama?.enpi.kode && <Chip kode="info" label="EnPI utama" />}
                       {h.ekstrapolasi > 0 && <Chip kode="warn" label="Ekstrapolasi" />}
+                      {jumlahDeviasi(h.enpi.kode) > 0 && <Chip kode="crit" label={`${jumlahDeviasi(h.enpi.kode)} deviasi terbuka`} />}
                     </span>
                   )}
                   <span className="muted small">{h.galat ? (h.enpi.meter_kode?.length ? 'Menunggu bacaan meter' : 'Model belum terbentuk') : `${rr.bulan} bulan · ${rr.hemat >= 0 ? 'hemat' : 'boros'} ${angka(Math.abs(rr.hemat), desimal(h.satuan))} ${h.satuan}`}</span>
@@ -216,8 +224,16 @@ export default async function Kinerja({ searchParams }: { searchParams: Promise<
         </div>
       </section>
 
+      <section id="deviasi">
+        <SectionHead no="01" eyebrow="Klausul 9.1 · Deviasi signifikan kinerja energi" judul={deviasiBuka.length ? `${deviasiBuka.length} deviasi signifikan perlu diselidiki` : 'Tidak ada deviasi signifikan terbuka'}>
+          <p className="muted">ISO 50001 mewajibkan deviasi signifikan kinerja energi diselidiki dan ditanggapi. Aplikasi mendeteksinya otomatis dari model EnPI lingkup KINRA setiap bulan; tim mencatat penyebab, tindakan, dan verifikasinya di sini.</p>
+        </SectionHead>
+        <DaftarDeviasi baris={barisDeviasi.map((b) => ({ ...b, umur: hariSejak(b.d.tahun, b.d.bulan, kini) }))} sisa={sisaDeviasi}
+          aksi={aksi.map((a) => ({ kode: a.kode, uraian: a.uraian }))} />
+      </section>
+
       <section id="variabel">
-        <SectionHead no="01" eyebrow="Variabel relevan · input bulanan" judul={`Data variabel ${tahun}`}>
+        <SectionHead no="02" eyebrow="Variabel relevan · input bulanan" judul={`Data variabel ${tahun}`}>
           <p className="muted">Variabel relevan adalah faktor terukur yang memengaruhi konsumsi energi secara signifikan dan rutin berubah. Tanpa data ini, EnPI tidak bisa dinormalisasi dan klaim penghematan sulit dibuktikan ke auditor.</p>
         </SectionHead>
         <div className="toolbar">
@@ -230,7 +246,7 @@ export default async function Kinerja({ searchParams }: { searchParams: Promise<
       </section>
 
       <section>
-        <SectionHead no="02" eyebrow="Definisi EnPI & EnB" judul={`${enpi.length} EnPI terdefinisi, ${aktif.length} aktif dipantau`}>
+        <SectionHead no="03" eyebrow="Definisi EnPI & EnB" judul={`${enpi.length} EnPI terdefinisi, ${aktif.length} aktif dipantau`}>
           <p className="muted">Tetapkan EnPI untuk organisasi dan untuk tiap SEU. Baseline disesuaikan bila ruang lingkup, fasilitas, atau variabel statis berubah signifikan (6.5); catat alasannya di kolom catatan.</p>
         </SectionHead>
         <DaftarEnpi enpi={enpi} sumber={sumber} variabel={variabel} meter={meter} />

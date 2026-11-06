@@ -1,8 +1,14 @@
 import { SectionHead } from '@/components/SectionHead'
 import { LANGKAH_TINDAK_LANJUT, SUMBER_TANYA_JAWAB, UNIT_AUDIT, URUTAN_PEMERIKSAAN } from '@/lib/tanya-jawab'
+import { ambilRiwayatSimulasi } from '@/lib/data'
 import { DaftarTanya } from './DaftarTanya'
+import { SimulasiAudit } from './SimulasiAudit'
+import { TabTanyaJawab } from './TabTanyaJawab'
 
-export default function TanyaJawab() {
+export const dynamic = 'force-dynamic'
+
+export default async function TanyaJawab() {
+  const riwayat = await ambilRiwayatSimulasi()
   const jumlah = UNIT_AUDIT.reduce((n, u) => n + u.tanya.length, 0)
   return (
     <section>
@@ -24,11 +30,11 @@ export default function TanyaJawab() {
         </div>
         <div className="card">
           <span className="eyebrow">Cara latihan</span>
-          <p>Jawaban disembunyikan. Coba jawab dulu, lalu klik pertanyaan untuk mencocokkan jawaban dan bukti yang akan diminta auditor.</p>
+          <p>Bank soal: jawaban disembunyikan, coba jawab dulu lalu cocokkan. Simulasi: KIRA berperan sebagai auditor, menilai jawaban Anda, dan memprediksi temuan dari celah nyata di data.</p>
         </div>
       </div>
 
-      <DaftarTanya />
+      <TabTanyaJawab bank={<DaftarTanya />} simulasi={<SimulasiAudit riwayat={riwayat} />} />
 
       <div className="card tj-penutup">
         <span className="eyebrow">Check menuju Act · tindak lanjut hasil audit</span>

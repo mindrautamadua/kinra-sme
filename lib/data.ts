@@ -2,7 +2,7 @@ import 'server-only'
 import { hitungEnpi } from './enpi'
 import { BUCKET_BUKTI } from './status'
 import { db } from './supabase'
-import type { Seu, TinjauanEnergi, Aset, MeterEnergi, PembacaanMeter, Berkas, BerkasTampil, Dokumen, EnergiBulanan, Enpi, Isu, JejakBukti, Kegiatan, Klausul, Peluang, RencanaAksi, Sasaran, SumberEnergi, Temuan, VariabelBulanan, VariabelRelevan } from './types'
+import type { Deviasi, Seu, TinjauanEnergi, Aset, MeterEnergi, PembacaanMeter, Berkas, BerkasTampil, Dokumen, EnergiBulanan, Enpi, Isu, JejakBukti, Kegiatan, Klausul, Peluang, RencanaAksi, Sasaran, SumberEnergi, Temuan, VariabelBulanan, VariabelRelevan } from './types'
 
 /** Tabel belum ada (PGRST205) dianggap kosong; layout menampilkan panduan migrasi. Galat lain dilempar. */
 function cek<T>(r: { data: T | null; error: { message: string; code?: string } | null }, tabel: string): T {
@@ -90,6 +90,26 @@ export async function ambilSeu(): Promise<{ seu: Seu[]; tinjauan: TinjauanEnergi
     seu: cek<Seu[]>(a, 'seu'),
     tinjauan: t && { ...t, ambang_persen: Number(t.ambang_persen), ambang_kumulatif: Number(t.ambang_kumulatif) },
   }
+}
+
+/** Register deviasi signifikan (migrasi 0028). */
+export async function ambilDeviasi(): Promise<Deviasi[]> {
+  const r = await (await db()).from('deviasi').select('*').order('tahun', { ascending: false }).order('bulan', { ascending: false })
+  return cek<Deviasi[]>(r, 'deviasi').map((d) => ({
+    ...d, aktual: d.aktual === null ? null : Number(d.aktual), harapan: d.harapan === null ? null : Number(d.harapan),
+    selisih_persen: d.selisih_persen === null ? null : Number(d.selisih_persen),
+  }))
+}
+
+export type SimulasiTersimpan = {
+  id: number; unit_no: number; unit_nama: string; mode: 'stage1' | 'stage2'; jumlah: number; skor: number; skor_maks: number
+  prediksi: { kategori: 'Mayor' | 'Minor' | 'OFI'; klausul: string; uraian: string }[]; oleh: string | null; dibuat_at: string
+}
+
+/** Riwayat simulasi audit (migrasi 0029). RLS: admin/konsultan semua, peran lain miliknya sendiri. */
+export async function ambilRiwayatSimulasi(): Promise<SimulasiTersimpan[]> {
+  const r = await (await db()).from('simulasi_audit').select('id, unit_no, unit_nama, mode, jumlah, skor, skor_maks, prediksi, oleh, dibuat_at').order('dibuat_at', { ascending: false }).limit(30)
+  return cek<SimulasiTersimpan[]>(r, 'simulasi_audit')
 }
 
 export async function ambilKegiatan(): Promise<Kegiatan[]> {

@@ -35,6 +35,8 @@ type Masukan = {
   dokumen: Dokumen[]; isu: Isu[]; peluang: Peluang[]; seu: Seu[]; tinjauan: TinjauanEnergi | null
   hasil: HasilEnpi[]; sasaran: Sasaran[]; aksi: RencanaAksi[]; temuan: Temuan[]
   meter: MeterEnergi[]; bacaan: PembacaanMeter[]; kini: string
+  /** Deviasi signifikan yang belum ditutup (lib/deviasi.ts) */
+  deviasiBuka?: number
 }
 
 /** Status dari persentase dokumen ber-evidence pada klausul tertentu. */
@@ -46,7 +48,7 @@ function dariDokumen(dokumen: Dokumen[], awalan: string[]) {
 }
 
 export function susunPeta(m: Masukan): Tahap[] {
-  const { dokumen, isu, peluang, seu, tinjauan, hasil, sasaran, aksi, temuan, meter, bacaan, kini } = m
+  const { dokumen, isu, peluang, seu, tinjauan, hasil, sasaran, aksi, temuan, meter, bacaan, kini, deviasiBuka = 0 } = m
 
   const d4 = dariDokumen(dokumen, ['4'])
   const d5 = dariDokumen(dokumen, ['5'])
@@ -79,7 +81,8 @@ export function susunPeta(m: Masukan): Tahap[] {
   const lalu = bl === 1 ? { t: th - 1, b: 12 } : { t: th, b: bl - 1 }
   const terbaca = new Set(bacaan.filter((x) => x.tahun === lalu.t && x.bulan === lalu.b && x.stand_awal !== null && x.stand_akhir !== null).map((x) => x.meter_kode))
   const adaBacaan = bacaan.length > 0
-  const s9: StatusTahap = !meter.length ? 'belum' : terbaca.size >= meter.length ? 'selesai' : adaBacaan ? 'berjalan' : 'menunggu'
+  const s9Dasar: StatusTahap = !meter.length ? 'belum' : terbaca.size >= meter.length ? 'selesai' : adaBacaan ? 'berjalan' : 'menunggu'
+  const s9: StatusTahap = s9Dasar === 'selesai' && deviasiBuka > 0 ? 'berjalan' : s9Dasar
   const kalibrasiKosong = meter.filter((x) => !x.kalibrasi_terakhir).length
 
   // ⑩ ⑫ Audit & perbaikan
@@ -166,10 +169,10 @@ export function susunPeta(m: Masukan): Tahap[] {
       artinya: 'Ukur energi secara rutin dengan meter yang andal, lalu bandingkan dengan target.',
       status: s9,
       diKinra: meter.length
-        ? `${terbaca.size} dari ${meter.length} meter terbaca bulan lalu. ${kalibrasiKosong} meter belum punya data kalibrasi.`
+        ? `${terbaca.size} dari ${meter.length} meter terbaca bulan lalu. ${kalibrasiKosong} meter belum punya data kalibrasi. ${deviasiBuka ? `${deviasiBuka} deviasi signifikan belum ditutup.` : 'Tidak ada deviasi signifikan terbuka.'}`
         : 'Belum ada meter terdaftar.',
-      auditor: 'Tunjukkan rencana pengukuran dan bukti kalibrasi meter.',
-      langkah: s9 === 'selesai' && !kalibrasiKosong ? null : 'Isi bacaan stand setiap bulan dan lengkapi data kalibrasi meter.',
+      auditor: 'Tunjukkan rencana pengukuran, bukti kalibrasi meter, dan bagaimana deviasi signifikan diselidiki.',
+      langkah: deviasiBuka ? `Selidiki dan tanggapi ${deviasiBuka} deviasi signifikan di halaman Kinerja Energi.` : s9 === 'selesai' && !kalibrasiKosong ? null : 'Isi bacaan stand setiap bulan dan lengkapi data kalibrasi meter.',
       tergantung: [], memengaruhi: [4, 5, 11],
     },
     {

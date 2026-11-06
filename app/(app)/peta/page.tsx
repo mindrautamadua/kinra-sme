@@ -1,5 +1,6 @@
 import { SectionHead } from '@/components/SectionHead'
-import { ambilDokumen, ambilIsu, ambilKinerja, ambilPeluang, ambilSasaran, ambilSeu, ambilTemuan } from '@/lib/data'
+import { ambilDokumen, ambilIsu, ambilKinerja, ambilPeluang, ambilSasaran, ambilSeu, ambilTemuan, ambilDeviasi } from '@/lib/data'
+import { deteksiDeviasi, gabungDeviasi, terbuka } from '@/lib/deviasi'
 import { hariIni } from '@/lib/format'
 import { susunPeta } from '@/lib/peta-smen'
 import { PetaInteraktif } from './PetaInteraktif'
@@ -7,10 +8,11 @@ import { PetaInteraktif } from './PetaInteraktif'
 export const dynamic = 'force-dynamic'
 
 export default async function PetaPage({ searchParams }: { searchParams: Promise<{ tahap?: string }> }) {
-  const [dokumen, isu, peluang, { seu, tinjauan }, kinerja, { sasaran, aksi }, temuan] = await Promise.all([
-    ambilDokumen(), ambilIsu(), ambilPeluang(), ambilSeu(), ambilKinerja(), ambilSasaran(), ambilTemuan(),
+  const [dokumen, isu, peluang, { seu, tinjauan }, kinerja, { sasaran, aksi }, temuan, register] = await Promise.all([
+    ambilDokumen(), ambilIsu(), ambilPeluang(), ambilSeu(), ambilKinerja(), ambilSasaran(), ambilTemuan(), ambilDeviasi(),
   ])
-  const tahap = susunPeta({ dokumen, isu, peluang, seu, tinjauan, hasil: kinerja.hasil, sasaran, aksi, temuan, meter: kinerja.meter, bacaan: kinerja.bacaan, kini: hariIni() })
+  const deviasiBuka = gabungDeviasi(deteksiDeviasi(kinerja.hasil), register).baris.filter((b) => terbuka(b.r)).length
+  const tahap = susunPeta({ dokumen, isu, peluang, seu, tinjauan, hasil: kinerja.hasil, sasaran, aksi, temuan, meter: kinerja.meter, bacaan: kinerja.bacaan, kini: hariIni(), deviasiBuka })
   const selesai = tahap.filter((t) => t.status === 'selesai').length
   const sp = await searchParams
   // Default: tahap pertama yang belum selesai, agar pengguna langsung melihat pekerjaan berikutnya

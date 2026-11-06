@@ -1,16 +1,17 @@
 import 'server-only'
-import { ambilAsetMeter, ambilDokumen, ambilIsu, ambilSeu, ambilKegiatan, ambilKinerja, ambilKlausul, ambilPeluang, ambilSasaran, ambilTemuan, rekapEnergi } from './data'
+import { ambilAsetMeter, ambilDeviasi, ambilDokumen, ambilIsu, ambilSeu, ambilKegiatan, ambilKinerja, ambilKlausul, ambilPeluang, ambilSasaran, ambilTemuan, rekapEnergi } from './data'
 import { LABEL_METODE, ringkas } from './enpi'
 import { angka, hariIni, persen, tanggal } from './format'
 import { penggunaEnergi } from './tinjauan'
+import { deteksiDeviasi, gabungDeviasi, terbuka as deviasiTerbuka } from './deviasi'
 import { adaBukti, kesiapan, terlambat, tingkatRisiko, tonggakDari } from './status'
 import { LANGKAH_TINDAK_LANJUT, SUMBER_TANYA_JAWAB, UNIT_AUDIT, URUTAN_PEMERIKSAAN } from './tanya-jawab'
 
 /** Ringkasan data dashboard dalam teks ringkas untuk instruksi sistem chatbot. Dibaca dengan sesi pengguna (RLS berlaku). */
 /** `tanyaJawab`: sertakan materi tanya jawab audit (~9 ribu token). Chat teks hanya menyertakannya bila pertanyaan relevan. */
 export async function konteksDashboard({ tanyaJawab = true }: { tanyaJawab?: boolean } = {}): Promise<string> {
-  const [dokumen, klausul, temuan, kegiatan, isu, peluang, { sasaran, aksi }, kinerja, { seu, tinjauan }, { aset }] = await Promise.all([
-    ambilDokumen(), ambilKlausul(), ambilTemuan(), ambilKegiatan(), ambilIsu(), ambilPeluang(), ambilSasaran(), ambilKinerja(), ambilSeu(), ambilAsetMeter(),
+  const [dokumen, klausul, temuan, kegiatan, isu, peluang, { sasaran, aksi }, kinerja, { seu, tinjauan }, { aset }, registerDeviasi] = await Promise.all([
+    ambilDokumen(), ambilKlausul(), ambilTemuan(), ambilKegiatan(), ambilIsu(), ambilPeluang(), ambilSasaran(), ambilKinerja(), ambilSeu(), ambilAsetMeter(), ambilDeviasi(),
   ])
   const kini = hariIni()
   const b: string[] = [`Tanggal hari ini: ${tanggal(kini, 'panjang')}.`]
@@ -51,6 +52,10 @@ export async function konteksDashboard({ tanyaJawab = true }: { tanyaJawab?: boo
     const model = h.model ? `R² ${angka(h.model.r2, 3)}, CV(RMSE) ${persen(h.model.cvrmse)}` : (h.galat ?? 'model belum terbentuk')
     b.push(`- ${h.enpi.kode} ${h.enpi.nama} [${LABEL_METODE[h.enpi.metode]}], baseline ${tanggal(h.enpi.baseline_mulai)}–${tanggal(h.enpi.baseline_selesai)}: ${model}; ${r.bulan} bulan pelaporan, perbaikan ${persen(r.perbaikan)}, hemat ${angka(r.hemat, 2)} ${h.satuan}${h.enpi.utama ? '; EnPI UTAMA' : ''}; lingkup ${(h.enpi.lingkup ?? 'kinra') === 'kinra' ? 'KINRA' : 'kawasan termasuk tenant'}${h.enpi.aktif ? '' : '; NONAKTIF'}${h.ekstrapolasi ? `; PERINGATAN: ${h.ekstrapolasi} bulan pelaporan di luar rentang baseline, harapan = ekstrapolasi, penghematan belum boleh diklaim` : ''}`)
   }
+
+  const dev = gabungDeviasi(deteksiDeviasi(kinerja.hasil), registerDeviasi).baris
+  b.push(`\n## Deviasi signifikan kinerja energi (klausul 9.1, lingkup KINRA)\n${dev.filter((x) => deviasiTerbuka(x.r)).length} terbuka dari ${dev.length} terdeteksi. Aturan: selisih bulanan > maks(2×RMSE, 10%), 3 bulan berturut-turut boros, atau data hilang.`)
+  for (const x of dev.slice(0, 12)) b.push(`- ${x.d.enpi_kode} ${x.d.label} [${x.d.jenis}, ${x.d.arah}] selisih ${persen(x.d.selisih_persen)}: ${x.r ? `${x.r.status}${x.r.penyebab ? `, penyebab: ${x.r.penyebab}` : ''}` : 'BELUM DISELIDIKI'}`)
 
   b.push('\n## Sasaran & rencana aksi')
   for (const s of sasaran) b.push(`- ${s.kode} ${s.uraian} | EnPI ${s.enpi_kode ?? '–'} | target ${persen(s.target_persen)} ${s.tahun_target ?? ''} | ${s.status}`)

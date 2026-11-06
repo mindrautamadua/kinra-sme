@@ -4,8 +4,9 @@ import { AngkaNaik } from '@/components/AngkaNaik'
 import { Grafik } from '@/components/charts/Grafik'
 import { Chip } from '@/components/Chip'
 import { SectionHead } from '@/components/SectionHead'
-import { ambilDokumen, ambilIsu, ambilJejakBukti, ambilKegiatan, ambilKinerja, ambilKlausul, ambilPeluang, ambilSasaran, ambilSeu, ambilTemuan, rekapEnergi } from '@/lib/data'
+import { ambilDokumen, ambilIsu, ambilJejakBukti, ambilKegiatan, ambilKinerja, ambilKlausul, ambilPeluang, ambilSasaran, ambilSeu, ambilTemuan, ambilDeviasi, rekapEnergi } from '@/lib/data'
 import { LABEL_STATUS, susunPeta } from '@/lib/peta-smen'
+import { BATAS_HARI_TANGGAPAN, deteksiDeviasi, gabungDeviasi, hariSejak, terbuka as deviasiTerbuka } from '@/lib/deviasi'
 import { LABEL_METODE, pilihEnpiUtama, ringkas } from '@/lib/enpi'
 import { angka, BULAN, delta, hariIni, persen, selisihHari, tanggal, waktu } from '@/lib/format'
 import { adaBukti, hariWib, kesiapan, kesiapanPerKlausul, KELOMPOK, terlambat, tonggakDari, trenKesiapan } from '@/lib/status'
@@ -13,12 +14,14 @@ import { adaBukti, hariWib, kesiapan, kesiapanPerKlausul, KELOMPOK, terlambat, t
 export const dynamic = 'force-dynamic'
 
 export default async function Ringkasan() {
-  const [dokumen, klausul, temuan, kegiatan, kinerja, jejak, isu, peluang, { seu, tinjauan }, { sasaran, aksi }] = await Promise.all([
-    ambilDokumen(), ambilKlausul(), ambilTemuan(), ambilKegiatan(), ambilKinerja(), ambilJejakBukti(), ambilIsu(), ambilPeluang(), ambilSeu(), ambilSasaran(),
+  const [dokumen, klausul, temuan, kegiatan, kinerja, jejak, isu, peluang, { seu, tinjauan }, { sasaran, aksi }, registerDeviasi] = await Promise.all([
+    ambilDokumen(), ambilKlausul(), ambilTemuan(), ambilKegiatan(), ambilKinerja(), ambilJejakBukti(), ambilIsu(), ambilPeluang(), ambilSeu(), ambilSasaran(), ambilDeviasi(),
   ])
   const energi = { sumber: kinerja.sumber, data: kinerja.energi }
   const kini = hariIni()
-  const peta = susunPeta({ dokumen, isu, peluang, seu, tinjauan, hasil: kinerja.hasil, sasaran, aksi, temuan, meter: kinerja.meter, bacaan: kinerja.bacaan, kini })
+  const deviasiBuka = gabungDeviasi(deteksiDeviasi(kinerja.hasil), registerDeviasi).baris.filter((b) => deviasiTerbuka(b.r))
+  const deviasiTelat = deviasiBuka.filter((b) => !b.r && hariSejak(b.d.tahun, b.d.bulan, kini) > BATAS_HARI_TANGGAPAN)
+  const peta = susunPeta({ dokumen, isu, peluang, seu, tinjauan, hasil: kinerja.hasil, sasaran, aksi, temuan, meter: kinerja.meter, bacaan: kinerja.bacaan, kini, deviasiBuka: deviasiBuka.length })
 
   const skor = kesiapan(dokumen)
   const siap = dokumen.filter(adaBukti).length
@@ -127,6 +130,11 @@ export default async function Ringkasan() {
             </li>
           ))}
         </ol>
+        {deviasiTelat.length > 0 && (
+          <p className="pesan galat" style={{ marginTop: 12 }}>
+            {deviasiTelat.length} deviasi signifikan kinerja energi lebih dari {BATAS_HARI_TANGGAPAN} hari belum diselidiki ({[...new Set(deviasiTelat.map((b) => b.d.enpi_kode))].join(', ')}). Klausul 9.1 mewajibkan penyelidikan dan tanggapan. <Link href="/kinerja#deviasi">Selidiki sekarang</Link>
+          </p>
+        )}
       </nav>
 
       <section>

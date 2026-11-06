@@ -6,6 +6,7 @@ import { ambilAsetMeter, ambilKinerja, ambilSeu } from '@/lib/data'
 import { angka, energiListrik, persen, tanggal } from '@/lib/format'
 import { penggunaEnergi } from '@/lib/tinjauan'
 import { FormTinjauan } from './FormTinjauan'
+import { DiagramSubmeter } from './DiagramSubmeter'
 import { RegisterSeu } from './RegisterSeu'
 
 export const dynamic = 'force-dynamic'
@@ -108,7 +109,17 @@ export default async function TinjauanPage() {
       </section>
 
       <section>
-        <SectionHead no="03" eyebrow="Kualitas data tinjauan" judul={`${tanpaData.length} aset belum punya data energi`}>
+        <SectionHead no="03" eyebrow="Rencana pengukuran SEU · klausul 6.6 & 9.1" judul="Di mana submeter dipasang">
+          <p className="muted">
+            Satu meter utama hanya memberi tahu total. Submeter pada beban terbesar menunjukkan bagian mana yang boros dan memungkinkan EnPI per proses.
+            Klik titik ukur untuk melihat kegunaannya; saring per tahap untuk melihat urutan pemasangan.
+          </p>
+        </SectionHead>
+        <DiagramSubmeter />
+      </section>
+
+      <section>
+        <SectionHead no="04" eyebrow="Kualitas data tinjauan" judul={`${tanpaData.length} aset belum punya data energi`}>
           <p className="muted">Aset tanpa data bisa menyembunyikan SEU. Prioritaskan aset terluas dan yang punya peralatan besar (pompa, boiler, pendingin).</p>
         </SectionHead>
         <div className="card">
@@ -133,7 +144,7 @@ export default async function TinjauanPage() {
       </section>
 
       <section>
-        <SectionHead no="04" eyebrow="Catatan tinjauan" judul={tinjauan ? `Tinjauan ${tanggal(tinjauan.periode_mulai)} – ${tanggal(tinjauan.periode_selesai)}` : 'Belum ada catatan tinjauan'}>
+        <SectionHead no="05" eyebrow="Catatan tinjauan" judul={tinjauan ? `Tinjauan ${tanggal(tinjauan.periode_mulai)} – ${tanggal(tinjauan.periode_selesai)}` : 'Belum ada catatan tinjauan'}>
           <p className="muted">ISO 50001 meminta tinjauan energi didokumentasikan dan diperbarui secara berkala serta saat ada perubahan besar pada fasilitas, peralatan, atau proses.</p>
         </SectionHead>
         <div className="card">

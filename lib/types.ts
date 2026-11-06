@@ -281,3 +281,28 @@ export type TinjauanEnergi = {
   disetujui_at: string | null
   diubah_at: string
 }
+
+/** Catatan penyelidikan deviasi signifikan kinerja energi (migrasi 0028). */
+export type Deviasi = {
+  id: number
+  enpi_kode: string
+  tahun: number
+  bulan: number
+  jenis: 'bulanan' | 'tren' | 'data'
+  arah: 'boros' | 'hemat' | 'data'
+  aktual: number | null
+  harapan: number | null
+  selisih_persen: number | null
+  status: 'Diselidiki' | 'Ditanggapi' | 'Ditutup' | 'Bukan deviasi'
+  kategori: 'operasi' | 'kerusakan' | 'data' | 'variabel' | 'aksi' | 'lainnya' | null
+  penyebab: string | null
+  tindakan: string | null
+  pic: string | null
+  tenggat: string | null
+  aksi_kode: string | null
+  dibuka_oleh: string | null
+  diverifikasi_oleh: string | null
+  diverifikasi_at: string | null
+  dibuat_at: string
+  diubah_at: string
+}
