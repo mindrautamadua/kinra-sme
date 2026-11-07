@@ -1820,3 +1820,65 @@ dialog.tj-ev-dlg { max-height: calc(100dvh - 32px); overflow-y: auto; overscroll
 .lp-kurva .realisasi { fill: none; stroke: var(--p-brand); stroke-width: 2.6; stroke-linejoin: round; }
 .lp-legenda i.lp-kurva-rencana { background: none; border-top: 2px dashed var(--p-line-2); height: 0; width: 5mm; }
 .lp-legenda i.lp-kurva-realisasi { background: var(--p-brand); height: 3px; width: 5mm; }
+
+/* ---------- Simulasi Pompa & VSD (/pompa-vsd) ---------- */
+.pv-utama { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(300px, 1fr); gap: 16px; align-items: start; }
+.pv-panggung { position: relative; aspect-ratio: 16 / 11; max-width: 100%; min-width: 0; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--line-2);
+  background: linear-gradient(180deg, var(--surface-2), var(--surface-3)); }
+.pv-panggung canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+.pv-tag { position: absolute; z-index: 1; font-family: var(--font-mono), monospace; font-size: 11px; color: var(--ink-2); background: var(--surface); border: 1px solid var(--line-2); padding: 3px 9px; border-radius: 99px; pointer-events: none; }
+.pv-mode { left: 12px; top: 12px; color: var(--brand); font-weight: 600; }
+.pv-petunjuk { right: 12px; bottom: 12px; }
+.pv-gagal { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 24px; margin: 0; }
+.pv-panel { display: grid; gap: 16px; }
+.pv-seg { display: grid; grid-template-columns: 1fr 1fr; }
+.pv-seg button { font-size: 13px; padding: 8px 10px; }
+.pv-ctl { display: grid; gap: 4px; }
+.pv-ctl label { display: flex; justify-content: space-between; gap: 8px; font-weight: 600; font-size: 13.5px; }
+.pv-ctl output { font-family: var(--font-mono), monospace; color: var(--brand); }
+.pv-ctl input[type=range] { width: 100%; accent-color: var(--brand); }
+.pv-angka { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.pv-angka > div { background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 10px 12px; min-width: 0; }
+.pv-angka span { display: block; font-family: var(--font-mono), monospace; font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.pv-angka b { font-family: var(--font-mono), monospace; font-size: 21px; line-height: 1.25; }
+.pv-angka b small, .pv-fakta b small { font-size: 12px; font-weight: 500; color: var(--muted); margin-left: 4px; }
+.pv-hemat { display: grid; gap: 2px; border-left: 4px solid var(--good); background: var(--surface-2); border-radius: var(--radius-sm); padding: 10px 12px; }
+.pv-hemat.nol { border-left-color: var(--muted); }
+.pv-hemat span { color: var(--ink-2); font-size: 13px; }
+.pv-grafik, .pv-tabel { min-width: 0; }
+.pv-grafik h3, .pv-tabel h3 { margin: 0 0 2px; font-size: 15px; }
+.pv-legenda { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12.5px; color: var(--ink-2); margin: 8px 0 4px; }
+.pv-legenda i { display: inline-block; width: 18px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 6px; }
+.pv-legenda i.putus { height: 0; border-top: 2px dashed var(--muted); }
+.pv-svg { width: 100%; height: auto; display: block; }
+.pv-svg text { font-family: var(--font-mono), monospace; font-size: 11px; fill: var(--muted); }
+.pv-svg text.lab { fill: var(--ink-2); font-weight: 600; }
+.pv-fakta { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.pv-fakta .card { display: grid; gap: 4px; }
+.pv-fakta b { font-family: var(--font-mono), monospace; font-size: 26px; line-height: 1.2; }
+@media (max-width: 900px) {
+  .pv-utama { grid-template-columns: 1fr; }
+  .pv-fakta { grid-template-columns: 1fr; }
+}
+
+/* ---------- Laboratorium EnPI (/lab-enpi) ---------- */
+.lab { display: grid; gap: 16px; }
+.lab-blok { display: grid; gap: 14px; }
+.lab-judul h2 { margin: 2px 0 4px; font-size: 18px; }
+.lab-judul p { margin: 0; max-width: 78ch; }
+.lab-kendali { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; align-items: start; }
+.lab-kendali > div { display: grid; gap: 6px; min-width: 0; }
+.lab-lbl { font-family: var(--font-mono), monospace; font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.lab-kendali .seg button:disabled { opacity: .45; cursor: not-allowed; }
+.lab-putusan { margin: 0; padding: 10px 14px; border-radius: var(--radius-sm); background: var(--surface-2); border-left: 4px solid var(--muted); font-weight: 700; }
+.lab-putusan.baik { border-left-color: var(--good); }
+.lab-putusan.buruk { border-left-color: var(--crit); }
+.lab-angka { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; }
+.lab-angka > div { background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 10px 12px; min-width: 0; }
+.lab-angka span { display: block; font-family: var(--font-mono), monospace; font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.lab-angka b { font-family: var(--font-mono), monospace; font-size: 19px; line-height: 1.3; }
+.lab-angka b small { font-size: 11.5px; font-weight: 500; color: var(--muted); margin-left: 4px; }
+.lab-catatan { display: grid; gap: 6px; }
+.lab-catatan p { margin: 0; max-width: 85ch; color: var(--ink-2); }
+@media (max-width: 900px) { .lab-angka { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .lab-angka { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

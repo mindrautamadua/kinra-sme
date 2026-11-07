@@ -69,6 +69,8 @@ export const GLOSARIUM: Istilah[] = [
     arti: 'Jumlah energi yang dipakai, dicatat per bulan per sumber di aplikasi.', href: '/energi' },
   { istilah: 'Efisiensi energi', asli: 'Energy efficiency', kategori: 'kinerja', klausul: '3.5.3',
     arti: 'Rasio antara keluaran (kinerja, layanan, barang) dengan masukan energi.' },
+  { istilah: 'VSD', asli: 'Variable Speed Drive / inverter / VFD', kategori: 'kinerja', href: '/pompa-vsd',
+    arti: 'Pengatur kecepatan motor listrik dengan mengubah frekuensi listrik. Pada pompa, menurunkan putaran 20% dapat memangkas daya hingga sekitar separuh (hukum afinitas). Di WTP 1 terpasang 3 VSD pada pompa distribusi 75 kW.' },
 
   // Data & analisis
   { istilah: 'CUSUM', asli: 'Cumulative Sum', kategori: 'analisis',

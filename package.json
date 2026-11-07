@@ -16,12 +16,14 @@
     "next": "16.4.1",
     "react": "19.2.0",
     "react-dom": "19.2.0",
-    "server-only": "0.0.1"
+    "server-only": "0.0.1",
+    "three": "0.170.0"
   },
   "devDependencies": {
     "@types/node": "22.18.0",
     "@types/react": "19.2.2",
     "@types/react-dom": "19.2.2",
+    "@types/three": "0.170.0",
     "typescript": "5.9.3"
   }
 }

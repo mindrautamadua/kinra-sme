@@ -1,6 +1,6 @@
 'use client'
 
-import { Activity, Presentation, BookA, Building2, Crosshair, Map as IkonPeta, BookOpen, MessagesSquare, CalendarRange, ClipboardCheck, FileText, Gauge, LayoutDashboard, Network, ScanSearch, SearchCheck, ShieldAlert, Target, Users } from 'lucide-react'
+import { Activity, Presentation, BookA, Building2, Crosshair, Fan, FlaskConical, Map as IkonPeta, BookOpen, MessagesSquare, CalendarRange, ClipboardCheck, FileText, Gauge, LayoutDashboard, Network, ScanSearch, SearchCheck, ShieldAlert, Target, Users } from 'lucide-react'
 import Link from 'next/link'
 import { Fragment } from 'react'
 import { usePathname } from 'next/navigation'
@@ -42,6 +42,8 @@ export const GRUP_MENU: GrupMenu[] = [
   { kode: 'bantuan', judul: 'Bantuan', item: [
     { href: '/panduan', label: 'Panduan', ikon: BookOpen },
     { href: '/glosarium', label: 'Glosarium', ikon: BookA },
+    { href: '/lab-enpi', label: 'Laboratorium EnPI', ikon: FlaskConical },
+    { href: '/pompa-vsd', label: 'Simulasi Pompa & VSD', ikon: Fan },
   ] },
 ]
 
