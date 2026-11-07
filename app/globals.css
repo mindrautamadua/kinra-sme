@@ -1882,3 +1882,53 @@ dialog.tj-ev-dlg { max-height: calc(100dvh - 32px); overflow-y: auto; overscroll
 .lab-catatan p { margin: 0; max-width: 85ch; color: var(--ink-2); }
 @media (max-width: 900px) { .lab-angka { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (max-width: 520px) { .lab-angka { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* ---------- Cerita Energi KINRA (/cerita-energi): tayangan satu tampilan (tosca brand), tidak mengikuti tema ---------- */
+.ce { display: grid; gap: 10px; }
+.ce-panggung { --ce-bg: #00797e; --ce-bg-2: #006469; --ce-putih: #ffffff; --ce-teks: #eaf7f7; --ce-redup: #b9e3e4;
+  --ce-biru: #7fd0f5; --ce-jingga: #fcaf17; --ce-merah: #f15a22; --ce-merah-2: #ff9a72;
+  position: relative; container-type: inline-size; aspect-ratio: 16 / 9; max-width: 100%; border-radius: var(--radius); overflow: hidden;
+  background: linear-gradient(160deg, var(--ce-bg) 0%, var(--ce-bg-2) 100%); color: var(--ce-teks); outline: none; }
+.ce-panggung:focus-visible { box-shadow: 0 0 0 3px var(--brand); }
+.ce-panggung.penuh { width: 100vw; height: 100vh; aspect-ratio: auto; border-radius: 0; }
+.ce-panggung::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1.2cqw;
+  background: linear-gradient(90deg, #f15a22 0 25%, #fcaf17 25% 50%, #32a3dc 50% 75%, #9fe0e2 75%); }
+.ce-adegan { position: absolute; inset: 0; display: grid; align-items: center; padding: 6cqw 8cqw 9cqw; }
+.ce-a { display: grid; gap: 1.6cqw; max-width: 82cqw; }
+.ce-kecil { margin: 0; font-size: 2.6cqw; font-weight: 600; color: var(--ce-redup); }
+.ce-raksasa { margin: 0; font-size: 12cqw; font-weight: 800; line-height: 1; letter-spacing: -0.02em; color: var(--ce-putih); display: flex; align-items: baseline; gap: 1.6cqw; flex-wrap: wrap; }
+.ce-satuan { font-size: 3.6cqw; font-weight: 700; color: var(--ce-jingga); letter-spacing: 0; }
+.ce-sedang { margin: 0; font-size: 2.5cqw; line-height: 1.35; max-width: 62cqw; }
+.ce-judul { margin: 0; font-size: 5cqw; font-weight: 800; line-height: 1.1; text-wrap: balance; color: var(--ce-putih); }
+.ce-judul em { font-style: normal; color: var(--ce-jingga); }
+.ce-sumber { margin: 0; font-family: var(--font-mono), monospace; font-size: 1.25cqw; letter-spacing: .06em; color: var(--ce-redup); }
+.ce-batang { display: flex; gap: 0.35cqw; height: 6cqw; border-radius: 0.8cqw; overflow: hidden; margin-top: 1cqw; }
+.ce-batang span { flex-basis: 0; transform-origin: left center; animation: ce-tumbuh .9s cubic-bezier(.2,.8,.2,1) both; }
+.ce-daftar { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1cqw 4cqw; }
+.ce-daftar li { display: grid; grid-template-columns: 1.4cqw 1fr auto; align-items: center; gap: 1.2cqw; font-size: 2cqw; animation: ce-masuk .6s ease-out both; }
+.ce-daftar i { width: 1.4cqw; height: 1.4cqw; border-radius: 0.3cqw; }
+.ce-daftar b { font-family: var(--font-mono), monospace; color: var(--ce-putih); }
+.ce-aksi { list-style: none; margin: 1.5cqw 0 0; padding: 0; display: grid; gap: 2cqw; }
+.ce-aksi li { display: grid; grid-template-columns: 18cqw 1fr; align-items: baseline; gap: 2cqw; border-top: 0.2cqw solid rgba(255,255,255,.28); padding-top: 1.6cqw; animation: ce-masuk .7s ease-out both; }
+.ce-aksi b { font-size: 4.2cqw; font-weight: 800; color: var(--ce-jingga); }
+.ce-aksi span { font-size: 2.5cqw; }
+.ce-a5 { justify-items: start; }
+.ce-logo { width: 26cqw; background: #fff; padding: 1.6cqw 2.2cqw; border-radius: 1cqw; }
+.ce-m1, .ce-m2, .ce-m3, .ce-m4 { animation: ce-masuk .7s ease-out both; }
+.ce-m2 { animation-delay: .35s; } .ce-m3 { animation-delay: 1.6s; } .ce-m4 { animation-delay: 2.2s; }
+.ce-kendali { position: absolute; right: 1.6cqw; bottom: 2.4cqw; display: flex; align-items: center; gap: 6px; background: rgba(0, 40, 42, .55); border-radius: 99px; padding: 4px 8px; }
+.ce-kendali > button { display: grid; place-items: center; width: 30px; height: 30px; border: 0; border-radius: 99px; background: transparent; color: #fff; cursor: pointer; }
+.ce-kendali > button:hover, .ce-kendali > button:focus-visible { background: rgba(255,255,255,.16); outline: none; }
+.ce-kendali svg { width: 16px; height: 16px; }
+.ce-titik { display: flex; gap: 4px; padding: 0 4px; }
+.ce-titik button { width: 22px; height: 6px; padding: 0; border: 0; border-radius: 99px; background: rgba(255,255,255,.28); overflow: hidden; cursor: pointer; }
+.ce-titik i { display: block; height: 100%; width: 0; background: #fff; }
+.ce-titik i.lewat, .ce-titik i.henti { width: 100%; }
+.ce-titik i.jalan { animation: ce-maju linear both; }
+@keyframes ce-masuk { from { opacity: 0; transform: translateY(1.2cqw); } to { opacity: 1; transform: none; } }
+@keyframes ce-tumbuh { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes ce-maju { from { width: 0; } to { width: 100%; } }
+@media (prefers-reduced-motion: reduce) {
+  .ce-m1, .ce-m2, .ce-m3, .ce-m4, .ce-daftar li, .ce-aksi li, .ce-batang span { animation: none; }
+}
+@media (max-width: 640px) { .ce-kendali { bottom: 3cqw; padding: 2px 4px; } .ce-titik button { width: 12px; } }
