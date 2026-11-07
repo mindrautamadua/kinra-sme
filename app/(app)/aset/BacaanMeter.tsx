@@ -5,6 +5,7 @@ import { useState, useTransition } from 'react'
 import { simpanBacaan } from '@/app/actions'
 import { useBoleh } from '@/components/Peran'
 import { angka, BULAN_PANJANG, delta, waktu } from '@/lib/format'
+import { konsumsiBacaan } from '@/lib/enpi'
 import type { MeterEnergi, PembacaanMeter } from '@/lib/types'
 
 /** Angka format Indonesia (3.698,09) atau titik desimal (3698.09). Kosong = null, tidak valid = NaN. */
@@ -43,14 +44,17 @@ export function BacaanMeter({ meter, bacaan, tahun, bulan, plnBulan }: {
   })))
   const [status, setStatus] = useState<Record<string, { s: 'simpan' | 'ok' | 'galat'; pesan?: string }>>({})
 
+  // kWh tagihan historis (tanpa stand) dipakai bila stand bulan ini belum diisi
+  const kwhTagihan = (m: MeterEnergi) => cari(m.kode, tahun, bulan)?.kwh_tagihan ?? null
   const konsumsi = (m: MeterEnergi) => {
     const a = bacaAngka(isi[m.kode]?.awal ?? ''), b = bacaAngka(isi[m.kode]?.akhir ?? '')
+    if (a === null && b === null) return kwhTagihan(m)
     if (a === null || b === null || !Number.isFinite(a) || !Number.isFinite(b)) return null
     return (b - a) * m.faktor_kali
   }
   const konsumsiLalu = (m: MeterEnergi) => {
     const r = cari(m.kode, lalu.tahun, lalu.bulan)
-    return r?.stand_awal != null && r.stand_akhir != null ? (r.stand_akhir - r.stand_awal) * m.faktor_kali : null
+    return r ? konsumsiBacaan(r, m) : null
   }
 
   function simpan(m: MeterEnergi) {
@@ -123,6 +127,7 @@ export function BacaanMeter({ meter, bacaan, tahun, bulan, plnBulan }: {
                   <td className="num">
                     {k === null ? '–' : <b className={k < 0 ? 'txt-bad' : undefined}>{angka(k, 1)} {m.satuan}</b>}
                     {k !== null && k < 0 && <span className="upd txt-bad">Stand akhir lebih kecil dari awal</span>}
+                    {k !== null && !isi[m.kode]?.awal && !isi[m.kode]?.akhir && kwhTagihan(m) !== null && <span className="upd">dari tagihan, tanpa stand</span>}
                   </td>
                   <td className="num">{k !== null && kl ? delta(((k - kl) / kl) * 100) : '–'}</td>
                 </tr>
@@ -147,7 +152,7 @@ export function BacaanMeter({ meter, bacaan, tahun, bulan, plnBulan }: {
         </p>
       )}
       {!bisaUbah && <p className="pesan" style={{ marginTop: 12 }}>Peran Pembaca hanya dapat melihat bacaan meter.</p>}
-      <p className="sumber">Konsumsi = (stand akhir − stand awal) × faktor kali. Ketik angka lalu pindah kolom untuk menyimpan; kosongkan kedua stand untuk menghapus bacaan bulan ini. Hijau = tersimpan, merah = gagal.</p>
+      <p className="sumber">Konsumsi = (stand akhir − stand awal) × faktor kali. Ketik angka lalu pindah kolom untuk menyimpan; kosongkan kedua stand untuk menghapus bacaan bulan ini. Bulan historis tanpa stand memakai kWh tagihan. Hijau = tersimpan, merah = gagal.</p>
     </div>
   )
 }

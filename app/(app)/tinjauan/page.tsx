@@ -6,6 +6,7 @@ import { SectionHead } from '@/components/SectionHead'
 import { ambilAsetMeter, ambilKinerja, ambilParameter, ambilSeu } from '@/lib/data'
 import { angka, energiListrik, hariIni, persen, tanggal } from '@/lib/format'
 import { nilaiEnergi, rupiahRingkas, susunKonversi, tonCo2 } from '@/lib/konversi'
+import { adaBacaan } from '@/lib/enpi'
 import { penggunaEnergi } from '@/lib/tinjauan'
 import { DiagramSubmeter } from './DiagramSubmeter'
 import { FormTinjauan } from './FormTinjauan'
@@ -48,7 +49,7 @@ export default async function TinjauanPage() {
   // Kesiapan per SEU: daftar cek yang lazim ditanyakan auditor
   const [th, bl] = [Number(kini.slice(0, 4)), Number(kini.slice(5, 7))]
   const lalu = bl === 1 ? { t: th - 1, b: 12 } : { t: th, b: bl - 1 }
-  const terbaca = (kode: string) => bacaan.some((b) => b.meter_kode === kode && b.tahun === lalu.t && b.bulan === lalu.b && b.stand_akhir !== null)
+  const terbaca = (kode: string) => bacaan.some((b) => b.meter_kode === kode && b.tahun === lalu.t && b.bulan === lalu.b && adaBacaan(b))
   const kesiapan: BarisKesiapan[] = aktif.map((s) => {
     const h = hasil.find((x) => x.enpi.kode === s.enpi_kode)
     const adaData = !!h && !h.galat && !!h.model

@@ -2,7 +2,7 @@
  * Peta SMEn: 12 tahap siklus PDCA ISO 50001 dengan penjelasan awam dan status yang dihitung dari data aplikasi.
  * Dipakai halaman Peta SMEn dan strip ringkas di Ringkasan.
  */
-import { modelLayak, type HasilEnpi } from './enpi'
+import { adaBacaan as bacaanAda, modelLayak, type HasilEnpi } from './enpi'
 import { angka, persen } from './format'
 import { kemajuan, kesiapan } from './status'
 import type { Dokumen, Isu, MeterEnergi, PembacaanMeter, Peluang, RencanaAksi, Sasaran, Seu, Temuan, TinjauanEnergi } from './types'
@@ -80,7 +80,7 @@ export function susunPeta(m: Masukan): Tahap[] {
   // ⑨ Pemantauan: bacaan meter bulan lalu
   const [th, bl] = [Number(kini.slice(0, 4)), Number(kini.slice(5, 7))]
   const lalu = bl === 1 ? { t: th - 1, b: 12 } : { t: th, b: bl - 1 }
-  const terbaca = new Set(bacaan.filter((x) => x.tahun === lalu.t && x.bulan === lalu.b && x.stand_awal !== null && x.stand_akhir !== null).map((x) => x.meter_kode))
+  const terbaca = new Set(bacaan.filter((x) => x.tahun === lalu.t && x.bulan === lalu.b && bacaanAda(x)).map((x) => x.meter_kode))
   const adaBacaan = bacaan.length > 0
   const s9Dasar: StatusTahap = !meter.length ? 'belum' : terbaca.size >= meter.length ? 'selesai' : adaBacaan ? 'berjalan' : 'menunggu'
   const s9: StatusTahap = s9Dasar === 'selesai' && deviasiBuka > 0 ? 'berjalan' : s9Dasar

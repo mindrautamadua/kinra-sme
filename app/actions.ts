@@ -342,14 +342,19 @@ export async function hapusMeter(kode: string): Promise<Hasil> {
   return gagalAset(error)
 }
 
-/** Simpan stand awal/akhir satu meter pada satu bulan. Keduanya kosong = hapus bacaan. */
+/** Simpan stand awal/akhir satu meter pada satu bulan. Keduanya kosong = hapus bacaan (kWh tagihan historis tetap disimpan). */
 export async function simpanBacaan(meter_kode: string, tahun: number, bulan: number, stand_awal: number | null, stand_akhir: number | null): Promise<Hasil> {
   const t = await tolak('aset.ubah'); if (t) return t
   if ([stand_awal, stand_akhir].some((v) => v !== null && (!Number.isFinite(v) || v < 0))) return { ok: false, pesan: 'Stand meter harus angka 0 atau lebih.' }
   const s = await db()
-  const { error } = stand_awal === null && stand_akhir === null
-    ? await s.from('pembacaan_meter').delete().match({ meter_kode, tahun, bulan })
-    : await s.from('pembacaan_meter').upsert({ meter_kode, tahun, bulan, stand_awal, stand_akhir })
+  if (stand_awal === null && stand_akhir === null) {
+    // Baris yang punya kWh tagihan tidak dihapus; cukup kosongkan standnya
+    const hapus = await s.from('pembacaan_meter').delete().match({ meter_kode, tahun, bulan }).is('kwh_tagihan', null)
+    const kosong = hapus.error ? hapus : await s.from('pembacaan_meter').update({ stand_awal: null, stand_akhir: null }).match({ meter_kode, tahun, bulan })
+    revalidasiAset()
+    return gagalAset(kosong.error)
+  }
+  const { error } = await s.from('pembacaan_meter').upsert({ meter_kode, tahun, bulan, stand_awal, stand_akhir })
   revalidasiAset()
   return gagalAset(error)
 }

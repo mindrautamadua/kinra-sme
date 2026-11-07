@@ -3,7 +3,7 @@
  * dan prediksi temuan berbasis aturan. Penilaian jawaban dilakukan Gemini di server action.
  */
 import type { DeviasiTerdeteksi } from './deviasi'
-import type { HasilEnpi } from './enpi'
+import { adaBacaan, type HasilEnpi } from './enpi'
 import { adaBukti, siapAudit } from './status'
 import { UNIT_AUDIT } from './tanya-jawab'
 import type { Deviasi, Dokumen, Isu, MeterEnergi, PembacaanMeter, Sasaran, Seu, Temuan } from './types'
@@ -106,7 +106,7 @@ export function susunCelah(d: {
   }
   const [th, bl] = [Number(d.kini.slice(0, 4)), Number(d.kini.slice(5, 7))]
   const lalu = bl === 1 ? { t: th - 1, b: 12 } : { t: th, b: bl - 1 }
-  const terbaca = new Set(d.bacaan.filter((x) => x.tahun === lalu.t && x.bulan === lalu.b && x.stand_akhir !== null).map((x) => x.meter_kode))
+  const terbaca = new Set(d.bacaan.filter((x) => x.tahun === lalu.t && x.bulan === lalu.b && adaBacaan(x)).map((x) => x.meter_kode))
   if (d.meter.length && terbaca.size < d.meter.length) {
     c.push({
       klausul: '6.6', keparahan: 'Minor', tahap: 'implementasi',

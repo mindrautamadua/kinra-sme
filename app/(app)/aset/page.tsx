@@ -1,6 +1,7 @@
 import { Building2, CalendarCheck, Database, Gauge } from 'lucide-react'
 import { SectionHead } from '@/components/SectionHead'
 import { ambilAsetMeter, ambilEnergi } from '@/lib/data'
+import { adaBacaan } from '@/lib/enpi'
 import { angka, BULAN_PANJANG, hariIni, persen } from '@/lib/format'
 import { BacaanMeter } from './BacaanMeter'
 import { type KotakAset, PetaAset } from './PetaAset'
@@ -53,7 +54,7 @@ export default async function AsetPage({ searchParams }: { searchParams: Promise
   // Pembacaan bulan lalu dan kalibrasi
   const [th, bl] = [Number(kini.slice(0, 4)), Number(kini.slice(5, 7))]
   const lalu = bl === 1 ? { t: th - 1, b: 12 } : { t: th, b: bl - 1 }
-  const terbaca = meter.filter((x) => bacaan.some((b) => b.meter_kode === x.kode && b.tahun === lalu.t && b.bulan === lalu.b && b.stand_awal !== null && b.stand_akhir !== null))
+  const terbaca = meter.filter((x) => bacaan.some((b) => b.meter_kode === x.kode && b.tahun === lalu.t && b.bulan === lalu.b && adaBacaan(b)))
   const tanpaKalibrasi = meter.filter((x) => !x.kalibrasi_terakhir)
   const kalibrasiLewat = meter.filter((x) => x.kalibrasi_berikutnya && x.kalibrasi_berikutnya < kini)
 

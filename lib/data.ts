@@ -80,7 +80,7 @@ export async function ambilAsetMeter(): Promise<{ aset: Aset[]; meter: MeterEner
     siap,
     aset: cek<Aset[]>(a, 'aset').map((r) => ({ ...r, luas_m2: angkaAtauNull(r.luas_m2), luas_ac_m2: angkaAtauNull(r.luas_ac_m2), kwh_bulan: angkaAtauNull(r.kwh_bulan), biaya_bulan: angkaAtauNull(r.biaya_bulan) })),
     meter: cek<MeterEnergi[]>(m, 'meter_energi').map((r) => ({ ...r, faktor_kali: Number(r.faktor_kali) })),
-    bacaan: cek<PembacaanMeter[]>(p, 'pembacaan_meter').map((r) => ({ ...r, stand_awal: angkaAtauNull(r.stand_awal), stand_akhir: angkaAtauNull(r.stand_akhir) })),
+    bacaan: cek<PembacaanMeter[]>(p, 'pembacaan_meter').map((r) => ({ ...r, stand_awal: angkaAtauNull(r.stand_awal), stand_akhir: angkaAtauNull(r.stand_akhir), kwh_tagihan: angkaAtauNull(r.kwh_tagihan) })),
   }
 }
 

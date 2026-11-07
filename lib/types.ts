@@ -243,13 +243,17 @@ export type MeterEnergi = {
   catatan: string | null
 }
 
-/** Bacaan stand meter per bulan. Konsumsi = (stand_akhir - stand_awal) x faktor_kali. */
+/**
+ * Bacaan meter per bulan. Konsumsi = (stand_akhir - stand_awal) x faktor_kali.
+ * Bila stand kosong, dipakai kwh_tagihan (kWh langsung dari tagihan/rekap, migrasi 0035).
+ */
 export type PembacaanMeter = {
   meter_kode: string
   tahun: number
   bulan: number
   stand_awal: number | null
   stand_akhir: number | null
+  kwh_tagihan: number | null
   catatan: string | null
   diubah_oleh: string | null
   diubah_at: string

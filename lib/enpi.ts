@@ -90,9 +90,15 @@ function statistik(aktual: number[], harapan: number[], parameter: number): Pick
   }
 }
 
-/** Konsumsi satu meter pada satu bacaan: (stand akhir − stand awal) × faktor kali. */
+/**
+ * Konsumsi satu meter pada satu bacaan: (stand akhir − stand awal) × faktor kali.
+ * Bila stand belum lengkap, memakai kWh tagihan (data historis dari rekap, tanpa stand).
+ */
 export const konsumsiBacaan = (b: PembacaanMeter, m: MeterEnergi) =>
-  b.stand_awal !== null && b.stand_akhir !== null ? (b.stand_akhir - b.stand_awal) * m.faktor_kali : null
+  b.stand_awal !== null && b.stand_akhir !== null ? (b.stand_akhir - b.stand_awal) * m.faktor_kali : (b.kwh_tagihan ?? null)
+
+/** Bacaan dianggap ada bila stand awal & akhir terisi, atau kWh tagihan tersedia. */
+export const adaBacaan = (b: PembacaanMeter) => (b.stand_awal !== null && b.stand_akhir !== null) || (b.kwh_tagihan ?? null) !== null
 
 /**
  * Pemakaian sendiri KINRA per bulan dari bacaan meter: kunci `tahun*12+bulan-1` → { kwh, terbaca }.
