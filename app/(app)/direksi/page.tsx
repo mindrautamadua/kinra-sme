@@ -9,7 +9,7 @@ import {
 import { BATAS_HARI_TANGGAPAN, deteksiDeviasi, gabungDeviasi, hariSejak, terbuka } from '@/lib/deviasi'
 import { pilihEnpiUtama, ringkas } from '@/lib/enpi'
 import { angka, BULAN_PANJANG, energiListrik, hariIni, persen, selisihHari, tanggal } from '@/lib/format'
-import { nilaiEnergi, rupiahRingkas, susunKonversi, tonCo2 } from '@/lib/konversi'
+import { nilaiEnergi, nilaiPengguna, rupiahRingkas, susunKonversi, tonCo2 } from '@/lib/konversi'
 import { LABEL_STATUS, susunPeta } from '@/lib/peta-smen'
 import { grupStatus, kesiapan, tonggakDari } from '@/lib/status'
 import { penggunaEnergi } from '@/lib/tinjauan'
@@ -36,7 +36,7 @@ export default async function RingkasanDireksi() {
   const skorSiap = kesiapan(dokumen)
   const pakai = penggunaEnergi({ aset, meter, bacaan, sumber, energi, seu, ambangPersen: tinjauan?.ambang_persen ?? 10, ambangKumulatif: tinjauan?.ambang_kumulatif ?? 80 })
   const biayaKinra = pakai.daftar.reduce((t, p) => {
-    const n = nilaiEnergi(kv, p.id === 'sumber:dexlite' ? p.kwh / 10 : p.kwh, p.id === 'sumber:dexlite' ? 'liter' : 'kWh')
+    const n = nilaiPengguna(kv, p.id, p.kwh)
     return { rupiah: t.rupiah + n.rupiah, kgCo2: t.kgCo2 + n.kgCo2 }
   }, { rupiah: 0, kgCo2: 0 })
   const utama = pilihEnpiUtama(hasil)

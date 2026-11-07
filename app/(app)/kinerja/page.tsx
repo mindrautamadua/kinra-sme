@@ -9,7 +9,7 @@ import { ambilDeviasi, ambilKinerja, ambilParameter, ambilSasaran } from '@/lib/
 import { nilaiEnergi, rupiahRingkas, susunKonversi, tonCo2 } from '@/lib/konversi'
 import { deteksiDeviasi, gabungDeviasi, hariSejak, terbuka as deviasiTerbuka } from '@/lib/deviasi'
 import { hariIni } from '@/lib/format'
-import { AMBANG, cusum, type HasilEnpi, LABEL_METODE, type Model, pasangan, pilihEnpiUtama, ringkas, rumus } from '@/lib/enpi'
+import { AMBANG, cusum, type HasilEnpi, LABEL_METODE, modelLayak, pasangan, pilihEnpiUtama, ringkas, rumus } from '@/lib/enpi'
 import { angka } from '@/lib/format'
 import { DaftarDeviasi } from './DaftarDeviasi'
 import { DaftarEnpi, DaftarVariabel } from './KelolaEnpi'
@@ -18,7 +18,8 @@ import { TabelVariabel } from './TabelVariabel'
 export const dynamic = 'force-dynamic'
 
 const desimal = (satuan: string) => (satuan === 'TJ' ? 2 : 0)
-const layak = (m: Model | null) => !!m && (m.r2 === null || m.r2 >= AMBANG.r2) && (m.cvrmse === null || m.cvrmse <= AMBANG.cvrmse) && m.n >= AMBANG.nMin
+/** Model layak hanya berlaku untuk EnPI rasio/regresi; EnPI absolut tidak punya model (R² dan CV(RMSE) kosong). */
+const layak = modelLayak
 const SKALA = 30 // gauge ±30%
 
 /** Gauge setengah lingkaran: kiri = lebih boros, kanan = lebih efisien. */
@@ -64,7 +65,7 @@ function SparkHemat({ h, tinggi = 40 }: { h: HasilEnpi; tinggi?: number }) {
 export default async function Kinerja({ searchParams }: { searchParams: Promise<{ tahun?: string }> }) {
   const [{ sumber, energi, variabel, dataVariabel, enpi, hasil, meter }, register, { aksi }, param] = await Promise.all([ambilKinerja(), ambilDeviasi(), ambilSasaran(), ambilParameter()])
   const kv = susunKonversi(param)
-  const nilaiHemat = (h: HasilEnpi, v: number) => (h.satuan === 'TJ' ? null : nilaiEnergi(kv, Math.abs(v), h.satuan))
+  const nilaiHemat = (h: HasilEnpi, v: number) => (h.satuan === 'TJ' ? null : nilaiEnergi(kv, Math.abs(v), h.satuan, h.enpi.sumber_kode[0]))
   const kini = hariIni()
   const { baris: barisDeviasi, sisa: sisaDeviasi } = gabungDeviasi(deteksiDeviasi(hasil), register)
   const deviasiBuka = barisDeviasi.filter((b) => deviasiTerbuka(b.r))
@@ -80,14 +81,19 @@ export default async function Kinerja({ searchParams }: { searchParams: Promise<
   const utama = pilihEnpiUtama(hasil)
   const ekstra = utama?.ekstrapolasi ?? 0
 
-  // EnPI absolut yang "boros" padahal ada EnPI ternormalisasi untuk lingkup yang sama: jelaskan penyebabnya
-  const samaLingkup = (a: HasilEnpi, b: HasilEnpi) => a.enpi.sumber_kode.length === b.enpi.sumber_kode.length && a.enpi.sumber_kode.every((k) => b.enpi.sumber_kode.includes(k))
+  // EnPI absolut yang "boros" padahal ada EnPI ternormalisasi untuk lingkup yang sama: jelaskan penyebabnya.
+  // Lingkup sama = lingkup (KINRA/kawasan), sumber energi, dan himpunan meter sama; EnPI berbasis meter tidak
+  // disamakan hanya karena sama-sama bersumber PLN.
+  const himpunanSama = (a: string[], b: string[]) => a.length === b.length && a.every((k) => b.includes(k))
+  const samaLingkup = (a: HasilEnpi, b: HasilEnpi) => (a.enpi.lingkup ?? 'kinra') === (b.enpi.lingkup ?? 'kinra')
+    && himpunanSama(a.enpi.sumber_kode, b.enpi.sumber_kode) && himpunanSama(a.enpi.meter_kode ?? [], b.enpi.meter_kode ?? [])
   const tenant = variabel.find((v) => v.kode === 'tenant')
   const nilaiTenant = (th: number, bl: number) => dataVariabel.find((d) => d.variabel_kode === 'tenant' && d.tahun === th && d.bulan === bl)?.nilai
   const catatanAbsolut = aktif.filter((h) => h.enpi.metode === 'absolut' && (ringkas(h.laporan).perbaikan ?? 0) < 0)
     .map((h) => {
-      const pasangannya = aktif.find((x) => x !== h && x.enpi.metode !== 'absolut' && samaLingkup(x, h))
+      const pasangannya = aktif.find((x) => x !== h && x.enpi.metode !== 'absolut' && !x.galat && samaLingkup(x, h))
       if (!pasangannya) return null
+      if (kinra(h)) return { kode: h.enpi.kode, teks: `${h.enpi.kode} memakai metode absolut: konsumsi dibandingkan langsung dengan bulan yang sama pada baseline tanpa memperhitungkan perubahan variabel relevan, sehingga kenaikan beban operasi ikut terbaca sebagai boros. Untuk menilai efisiensi, lihat ${pasangannya.enpi.kode} yang dinormalisasi variabel relevan.` }
       const awal = h.baseline.find((t) => nilaiTenant(t.tahun, t.bulan) !== undefined)
       const akhir = [...h.laporan].reverse().find((t) => t.aktual !== null && nilaiTenant(t.tahun, t.bulan) !== undefined)
       const tumbuh = tenant && awal && akhir ? ` Jumlah tenant naik dari ${angka(nilaiTenant(awal.tahun, awal.bulan))} (${awal.label}) menjadi ${angka(nilaiTenant(akhir.tahun, akhir.bulan))} (${akhir.label}).` : ''
@@ -116,7 +122,10 @@ export default async function Kinerja({ searchParams }: { searchParams: Promise<
             : aktifKinra.length ? 'EnPI lingkup KINRA menunggu data bacaan meter' : 'Kinerja energi belum dapat dihitung'}>
           <p className="muted">
             {ru && utama ? `${ru.bulan} bulan pelaporan sejak baseline berakhir, setara ${ru.hemat >= 0 ? 'penghematan' : 'kelebihan'} ${angka(Math.abs(ru.hemat), desimal(utama.satuan))} ${utama.satuan}. ` : ''}
-            Perbaikan = (konsumsi harapan − aktual) ÷ harapan. Konsumsi harapan dihitung dari model baseline pada kondisi bulan berjalan, sehingga perubahan beban operasi tidak terbaca sebagai penghematan.
+            Perbaikan = (konsumsi harapan − aktual) ÷ harapan.{' '}
+            {utama?.enpi.metode === 'absolut'
+              ? <>Pada {utama.enpi.kode} (metode absolut), harapan = konsumsi bulan yang sama pada periode baseline tanpa normalisasi, sehingga kenaikan beban operasi (mis. volume air WTP) ikut terbaca sebagai boros dan penghematan dari aksi efisiensi bisa tertutup. Gunakan EnPI rasio/regresi per SEU untuk menilai efisiensi.</>
+              : <>Konsumsi harapan dihitung dari model baseline pada kondisi bulan berjalan, sehingga perubahan beban operasi tidak terbaca sebagai penghematan.</>}
             {ekstra > 0 && <b> Angka di bawah adalah hasil ekstrapolasi model; kondisi operasi berubah besar sejak baseline, pertimbangkan penyesuaian baseline (6.5).</b>}
             {!utama && aktifKinra.length > 0 && <b> EnPI lingkup KINRA ({aktifKinra.map((h) => h.enpi.kode).join(', ')}) diukur dari bacaan stand meter aset di halaman Aset & Meter; baseline terbentuk setelah 12 bulan bacaan. EnPI kawasan di bawah memuat listrik tenant sehingga hanya menjadi konteks.</b>}
             {' '}{ternormalisasi === 0 && <b>Belum ada EnPI ternormalisasi (rasio/regresi): isi data variabel relevan lalu tambahkan EnPI per SEU.</b>}
@@ -154,7 +163,9 @@ export default async function Kinerja({ searchParams }: { searchParams: Promise<
           <div className="kj-kanan">
             <div className="card kj-uji">
               <div className="row"><div><h3>Uji kelayakan model</h3><p className="muted small">Ambang ISO 50006 & ASHRAE Guideline 14{utama && ` · ${utama.enpi.kode}`}</p></div>
-                {m && <Chip kode={layak(m) ? 'good' : 'warn'} label={layak(m) ? 'Model layak' : 'Perlu ditinjau'} />}
+                {m && (utama?.enpi.metode === 'absolut'
+                  ? <Chip kode="info" label="Metode absolut, tanpa model" />
+                  : <Chip kode={layak(m) ? 'good' : 'warn'} label={layak(m) ? 'Model layak' : 'Perlu ditinjau'} />)}
               </div>
               {[
                 { label: 'R²', nilai: m?.r2 ?? null, teks: m?.r2 != null ? angka(m.r2, 2) : '–', p: (m?.r2 ?? 0) * 100, batas: AMBANG.r2 * 100, ok: m?.r2 == null ? null : m.r2 >= AMBANG.r2, ket: `≥ ${angka(AMBANG.r2, 2)}`,

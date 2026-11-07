@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { TombolCetak } from '@/components/TombolCetak'
 import { ambilAsetMeter, ambilDeviasi, ambilDokumen, ambilIsu, ambilKegiatan, ambilKinerja, ambilKlausul, ambilParameter, ambilRiwayatSimulasi, ambilSasaran, ambilSeu, ambilTemuan, catatPotret } from '@/lib/data'
 import { deteksiDeviasi, gabungDeviasi, terbuka as deviasiTerbuka } from '@/lib/deviasi'
-import { nilaiEnergi, rupiahRingkas, susunKonversi, tonCo2 } from '@/lib/konversi'
+import { nilaiPengguna, rupiahRingkas, susunKonversi, tonCo2 } from '@/lib/konversi'
 import { susunProgram } from '@/lib/program'
 import { penggunaEnergi } from '@/lib/tinjauan'
 import { AMBANG, LABEL_METODE } from '@/lib/enpi'
@@ -96,7 +96,7 @@ export default async function CetakKesiapan() {
 
   // Tinjauan energi, SEU, deviasi (lingkup KINRA)
   const pakai = penggunaEnergi({ aset, meter: kinerja.meter, bacaan: kinerja.bacaan, sumber: kinerja.sumber, energi: kinerja.energi, seu, ambangPersen: tinjauan?.ambang_persen ?? 10, ambangKumulatif: tinjauan?.ambang_kumulatif ?? 80 })
-  const nilaiP = (id: string, kwh: number) => nilaiEnergi(kv, id === 'sumber:dexlite' ? kwh / 10 : kwh, id === 'sumber:dexlite' ? 'liter' : 'kWh')
+  const nilaiP = (id: string, kwh: number) => nilaiPengguna(kv, id, kwh)
   const biayaKinra = pakai.daftar.reduce((t, p) => { const n = nilaiP(p.id, p.kwh); return { rupiah: t.rupiah + n.rupiah, kgCo2: t.kgCo2 + n.kgCo2 } }, { rupiah: 0, kgCo2: 0 })
   const porsiSeu = (kode: string) => pakai.daftar.filter((p) => p.seu?.kode === kode).reduce((t, p) => t + p.porsi, 0)
   const seuAktif = seu.filter((x) => x.status !== 'Dicabut')

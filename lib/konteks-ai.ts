@@ -47,7 +47,7 @@ export async function konteksDashboard({ tanyaJawab = true }: { tanyaJawab?: boo
   for (const x of seu) b.push(`- ${x.kode} ${x.nama} [${x.status}] EnPI ${x.enpi_kode ?? '–'}, PIC ${x.pic ?? '–'}, personel ${x.personel ?? '–'}`)
 
   const kv = susunKonversi(param)
-  b.push(`\n## Konversi rupiah & emisi\nTarif listrik Rp${angka(kv.tarifListrik, 2)}/kWh; faktor emisi listrik ${angka(kv.efListrik, 2)} kg CO2/kWh; Dexlite Rp${angka(kv.hargaDexlite, 0)}/liter, ${angka(kv.efDexlite, 2)} kg CO2/liter.${kv.asumsi.length ? ` Masih asumsi (sebutkan bila mengutip): ${kv.asumsi.join(', ')}.` : ''}`)
+  b.push(`\n## Konversi rupiah & emisi\nTarif listrik Rp${angka(kv.tarifListrik, 2)}/kWh; faktor emisi listrik ${angka(kv.efListrik, 2)} kg CO2/kWh; Dexlite Rp${angka(kv.hargaDexlite, 0)}/liter, ${angka(kv.efDexlite, 2)} kg CO2/liter; bensin Rp${angka(kv.hargaBensin, 0)}/liter, ${angka(kv.efBensin, 2)} kg CO2/liter.${kv.asumsi.length ? ` Masih asumsi (sebutkan bila mengutip): ${kv.asumsi.join(', ')}.` : ''}`)
   b.push('\n## EnPI')
   b.push('Batas lingkup: data PLN di energi bulanan adalah total kawasan TERMASUK listrik tenant (di luar lingkup SMEn). Kinerja SMEn KINRA hanya diklaim dari EnPI lingkup KINRA (bacaan meter aset KINRA, BBM kendaraan). EnPI lingkup kawasan hanya konteks.')
   for (const h of kinerja.hasil) {

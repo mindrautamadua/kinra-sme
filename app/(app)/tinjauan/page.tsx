@@ -5,7 +5,7 @@ import { Istilah } from '@/components/Istilah'
 import { SectionHead } from '@/components/SectionHead'
 import { ambilAsetMeter, ambilKinerja, ambilParameter, ambilSeu } from '@/lib/data'
 import { angka, energiListrik, hariIni, persen, tanggal } from '@/lib/format'
-import { nilaiEnergi, rupiahRingkas, susunKonversi, tonCo2 } from '@/lib/konversi'
+import { nilaiEnergi, nilaiPengguna, rupiahRingkas, susunKonversi, tonCo2 } from '@/lib/konversi'
 import { adaBacaan } from '@/lib/enpi'
 import { penggunaEnergi } from '@/lib/tinjauan'
 import { DiagramSubmeter } from './DiagramSubmeter'
@@ -19,8 +19,8 @@ export const dynamic = 'force-dynamic'
 export default async function TinjauanPage() {
   const [{ seu, tinjauan, siap }, { aset, meter, bacaan }, { sumber, energi, variabel, enpi, hasil }, param] = await Promise.all([ambilSeu(), ambilAsetMeter(), ambilKinerja(), ambilParameter()])
   const kv = susunKonversi(param)
-  // Rupiah & CO₂ per pengguna: BBM dihitung dari liter (kWh setara ÷ 10 kWh/liter, 36 MJ/liter)
-  const nilaiP = (id: string, kwh: number) => nilaiEnergi(kv, id === 'sumber:dexlite' ? kwh / 10 : kwh, id === 'sumber:dexlite' ? 'liter' : 'kWh')
+  // Rupiah & CO₂ per pengguna: BBM dihitung dari liter (kWh setara dikembalikan ke liter per jenis BBM)
+  const nilaiP = (id: string, kwh: number) => nilaiPengguna(kv, id, kwh)
 
   if (!siap) {
     return (
