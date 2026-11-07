@@ -636,6 +636,19 @@ export async function simpanAksi(id: number | null, f: FormData): Promise<Hasil>
   return gagal(error && { message: /duplicate key/.test(error.message) ? 'Kode aksi sudah dipakai.' : error.message })
 }
 
+/** Hubungkan beberapa aksi ke sasarannya sekaligus (mis. aksi dari usulan yang dibuat sebelum sasarannya ada) */
+export async function hubungkanAksi(pasangan: { id: number; sasaran_id: number }[]): Promise<Hasil> {
+  const t = await tolak('aksi.ubah'); if (t) return t
+  const klien = await db()
+  for (const p of pasangan) {
+    if (!Number.isInteger(p.id) || !Number.isInteger(p.sasaran_id)) return { ok: false, pesan: 'Data aksi tidak valid.' }
+    const { error } = await klien.from('rencana_aksi').update({ sasaran_id: p.sasaran_id, diubah_at: new Date().toISOString() }).eq('id', p.id)
+    if (error) { revalidasiKinerja(); return gagal(error) }
+  }
+  revalidasiKinerja()
+  return { ok: true }
+}
+
 export async function ubahStatusAksi(id: number, status: StatusAksi): Promise<Hasil> {
   const t = await tolak('aksi.ubah'); if (t) return t
   const { error } = await (await db()).from('rencana_aksi').update({ status, diubah_at: new Date().toISOString() }).eq('id', id)

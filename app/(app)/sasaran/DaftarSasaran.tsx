@@ -3,14 +3,14 @@
 import { ArrowRight, Check, Pencil, Plus, Trash2, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useRef, useState, useTransition } from 'react'
-import { hapusAksi, hapusSasaran, simpanAksi, simpanSasaran, ubahStatusAksi } from '@/app/actions'
+import { hapusAksi, hapusSasaran, hubungkanAksi, simpanAksi, simpanSasaran, ubahStatusAksi } from '@/app/actions'
 import { Chip } from '@/components/Chip'
 import { useBoleh } from '@/components/Peran'
 import { angka, tanggal } from '@/lib/format'
 import { rupiahRingkas, tonCo2 } from '@/lib/konversi'
 import type { KodeChip } from '@/lib/status'
 import type { RencanaAksi, Sasaran, StatusAksi, StatusSasaran } from '@/lib/types'
-import type { UsulanAksi, UsulanSasaran } from '@/lib/usulan-sasaran'
+import { tagUsulan, type UsulanAksi, type UsulanSasaran } from '@/lib/usulan-sasaran'
 
 export type Capaian = {
   enpi: string
@@ -54,11 +54,48 @@ export function DaftarSasaran({ sasaran, aksi, capaian, enpi, peluang, kini, tar
   const terverifikasi = aksi.reduce((t, a) => t + (a.hemat_terverifikasi_kwh ?? 0), 0)
   const lewat = (a: RencanaAksi) => !!a.tenggat && a.tenggat < kini && a.status !== 'Selesai' && a.status !== 'Batal'
 
-  function bukaS(s: Partial<Sasaran> | null) { setEditS(s); setGalat(null); dlgS.current?.showModal() }
+  // Nomor buka form: bagian dari key agar form selalu dipasang ulang dengan isian terbaru (input memakai defaultValue)
+  const [nomorBuka, setNomorBuka] = useState(0)
+  function bukaS(s: Partial<Sasaran> | null) { setEditS(s); setNomorBuka((n) => n + 1); setGalat(null); dlgS.current?.showModal() }
   const [usulanAktif, setUsulanAktif] = useState<string | null>(null)
-  function bukaA(a: Partial<RencanaAksi> | null, kunci: string | null = null) { setEditA(a ?? {}); setUsulanAktif(kunci); setGalat(null); dlgA.current?.showModal() }
+  function bukaA(a: Partial<RencanaAksi> | null, kunci: string | null = null) { setEditA(a ?? {}); setUsulanAktif(kunci); setNomorBuka((n) => n + 1); setGalat(null); dlgA.current?.showModal() }
   const sisaS = usulanS.filter((u) => !u.dipakai)
   const sisaA = usulanA.filter((u) => !u.dipakai)
+  const jumlahDipakai = usulanS.length + usulanA.length - sisaS.length - sisaA.length
+  // Usulan yang belum digunakan tampil lebih dulu
+  const urut = <T extends { dipakai: string | null }>(d: T[]) => [...d.filter((u) => !u.dipakai), ...d.filter((u) => u.dipakai)]
+  const tandaDipakai = (kode: string, jenis: 'sasaran' | 'aksi') => (
+    <a className="ss-dipakai" href={`#${jenis}-${kode}`} title={`Lihat ${kode}`}><Check aria-hidden="true" />Sudah digunakan · {kode}</a>
+  )
+  // Aksi tanpa sasaran yang berasal dari usulan: cari sasaran dengan EnPI usulan tersebut
+  const pasanganOtomatis = tanpaSasaran.flatMap((a) => {
+    const u = usulanA.find((x) => [x.kunci, ...(x.alias ?? [])].some((k) => a.catatan?.includes(tagUsulan(k))) || x.uraian.toLowerCase() === a.uraian.trim().toLowerCase())
+    const s = u?.enpi ? sasaran.find((x) => x.enpi_kode === u.enpi && x.status !== 'Tidak tercapai') : undefined
+    return s ? [{ id: a.id, sasaran_id: s.id, aksi: a.kode, sasaran: s.kode }] : []
+  })
+  const hubungkanOtomatis = () => mulai(async () => {
+    const h = await hubungkanAksi(pasanganOtomatis.map(({ id, sasaran_id }) => ({ id, sasaran_id })))
+    if (!h.ok) alert(h.pesan)
+    router.refresh()
+  })
+  // Usulan dikelompokkan per sasaran (EnPI yang sama); aksi tanpa sasaran usulan masuk kelompok terakhir
+  const grupUsulan = [
+    ...usulanS.map((s) => ({ s, aksi: urut(usulanA.filter((a) => a.enpi === s.enpi_kode)) })),
+    { s: null, aksi: urut(usulanA.filter((a) => !usulanS.some((s) => s.enpi_kode === a.enpi))) },
+  ].filter((g) => g.s || g.aksi.length)
+  const kartuAksi = (u: UsulanAksi) => (
+    <div key={u.kunci} className={`ss-kartu a${u.dipakai ? ' dipakai' : ''}`}>
+      {u.dipakai && tandaDipakai(u.dipakai, 'aksi')}
+      <span className="eyebrow">Aksi{u.peluang_kode ? ` · dari ${u.peluang_kode}` : ''}{u.estimasi_hemat_kwh ? ` · ±${angka(u.estimasi_hemat_kwh)} kWh/thn · ±${rupiahRingkas(u.estimasi_hemat_kwh * tarif)}` : ''}</span>
+      <b>{u.uraian}</b>
+      <span className="muted small">{u.alasan} Tenggat {tanggal(u.tenggat)}.</span>
+      {!u.dipakai && bisa('aksi.ubah') && <button type="button" className="btn kecil" onClick={() => bukaA({
+        uraian: u.uraian, peluang_kode: u.peluang_kode, pic: u.pic, sumber_daya: u.sumber_daya, mulai: u.mulai, tenggat: u.tenggat,
+        estimasi_hemat_kwh: u.estimasi_hemat_kwh, metode_verifikasi: u.metode_verifikasi, catatan: u.catatan, status: 'Rencana',
+        sasaran_id: sasaran.find((x) => x.enpi_kode === u.enpi)?.id ?? null,
+      }, u.kunci)}><Plus aria-hidden="true" />Gunakan</button>}
+    </div>
+  )
   const ubahStatus = (a: RencanaAksi, status: StatusAksi) => mulai(async () => { const h = await ubahStatusAksi(a.id, status); if (!h.ok) alert(h.pesan); router.refresh() })
 
   const tabelAksi = (daftar: RencanaAksi[]) => (
@@ -68,7 +105,7 @@ export function DaftarSasaran({ sasaran, aksi, capaian, enpi, peluang, kini, tar
           <tbody>
             {daftar.length === 0 && <tr className="kosong"><td colSpan={7}>Belum ada rencana aksi.</td></tr>}
             {daftar.map((a) => (
-              <tr key={a.id} className={lewat(a) ? 'lewat' : undefined}>
+              <tr key={a.id} id={`aksi-${a.kode}`} className={lewat(a) ? 'lewat' : undefined}>
                 <td className="kode">{a.kode}{a.peluang_kode && <span className="upd">dari {a.peluang_kode}</span>}</td>
                 <td style={{ maxWidth: 360 }}>{a.uraian}
                   {a.sumber_daya && <span className="upd">Sumber daya: {a.sumber_daya}</span>}
@@ -102,34 +139,30 @@ export function DaftarSasaran({ sasaran, aksi, capaian, enpi, peluang, kini, tar
           <div className="row">
             <div>
               <span className="eyebrow">Usulan dari data aplikasi · tinjau sebelum disimpan</span>
-              <h3>{sisaS.length} sasaran dan {sisaA.length} rencana aksi siap dipakai</h3>
+              <h3>{sisaS.length} sasaran dan {sisaA.length} rencana aksi siap dipakai{jumlahDipakai > 0 && <span className="muted"> · {jumlahDipakai} sudah digunakan</span>}</h3>
               <p className="muted small">Disusun dari SEU, EnPI lingkup KINRA, peluang, rencana submeter, dan deviasi. Klik Gunakan untuk membuka form yang sudah terisi; ubah target dan estimasi sesuai keputusan tim.</p>
             </div>
           </div>
-          <div className="ss-usulan-grid">
-            {usulanS.map((u) => (
-              <div key={u.uraian} className={`ss-kartu s${u.dipakai ? ' dipakai' : ''}`}>
-                <span className="eyebrow">Sasaran · {u.enpi_kode} · target {u.target_persen}% pada {u.tahun_target}</span>
-                <b>{u.uraian}</b>
-                <span className="muted small">{u.alasan}</span>
-                {u.dipakai ? <span className="ss-dipakai"><Check aria-hidden="true" />Sudah dipakai → {u.dipakai}</span>
-                  : bisa('sasaran.tambah') && <button type="button" className="btn kecil" onClick={() => bukaS({ uraian: u.uraian, enpi_kode: u.enpi_kode, target_persen: u.target_persen, tahun_target: u.tahun_target, pic: u.pic, catatan: u.catatan, status: 'Aktif' })}><Plus aria-hidden="true" />Gunakan</button>}
+          {grupUsulan.map(({ s: u, aksi: daftarA }) => (
+            <section key={u?.enpi_kode ?? 'lain'} className="ss-grup">
+              <h4 className="ss-grup-judul">
+                {u ? <>Sasaran {u.enpi_kode} <span className="muted">· {daftarA.length} rencana aksi</span></> : <>Aksi lain <span className="muted">· belum ada usulan sasaran untuk EnPI-nya</span></>}
+              </h4>
+              <div className="ss-usulan-grid">
+                {u && (
+                  <div className={`ss-kartu s${u.dipakai ? ' dipakai' : ''}`}>
+                    {u.dipakai && tandaDipakai(u.dipakai, 'sasaran')}
+                    <span className="eyebrow">Sasaran · {u.enpi_kode} · target {u.target_persen}% pada {u.tahun_target}</span>
+                    <b>{u.uraian}</b>
+                    <span className="muted small">{u.alasan}</span>
+                    {!u.dipakai && bisa('sasaran.tambah') && <button type="button" className="btn kecil" onClick={() => bukaS({ uraian: u.uraian, enpi_kode: u.enpi_kode, target_persen: u.target_persen, tahun_target: u.tahun_target, pic: u.pic, catatan: u.catatan, status: 'Aktif' })}><Plus aria-hidden="true" />Gunakan</button>}
+                  </div>
+                )}
+                {daftarA.map(kartuAksi)}
+                {u && daftarA.length === 0 && <p className="muted small">Belum ada usulan aksi untuk sasaran ini; tambahkan aksi sendiri setelah sasaran disimpan.</p>}
               </div>
-            ))}
-            {usulanA.map((u) => (
-              <div key={u.kunci} className={`ss-kartu a${u.dipakai ? ' dipakai' : ''}`}>
-                <span className="eyebrow">Aksi{u.peluang_kode ? ` · dari ${u.peluang_kode}` : ''}{u.estimasi_hemat_kwh ? ` · ±${angka(u.estimasi_hemat_kwh)} kWh/thn · ±${rupiahRingkas(u.estimasi_hemat_kwh * tarif)}` : ''}</span>
-                <b>{u.uraian}</b>
-                <span className="muted small">{u.alasan} Tenggat {tanggal(u.tenggat)}.</span>
-                {u.dipakai ? <span className="ss-dipakai"><Check aria-hidden="true" />Sudah dipakai → {u.dipakai}</span>
-                  : bisa('aksi.ubah') && <button type="button" className="btn kecil" onClick={() => bukaA({
-                    uraian: u.uraian, peluang_kode: u.peluang_kode, pic: u.pic, sumber_daya: u.sumber_daya, mulai: u.mulai, tenggat: u.tenggat,
-                    estimasi_hemat_kwh: u.estimasi_hemat_kwh, metode_verifikasi: u.metode_verifikasi, catatan: u.catatan, status: 'Rencana',
-                    sasaran_id: sasaran.find((x) => x.enpi_kode === u.enpi)?.id ?? null,
-                  }, u.kunci)}><Plus aria-hidden="true" />Gunakan</button>}
-              </div>
-            ))}
-          </div>
+            </section>
+          ))}
         </div>
       )}
 
@@ -166,7 +199,7 @@ export function DaftarSasaran({ sasaran, aksi, capaian, enpi, peluang, kini, tar
           const c = capaian[s.id]
           const daftar = aksi.filter((a) => a.sasaran_id === s.id)
           return (
-            <div key={s.id} className="card">
+            <div key={s.id} id={`sasaran-${s.kode}`} className="card">
               <div className="row">
                 <div>
                   <span className="eyebrow">{s.kode}{s.pic && ` · PIC ${s.pic}`}</span>
@@ -218,7 +251,12 @@ export function DaftarSasaran({ sasaran, aksi, capaian, enpi, peluang, kini, tar
 
         {tanpaSasaran.length > 0 && (
           <div className="card">
-            <div className="row"><div><h3>Aksi belum terhubung ke sasaran</h3><p className="muted small">Hubungkan agar kontribusinya terhadap target terlihat.</p></div></div>
+            <div className="row">
+              <div><h3>Aksi belum terhubung ke sasaran</h3><p className="muted small">Hubungkan agar kontribusinya terhadap target terlihat.{pasanganOtomatis.length > 0 && ` Dari usulan: ${pasanganOtomatis.map((p) => `${p.aksi} → ${p.sasaran}`).join(', ')}.`}</p></div>
+              {pasanganOtomatis.length > 0 && bisa('aksi.ubah') && (
+                <button type="button" className="btn kecil" disabled={menunggu} onClick={hubungkanOtomatis}>Hubungkan {pasanganOtomatis.length} aksi ke sasarannya</button>
+              )}
+            </div>
             {tabelAksi(tanpaSasaran)}
           </div>
         )}
@@ -244,7 +282,7 @@ export function DaftarSasaran({ sasaran, aksi, capaian, enpi, peluang, kini, tar
       </div>
 
       <dialog ref={dlgS} className="panel" onClose={() => setEditS(null)}>
-        <form className="card" key={editS?.id ?? 'baru'} action={(f) => mulai(async () => {
+        <form className="card" key={`${editS?.id ?? 'baru'}-${nomorBuka}`} action={(f) => mulai(async () => {
           const h = await simpanSasaran(editS?.id ?? null, f)
           if (!h.ok) return setGalat(h.pesan)
           dlgS.current?.close(); router.refresh()
@@ -280,7 +318,7 @@ export function DaftarSasaran({ sasaran, aksi, capaian, enpi, peluang, kini, tar
       </dialog>
 
       <dialog ref={dlgA} className="panel" onClose={() => setEditA(null)}>
-        <form className="card" key={editA?.id ?? `baru-${editA?.sasaran_id ?? ''}-${editA?.peluang_kode ?? ''}`} action={(f) => mulai(async () => {
+        <form className="card" key={`${editA?.id ?? 'baru'}-${nomorBuka}`} action={(f) => mulai(async () => {
           const h = await simpanAksi(editA?.id ?? null, f)
           if (!h.ok) return setGalat(h.pesan)
           dlgA.current?.close(); router.refresh()

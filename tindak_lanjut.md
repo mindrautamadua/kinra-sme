@@ -19,16 +19,17 @@ Jalankan di SQL Editor Supabase sesuai urutan. Semua migrasi aman dijalankan ula
 - [x] `0028_deviasi.sql`: register deviasi signifikan kinerja energi (klausul 9.1)
 - [x] `0029_simulasi_audit.sql`: riwayat simulasi audit bersama KIRA
 - [x] `0030_parameter_energi.sql`: tarif listrik dan faktor emisi untuk tampilan rupiah dan CO₂
-- [ ] `0031_berkas_sah.sql`: penanda versi sah per berkas evidence; skor kesiapan menjadi "siap audit" (Final + berkas sah)
-- [ ] `0032_isi_sah_final.sql`: tandai otomatis berkas versi sah untuk item yang sudah Final (PDF bila ada, selain itu semua berkas)
-- [ ] `0033_potret_kesiapan.sql`: potret skor harian untuk pembanding di laporan kesiapan
-- [ ] `0034_kegiatan_keterkaitan.sql`: keterkaitan kegiatan pendampingan dengan klausul/dokumen serta kendala & tindak lanjut (PICA)
+- [x] `0031_berkas_sah.sql`: penanda versi sah per berkas evidence; skor kesiapan menjadi "siap audit" (Final + berkas sah)
+- [x] `0032_isi_sah_final.sql`: tandai otomatis berkas versi sah untuk item yang sudah Final (PDF bila ada, selain itu semua berkas)
+- [x] `0033_potret_kesiapan.sql`: potret skor harian untuk pembanding di laporan kesiapan
+- [x] `0034_kegiatan_keterkaitan.sql`: keterkaitan kegiatan pendampingan dengan klausul/dokumen serta kendala & tindak lanjut (PICA)
 - [x] `0035_kwh_tagihan_meter.sql`: kolom kWh tagihan pada bacaan meter, kWh bulanan 7 meter aset Jan 2024 – Okt 2026 (Graha Apr 2025 dikoreksi), BBM bensin, Dexlite 2024 dan Okt 2026, baseline EnPI-04 Jan–Des 2025, EnPI-06 (WWTP) dan EnPI-09 (bensin). Perlu kode aplikasi terbaru (kolom `kwh_tagihan`).
 - [x] `0036_parameter_bensin.sql`: harga dan faktor emisi bensin (Asumsi) agar dapat diubah di halaman Data Energi. Nilai bawaan sama sudah dipakai aplikasi walau migrasi belum dijalankan.
 - [x] `0037_harga_bbm_2026.sql`: harga Dexlite Rp24.200/L dan bensin Rp16.303/L (Okt 2026, status Data) untuk tampilan rupiah.
 - [x] `0038_variabel_air_wtp1.sql`: variabel relevan air diolah WTP 1 (distribusi total dikurangi air BTM; Nov 2025 – Jan 2026 kosong). Dipakai Laboratorium EnPI; ENPI-05 belum diubah.
 - [x] `0039_meter_intake_enpi05.sql`: meter intake WTP 1 (KINRA-MTR-008, No. 215266996, faktor kali sementara 1), ENPI-05 rasio air WTP 1 baseline 2025 sebagai EnPI utama, deviasi WTP 1 Feb–Jun 2026 (Diselidiki), rencana aksi RA-LED-PJU.
 - [x] `0040_faktor_kali_intake.sql`: konfirmasi faktor kali WTP ×200 dan intake ×1; hapus tanda "belum dikonfirmasi" pada KINRA-MTR-008.
+- [x] `0041_rapikan_sasaran_aksi.sql`: satu sasaran per EnPI lingkup KINRA (ENPI-04, ENPI-05, ENPI-06, ENPI-01 Draft), setiap aksi terhubung ke sasarannya, sasaran ganda digabung, aksi ganda diberi status Batal. Dijalankan 8 November 2026.
 - [ ] **Cek urutan migrasi.** Bila EnPI-03 muncul di kelompok "Lingkup SMEn KINRA" di halaman Kinerja, jalankan ulang `0026_lingkup_kinra.sql`.
 
 Migrasi 0018–0030 sudah dijalankan di Supabase (6 November 2026). File 0027–0030 dan perubahan aplikasi terkait belum di-commit ke repositori.

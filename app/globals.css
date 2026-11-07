@@ -1742,6 +1742,10 @@ dialog.tj-ev-dlg { max-height: calc(100dvh - 32px); overflow-y: auto; overscroll
 .ss-usulan-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; margin-top: 12px; }
 .ss-kartu { display: flex; flex-direction: column; gap: 6px; padding: 12px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); border-left: 3px solid var(--s1); }
 .ss-kartu.a { border-left-color: var(--s2); }
+.ss-grup { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line); }
+.ss-grup:first-of-type { border-top: 0; padding-top: 0; }
+.ss-grup-judul { margin: 0; font-size: 13px; font-weight: 600; }
+.ss-grup .ss-usulan-grid { margin-top: 8px; }
 .ss-kartu b { font-size: 13.5px; line-height: 1.4; }
 .ss-kartu .btn { align-self: flex-start; margin-top: auto; }
 .ss-gantt { --label: 34%; position: relative; display: flex; flex-direction: column; gap: 6px; padding-top: 26px; }
@@ -1756,9 +1760,13 @@ dialog.tj-ev-dlg { max-height: calc(100dvh - 32px); overflow-y: auto; overscroll
 .ss-kini { position: absolute; top: 18px; bottom: 0; width: 2px; background: var(--brand); box-shadow: 0 0 8px var(--brand); }
 @media (max-width: 900px) { .ss-rantai { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 8px; } .ss-panah { display: none; } .ss-rantai a { margin-right: 8px; } .ss-gantt { --label: 42%; } }
 @media (prefers-reduced-motion: reduce) { .ss-rantai li, .ss-batang { animation: none; } }
-.ss-kartu.dipakai { opacity: .6; border-left-color: var(--good); }
-.ss-dipakai { display: inline-flex; align-items: center; gap: 6px; margin-top: auto; font-size: 12px; font-weight: 600; color: var(--good); }
+.ss-kartu.dipakai { border-left-color: var(--good); background: color-mix(in srgb, var(--good) 5%, var(--surface)); }
+.ss-kartu.dipakai > :not(.ss-dipakai) { opacity: .6; }
+.ss-dipakai { align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; color: var(--good); background: color-mix(in srgb, var(--good) 14%, transparent); border: 1px solid color-mix(in srgb, var(--good) 35%, transparent); text-decoration: none; }
+.ss-dipakai:hover { background: color-mix(in srgb, var(--good) 22%, transparent); }
 .ss-dipakai svg { width: 14px; height: 14px; }
+[id^="sasaran-"], [id^="aksi-"] { scroll-margin-top: 80px; }
+[id^="aksi-"]:target, [id^="sasaran-"]:target { outline: 2px solid var(--good); outline-offset: 2px; }
 
 /* ---------- Aset: treemap & umur bangunan ---------- */
 .pa-svg { width: 100%; height: auto; display: block; }
