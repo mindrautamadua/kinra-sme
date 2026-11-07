@@ -27,6 +27,8 @@ Jalankan di SQL Editor Supabase sesuai urutan. Semua migrasi aman dijalankan ula
 - [x] `0036_parameter_bensin.sql`: harga dan faktor emisi bensin (Asumsi) agar dapat diubah di halaman Data Energi. Nilai bawaan sama sudah dipakai aplikasi walau migrasi belum dijalankan.
 - [x] `0037_harga_bbm_2026.sql`: harga Dexlite Rp24.200/L dan bensin Rp16.303/L (Okt 2026, status Data) untuk tampilan rupiah.
 - [x] `0038_variabel_air_wtp1.sql`: variabel relevan air diolah WTP 1 (distribusi total dikurangi air BTM; Nov 2025 – Jan 2026 kosong). Dipakai Laboratorium EnPI; ENPI-05 belum diubah.
+- [x] `0039_meter_intake_enpi05.sql`: meter intake WTP 1 (KINRA-MTR-008, No. 215266996, faktor kali sementara 1), ENPI-05 rasio air WTP 1 baseline 2025 sebagai EnPI utama, deviasi WTP 1 Feb–Jun 2026 (Diselidiki), rencana aksi RA-LED-PJU.
+- [x] `0040_faktor_kali_intake.sql`: konfirmasi faktor kali WTP ×200 dan intake ×1; hapus tanda "belum dikonfirmasi" pada KINRA-MTR-008.
 - [ ] **Cek urutan migrasi.** Bila EnPI-03 muncul di kelompok "Lingkup SMEn KINRA" di halaman Kinerja, jalankan ulang `0026_lingkup_kinra.sql`.
 
 Migrasi 0018–0030 sudah dijalankan di Supabase (6 November 2026). File 0027–0030 dan perubahan aplikasi terkait belum di-commit ke repositori.

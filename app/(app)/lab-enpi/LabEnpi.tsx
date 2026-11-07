@@ -30,7 +30,7 @@ export function LabEnpi({ data }: { data: Data }) {
 function Eksperimen({ data, adaWtp1 }: { data: Data; adaWtp1: boolean }) {
   const [metode, setMetode] = useState<MetodeEnpi>('absolut')
   const [variabel, setVariabel] = useState<'air_olahan' | 'air_wtp1'>('air_olahan')
-  const [kodeBase, setKodeBase] = useState('pra-vsd')
+  const [kodeBase, setKodeBase] = useState('2025')
   const baseline = PRESET_BASELINE.find((b) => b.kode === kodeBase)!
   const { hasil: h } = useMemo(() => jalankan(enpiLab({ metode, variabel, baseline }), data), [metode, variabel, baseline, data])
   const r = ringkas(h.laporan)
@@ -54,8 +54,9 @@ function Eksperimen({ data, adaWtp1 }: { data: Data; adaWtp1: boolean }) {
   if (metode === 'absolut') catatan.push('Metode absolut membandingkan kWh dengan bulan yang sama di baseline tanpa melihat volume air. Kenaikan air yang dipompa ikut terbaca sebagai boros, dan penghematan dari VSD bisa tertutup.')
   if (metode !== 'absolut' && variabel === 'air_olahan') catatan.push('Distribusi total memuat air WTP 2 (BTM) yang dibeli dari pihak ketiga. Energinya tidak tercatat di meter WTP 1, sehingga pembaginya terlalu besar dan muncul penghematan semu. Ini kesalahan yang paling mudah dibantah auditor.')
   if (metode !== 'absolut' && variabel === 'air_wtp1') catatan.push('Air WTP 1 tanpa BTM menyamakan pembilang dan penyebut: keduanya hanya WTP 1. Nov 2025 – Jan 2026 tidak dibandingkan karena air BTM periode itu tertagih sekaligus di Jan 2026.')
-  if (kodeBase === '2025') catatan.push('Baseline Jan–Des 2025 sudah memuat Okt–Des 2025, yaitu bulan sesudah VSD dipasang. Sebagian efek VSD ikut "tertelan" ke dalam baseline sehingga penghematan terlihat lebih kecil.')
+  if (kodeBase === '2025') catatan.push('Baseline Jan–Des 2025 adalah baseline ENPI-05. Nov–Des 2025 tidak punya data air WTP 1, sehingga model dibentuk dari 10 bulan, di bawah 12 bulan yang disarankan ISO 50006. Ketiga VSD (2022, Jan 2024, Agu 2025) sudah beroperasi dan menjadi bagian kondisi baseline.')
   if (kodeBase === '2024') catatan.push('Baseline 2024 dibentuk saat volume air jauh lebih kecil. Kondisi operasi 2026 sangat berbeda, sehingga perbandingan banyak berupa ekstrapolasi.')
+  if (kodeBase === '2024-2025') catatan.push('Menggabungkan dua tahun menambah titik data, tetapi intensitas 2024 (±0,56 kWh/m³) lebih rendah dari 2025 (±0,67). Bila kondisi kedua tahun berbeda, model gabungan justru kurang mewakili; lihat CV(RMSE).')
   if (metode === 'regresi' && h.ekstrapolasi > 0) catatan.push('Regresi hanya sahih di dalam rentang variabel baseline. Volume air 2026 lebih tinggi dari baseline, jadi garis harapan diperpanjang ke luar data (ekstrapolasi).')
 
   return (
@@ -140,7 +141,7 @@ function LatihanDeviasi({ data, adaWtp1 }: { data: Data; adaWtp1: boolean }) {
   return (
     <div className="card lab-blok">
       <div className="lab-judul"><span className="eyebrow">Eksperimen 2</span><h2>Seberapa cepat pemborosan ketahuan?</h2>
-        <p className="muted">Memakai EnPI rasio WTP 1 dengan baseline sebelum VSD. Suntikkan gangguan buatan pada kWh, lalu lihat kapan CUSUM berbelok dan kapan aplikasi mencatat deviasi. Aturan deteksi sama dengan register deviasi: bulanan bila selisih melebihi maks(2 × RMSE, {AMBANG_DEVIASI.persen}%), tren bila {AMBANG_DEVIASI.trenBulan} bulan berturut-turut di atas harapan.</p></div>
+        <p className="muted">Memakai EnPI rasio WTP 1 dengan baseline Jan–Des 2025 (sama dengan ENPI-05). Suntikkan gangguan buatan pada kWh, lalu lihat kapan CUSUM berbelok dan kapan aplikasi mencatat deviasi. Aturan deteksi sama dengan register deviasi: bulanan bila selisih melebihi maks(2 × RMSE, {AMBANG_DEVIASI.persen}%), tren bila {AMBANG_DEVIASI.trenBulan} bulan berturut-turut di atas harapan.</p></div>
 
       <div className="lab-kendali">
         <div><span className="lab-lbl">Gangguan</span>
@@ -183,7 +184,7 @@ function LatihanDeviasi({ data, adaWtp1 }: { data: Data; adaWtp1: boolean }) {
 
       <div className="lab-catatan">
         <p><b>Yang perlu dilatih:</b> deviasi bulanan hanya menangkap lonjakan besar. Pemborosan kecil yang terus-menerus (kebocoran, VSD di-bypass) sering lolos dari ambang bulanan, tetapi terlihat sebagai CUSUM yang terus naik dan tertangkap aturan tren setelah {AMBANG_DEVIASI.trenBulan} bulan. Karena itu CUSUM perlu dibaca setiap bulan, bukan menunggu deviasi muncul.</p>
-        {pasangan(asli.hasil.laporan).length > 0 && <p className="muted small">Data asli: {pasangan(asli.hasil.laporan).length} bulan pelaporan sesudah VSD. Penurunan kWh/m³ pada Feb–Jul 2026 tercatat sebagai deviasi ke arah hemat; Agu–Okt 2026 kembali mendekati baseline.</p>}
+        {pasangan(asli.hasil.laporan).length > 0 && <p className="muted small">Data asli: {pasangan(asli.hasil.laporan).length} bulan pelaporan. Penurunan kWh/m³ pada Feb–Jun 2026 tercatat sebagai deviasi ke arah hemat yang penyebabnya sedang diselidiki (bukan efek VSD baru); Agu–Okt 2026 kembali mendekati baseline.</p>}
       </div>
     </div>
   )

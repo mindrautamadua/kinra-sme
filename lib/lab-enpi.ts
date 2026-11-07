@@ -7,12 +7,14 @@ import { hitungEnpi } from './enpi'
 import type { Enpi, MeterEnergi, MetodeEnpi, PembacaanMeter, VariabelBulanan, VariabelRelevan } from './types'
 
 export const METER_WTP = 'KINRA-MTR-005'
+/** Meter WTP 1 (proses + distribusi) dan intake; s.d. Okt 2026 angka intake digabung ke MTR-005 (migrasi 0039). */
+export const METER_WTP_SEMUA = ['KINRA-MTR-005', 'KINRA-MTR-008']
 
 export type PresetBaseline = { kode: string; label: string; mulai: string; selesai: string; ket: string }
 export const PRESET_BASELINE: PresetBaseline[] = [
-  { kode: 'pra-vsd', label: 'Jan–Sep 2025', mulai: '2025-01-01', selesai: '2025-09-01', ket: 'Sebelum VSD pompa distribusi (usulan ENPI-05)' },
-  { kode: '2025', label: 'Jan–Des 2025', mulai: '2025-01-01', selesai: '2025-12-01', ket: 'Tahun penuh terakhir; Okt–Des sudah memakai VSD' },
+  { kode: '2025', label: 'Jan–Des 2025', mulai: '2025-01-01', selesai: '2025-12-01', ket: 'Baseline ENPI-05; Nov–Des tanpa data air WTP 1, efektif 10 bulan' },
   { kode: '2024', label: 'Jan–Des 2024', mulai: '2024-01-01', selesai: '2024-12-01', ket: 'Tahun penuh pertama dengan data meter' },
+  { kode: '2024-2025', label: 'Jan 2024 – Des 2025', mulai: '2024-01-01', selesai: '2025-12-01', ket: 'Dua tahun digabung: lebih banyak titik, tetapi kondisi 2024 dan 2025 berbeda' },
 ]
 
 export type JenisGangguan = 'tidak' | 'bocor' | 'rusak' | 'bypass'
@@ -26,14 +28,14 @@ export const KET_GANGGUAN: Record<JenisGangguan, string> = {
   tidak: 'Data kWh WTP 1 apa adanya.',
   bocor: 'Air yang bocor tetap dipompa dan diolah, sehingga kWh naik bertahap mulai bulan yang dipilih dan terus berlanjut.',
   rusak: 'Bantalan atau impeller rusak membuat pompa boros hanya pada satu bulan, lalu diperbaiki.',
-  bypass: 'VSD dimatikan atau di-bypass, sehingga pompa kembali berputar penuh 50 Hz mulai bulan yang dipilih.',
+  bypass: 'VSD dimatikan atau di-bypass (mis. saat gangguan), sehingga pompa kembali berputar penuh 50 Hz mulai bulan yang dipilih.',
 }
 
 export function enpiLab(o: { metode: MetodeEnpi; variabel: string; baseline: PresetBaseline }): Enpi {
   return {
     kode: 'LAB-WTP', nama: 'Intensitas energi WTP 1 (eksperimen)', sumber_kode: ['pln'], metode: o.metode,
     variabel_kode: o.metode === 'absolut' ? [] : [o.variabel], baseline_mulai: o.baseline.mulai, baseline_selesai: o.baseline.selesai,
-    alasan_baseline: null, catatan: null, aktif: true, utama: false, lingkup: 'kinra', meter_kode: [METER_WTP], urutan: 0,
+    alasan_baseline: null, catatan: null, aktif: true, utama: false, lingkup: 'kinra', meter_kode: METER_WTP_SEMUA, urutan: 0,
   }
 }
 

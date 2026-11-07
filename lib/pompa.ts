@@ -15,6 +15,8 @@ export const POMPA_WTP1 = {
   rpm: 1485,
   vsdTerpasang: 3,
   vsdBeroperasi: 2,
+  /** Tanggal pasang VSD (konfirmasi Bagian M/E, 7 Nov 2026). */
+  vsdDipasang: ['10 Okt 2022', '29 Jan 2024', 'Agu 2025'],
   kapasitasWtp: 500,
 }
 
