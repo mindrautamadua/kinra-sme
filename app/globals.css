@@ -1808,3 +1808,15 @@ dialog.tj-ev-dlg { max-height: calc(100dvh - 32px); overflow-y: auto; overscroll
 .lp-peta-bar i { display: block; height: 100%; }
 .lp-peta-bar i.siap { background: var(--p-hijau); } .lp-peta-bar i.proses { background: #d39a17; }
 .lp-distribusi { font-size: 8pt; color: var(--p-ink-2); margin-top: 3mm; }
+.keg-kait { display: block; margin-top: 4px; color: var(--s1); font-family: var(--font-mono), monospace; font-size: 11px; }
+.keg-pica { display: block; margin-top: 4px; padding: 6px 8px; border-left: 3px solid var(--warn); background: color-mix(in srgb, var(--warn) 7%, transparent); border-radius: 0 6px 6px 0; }
+.lp-kurva { width: 100%; height: auto; display: block; margin: 1mm 0; }
+.lp-kurva .grid { stroke: var(--p-line); stroke-width: 0.6; }
+.lp-kurva .ax { font-size: 8px; fill: var(--p-muted); }
+.lp-kurva .tonggak { stroke: var(--p-line-2); stroke-width: 0.8; stroke-dasharray: 3 3; }
+.lp-kurva .kini { stroke: var(--p-aksen); stroke-width: 1.2; }
+.lp-kurva .kini-t { fill: var(--p-aksen); }
+.lp-kurva .rencana { fill: none; stroke: var(--p-line-2); stroke-width: 2; stroke-dasharray: 5 3; }
+.lp-kurva .realisasi { fill: none; stroke: var(--p-brand); stroke-width: 2.6; stroke-linejoin: round; }
+.lp-legenda i.lp-kurva-rencana { background: none; border-top: 2px dashed var(--p-line-2); height: 0; width: 5mm; }
+.lp-legenda i.lp-kurva-realisasi { background: var(--p-brand); height: 3px; width: 5mm; }

@@ -22,6 +22,7 @@ Jalankan di SQL Editor Supabase sesuai urutan. Semua migrasi aman dijalankan ula
 - [ ] `0031_berkas_sah.sql`: penanda versi sah per berkas evidence; skor kesiapan menjadi "siap audit" (Final + berkas sah)
 - [ ] `0032_isi_sah_final.sql`: tandai otomatis berkas versi sah untuk item yang sudah Final (PDF bila ada, selain itu semua berkas)
 - [ ] `0033_potret_kesiapan.sql`: potret skor harian untuk pembanding di laporan kesiapan
+- [ ] `0034_kegiatan_keterkaitan.sql`: keterkaitan kegiatan pendampingan dengan klausul/dokumen serta kendala & tindak lanjut (PICA)
 - [ ] **Cek urutan migrasi.** Bila EnPI-03 muncul di kelompok "Lingkup SMEn KINRA" di halaman Kinerja, jalankan ulang `0026_lingkup_kinra.sql`.
 
 Migrasi 0018–0030 sudah dijalankan di Supabase (6 November 2026). File 0027–0030 dan perubahan aplikasi terkait belum di-commit ke repositori.
@@ -110,6 +111,8 @@ Titik di bawah adalah rancangan umum. Cocokkan dulu dengan diagram satu garis (s
 - [ ] Tuangkan kedua tabel di atas ke dokumen Rencana Pengumpulan Data Energi (klausul 6.6), lengkap dengan PIC, tanggal target per tahap, dan frekuensi pembacaan. Auditor menerima rencana yang jelas walaupun meter belum semua terpasang.
 
 ## 6. Keputusan Tim SMEn dan konsultan
+
+- [ ] **Periksa pemetaan kegiatan.** Pemetaan awal kegiatan pendampingan ke klausul dan dokumen (migrasi 0034) adalah usulan dari nama kegiatan. Konsultan memeriksa dan mengoreksinya di halaman Timeline (tombol tautan pada tiap kegiatan), serta mengisi kendala dan tindak lanjut untuk kegiatan yang bermasalah.
 
 - [ ] **Tandai berkas versi sah dan sahkan dokumen.** Skor kesiapan kini dihitung dari dokumen berstatus Final yang punya berkas bertanda versi sah, sehingga angkanya akan turun dibanding skor lama (yang hanya menghitung ada berkas). Untuk setiap item: tandai PDF yang sudah disahkan/ditandatangani (atau rekaman yang lengkap) sebagai versi sah, lalu ubah status menjadi Final. Prioritaskan dokumen wajib ISO sebelum TÜV Stage 1 (20 November 2026). Komunikasikan ke tim bahwa penurunan angka adalah perubahan cara hitung, bukan kemunduran.
 

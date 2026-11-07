@@ -5,6 +5,7 @@ import { TombolCetak } from '@/components/TombolCetak'
 import { ambilAsetMeter, ambilDeviasi, ambilDokumen, ambilIsu, ambilKegiatan, ambilKinerja, ambilKlausul, ambilParameter, ambilRiwayatSimulasi, ambilSasaran, ambilSeu, ambilTemuan, catatPotret } from '@/lib/data'
 import { deteksiDeviasi, gabungDeviasi, terbuka as deviasiTerbuka } from '@/lib/deviasi'
 import { nilaiEnergi, rupiahRingkas, susunKonversi, tonCo2 } from '@/lib/konversi'
+import { susunProgram } from '@/lib/program'
 import { penggunaEnergi } from '@/lib/tinjauan'
 import { AMBANG, LABEL_METODE } from '@/lib/enpi'
 import { angka, hariIni, persen, selisihHari, tanggal, waktu } from '@/lib/format'
@@ -39,6 +40,29 @@ function Cincin({ p, rag }: { p: number; rag: Rag }) {
       <circle cx="60" cy="60" r="50" pathLength={100} className="trk" />
       <circle cx="60" cy="60" r="50" pathLength={100} className="isi" style={{ strokeDasharray: `${p} 100` }} />
       <text x="60" y="60" textAnchor="middle" dominantBaseline="central">{Math.round(p)}<tspan dy="-12" fontSize="14">%</tspan></text>
+    </svg>
+  )
+}
+
+function KurvaS({ kurva, kini, tonggak }: { kurva: { tanggal: string; rencana: number; realisasi: number | null }[]; kini: string; tonggak: { nama: string; tanggal: string }[] }) {
+  const L = 640, T = 190, KI = 34, KA = 10, AT = 10, BA = 26
+  if (kurva.length < 2) return null
+  const x = (i: number) => KI + (i / (kurva.length - 1)) * (L - KI - KA)
+  const y = (p: number) => AT + (1 - p / 100) * (T - AT - BA)
+  const idx = (iso: string) => kurva.findIndex((k) => k.tanggal >= iso)
+  const garis = (f: (k: (typeof kurva)[number]) => number | null) => kurva.map((k, i) => (f(k) === null ? null : `${x(i)},${y(f(k)!)}`)).filter(Boolean).join(' ')
+  const iKini = idx(kini)
+  return (
+    <svg viewBox={`0 0 ${L} ${T}`} className="lp-kurva" role="img" aria-label="Kurva-S rencana dibanding realisasi kegiatan pendampingan">
+      {[0, 50, 100].map((g) => <g key={g}><line x1={KI} x2={L - KA} y1={y(g)} y2={y(g)} className="grid" /><text x={KI - 4} y={y(g)} textAnchor="end" dominantBaseline="middle" className="ax">{g}%</text></g>)}
+      {tonggak.filter((t) => idx(t.tanggal) >= 0).map((t) => (
+        <g key={t.nama}><line x1={x(idx(t.tanggal))} x2={x(idx(t.tanggal))} y1={AT} y2={T - BA} className="tonggak" /><text x={x(idx(t.tanggal)) + 3} y={AT + 8} className="ax">{t.nama.replace(/^(Eksternal Audit |TÜV )/i, '')}</text></g>
+      ))}
+      {iKini >= 0 && <><line x1={x(iKini)} x2={x(iKini)} y1={AT} y2={T - BA} className="kini" /><text x={x(iKini) + 3} y={T - BA - 4} className="ax kini-t">hari ini</text></>}
+      <polyline points={garis((k) => k.rencana)} className="rencana" />
+      <polyline points={garis((k) => k.realisasi)} className="realisasi" />
+      <text x={KI} y={T - 6} className="ax">{kurva[0].tanggal.slice(5).split('-').reverse().join('/')}</text>
+      <text x={L - KA} y={T - 6} textAnchor="end" className="ax">{kurva.at(-1)!.tanggal.slice(5).split('-').reverse().join('/')}</text>
     </svg>
   )
 }
@@ -80,6 +104,8 @@ export default async function CetakKesiapan() {
   const dev = gabungDeviasi(deteksiDeviasi(kinerja.hasil), register).baris
   const devBuka = dev.filter((x) => deviasiTerbuka(x.r))
   // Simulasi audit: hasil terakhir per unit
+  const program = susunProgram(kegiatan, dokumen, kini, { stage1: L.stage1.tanggal, stage2: L.stage2.tanggal })
+  const deviasiProgram = program.persenRealisasi - program.persenRencana
   const simTerakhir = [...new Map([...simulasi].reverse().map((x) => [x.unit_no, x])).values()].sort((a, b) => a.unit_no - b.unit_no)
   const nomor = `KINRA/SMEn/LKA/${kini.replaceAll('-', '')}`
   const dicetak = waktu(new Date().toISOString())
@@ -195,6 +221,7 @@ export default async function CetakKesiapan() {
             <div>
               <h3 className="lp-h3">Hal yang memerlukan perhatian manajemen</h3>
               <ol className="lp-poin">
+                {program.terlambat.length > 0 && <li><b>{program.terlambat.length} kegiatan pendampingan di belakang jadwal</b> ({program.terlambat.map((b) => b.k.no).join(', ')}); realisasi program {persen(program.persenRealisasi, 0)} dibanding rencana {persen(program.persenRencana, 0)}.</li>}
                 {L.temuan.mayorTerbuka.length > 0 && <li><b>{L.temuan.mayorTerbuka.length} ketidaksesuaian mayor terbuka.</b> Satu mayor terbuka saat Stage 2 menahan rekomendasi sertifikasi.</li>}
                 {L.gerbang.filter((g) => g.hasil === 'gagal').slice(0, 3).map((g) => <li key={g.kriteria}><b>{g.kriteria} ({g.acuan}) belum memadai.</b> {g.bukti}.</li>)}
                 {L.nBukti > L.nSiap && <li><b>{L.nBukti - L.nSiap} dokumen sudah ada berkas tetapi belum disahkan.</b> Draf atau dokumen tanpa versi sah belum dihitung siap: auditor memeriksa informasi terdokumentasi yang terkendali (Kl. 7.5).</li>}
@@ -207,8 +234,79 @@ export default async function CetakKesiapan() {
           </div>
         </Bagian>
 
-        {/* ── 2. Gerbang kesiapan ────────────────────────────────── */}
-        <Bagian no="2" judul="Gerbang kesiapan audit" acuan="Informasi terdokumentasi wajib ISO 50001:2018"
+        {/* ── 2. Program pendampingan ───────────────────────────── */}
+        <Bagian no="2" judul="Program pendampingan dan jalur kritis" acuan="Timeline pendampingan" baru
+          pesan={`${program.selesai} dari ${program.total} kegiatan selesai (${persen(program.persenRealisasi, 0)}) dibanding rencana ${persen(program.persenRencana, 0)} per hari ini${program.terlambat.length ? `; ${program.terlambat.length} kegiatan di belakang jadwal` : '; program sesuai jadwal'}. Jalur kritis menuju ${L.stage1.nama} tersisa ${program.jalur.filter((j) => j.sebelumS1).length} kegiatan.`}>
+          <div className="lp-dua">
+            <div>
+              <h3 className="lp-h3">Rencana vs realisasi (kurva-S)</h3>
+              <KurvaS kurva={program.kurva} kini={kini} tonggak={L.tonggak} />
+              <ul className="lp-legenda">
+                <li><i className="lp-kurva-rencana" />Rencana kumulatif<b>{persen(program.persenRencana, 0)}</b></li>
+                <li><i className="lp-kurva-realisasi" />Realisasi kumulatif<b>{persen(program.persenRealisasi, 0)}</b></li>
+                <li>Deviasi<b className={deviasiProgram < -5 ? 'buruk' : undefined}>{deviasiProgram >= 0 ? '+' : '−'}{angka(Math.abs(deviasiProgram), 0)} poin</b></li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="lp-h3">Jalur kritis menuju sertifikasi</h3>
+              {program.jalur.length === 0 ? <p className="lp-p">Semua kegiatan sampai {L.stage2.nama} sudah selesai.</p> : (
+                <table className="lp-tbl">
+                  <thead><tr><th scope="col">Kegiatan</th><th scope="col" style={{ width: '22%' }}>Jadwal</th><th scope="col" style={{ width: '24%' }}>Status</th></tr></thead>
+                  <tbody>
+                    {program.jalur.map((j) => (
+                      <tr key={j.k.no}>
+                        <td className="kecil">{j.k.no}. {j.k.nama}{j.sebelumS1 && <span className="lp-bintang" title={`Sebelum ${L.stage1.nama}`}> ●</span>}</td>
+                        <td className="kecil">{tanggal(j.rencana)}</td>
+                        <td>{j.terlambat ? <Tanda rag="merah">Lewat {j.terlambat} hari</Tanda> : <Tanda rag={j.status === 'berjalan' ? 'kuning' : 'netral'}>{j.status === 'berjalan' ? 'Berjalan' : `${j.sisaHari} hari lagi`}</Tanda>}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+              <p className="lp-catatan">● dijadwalkan sebelum {L.stage1.nama} ({tanggal(L.stage1.tanggal)}).</p>
+            </div>
+          </div>
+          {program.dampak.length > 0 && (
+            <>
+              <h3 className="lp-h3">Kegiatan terlambat dan dampaknya ke kesiapan</h3>
+              <table className="lp-tbl">
+                <thead><tr><th scope="col">Kegiatan terlambat</th><th scope="col" style={{ width: '12%' }}>Lewat</th><th scope="col" style={{ width: '14%' }}>Klausul</th><th scope="col">Dokumen terkait yang belum siap audit</th></tr></thead>
+                <tbody>
+                  {program.dampak.map((d) => (
+                    <tr key={d.kegiatan.k.no}>
+                      <td className="kecil">{d.kegiatan.k.no}. {d.kegiatan.k.nama}</td>
+                      <td className="angka buruk">{d.kegiatan.terlambat} hari</td>
+                      <td className="kecil">{d.klausul.length ? d.klausul.map((k) => `${k}${k in KLAUSUL_KRITIS ? '★' : ''}`).join(', ') : '–'}</td>
+                      <td className="kecil">{d.dokumen.length ? d.dokumen.map((x) => x.kode).join(', ') : (d.kegiatan.k.dokumen_kode?.length ? 'Semua dokumen terkait sudah siap' : 'Keterkaitan belum dipetakan')}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <p className="lp-catatan">★ klausul dengan informasi terdokumentasi wajib (gerbang Stage 1). Keterkaitan kegiatan–dokumen dipetakan di halaman Timeline.</p>
+            </>
+          )}
+          {program.pica.length > 0 && (
+            <>
+              <h3 className="lp-h3">Masalah dan tindak lanjut (PICA)</h3>
+              <table className="lp-tbl">
+                <thead><tr><th scope="col" style={{ width: '24%' }}>Kegiatan</th><th scope="col">Masalah (PI)</th><th scope="col">Tindak lanjut (CA)</th><th scope="col" style={{ width: '16%' }}>PIC · tenggat</th></tr></thead>
+                <tbody>
+                  {program.pica.slice(0, 5).map((x) => (
+                    <tr key={x.no}>
+                      <td className="kecil">{x.no}. {x.nama}</td>
+                      <td className="kecil">{x.masalah}</td>
+                      <td className="kecil">{x.tindakan}{x.otomatis && <div className="kecil" style={{ opacity: 0.7 }}>(usulan otomatis; isi kendala & tindak lanjut di Timeline)</div>}</td>
+                      <td className="kecil">{x.pic ?? '–'}{x.tenggat ? ` · ${tanggal(x.tenggat)}` : ''}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </>
+          )}
+        </Bagian>
+
+        {/* ── 3. Gerbang kesiapan ────────────────────────────────── */}
+        <Bagian no="3" judul="Gerbang kesiapan audit" acuan="Informasi terdokumentasi wajib ISO 50001:2018"
           pesan={`${lulusGerbang} dari ${L.gerbang.length} gerbang lulus; ${L.gerbang.filter((g) => g.hasil === 'gagal').length} gerbang belum lulus berpotensi menjadi temuan mayor pada ${L.stage1.nama}.`}>
           <p className="lp-p">Gerbang adalah syarat minimum yang lazim diperiksa lembaga sertifikasi pada Stage 1. Satu gerbang berstatus “Belum” berpotensi menjadi temuan mayor atau menunda Stage 2.</p>
           <table className="lp-tbl">
@@ -224,8 +322,8 @@ export default async function CetakKesiapan() {
           </table>
         </Bagian>
 
-        {/* ── 3. Kesiapan per klausul ────────────────────────────── */}
-        <Bagian no="3" judul="Kesiapan per klausul" acuan="Klausul 4–10" baru
+        {/* ── 4. Kesiapan per klausul ────────────────────────────── */}
+        <Bagian no="4" judul="Kesiapan per klausul" acuan="Klausul 4–10" baru
           pesan={L.terlemah.length ? `Klausul terlemah ${L.terlemah.map((k) => `${k.kode} (${Math.round(k.skor)}%)`).join(', ')}: prioritaskan pengesahan dokumen pada klausul ini.` : undefined}>
           <table className="lp-tbl">
             <thead>
@@ -245,8 +343,8 @@ export default async function CetakKesiapan() {
           <p className="lp-catatan">★ Klausul dengan informasi terdokumentasi wajib (gerbang Stage 1). Garis tegak pada batang menandai ambang memadai {AMBANG_RAG.hijau}%.</p>
         </Bagian>
 
-        {/* ── 4. Register kesenjangan ────────────────────────────── */}
-        <Bagian no="4" judul="Register kesenjangan" acuan={`${L.gap.length} butir`} baru
+        {/* ── 5. Register kesenjangan ────────────────────────────── */}
+        <Bagian no="5" judul="Register kesenjangan" acuan={`${L.gap.length} butir`} baru
           pesan={`${L.gap.filter((g) => g.tingkat === 'Kritis').length} kesenjangan kritis dan ${L.gap.filter((g) => g.tingkat === 'Tinggi').length} tinggi harus ditutup sebelum ${L.stage1.nama} (${tanggal(L.stage1.tanggal)}).`}>
           <p className="lp-p">
             Semua dokumen yang belum siap audit: tanpa evidence, evidence masih draf, atau Final tanpa berkas versi sah. Diurutkan menurut tingkat kesenjangan lalu tenggat.{' '}
@@ -275,8 +373,8 @@ export default async function CetakKesiapan() {
           </>}
         </Bagian>
 
-        {/* ── 5. Temuan audit ────────────────────────────────────── */}
-        <Bagian no="5" judul="Temuan audit dan kesiapan auditee" acuan="Kl. 7.3 · 9.2 · 10.1" baru
+        {/* ── 6. Temuan audit ────────────────────────────────────── */}
+        <Bagian no="6" judul="Temuan audit dan kesiapan auditee" acuan="Kl. 7.3 · 9.2 · 10.1" baru
           pesan={L.temuan.mayorTerbuka.length ? `${L.temuan.mayorTerbuka.length} ketidaksesuaian mayor terbuka menahan rekomendasi sertifikasi.` : simTerakhir.length ? `Tidak ada mayor terbuka; ${simTerakhir.filter((x) => x.skor / x.skor_maks < 0.67).length} dari ${simTerakhir.length} unit yang berlatih masih di bawah 67% pada simulasi audit.` : 'Tidak ada ketidaksesuaian mayor terbuka. Belum ada unit yang menjalani simulasi audit.'}>
           <div className="lp-dua">
             <table className="lp-tbl">
@@ -324,8 +422,8 @@ export default async function CetakKesiapan() {
           <p className="lp-p kecil">{simTerakhir.length} dari 13 unit auditee sudah berlatih. Prediksi temuan simulasi adalah alat latihan, bukan keputusan auditor.</p>
         </Bagian>
 
-        {/* ── 6. Kinerja energi ──────────────────────────────────── */}
-        <Bagian no="6" judul="Tinjauan energi, SEU, kinerja energi, dan sasaran" acuan="Kl. 6.2 · 6.3 · 6.4 · 6.5 · 9.1" baru
+        {/* ── 7. Kinerja energi ──────────────────────────────────── */}
+        <Bagian no="7" judul="Tinjauan energi, SEU, kinerja energi, dan sasaran" acuan="Kl. 6.2 · 6.3 · 6.4 · 6.5 · 9.1" baru
           pesan={`${pakai.daftar.slice(0, 2).map((p) => p.nama).join(' dan ')} menyerap ${persen(pakai.daftar.slice(0, 2).reduce((t, p) => t + p.porsi, 0), 0)} energi KINRA; ${seuTetap.length ? `${seuTetap.length} SEU sudah ditetapkan` : 'SEU belum ditetapkan resmi'}, ${L.enpi.valid.length} dari ${L.enpi.aktif.length} EnPI lingkup KINRA valid${devBuka.length ? `, dan ${devBuka.length} deviasi signifikan belum ditutup` : ''}.`}>
           <h3 className="lp-h3">Tinjauan energi dan SEU (lingkup KINRA, tanpa tenant)</h3>
           <p className="lp-p">
@@ -399,8 +497,8 @@ export default async function CetakKesiapan() {
           )}
         </Bagian>
 
-        {/* ── 7. Risiko & jadwal ─────────────────────────────────── */}
-        <Bagian no="7" judul="Risiko utama dan jadwal sertifikasi" acuan="Kl. 6.1" baru
+        {/* ── 8. Risiko & jadwal ─────────────────────────────────── */}
+        <Bagian no="8" judul="Risiko utama dan jadwal sertifikasi" acuan="Kl. 6.1" baru
           pesan={`${L.stage1.nama} ${hariS1 > 0 ? `${hariS1} hari lagi` : hariS1 === 0 ? 'hari ini' : 'telah lewat'}; ${L.risikoUtama.filter((r) => r.skor >= 15).length ? `${L.risikoUtama.filter((r) => r.skor >= 15).length} risiko tinggi perlu dipantau` : 'tidak ada risiko berskor tinggi di register, pastikan penilaian risiko mutakhir'}.`}>
           <div className="lp-dua">
             <div>
@@ -425,13 +523,12 @@ export default async function CetakKesiapan() {
                   )
                 })}
               </ol>
-              <p className="lp-p kecil">Program pendampingan: {L.program.selesai} dari {L.program.total} kegiatan selesai{L.program.konfirmasi ? `, ${L.program.konfirmasi} perlu konfirmasi` : ''}.</p>
             </div>
           </div>
         </Bagian>
 
-        {/* ── 8. Rekomendasi ─────────────────────────────────────── */}
-        <Bagian no="8" judul="Rekomendasi dan rencana tindak"
+        {/* ── 9. Rekomendasi ─────────────────────────────────────── */}
+        <Bagian no="9" judul="Rekomendasi dan rencana tindak"
           pesan={`${L.rekomendasi.filter((r) => r.prioritas === 'P1').length} tindakan P1 harus selesai paling lambat ${tanggal(L.rekomendasi.find((r) => r.prioritas === 'P1')?.batas ?? L.stage1.tanggal)}.`}>
           <p className="lp-p"><b>P1</b> wajib selesai sebelum {L.stage1.nama}; <b>P2</b> menurunkan risiko temuan; <b>P3</b> memperkuat kesiapan wawancara dan bukti penerapan.</p>
           <table className="lp-tbl">

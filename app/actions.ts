@@ -656,6 +656,26 @@ export async function ubahStatusKegiatan(no: number, status: StatusKegiatan): Pr
   return gagal(error)
 }
 
+/** Keterkaitan kegiatan (klausul, dokumen) dan PICA-nya (migrasi 0034). Daftar dipisah koma. */
+export async function simpanKeterkaitanKegiatan(no: number, f: FormData): Promise<Hasil> {
+  const t = await tolak('kegiatan.ubah'); if (t) return t
+  const pecah = (k: string) => (teks(f, k) ?? '').split(/[,;\s]+/).map((x) => x.trim().toUpperCase()).filter(Boolean)
+  const klausul = pecah('klausul').map((x) => x.toLowerCase())
+  const dokumen_kode = pecah('dokumen_kode')
+  if (klausul.some((x) => !/^\d{1,2}(\.\d{1,2})?$/.test(x))) return { ok: false, pesan: 'Format klausul tidak dikenal. Contoh: 6.3, 7.2' }
+  const { data: ada } = dokumen_kode.length ? await (await db()).from('dokumen_audit').select('kode').in('kode', dokumen_kode) : { data: [] }
+  const tidakAda = dokumen_kode.filter((k) => !(ada ?? []).some((d: { kode: string }) => d.kode === k))
+  if (tidakAda.length) return { ok: false, pesan: `Kode dokumen tidak ditemukan di lembar Kesiapan: ${tidakAda.join(', ')}` }
+  const { error } = await (await db()).from('kegiatan').update({
+    klausul, dokumen_kode, kendala: teks(f, 'kendala'), tindak_lanjut: teks(f, 'tindak_lanjut'),
+    tindak_pic: teks(f, 'tindak_pic'), tindak_tenggat: teks(f, 'tindak_tenggat'),
+  }).eq('no', no)
+  revalidatePath('/timeline')
+  revalidatePath('/kesiapan/cetak')
+  if (error?.code === 'PGRST204' || error?.code === '42703') return { ok: false, pesan: 'Kolom keterkaitan belum ada. Jalankan migrasi 0034_kegiatan_keterkaitan.sql di Supabase.' }
+  return gagal(error)
+}
+
 // ---------- Isu & peluang ----------
 
 export async function simpanIsu(id: number | null, f: FormData): Promise<Hasil> {

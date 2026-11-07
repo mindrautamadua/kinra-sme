@@ -75,6 +75,13 @@ export type Kegiatan = {
   selesai_at?: string | null
   /** Kode tonggak audit ('ia', 'tm', 's1', 's2'); tidak ada bila migrasi 0012 belum dijalankan */
   tonggak?: string | null
+  /** Keterkaitan dan PICA (migrasi 0034) */
+  klausul?: string[]
+  dokumen_kode?: string[]
+  kendala?: string | null
+  tindak_lanjut?: string | null
+  tindak_pic?: string | null
+  tindak_tenggat?: string | null
 }
 
 export type StatusKegiatan = 'belum' | 'berjalan' | 'selesai'
