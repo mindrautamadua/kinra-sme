@@ -1,4 +1,5 @@
 -- Akun pembaca dipakai bersama oleh seluruh bagian. Jalankan setelah 0029. Aman diulang.
+-- Sekaligus memastikan constraint peran mengizinkan 'pembaca' (isi migrasi 0008), untuk database yang belum menjalankannya.
 --
 -- Peran pembaca (migrasi 0008) sudah hanya bisa melihat data. Karena satu akun dipakai banyak orang,
 -- tiga celah ditutup:
@@ -7,6 +8,10 @@
 --   2) Pembaca tidak pernah diwajibkan ganti sandi saat masuk pertama / setelah diatur ulang admin.
 --   3) Pembaca tidak bisa menyimpan hasil simulasi audit (satu-satunya tabel yang masih bisa ditulis
 --      oleh semua peran yang login). Latihan simulasi tetap bisa dijalankan, hanya tidak disimpan.
+
+-- 0) Izinkan peran pembaca (sama dengan 0008)
+alter table pengguna drop constraint if exists pengguna_peran_check;
+alter table pengguna add constraint pengguna_peran_check check (peran in ('admin', 'konsultan', 'tim_kinra', 'pembaca'));
 
 -- 1) Tolak ganti sandi untuk pembaca
 create or replace function ganti_sandi(p_lama text, p_baru text) returns void

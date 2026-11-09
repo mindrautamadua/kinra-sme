@@ -88,12 +88,12 @@ export function KelolaPengguna({ daftar, sayaId }: { daftar: BarisPengguna[]; sa
       </div>
 
       <dialog ref={dlg} className="panel" onClose={() => setEdit(null)}>
-        <form className="card" key={edit?.id ?? 'baru'} action={(f) => mulai(async () => {
+        <form className="card" key={edit?.id ?? 'baru'} onSubmit={(e) => { e.preventDefault(); const f = new FormData(e.currentTarget); mulai(async () => {
           const h = edit ? await ubahPengguna(edit.id, f) : await tambahPengguna(f)
           if (!h.ok) return setGalat(h.pesan)
-          if (!edit) setInfo(`Akun ${f.get('nama')} (${f.get('email')}) dibuat. Sandi sementara: ${f.get('sandi')} — sampaikan secara langsung; wajib diganti saat login pertama.`)
+          if (!edit) setInfo(`Akun ${f.get('nama')} (${f.get('email')}) dibuat. Sandi sementara: ${f.get('sandi')} — ${f.get('peran') === 'pembaca' ? 'akun pembaca tidak diminta ganti sandi; hanya admin yang bisa mengaturnya ulang.' : 'sampaikan secara langsung; wajib diganti saat login pertama.'}`)
           dlg.current?.close(); router.refresh()
-        })}>
+        }) }}>
           <div className="row"><h3>{edit ? `Ubah ${edit.nama}` : 'Pengguna baru'}</h3><button type="button" className="btn btn-ikon" aria-label="Tutup" onClick={() => dlg.current?.close()}><X aria-hidden="true" /></button></div>
           <div className="form-grid">
             <label className="field full"><span>Nama</span><input name="nama" required defaultValue={edit?.nama ?? ''} /></label>
