@@ -17,7 +17,7 @@ const CHIP_TEMUAN = { Mayor: 'crit', Minor: 'warn', OFI: 'info' } as const
 
 type Nilai = { skor: number; alasan: string; bukti_kurang: string; lanjut: string | null }
 
-export function SimulasiAudit({ riwayat }: { riwayat: SimulasiTersimpan[] }) {
+export function SimulasiAudit({ riwayat, bolehSimpan }: { riwayat: SimulasiTersimpan[]; bolehSimpan: boolean }) {
   const router = useRouter()
   const [unit, setUnit] = useState(3)
   const [mode, setMode] = useState<ModeSimulasi>('stage2')
@@ -157,11 +157,11 @@ export function SimulasiAudit({ riwayat }: { riwayat: SimulasiTersimpan[] }) {
         </ol>
         {galat && <p className="pesan galat" role="alert">{galat}</p>}
         <div className="toolbar" style={{ marginTop: 14, marginBottom: 0 }}>
-          <button type="button" className="btn utama" disabled={sibuk || tersimpan} onClick={() => mulai(async () => {
+          {bolehSimpan && <button type="button" className="btn utama" disabled={sibuk || tersimpan} onClick={() => mulai(async () => {
             const r = await simpanSimulasi({ unitNo: unit, mode, hasil, prediksi })
             if (!r.ok) return setGalat(r.pesan)
             setTersimpan(true); router.refresh()
-          })}>{tersimpan ? <><CheckCircle2 aria-hidden="true" />Tersimpan</> : <><Save aria-hidden="true" />Simpan hasil latihan</>}</button>
+          })}>{tersimpan ? <><CheckCircle2 aria-hidden="true" />Tersimpan</> : <><Save aria-hidden="true" />Simpan hasil latihan</>}</button>}
           {lemah.length > 0 && <button type="button" className="btn" disabled={sibuk} onClick={() => awal(lemah)}><RotateCcw aria-hidden="true" />Ulangi {lemah.length} pertanyaan yang lemah</button>}
           <button type="button" className="btn" onClick={() => setSoal(null)}>Simulasi baru</button>
         </div>

@@ -132,7 +132,7 @@ export default async function Panduan() {
             { p: 'admin', ket: 'Pengelola aplikasi: semua tindakan, termasuk menghapus data dan mengelola akun pengguna.' },
             { p: 'konsultan', ket: 'Pendamping ISO 50001: menyusun EnPI dan sasaran baru, menyetujui dokumen, mencatat dan menutup temuan.' },
             { p: 'tim_kinra', ket: 'Pelaksana SMEn: melengkapi dokumen dan evidence, input data energi dan variabel, mengubah EnPI/baseline dan sasaran, menindaklanjuti temuan.' },
-            { p: 'pembaca', ket: 'Direksi, auditor, atau tamu: melihat semua halaman dan mengunduh CSV tanpa mengubah data.' },
+            { p: 'pembaca', ket: 'Akun bersama untuk seluruh bagian, direksi, atau auditor: melihat semua halaman dan mengunduh CSV tanpa mengubah data. Sandi diatur oleh admin dan tidak bisa diganti dari akun ini.' },
           ].map((x, i) => (
             <div key={x.p} className={`pd-peran-item${x.p === peran ? ' saya' : ''}`} style={{ '--i': i } as React.CSSProperties}>
               <Users aria-hidden="true" />
@@ -257,7 +257,7 @@ export default async function Panduan() {
         <div className="pd-cara-grid">
           <Langkah judul="Masuk pertama kali" peran="Semua peran" href="/ganti-sandi?dari=menu" langkah={[
             'Buka alamat aplikasi, masukkan email dan sandi sementara dari admin.',
-            'Aplikasi meminta sandi baru; buat sandi yang hanya Anda ketahui.',
+            'Aplikasi meminta sandi baru; buat sandi yang hanya Anda ketahui. Akun pembaca bersama dilewati: sandinya tetap dari admin.',
             'Sesi berakhir otomatis setelah 12 jam. Keluar lewat ikon pintu di bilah atas bila memakai komputer bersama.',
           ]} />
           <Langkah judul="Melengkapi evidence dokumen" peran="Tim KINRA, konsultan, admin" href="/kesiapan" langkah={[

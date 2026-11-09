@@ -66,7 +66,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
             )}
             <div className="akun">
               <span className="akun-nama"><b>{saya.nama}</b><Chip kode="info" label={LABEL_PERAN[saya.peran]} /></span>
-              <Link href="/ganti-sandi?dari=menu" className="btn btn-ikon" aria-label="Ganti sandi" title="Ganti sandi"><KeyRound aria-hidden="true" /></Link>
+              {boleh(saya.peran, 'sandi.ganti') && <Link href="/ganti-sandi?dari=menu" className="btn btn-ikon" aria-label="Ganti sandi" title="Ganti sandi"><KeyRound aria-hidden="true" /></Link>}
               <form action={keluar}><button type="submit" className="btn btn-ikon" aria-label="Keluar" title="Keluar"><LogOut aria-hidden="true" /></button></form>
             </div>
             <TemaToggle />

@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { ambilAsetMeter, ambilDeviasi, ambilDokumen, ambilIsu, ambilKinerja, ambilSasaran, ambilSeu, ambilTemuan } from '@/lib/data'
 import { deteksiDeviasi, gabungDeviasi, terbuka } from '@/lib/deviasi'
 import { hariIni } from '@/lib/format'
+import { boleh } from '@/lib/akses'
 import { penggunaSaya } from '@/lib/sesi'
 import { type HasilSoal, type ModeSimulasi, type Prediksi, type Soal, LABEL_MODE, susunCelah, susunSoal } from '@/lib/simulasi'
 import { db } from '@/lib/supabase'
@@ -92,7 +93,9 @@ export async function nilaiJawaban(unitNo: number, mode: ModeSimulasi, soal: Soa
 
 /** Simpan hasil simulasi ke riwayat (migrasi 0029). */
 export async function simpanSimulasi(d: { unitNo: number; mode: ModeSimulasi; hasil: HasilSoal[]; prediksi: Prediksi[] }): Promise<{ ok: true } | Gagal> {
-  if (!(await penggunaSaya())) return { ok: false, pesan: 'Sesi berakhir. Silakan masuk kembali.' }
+  const saya = await penggunaSaya()
+  if (!saya) return { ok: false, pesan: 'Sesi berakhir. Silakan masuk kembali.' }
+  if (!boleh(saya.peran, 'simulasi.simpan')) return { ok: false, pesan: 'Akun pembaca tidak dapat menyimpan hasil simulasi.' }
   const unit = UNIT_AUDIT.find((u) => u.no === d.unitNo)
   if (!unit || !d.hasil.length) return { ok: false, pesan: 'Data simulasi tidak lengkap.' }
   const { error } = await (await db()).from('simulasi_audit').insert({

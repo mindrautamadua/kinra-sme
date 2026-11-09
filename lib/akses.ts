@@ -1,4 +1,4 @@
-/** Matriks hak akses. Sinkron dengan policy RLS di supabase/migrations/0006_login_peran.sql, 0007, 0009, 0011, 0014, 0019, 0020, 0021, 0022, 0027, 0028, dan 0030. */
+/** Matriks hak akses. Sinkron dengan policy RLS di supabase/migrations/0006_login_peran.sql, 0007, 0009, 0011, 0014, 0019, 0020, 0021, 0022, 0027, 0028, 0030, dan 0042. */
 export type Peran = 'admin' | 'konsultan' | 'tim_kinra' | 'pembaca'
 
 export const LABEL_PERAN: Record<Peran, string> = { admin: 'Admin', konsultan: 'Konsultan', tim_kinra: 'Tim KINRA', pembaca: 'Pembaca' }
@@ -41,6 +41,8 @@ export const AKSES = {
   'formulir.isi': SEMUA,                        // buat, isi, ajukan formulir
   'formulir.setujui': ['admin', 'konsultan'],   // setujui / buka kembali formulir
   'formulir.hapus': ['admin', 'tim_kinra'],     // migrasi 0014
+  'simulasi.simpan': SEMUA,                     // riwayat simulasi audit (migrasi 0042)
+  'sandi.ganti': SEMUA,                         // akun pembaca dipakai bersama: sandi hanya diatur ulang admin (migrasi 0042)
   'pengguna.kelola': ['admin'],
 } satisfies Record<string, Peran[]>
 
@@ -59,6 +61,7 @@ export const LABEL_AKSI: Record<Aksi, string> = {
   'register.ubah': 'Isi isu & peluang', 'register.hapus': 'Hapus isu', 'temuan.tambah': 'Catat temuan',
   'temuan.ubah': 'Tindak lanjut temuan', 'temuan.tutup': 'Tutup temuan', 'temuan.hapus': 'Hapus temuan',
   'formulir.isi': 'Isi & ajukan formulir', 'formulir.setujui': 'Setujui formulir', 'formulir.hapus': 'Hapus isian formulir',
+  'simulasi.simpan': 'Simpan hasil simulasi audit', 'sandi.ganti': 'Ganti sandi sendiri',
   'pengguna.kelola': 'Kelola pengguna',
 }
 

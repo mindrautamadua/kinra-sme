@@ -1,6 +1,8 @@
 import { SectionHead } from '@/components/SectionHead'
 import { LANGKAH_TINDAK_LANJUT, SUMBER_TANYA_JAWAB, UNIT_AUDIT, URUTAN_PEMERIKSAAN } from '@/lib/tanya-jawab'
 import { ambilRiwayatSimulasi } from '@/lib/data'
+import { boleh } from '@/lib/akses'
+import { penggunaSaya } from '@/lib/sesi'
 import { DaftarTanya } from './DaftarTanya'
 import { SimulasiAudit } from './SimulasiAudit'
 import { TabTanyaJawab } from './TabTanyaJawab'
@@ -8,7 +10,7 @@ import { TabTanyaJawab } from './TabTanyaJawab'
 export const dynamic = 'force-dynamic'
 
 export default async function TanyaJawab() {
-  const riwayat = await ambilRiwayatSimulasi()
+  const [riwayat, saya] = await Promise.all([ambilRiwayatSimulasi(), penggunaSaya()])
   const jumlah = UNIT_AUDIT.reduce((n, u) => n + u.tanya.length, 0)
   return (
     <section>
@@ -34,7 +36,7 @@ export default async function TanyaJawab() {
         </div>
       </div>
 
-      <TabTanyaJawab bank={<DaftarTanya />} simulasi={<SimulasiAudit riwayat={riwayat} />} />
+      <TabTanyaJawab bank={<DaftarTanya />} simulasi={<SimulasiAudit riwayat={riwayat} bolehSimpan={boleh(saya?.peran, 'simulasi.simpan')} />} />
 
       <div className="card tj-penutup">
         <span className="eyebrow">Check menuju Act · tindak lanjut hasil audit</span>

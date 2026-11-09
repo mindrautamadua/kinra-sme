@@ -895,6 +895,7 @@ export async function keluar(): Promise<void> {
 }
 
 export async function gantiSandi(_: unknown, f: FormData): Promise<{ pesan: string; ok?: boolean } | undefined> {
+  const larang = await cekAkses('sandi.ganti'); if (larang) return { pesan: larang }
   const lama = f.get('lama'), baru = f.get('baru'), ulang = f.get('ulang')
   if (typeof lama !== 'string' || typeof baru !== 'string' || !lama || !baru) return { pesan: 'Isi semua kolom.' }
   if (baru !== ulang) return { pesan: 'Konfirmasi sandi baru tidak sama.' }
