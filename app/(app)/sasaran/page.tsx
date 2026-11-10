@@ -4,7 +4,8 @@ import { SectionHead } from '@/components/SectionHead'
 import { ambilAsetMeter, ambilKinerja, ambilParameter, ambilPeluang, ambilSasaran, ambilSeu } from '@/lib/data'
 import { ringkas } from '@/lib/enpi'
 import { angka, BULAN, hariIni, tanggal } from '@/lib/format'
-import { rupiahRingkas, susunKonversi } from '@/lib/konversi'
+import { nilaiEnergi, rupiahRingkas, susunKonversi } from '@/lib/konversi'
+import { LABEL_PROYEKSI, proyeksiSasaran } from '@/lib/proyeksi-sasaran'
 import { penggunaEnergi } from '@/lib/tinjauan'
 import { susunUsulan } from '@/lib/usulan-sasaran'
 import { DaftarSasaran, type Capaian } from './DaftarSasaran'
@@ -25,7 +26,10 @@ export default async function SasaranPage() {
     const h = hasil.find((x) => x.enpi.kode === s.enpi_kode)
     if (!h || !s.tahun_target) continue
     const r = ringkas(h.laporan.filter((t) => t.tahun === s.tahun_target))
+    const proyeksi = proyeksiSasaran(s, h, kini)
     capaian[s.id] = {
+      proyeksi,
+      rupiahKurang: proyeksi?.hematKurang && h.satuan !== 'TJ' ? nilaiEnergi(kv, proyeksi.hematKurang, h.satuan, h.enpi.sumber_kode[0]).rupiah : null,
       enpi: h.enpi.nama, satuan: h.satuan, bulan: r.bulan, perbaikan: r.perbaikan, hemat: r.hemat,
       persenTarget: r.perbaikan !== null && s.target_persen ? (r.perbaikan / s.target_persen) * 100 : null,
       galat: h.galat,
@@ -65,6 +69,8 @@ export default async function SasaranPage() {
   if (lewat.length) catatan.push({ kode: 'warn', teks: `${lewat.length} rencana aksi lewat tenggat.` })
   const estimasi = hidup.reduce((t, a) => t + (a.estimasi_hemat_kwh ?? 0), 0)
   if (estimasi && terverifikasi < estimasi * 0.2 && hidup.some((a) => a.status === 'Selesai')) catatan.push({ kode: 'info', teks: `Penghematan terverifikasi baru ${angka((terverifikasi / estimasi) * 100, 0)}% dari estimasi. Catat hasil verifikasi untuk aksi yang sudah selesai.` })
+  const terancam = aktif.filter((s) => capaian[s.id]?.proyeksi && ['sulit', 'berisiko'].includes(capaian[s.id].proyeksi!.status))
+  if (terancam.length) catatan.push({ kode: terancam.some((s) => capaian[s.id].proyeksi!.status === 'sulit') ? 'crit' : 'warn', teks: `Proyeksi akhir tahun: ${terancam.map((s) => `${s.kode} ${LABEL_PROYEKSI[capaian[s.id].proyeksi!.status].toLowerCase()}`).join(', ')}. Percepat rencana aksi atau tinjau ulang target bersama manajemen (klausul 6.2, 9.3).` })
   if (usulan.sasaran.length || usulan.aksi.length) catatan.push({ kode: 'info', teks: `Tersedia ${usulan.sasaran.length} usulan sasaran dan ${usulan.aksi.length} usulan rencana aksi dari data aplikasi di bawah. Tinjau bersama Tim Energi lalu simpan.` })
 
   // Timeline aksi (mulai–tenggat)

@@ -3,8 +3,10 @@ import { SectionHead } from '@/components/SectionHead'
 import { ambilAsetMeter, ambilEnergi, ambilPompa } from '@/lib/data'
 import { adaBacaan, konsumsiBacaan } from '@/lib/enpi'
 import { angka, BULAN_PANJANG, hariIni, persen } from '@/lib/format'
+import { LABEL_TEMUAN, periksaKualitasMeter } from '@/lib/kualitas-meter'
 import { BacaanMeter } from './BacaanMeter'
 import { JamOperasiPompa } from './JamOperasiPompa'
+import { KualitasMeter } from './KualitasMeter'
 import { type KotakAset, PetaAset } from './PetaAset'
 import { PilihPeriode } from './PilihPeriode'
 import { RegisterAset } from './RegisterAset'
@@ -58,6 +60,9 @@ export default async function AsetPage({ searchParams }: { searchParams: Promise
   const terbaca = meter.filter((x) => bacaan.some((b) => b.meter_kode === x.kode && b.tahun === lalu.t && b.bulan === lalu.b && adaBacaan(b)))
   const tanpaKalibrasi = meter.filter((x) => !x.kalibrasi_terakhir)
   const kalibrasiLewat = meter.filter((x) => x.kalibrasi_berikutnya && x.kalibrasi_berikutnya < kini)
+  // Kualitas data bacaan sampai bulan lalu (bulan berjalan belum selesai)
+  const kualitas = periksaKualitasMeter(meter, bacaan, { tahun: lalu.t, bulan: lalu.b }, 24)
+  const temuanBerat = kualitas.temuan.filter((t) => t.tingkat !== 'info' && t.jenis !== 'kosong')
 
   // Kelengkapan data aset per kolom
   const kolom: { label: string; n: number }[] = [
@@ -85,6 +90,10 @@ export default async function AsetPage({ searchParams }: { searchParams: Promise
   if (kwhDiketahui && kwhBermeter / kwhDiketahui > 0.95 && tanpaData.length) catatan.push({ kode: 'info', teks: `Meter yang ada sudah mencakup ${persen((kwhBermeter / kwhDiketahui) * 100, 0)} konsumsi yang diketahui, tetapi ${tanpaData.length} aset (${angka(luasTanpa, 0)} m²) belum punya data energi sama sekali. Prioritaskan ${[...tanpaData].sort((a, b) => (b.luas_m2 ?? 0) - (a.luas_m2 ?? 0)).slice(0, 3).map((a) => a.nama.trim()).join(', ')}.` })
   if (tanpaKalibrasi.length) catatan.push({ kode: 'warn', teks: `${tanpaKalibrasi.length} dari ${meter.length} meter belum punya data kalibrasi/verifikasi. Auditor akan meminta bukti akurasi peralatan ukur (klausul 7.1.5 dan 9.1).` })
   if (kalibrasiLewat.length) catatan.push({ kode: 'crit', teks: `${kalibrasiLewat.length} meter melewati jadwal kalibrasi: ${kalibrasiLewat.map((x) => x.kode).join(', ')}.` })
+  if (temuanBerat.length) {
+    const terbaru = temuanBerat[0]
+    catatan.push({ kode: temuanBerat.some((t) => t.tingkat === 'crit') ? 'crit' : 'warn', teks: `${temuanBerat.length} temuan kualitas data meter dalam 24 bulan terakhir; terbaru ${LABEL_TEMUAN[terbaru.jenis].toLowerCase()} ${terbaru.meter_nama} ${terbaru.label}${terbaru.selisih_persen !== null ? ` (${terbaru.selisih_persen > 0 ? '+' : ''}${angka(terbaru.selisih_persen, 0)}%)` : ''}. Lihat bagian Kualitas data meter.` })
+  }
   const grupNama = new Map<string, string[]>()
   for (const a of aset) { const k = kunciNama(a.nama); grupNama.set(k, [...(grupNama.get(k) ?? []), `${a.nama.trim()} (${a.kode.replace('KINRA-', '')})`]) }
   const duplikat = [...grupNama.entries()].filter(([k, v]) => v.length > 1 && k.split('|')[1])
@@ -187,8 +196,17 @@ export default async function AsetPage({ searchParams }: { searchParams: Promise
         </div>
       </section>
 
+      <section id="kualitas-data">
+        <SectionHead no="02" eyebrow="Kualitas data meter · klausul 7.1.5, 9.1" judul={kualitas.ringkas.masalah + kualitas.ringkas.anomali + kualitas.ringkas.kosong
+          ? `${kualitas.ringkas.masalah + kualitas.ringkas.anomali + kualitas.ringkas.kosong} bulan-meter perlu dicek sebelum dipakai EnPI`
+          : 'Semua bacaan 24 bulan terakhir lolos pemeriksaan'}>
+          <p className="muted">Pemeriksaan otomatis setiap bacaan: bulan kosong, stand mundur atau tidak bersambung, selisih dengan tagihan, dan konsumsi di luar pola bulan-bulan sebelumnya. Data yang salah di sini terbawa ke EnPI, deviasi, dan laporan.</p>
+        </SectionHead>
+        <KualitasMeter hasil={kualitas} />
+      </section>
+
       <section>
-        <SectionHead no="02" eyebrow="Bacaan stand meter" judul={`Bacaan ${BULAN_PANJANG[bulan - 1]} ${tahun}`}>
+        <SectionHead no="03" eyebrow="Bacaan stand meter" judul={`Bacaan ${BULAN_PANJANG[bulan - 1]} ${tahun}`}>
           <p className="muted">Catat stand awal dan akhir setiap meter per bulan. Stand awal otomatis diambil dari stand akhir bulan sebelumnya bila sudah ada.</p>
         </SectionHead>
         <PilihPeriode tahun={tahun} bulan={bulan} />
@@ -196,21 +214,21 @@ export default async function AsetPage({ searchParams }: { searchParams: Promise
       </section>
 
       <section>
-        <SectionHead no="03" eyebrow="Register induk meter energi" judul="Meter & alat ukur">
+        <SectionHead no="04" eyebrow="Register induk meter energi" judul="Meter & alat ukur">
           <p className="muted">Lengkapi akurasi, jadwal kalibrasi/verifikasi, PIC, dan bukti pendukung setiap meter (klausul 6.6, 7.1.5, dan 9.1).</p>
         </SectionHead>
         <RegisterMeter meter={meter} aset={aset} sumber={sumber} jumlahBacaan={jumlahBacaan} />
       </section>
 
       <section>
-        <SectionHead no="04" eyebrow="Daftar aset gedung & fasilitas" judul="Aset KINRA">
+        <SectionHead no="05" eyebrow="Daftar aset gedung & fasilitas" judul="Aset KINRA">
           <p className="muted">Data luas, teknis, dan energi per gedung/fasilitas sebagai dasar pembagian konsumsi dan penentuan SEU.</p>
         </SectionHead>
         <RegisterAset aset={aset} meter={meter} />
       </section>
 
       <section>
-        <SectionHead no="05" eyebrow="Jam operasi pompa & motor" judul="Pompa IPAB, IPAL, dan Tangki Timbun">
+        <SectionHead no="06" eyebrow="Jam operasi pompa & motor" judul="Pompa IPAB, IPAL, dan Tangki Timbun">
           <p className="muted">Jam operasi bulanan per pompa/motor beserta daya dan kapasitasnya. Dipakai untuk menelusuri perubahan konsumsi SEU WTP dan WWTP, dan sebagai calon variabel relevan EnPI.</p>
         </SectionHead>
         <JamOperasiPompa pompa={pompa} jam={jam} kwhMeter={kwhMeterPompa} />

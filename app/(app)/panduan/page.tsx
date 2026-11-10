@@ -29,7 +29,7 @@ const MODUL = [
   ...(FITUR_FORMULIR ? [{ href: '/formulir', ikon: FileText, nama: 'Formulir', klausul: 'Klausul 4–10', isi: 'Semua formulir SMEn diisi langsung di aplikasi: buat isian, isi tabel, ajukan, setujui, lalu cetak atau simpan sebagai PDF.' }] : []),
   { href: '/tanya-jawab', ikon: MessagesSquare, nama: 'Tanya Jawab Audit', klausul: 'Klausul 4–10', isi: '65 contoh pertanyaan auditor internal per unit kerja, lengkap dengan jawaban, bukti objektif, dan indikator. Jawaban disembunyikan untuk latihan.' },
   { href: '/energi', ikon: Gauge, nama: 'Data Energi', klausul: 'Klausul 6.3', isi: 'Input konsumsi bulanan per sumber (PLN, PLTBG, PLTS, BBM), aliran energi, peta panas, dan tren antar tahun dalam Terajoule.' },
-  { href: '/aset', ikon: Building2, nama: 'Aset & Meter', klausul: 'Klausul 6.3, 6.6, 9.1', isi: 'Register aset gedung/fasilitas dan delapan meter energi KINRA, bacaan stand bulanan dengan faktor kali (mis. WTP ×200), serta jadwal kalibrasi meter.' },
+  { href: '/aset', ikon: Building2, nama: 'Aset & Meter', klausul: 'Klausul 6.3, 6.6, 9.1', isi: 'Register aset gedung/fasilitas dan delapan meter energi KINRA, bacaan stand bulanan dengan faktor kali (mis. WTP ×200), jadwal kalibrasi meter, serta pemeriksaan otomatis kualitas data bacaan (bulan kosong, stand janggal, konsumsi di luar pola).' },
   { href: '/tinjauan', ikon: Crosshair, nama: 'Tinjauan Energi & SEU', klausul: 'Klausul 6.3', isi: 'Pareto pengguna energi KINRA, kandidat dan register SEU beserta alasan, variabel, EnPI, PIC, dan personel; kualitas data dan catatan tinjauan berkala. Penetapan SEU dan persetujuan tinjauan hanya oleh admin atau konsultan.' },
   { href: '/kinerja', ikon: Activity, nama: 'Kinerja Energi', klausul: 'Klausul 6.4 & 6.5', isi: 'EnPI dan baseline energi (EnB): aktual vs harapan, CUSUM, uji kelayakan model, input variabel relevan bulanan, dan register deviasi signifikan beserta penyelidikannya (klausul 9.1).' },
   { href: '/sasaran', ikon: Target, nama: 'Sasaran & Aksi', klausul: 'Klausul 6.2', isi: 'Satu sasaran per EnPI lingkup KINRA (bukan EnPI kawasan yang memuat tenant). Setiap rencana aksi terhubung ke sasarannya, lengkap dengan PIC, tenggat, dan penghematan terverifikasi.' },
@@ -272,6 +272,7 @@ export default async function Panduan() {
             'Aplikasi mengalikan selisih stand dengan faktor kali meter (mis. WTP ×200, intake ×1). Periksa faktor kali sebelum mengisi.',
             'Bila angka janggal (terlalu besar, nol, atau turun), cek ulang di lapangan sebelum disimpan.',
             'Data meter KINRA menjadi dasar EnPI-04, EnPI-05, dan EnPI-06, jadi jangan ada bulan yang kosong.',
+            'Setelah menyimpan, lihat bagian Kualitas data meter: kotak merah (bacaan janggal) atau kuning (di luar pola) perlu dikonfirmasi ke PIC data sebelum dipakai EnPI.',
           ]} />
           <Langkah judul="Input data energi bulanan" peran="Tim KINRA, admin" href="/energi" langkah={[
             'Buka Data Energi, pilih tahun di kanan atas.',

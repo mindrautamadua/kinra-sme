@@ -11,6 +11,7 @@ import { pilihEnpiUtama, ringkas } from '@/lib/enpi'
 import { angka, BULAN_PANJANG, energiListrik, hariIni, persen, selisihHari, tanggal } from '@/lib/format'
 import { nilaiEnergi, nilaiPengguna, rupiahRingkas, susunKonversi, tonCo2 } from '@/lib/konversi'
 import { LABEL_STATUS, susunPeta } from '@/lib/peta-smen'
+import { LABEL_PROYEKSI, proyeksiSasaran } from '@/lib/proyeksi-sasaran'
 import { grupStatus, kesiapan, tahapSiap, tonggakDari } from '@/lib/status'
 import { penggunaEnergi } from '@/lib/tinjauan'
 
@@ -45,6 +46,14 @@ export default async function RingkasanDireksi() {
   const devBuka = devBaris.filter((x) => terbuka(x.r))
   const devTelat = devBuka.filter((x) => !x.r && hariSejak(x.d.tahun, x.d.bulan, kini) > BATAS_HARI_TANGGAPAN)
   const temuanBuka = temuan.filter((t) => t.status !== 'Tertutup')
+  const proyeksi = sasaran.filter((s) => s.status === 'Aktif').map((s) => {
+    const h = hasil.find((x) => x.enpi.kode === s.enpi_kode)
+    const p = h ? proyeksiSasaran(s, h, kini) : null
+    return p && { s, p }
+  }).filter((x) => !!x)
+  const diJalur = proyeksi.filter((x) => x.p.status === 'di_jalur' || x.p.status === 'tercapai')
+  const terancam = proyeksi.filter((x) => x.p.status === 'sulit' || x.p.status === 'berisiko')
+  const berjalan = proyeksi.filter((x) => x.p.status !== 'belum_mulai' && x.p.status !== 'kurang_data')
 
   // 2. Perubahan terbesar: bulan laporan dibanding bulan yang sama tahun lalu
   const kandidat: (Perubahan | null)[] = [
@@ -71,6 +80,7 @@ export default async function RingkasanDireksi() {
   const stage2 = tonggakDari(kegiatan).find((t) => /stage 2/i.test(t.nama))
   if (kinraTanpaData.length) keputusan.push({ teks: 'Tetapkan strategi baseline EnPI lingkup KINRA', ket: `${kinraTanpaData.map((h) => h.enpi.kode).join(', ')} baru punya baseline setelah 12 bulan bacaan meter${stage2 ? `, sedangkan ${stage2.nama} ${tanggal(stage2.tanggal)}` : ''}. Pilih: rekonstruksi dari tagihan per sambungan, atau rencana pengukuran sebagai bukti.`, href: '/kinerja' })
   if (devTelat.length) keputusan.push({ teks: `Minta penyelidikan ${devTelat.length} deviasi signifikan`, ket: `Lebih dari ${BATAS_HARI_TANGGAPAN} hari belum diselidiki (${[...new Set(devTelat.map((x) => x.d.enpi_kode))].join(', ')}). Wajib menurut klausul 9.1.`, href: '/kinerja#deviasi' })
+  if (terancam.length) keputusan.push({ teks: `Tindak lanjuti ${terancam.length} sasaran energi yang terancam tidak tercapai`, ket: `${terancam.map((x) => `${x.s.kode} (${x.s.enpi_kode}): proyeksi ${x.p.proyeksi === null ? '–' : persen(x.p.proyeksi, 1)} dari target ${persen(x.p.target, 1)}, ${LABEL_PROYEKSI[x.p.status].toLowerCase()}`).join('; ')}. Pilih: percepat rencana aksi dan sumber dayanya, atau tetapkan ulang target melalui tinjauan manajemen (klausul 6.2, 9.3).`, href: '/sasaran' })
   const lewatTenggat = temuanBuka.filter((t) => t.tenggat && t.tenggat < kini)
   if (lewatTenggat.length) keputusan.push({ teks: `Percepat ${lewatTenggat.length} temuan yang lewat tenggat`, ket: 'Temuan terbuka melewati tenggat menjadi sorotan auditor pada klausul 10.', href: '/temuan' })
   if (kv.asumsi.length) keputusan.push({ teks: 'Verifikasi parameter rupiah dan emisi', ket: `Masih asumsi: ${kv.asumsi.join(', ')}. Angka rupiah dan CO₂ di laporan ini bersifat perkiraan sampai diverifikasi.`, href: '/energi' })
@@ -95,6 +105,11 @@ export default async function RingkasanDireksi() {
           <div className="tile"><span className="label">EnPI utama</span>
             <div className="nilai tnum">{ru?.perbaikan == null ? '–' : utama!.ekstrapolasi ? '?' : `${ru.perbaikan >= 0 ? '+' : '−'}${angka(Math.abs(ru.perbaikan), 1)}%`}</div>
             <div className="meta">{utama ? `${utama.enpi.kode} ${utama.enpi.nama}${utama.ekstrapolasi ? ' · ekstrapolasi, belum dapat diklaim' : ''}` : 'Menunggu data meter'}</div></div>
+          <div className="tile"><span className="label">Sasaran energi akhir tahun</span>
+            <div className={`nilai tnum ${terancam.length ? 'txt-bad' : ''}`}>{berjalan.length ? <>{diJalur.length}<small>dari {berjalan.length} di jalur</small></> : '–'}</div>
+            <div className="meta">{!proyeksi.length ? 'Belum ada sasaran aktif terukur'
+              : !berjalan.length ? `${proyeksi.length} sasaran, tahun target ${[...new Set(proyeksi.map((x) => x.p.tahun))].join(', ')} belum berjalan`
+              : `${terancam.length} terancam · proyeksi laju 3 bulan terakhir${proyeksi.length > berjalan.length ? ` · ${proyeksi.length - berjalan.length} belum berjalan` : ''}`}</div></div>
           <div className="tile"><span className="label">Deviasi signifikan terbuka</span><div className={`nilai tnum ${devBuka.length ? 'txt-bad' : ''}`}>{devBuka.length}</div><div className="meta">{devTelat.length} lewat {BATAS_HARI_TANGGAPAN} hari tanpa penyelidikan</div></div>
           <div className="tile"><span className="label">Temuan audit terbuka</span><div className="nilai tnum">{temuanBuka.length}</div><div className="meta">{temuanBuka.filter((t) => t.kategori === 'Mayor').length} mayor · {lewatTenggat.length} lewat tenggat</div></div>
         </div>

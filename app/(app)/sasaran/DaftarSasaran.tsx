@@ -4,10 +4,12 @@ import { ArrowRight, Check, Pencil, Plus, Trash2, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useRef, useState, useTransition } from 'react'
 import { hapusAksi, hapusSasaran, hubungkanAksi, simpanAksi, simpanSasaran, ubahStatusAksi } from '@/app/actions'
+import { Grafik } from '@/components/charts/Grafik'
 import { Chip } from '@/components/Chip'
 import { useBoleh } from '@/components/Peran'
 import { angka, tanggal } from '@/lib/format'
 import { rupiahRingkas, tonCo2 } from '@/lib/konversi'
+import { CHIP_PROYEKSI, LABEL_PROYEKSI, type ProyeksiSasaran } from '@/lib/proyeksi-sasaran'
 import type { KodeChip } from '@/lib/status'
 import type { RencanaAksi, Sasaran, StatusAksi, StatusSasaran } from '@/lib/types'
 import { tagUsulan, type UsulanAksi, type UsulanSasaran } from '@/lib/usulan-sasaran'
@@ -20,6 +22,9 @@ export type Capaian = {
   hemat: number
   persenTarget: number | null
   galat: string | null
+  proyeksi: ProyeksiSasaran | null
+  /** Rupiah dari energi yang masih harus dihemat agar target tercapai */
+  rupiahKurang: number | null
 }
 
 type PeluangRingkas = { kode: string; uraian: string; status: string; estimasi_kwh: number | null; pemilik: string | null }
@@ -236,6 +241,7 @@ export function DaftarSasaran({ sasaran, aksi, capaian, enpi, peluang, kini, tar
                       )}
                     </>
                   )}
+                  {c.proyeksi && s.status === 'Aktif' && <BlokProyeksi p={c.proyeksi} rupiah={c.rupiahKurang} kode={s.kode} />}
                 </div>
               )}
 
@@ -365,5 +371,39 @@ export function DaftarSasaran({ sasaran, aksi, capaian, enpi, peluang, kini, tar
         </form>
       </dialog>
     </>
+  )
+}
+
+const pct = (v: number | null) => (v === null ? '–' : `${v < 0 ? '−' : ''}${angka(Math.abs(v), 1)}%`)
+
+/** Proyeksi capaian sasaran sampai akhir tahun target. */
+function BlokProyeksi({ p, rupiah, kode }: { p: ProyeksiSasaran; rupiah: number | null; kode: string }) {
+  const berjalan = p.bulanData > 0 && p.bulanSisa > 0
+  return (
+    <div className="ss-proyeksi">
+      <div className="row" style={{ alignItems: 'center' }}>
+        <span className="eyebrow">Proyeksi akhir {p.tahun}</span>
+        <Chip kode={CHIP_PROYEKSI[p.status]} label={LABEL_PROYEKSI[p.status]} />
+      </div>
+      <p className="small" style={{ margin: '6px 0 10px' }}>{p.kalimat}</p>
+      {berjalan && (
+        <div className="mini-stats" style={{ justifyContent: 'flex-start', marginBottom: 8 }}>
+          <div style={{ alignItems: 'flex-start' }}><span>Proyeksi Des</span><b className={`tnum ${(p.proyeksi ?? 0) >= p.target ? 'txt-good' : 'txt-bad'}`}>{pct(p.proyeksi)}</b></div>
+          {p.rentang && <div style={{ alignItems: 'flex-start' }}><span>Rentang</span><b className="tnum">{pct(p.rentang[0])} s.d. {pct(p.rentang[1])}</b></div>}
+          {p.dibutuhkan !== null && p.status !== 'di_jalur' && <div style={{ alignItems: 'flex-start' }}><span>Butuh/bulan sisa</span><b className="tnum">{p.dibutuhkan > 100 ? '> 100%' : pct(p.dibutuhkan)}</b></div>}
+          {!!p.hematKurang && <div style={{ alignItems: 'flex-start' }}><span>Kurang hemat</span><b className="tnum">{angka(p.hematKurang, p.satuan === 'TJ' ? 2 : 0)} {p.satuan}{rupiah ? ` · ${rupiahRingkas(rupiah)}` : ''}</b></div>}
+        </div>
+      )}
+      {p.bulanData > 0 && (
+        <Grafik tinggi={200} label={`${kode}: perbaikan kumulatif ${p.tahun} ${pct(p.perbaikanYtd)}, proyeksi akhir tahun ${pct(p.proyeksi)}, target ${pct(p.target)}`} spek={{
+          jenis: 'garis', kategori: p.grafik.kategori, satuan: '%',
+          seri: [
+            { nama: 'Perbaikan kumulatif', data: p.grafik.aktual, warna: 's1' },
+            ...(berjalan ? [{ nama: 'Proyeksi laju 3 bulan', data: p.grafik.proyeksi, warna: 's1' as const, putus: true }] : []),
+            { nama: 'Target', data: p.grafik.target, warna: 'jingga', putus: true },
+          ],
+        }} />
+      )}
+    </div>
   )
 }
