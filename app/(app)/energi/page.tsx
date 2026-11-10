@@ -16,8 +16,8 @@ import { TabelEnergi } from './TabelEnergi'
 
 export const dynamic = 'force-dynamic'
 
-const WARNA = { pln: 's3', pltbg: 's1', plts: 'jingga', dexlite: 's2' } as const
-const IKON = { pln: Zap, pltbg: Leaf, plts: Sun, dexlite: Flame } as const
+const WARNA = { pln: 's3', pltbg: 's1', plts: 'jingga', dexlite: 's2', dexlite_genset: 's2' } as const
+const IKON = { pln: Zap, pltbg: Leaf, plts: Sun, dexlite: Flame, dexlite_genset: Flame } as const
 
 export default async function Energi({ searchParams }: { searchParams: Promise<{ tahun?: string }> }) {
   const [{ sumber, data }, { aset, meter, bacaan }, param] = await Promise.all([ambilEnergi(), ambilAsetMeter(), ambilParameter()])

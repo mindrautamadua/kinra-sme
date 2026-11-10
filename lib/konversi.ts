@@ -20,7 +20,7 @@ export const BAWAAN: ParameterEnergi[] = [
 ]
 
 /** kWh setara per liter, sama dengan faktor_tj sumber_energi (Dexlite 36 MJ/L, bensin 33 MJ/L). */
-export const KWH_PER_LITER: Record<string, number> = { dexlite: 10, bensin: 33 / 3.6 }
+export const KWH_PER_LITER: Record<string, number> = { dexlite: 10, dexlite_genset: 10, bensin: 33 / 3.6 }
 
 export function susunKonversi(param: ParameterEnergi[]): Konversi {
   const p = (k: string) => (param.find((x) => x.kode === k) ?? BAWAAN.find((x) => x.kode === k)!)

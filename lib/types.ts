@@ -322,3 +322,24 @@ export type Deviasi = {
   dibuat_at: string
   diubah_at: string
 }
+
+/** Register pompa/motor IPAB, IPAL, dan Tangki Timbun (migrasi 0044). */
+export type Pompa = {
+  kode: string
+  no_urut: number
+  unit: string
+  nama: string
+  lokasi: string | null
+  daya_kw: number | null
+  kapasitas: string | null
+  catatan: string | null
+}
+
+/** Jam operasi pompa per bulan. `jam` kosong dengan keterangan 'standby' berarti pompa siaga. */
+export type JamOperasiPompa = {
+  pompa_kode: string
+  tahun: number
+  bulan: number
+  jam: number | null
+  keterangan: string | null
+}

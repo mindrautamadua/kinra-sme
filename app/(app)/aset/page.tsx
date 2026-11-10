@@ -1,9 +1,10 @@
 import { Building2, CalendarCheck, Database, Gauge } from 'lucide-react'
 import { SectionHead } from '@/components/SectionHead'
-import { ambilAsetMeter, ambilEnergi } from '@/lib/data'
-import { adaBacaan } from '@/lib/enpi'
+import { ambilAsetMeter, ambilEnergi, ambilPompa } from '@/lib/data'
+import { adaBacaan, konsumsiBacaan } from '@/lib/enpi'
 import { angka, BULAN_PANJANG, hariIni, persen } from '@/lib/format'
 import { BacaanMeter } from './BacaanMeter'
+import { JamOperasiPompa } from './JamOperasiPompa'
 import { type KotakAset, PetaAset } from './PetaAset'
 import { PilihPeriode } from './PilihPeriode'
 import { RegisterAset } from './RegisterAset'
@@ -20,7 +21,7 @@ function kunciNama(nama: string) {
 }
 
 export default async function AsetPage({ searchParams }: { searchParams: Promise<{ periode?: string }> }) {
-  const [{ aset, meter, bacaan, siap }, { sumber, data }] = await Promise.all([ambilAsetMeter(), ambilEnergi()])
+  const [{ aset, meter, bacaan, siap }, { sumber, data }, { pompa, jam }] = await Promise.all([ambilAsetMeter(), ambilEnergi(), ambilPompa()])
   const sp = await searchParams
 
   // Periode default: bulan bacaan terakhir; bila belum ada bacaan, bulan berjalan
@@ -95,6 +96,20 @@ export default async function AsetPage({ searchParams }: { searchParams: Promise
     kode: a.kode, nama: a.nama.trim(), luas: a.luas_m2 ?? 0, status: statusAset(a.kode, a.kwh_bulan),
     ket: bermeter.has(a.kode) ? 'terukur meter' : a.kwh_bulan ? `perkiraan ${angka(a.kwh_bulan, 0)} kWh/bulan` : 'belum ada data energi',
   }))
+  // kWh meter pembanding untuk tabel jam operasi pompa
+  const kwhMeterUnit = (kode: string[], label: string) => {
+    const perBulan: Record<string, number> = {}
+    for (const b of bacaan) {
+      const m = meter.find((x) => x.kode === b.meter_kode && kode.includes(x.kode))
+      const v = m ? konsumsiBacaan(b, m) : null
+      if (v !== null) perBulan[`${b.tahun}-${b.bulan}`] = (perBulan[`${b.tahun}-${b.bulan}`] ?? 0) + v
+    }
+    return { label, perBulan }
+  }
+  const kwhMeterPompa = {
+    'IPAB I': kwhMeterUnit(['KINRA-MTR-005', 'KINRA-MTR-008'], 'kWh meter WTP + intake'),
+    'IPAL I': kwhMeterUnit(['KINRA-MTR-004'], 'kWh meter WWTP'),
+  }
   const luasStatus = (s: KotakAset['status']) => kotak.filter((k) => k.status === s).reduce((t, k) => t + k.luas, 0)
 
   return (
@@ -192,6 +207,13 @@ export default async function AsetPage({ searchParams }: { searchParams: Promise
           <p className="muted">Data luas, teknis, dan energi per gedung/fasilitas sebagai dasar pembagian konsumsi dan penentuan SEU.</p>
         </SectionHead>
         <RegisterAset aset={aset} meter={meter} />
+      </section>
+
+      <section>
+        <SectionHead no="05" eyebrow="Jam operasi pompa & motor" judul="Pompa IPAB, IPAL, dan Tangki Timbun">
+          <p className="muted">Jam operasi bulanan per pompa/motor beserta daya dan kapasitasnya. Dipakai untuk menelusuri perubahan konsumsi SEU WTP dan WWTP, dan sebagai calon variabel relevan EnPI.</p>
+        </SectionHead>
+        <JamOperasiPompa pompa={pompa} jam={jam} kwhMeter={kwhMeterPompa} />
       </section>
     </>
   )

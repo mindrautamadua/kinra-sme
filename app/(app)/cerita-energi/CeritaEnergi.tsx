@@ -10,7 +10,7 @@ const DURASI = [7, 9, 8, 7, 8, 7]
 
 const juta = (kwh: number) => angka(kwh / 1e6, 2)
 const rpMiliar = (v: number) => (v >= 1e9 ? `Rp${angka(v / 1e9, 2)} miliar` : `Rp${angka(v / 1e6, 0)} juta`)
-const WARNA: Record<string, string> = { 'KINRA-MTR-005': 'var(--ce-biru)', 'KINRA-MTR-004': 'var(--ce-jingga)', gedung: 'var(--ce-putih)', dexlite: 'var(--ce-merah)', bensin: 'var(--ce-merah-2)' }
+const WARNA: Record<string, string> = { 'KINRA-MTR-005': 'var(--ce-biru)', 'KINRA-MTR-004': 'var(--ce-jingga)', gedung: 'var(--ce-putih)', dexlite: 'var(--ce-merah)', dexlite_genset: 'var(--ce-merah)', bensin: 'var(--ce-merah-2)' }
 
 function HitungNaik({ ke, aktif, format }: { ke: number; aktif: boolean; format: (v: number) => string }) {
   const [v, setV] = useState(aktif ? 0 : ke)

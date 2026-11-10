@@ -22,7 +22,7 @@ export type PenggunaEnergi = {
 const TJ_PER_KWH = 3.6e-6
 
 /** Sumber energi di luar listrik kawasan yang langsung dipakai KINRA (mis. BBM kendaraan operasional). */
-const SUMBER_KINRA = ['dexlite', 'bensin']
+const SUMBER_KINRA = ['dexlite', 'dexlite_genset', 'bensin']
 
 export function penggunaEnergi(opsi: {
   aset: Aset[]; meter: MeterEnergi[]; bacaan: PembacaanMeter[]

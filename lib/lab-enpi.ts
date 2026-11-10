@@ -7,7 +7,7 @@ import { hitungEnpi } from './enpi'
 import type { Enpi, MeterEnergi, MetodeEnpi, PembacaanMeter, VariabelBulanan, VariabelRelevan } from './types'
 
 export const METER_WTP = 'KINRA-MTR-005'
-/** Meter WTP 1 (proses + distribusi) dan intake; s.d. Okt 2026 angka intake digabung ke MTR-005 (migrasi 0039). */
+/** Meter WTP 1 (proses + distribusi) dan meter intake terpisah (konfirmasi M/E 10 Nov 2026, migrasi 0043). */
 export const METER_WTP_SEMUA = ['KINRA-MTR-005', 'KINRA-MTR-008']
 
 export type PresetBaseline = { kode: string; label: string; mulai: string; selesai: string; ket: string }

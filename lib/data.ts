@@ -3,7 +3,7 @@ import { hitungEnpi } from './enpi'
 import { BUCKET_BUKTI } from './status'
 import { BAWAAN, type ParameterEnergi } from './konversi'
 import { db } from './supabase'
-import type { Deviasi, Seu, TinjauanEnergi, Aset, MeterEnergi, PembacaanMeter, Berkas, BerkasTampil, Dokumen, EnergiBulanan, Enpi, Isu, JejakBukti, Kegiatan, Klausul, Peluang, RencanaAksi, Sasaran, SumberEnergi, Temuan, VariabelBulanan, VariabelRelevan } from './types'
+import type { Deviasi, JamOperasiPompa, Pompa, Seu, TinjauanEnergi, Aset, MeterEnergi, PembacaanMeter, Berkas, BerkasTampil, Dokumen, EnergiBulanan, Enpi, Isu, JejakBukti, Kegiatan, Klausul, Peluang, RencanaAksi, Sasaran, SumberEnergi, Temuan, VariabelBulanan, VariabelRelevan } from './types'
 
 /** Tabel belum ada (PGRST205) dianggap kosong; layout menampilkan panduan migrasi. Galat lain dilempar. */
 function cek<T>(r: { data: T | null; error: { message: string; code?: string } | null }, tabel: string): T {
@@ -82,6 +82,23 @@ export async function ambilAsetMeter(): Promise<{ aset: Aset[]; meter: MeterEner
     meter: cek<MeterEnergi[]>(m, 'meter_energi').map((r) => ({ ...r, faktor_kali: Number(r.faktor_kali) })),
     bacaan: cek<PembacaanMeter[]>(p, 'pembacaan_meter').map((r) => ({ ...r, stand_awal: angkaAtauNull(r.stand_awal), stand_akhir: angkaAtauNull(r.stand_akhir), kwh_tagihan: angkaAtauNull(r.kwh_tagihan) })),
   }
+}
+
+/** Register pompa dan jam operasi bulanan (migrasi 0044). `siap` false bila tabel belum ada. */
+export async function ambilPompa(): Promise<{ pompa: Pompa[]; jam: JamOperasiPompa[]; siap: boolean }> {
+  const s = await db()
+  const a = await s.from('pompa').select('*').order('unit').order('no_urut')
+  if (a.error?.code === 'PGRST205' || a.error?.code === '42P01') return { pompa: [], jam: [], siap: false }
+  // Supabase membatasi 1.000 baris per permintaan: ambil bertahap
+  const jam: JamOperasiPompa[] = []
+  for (let dari = 0; ; dari += 1000) {
+    const b = await s.from('jam_operasi_pompa').select('pompa_kode, tahun, bulan, jam, keterangan')
+      .order('pompa_kode').order('tahun').order('bulan').range(dari, dari + 999)
+    const baris = cek<JamOperasiPompa[]>(b, 'jam_operasi_pompa')
+    jam.push(...baris.map((r) => ({ ...r, jam: angkaAtauNull(r.jam) })))
+    if (baris.length < 1000) break
+  }
+  return { siap: true, pompa: cek<Pompa[]>(a, 'pompa').map((r) => ({ ...r, daya_kw: angkaAtauNull(r.daya_kw) })), jam }
 }
 
 /** Register SEU dan tinjauan energi terbaru (migrasi 0027). `siap` false bila tabel belum ada. */
