@@ -8,7 +8,7 @@ import { boleh } from '@/lib/akses'
 import { ambilBerkas, ambilKlausul } from '@/lib/data'
 import { penggunaSaya } from '@/lib/sesi'
 import { waktu } from '@/lib/format'
-import { KATEGORI_TEMUAN_CHIP, KELOMPOK, TEMUAN_STATUS_CHIP } from '@/lib/status'
+import { KATEGORI_TEMUAN_CHIP, KELOMPOK, LABEL_TAHAP_SIAP, tahapSiap, TEMUAN_STATUS_CHIP } from '@/lib/status'
 import { ambilTemplat } from '@/lib/formulir/data'
 import { STATUS_FORMULIR } from '@/lib/formulir/isi'
 import { templatUntukDokumen } from '@/lib/formulir/tautan'
@@ -45,6 +45,7 @@ export default async function HalamanDokumen({ params }: { params: Promise<{ id:
   ])
   if (!dok) notFound()
   const jumlahBerkas = berkas.length
+  const tahap = tahapSiap({ status: dok.status, jumlah_berkas: jumlahBerkas, jumlah_sah: berkas.filter((b) => b.sah).length })
   const k = klausul.find((x) => x.kode === dok.klausul_kode)
   const templat = templatUntukDokumen(dok.kode).map((kode) => ambilTemplat(kode)).filter((x) => x !== null)
   const { data: isian } = templat.length
@@ -58,7 +59,7 @@ export default async function HalamanDokumen({ params }: { params: Promise<{ id:
       <Link href={`/kesiapan?klausul=${encodeURIComponent(dok.klausul_kode)}`} className="btn kecil" style={{ marginBottom: 16 }}><ArrowLeft aria-hidden="true" /> Kesiapan audit</Link>
       <SectionHead eyebrow={`${dok.kode} · ${dok.klausul_kode === 'P' ? 'Persiapan awal' : `Klausul ${dok.klausul_kode} ${k?.judul ?? ''}`}`} judul={dok.nama}>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-          <Chip kode={jumlahBerkas ? 'good' : 'crit'} label={jumlahBerkas ? 'Ada evidence' : 'Belum ada evidence'} />
+          <Chip kode={tahap === 'siap' ? 'good' : tahap === 'proses' ? 'warn' : 'crit'} label={LABEL_TAHAP_SIAP[tahap]} />
           <Chip kode="na" label={KELOMPOK[dok.kelompok]} />
         </div>
       </SectionHead>

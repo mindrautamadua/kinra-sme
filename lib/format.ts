@@ -27,28 +27,54 @@ export function energiListrik(kwh: number | null | undefined): string {
   return `${nf(0).format(kwh)} kWh`
 }
 
+/**
+ * Semua tanggal & jam ditampilkan dalam WIB (Asia/Jakarta), apa pun zona waktu server (Vercel = UTC) atau browser.
+ * Tanggal tanpa jam ('YYYY-MM-DD') diperlakukan sebagai tanggal kalender apa adanya.
+ */
+const ZONA = 'Asia/Jakarta'
+const fmtWib = new Intl.DateTimeFormat('en-CA', { timeZone: ZONA, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' })
+
+/** Komponen tanggal & jam WIB dari sebuah Date. */
+export function bagianWib(d: Date): { tahun: number; bulan: number; hari: number; jam: number; menit: number } {
+  const p = Object.fromEntries(fmtWib.formatToParts(d).map((x) => [x.type, x.value]))
+  return { tahun: Number(p.year), bulan: Number(p.month), hari: Number(p.day), jam: Number(p.hour), menit: Number(p.minute) }
+}
+
+const isoTanggal = (t: number, b: number, h: number) => `${t}-${String(b).padStart(2, '0')}-${String(h).padStart(2, '0')}`
+
 export function tanggal(v: string | Date | null | undefined, opsi: 'pendek' | 'panjang' = 'pendek'): string {
   if (!v) return '–'
-  const d = typeof v === 'string' ? new Date(v.length === 10 ? `${v}T00:00:00` : v) : v
-  if (Number.isNaN(d.getTime())) return '–'
-  const b = opsi === 'panjang' ? BULAN_PANJANG[d.getMonth()] : BULAN[d.getMonth()]
-  return `${d.getDate()} ${b} ${d.getFullYear()}`
+  let t: number, b: number, h: number
+  const polos = typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.exec(v)
+  if (polos) {
+    [t, b, h] = (v as string).split('-').map(Number)
+  } else {
+    const d = typeof v === 'string' ? new Date(v) : v
+    if (Number.isNaN(d.getTime())) return '–'
+    ;({ tahun: t, bulan: b, hari: h } = bagianWib(d))
+  }
+  return `${h} ${(opsi === 'panjang' ? BULAN_PANJANG : BULAN)[b - 1]} ${t}`
 }
 
 export function waktu(v: string | null | undefined): string {
   if (!v) return '–'
   const d = new Date(v)
-  return `${tanggal(d)} ${String(d.getHours()).padStart(2, '0')}.${String(d.getMinutes()).padStart(2, '0')}`
+  if (Number.isNaN(d.getTime())) return '–'
+  const w = bagianWib(d)
+  return `${tanggal(d)} ${String(w.jam).padStart(2, '0')}.${String(w.menit).padStart(2, '0')}`
 }
 
-/** Selisih hari kalender dari hari ini (zona waktu lokal). Positif = di masa depan. */
-export function selisihHari(v: string, kini = new Date()): number {
-  const a = new Date(`${v}T00:00:00`)
-  const b = new Date(kini.getFullYear(), kini.getMonth(), kini.getDate())
-  return Math.round((a.getTime() - b.getTime()) / 86_400_000)
-}
-
+/** Tanggal hari ini menurut WIB, format 'YYYY-MM-DD'. */
 export function hariIni(): string {
-  const d = new Date()
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+  const w = bagianWib(new Date())
+  return isoTanggal(w.tahun, w.bulan, w.hari)
+}
+
+/**
+ * Selisih hari kalender (WIB) dari `kini` ke `v`. Positif = di masa depan.
+ * `kini` boleh 'YYYY-MM-DD' atau Date (diambil tanggal WIB-nya); bawaan hari ini WIB.
+ */
+export function selisihHari(v: string, kini: string | Date = hariIni()): number {
+  const k = typeof kini === 'string' ? kini.slice(0, 10) : (() => { const w = bagianWib(kini); return isoTanggal(w.tahun, w.bulan, w.hari) })()
+  return Math.round((Date.parse(`${v.slice(0, 10)}T00:00:00Z`) - Date.parse(`${k}T00:00:00Z`)) / 86_400_000)
 }

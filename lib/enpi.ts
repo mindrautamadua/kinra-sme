@@ -22,6 +22,8 @@ export type Model = {
   n: number
   r2: number | null
   cvrmse: number | null
+  /** RMSE dengan derajat bebas n − p (satuan energi); dasar ambang deviasi 2 × RMSE */
+  rmse?: number | null
 }
 
 export type HasilEnpi = {
@@ -78,7 +80,7 @@ export function regresi(xs: number[][], y: number[]): number[] | null {
   return selesaikan(XtX, Xty)
 }
 
-function statistik(aktual: number[], harapan: number[], parameter: number): Pick<Model, 'r2' | 'cvrmse'> {
+function statistik(aktual: number[], harapan: number[], parameter: number): Pick<Model, 'r2' | 'cvrmse' | 'rmse'> {
   const n = aktual.length
   const rata = aktual.reduce((s, v) => s + v, 0) / n
   const ssRes = aktual.reduce((s, v, i) => s + (v - harapan[i]) ** 2, 0)
@@ -87,6 +89,7 @@ function statistik(aktual: number[], harapan: number[], parameter: number): Pick
   return {
     r2: ssTot > 0 ? 1 - ssRes / ssTot : null,
     cvrmse: dof > 0 && rata !== 0 ? (Math.sqrt(ssRes / dof) / rata) * 100 : null,
+    rmse: dof > 0 ? Math.sqrt(ssRes / dof) : null,
   }
 }
 
@@ -181,8 +184,10 @@ export function hitungEnpi(enpi: Enpi, sumber: SumberEnergi[], energi: EnergiBul
     const ada = baseline.filter((t) => t.aktual !== null)
     if (!ada.length) { hasil.galat = 'Belum ada data energi pada periode baseline.'; return hasil }
     const rata = ada.reduce((s, t) => s + t.aktual!, 0) / ada.length
-    const perKalender = new Map<number, number>()
-    for (const t of ada) perKalender.set(t.bulan, t.aktual!)
+    // Baseline lebih dari 12 bulan: rata-rata per bulan kalender (bukan ditimpa tahun terakhir)
+    const kalender = new Map<number, { s: number; n: number }>()
+    for (const t of ada) { const r = kalender.get(t.bulan) ?? { s: 0, n: 0 }; kalender.set(t.bulan, { s: r.s + t.aktual!, n: r.n + 1 }) }
+    const perKalender = new Map([...kalender].map(([b, r]) => [b, r.s / r.n]))
     for (const t of [...baseline, ...laporan]) t.harapan = perKalender.get(t.bulan) ?? rata
     if (perKalender.size < 12) peringatan.push('Baseline kurang dari 12 bulan kalender; bulan tanpa padanan memakai rata-rata baseline.')
     peringatan.push('Metode absolut tidak menormalisasi perubahan kondisi operasi. Auditor umumnya meminta EnPI ternormalisasi (rasio/regresi) untuk SEU.')

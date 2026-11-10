@@ -7,7 +7,7 @@ import { SectionHead } from '@/components/SectionHead'
 import { ambilAsetMeter, ambilEnergi, ambilParameter, rekapEnergi } from '@/lib/data'
 import { Istilah } from '@/components/Istilah'
 import { Sankey } from '@/components/Sankey'
-import { nilaiEnergi, rupiahRingkas, susunKonversi, tonCo2 } from '@/lib/konversi'
+import { KWH_PER_LITER, nilaiEnergi, rupiahRingkas, susunKonversi, tonCo2 } from '@/lib/konversi'
 import { penggunaEnergi } from '@/lib/tinjauan'
 import { FormParameter } from './FormParameter'
 import { pemakaianMeter } from '@/lib/enpi'
@@ -27,6 +27,8 @@ export default async function Energi({ searchParams }: { searchParams: Promise<{
   const tahun = Number(sp.tahun) || daftarTahun.at(-1) || new Date().getFullYear()
   const listrik = sumber.filter((s) => s.satuan === 'kWh')
   const bbm = sumber.filter((s) => s.satuan !== 'kWh')
+  /** BBM kendaraan saja (genset IPAB/IPAL bukan kendaraan) */
+  const bbmKendaraan = bbm.filter((s) => s.kode !== 'dexlite_genset')
 
   const nilai = (th: number, b: number, k: string) => data.find((d) => d.tahun === th && d.bulan === b && d.sumber_kode === k)?.nilai ?? null
   const blnAkhir = Math.max(0, ...data.filter((d) => d.tahun === tahun && d.sumber_kode === 'pln').map((d) => d.bulan))
@@ -64,7 +66,8 @@ export default async function Energi({ searchParams }: { searchParams: Promise<{
 
   // Batas lingkup SMEn: PLN kawasan memuat listrik tenant; pemakaian sendiri KINRA diukur dari meter aset
   const { hasil: perMeter, jumlahMeter } = pemakaianMeter(meter.filter((m) => m.sumber_kode === 'pln'), bacaan)
-  const kunciTerakhir = Math.max(-1, ...[...perMeter.keys()].filter((k) => nilai(Math.floor(k / 12), (k % 12) + 1, 'pln') !== null))
+  // Bulan acuan: bulan terakhir yang SEMUA meter terbaca dan PLN kawasan terisi (bulan sebagian akan meremehkan pemakaian KINRA)
+  const kunciTerakhir = Math.max(-1, ...[...perMeter.entries()].filter(([k, r]) => r.terbaca >= jumlahMeter && nilai(Math.floor(k / 12), (k % 12) + 1, 'pln') !== null).map(([k]) => k))
   const acuan = kunciTerakhir >= 0
     ? { tahun: Math.floor(kunciTerakhir / 12), bulan: (kunciTerakhir % 12) + 1, kinra: perMeter.get(kunciTerakhir)!.kwh, terbaca: perMeter.get(kunciTerakhir)!.terbaca, sumberKinra: 'meter' as const }
     : { tahun, bulan: blnAkhir, kinra: aset.reduce((t, a) => t + (a.kwh_bulan ?? 0), 0), terbaca: 0, sumberKinra: 'inventaris' as const }
@@ -81,16 +84,22 @@ export default async function Energi({ searchParams }: { searchParams: Promise<{
   const rataBulan = (k: string) => bulanAda.length ? bulanAda.reduce((t, b) => t + (nilai(tahun, b, k) ?? 0), 0) / bulanAda.length : 0
   const pakai = penggunaEnergi({ aset, meter, bacaan, sumber, energi: data, seu: [], ambangPersen: 10, ambangKumulatif: 80 })
   const asetKinra = pakai.daftar.filter((p) => p.id.startsWith('aset:'))
-  const bbmKinra = pakai.daftar.find((p) => p.id === 'sumber:dexlite')
-  const listrikKinra = asetKinra.reduce((t, p) => t + p.kwh, 0)
+  // Semua BBM lingkup KINRA (Dexlite kendaraan, genset, bensin), rata-rata 12 bulan terakhir
+  const bbmDaftar = pakai.daftar.filter((p) => p.id.startsWith('sumber:'))
+  const bbmKinra = bbmDaftar.length ? { kwh: bbmDaftar.reduce((t, p) => t + p.kwh, 0) } : null
+  const literBulan = bbmDaftar.reduce((t, p) => t + p.kwh / (KWH_PER_LITER[p.id.slice(7)] ?? 10), 0)
+  const nKinraBbm = bbmDaftar.reduce((t, p) => { const kode = p.id.slice(7); const n = nilaiEnergi(kv, p.kwh / (KWH_PER_LITER[kode] ?? 10), 'liter', kode); return { rupiah: t.rupiah + n.rupiah, kgCo2: t.kgCo2 + n.kgCo2 } }, { rupiah: 0, kgCo2: 0 })
+  // Listrik KINRA: rata-rata bulan lengkap tahun terpilih, agar sebanding dengan kawasan tahun yang sama
+  const bulanKinra = rekapKinra.filter((r) => r.kwh !== null && r.terbaca >= jumlahMeter)
+  const asetTotal = asetKinra.reduce((t, p) => t + p.kwh, 0)
+  const listrikKinra = bulanKinra.length ? bulanKinra.reduce((t, r) => t + r.kwh!, 0) / bulanKinra.length : asetTotal
+  const skalaAset = asetTotal ? listrikKinra / asetTotal : 1
   const kawasanBulan = listrik.reduce((t, s) => t + rataBulan(s.kode), 0)
-  const bbmLiter = data.filter((d) => d.sumber_kode === 'dexlite').slice(-12)
-  const literBulan = bbmLiter.length ? bbmLiter.reduce((t, d) => t + d.nilai, 0) / bbmLiter.length : 0
   const nKinraListrik = nilaiEnergi(kv, listrikKinra, 'kWh')
-  const nKinraBbm = nilaiEnergi(kv, literBulan, 'liter')
   const nKawasan = nilaiEnergi(kv, kawasanBulan, 'kWh')
-  const asetUtama = asetKinra.slice(0, 3)
-  const asetLain = asetKinra.slice(3).reduce((t, p) => t + p.kwh, 0)
+  // Porsi antar-aset dari 12 bulan lengkap terakhir, diskalakan ke total tahun terpilih
+  const asetUtama = asetKinra.slice(0, 3).map((p) => ({ ...p, kwh: p.kwh * skalaAset }))
+  const asetLain = asetKinra.slice(3).reduce((t, p) => t + p.kwh, 0) * skalaAset
 
   // Peta panas bulan x tahun
   const peta = daftarTahun.map((t) => ({ t, v: totalBulan(t) }))
@@ -262,11 +271,11 @@ export default async function Energi({ searchParams }: { searchParams: Promise<{
             <Sankey label="Aliran energi lingkup KINRA" format={(v) => energiListrik(v)}
               simpul={[
                 { id: 'listrik', label: 'Listrik', kolom: 0, warna: 'var(--s3)' },
-                ...(bbmKinra ? [{ id: 'bbm', label: 'BBM Dexlite', kolom: 0 as const, warna: 'var(--s2)', catatan: `${angka(literBulan, 0)} L` }] : []),
+                ...(bbmKinra ? [{ id: 'bbm', label: 'BBM', kolom: 0 as const, warna: 'var(--s2)', catatan: `${angka(literBulan, 0)} L` }] : []),
                 { id: 'kinra', label: 'KINRA', kolom: 1, warna: 'var(--good)' },
                 ...asetUtama.map((p) => ({ id: p.id, label: p.nama, kolom: 2 as const, warna: 'var(--s1)', catatan: p.dasar === 'inventaris' ? 'perkiraan' : undefined })),
                 ...(asetLain > 0 ? [{ id: 'lain', label: `${asetKinra.length - 3} aset lain`, kolom: 2 as const, warna: 'var(--s3)' }] : []),
-                ...(bbmKinra ? [{ id: 'kendaraan', label: 'Kendaraan operasional', kolom: 2 as const, warna: 'var(--s2)' }] : []),
+                ...(bbmKinra ? [{ id: 'kendaraan', label: 'Kendaraan & genset', kolom: 2 as const, warna: 'var(--s2)' }] : []),
               ]}
               tautan={[
                 { dari: 'listrik', ke: 'kinra', nilai: listrikKinra },
@@ -278,7 +287,7 @@ export default async function Energi({ searchParams }: { searchParams: Promise<{
           </div>
         </div>
         <p className="sumber">
-          Kawasan: rata-rata bulanan data energi {tahun}. KINRA: {pakai.porsiMeter > 0 ? 'bacaan meter dan' : ''} data inventaris aset, ditambah BBM dikonversi ke kWh setara (36 MJ/liter).
+          Kawasan: rata-rata bulanan data energi {tahun}. KINRA: rata-rata bulan lengkap bacaan meter {tahun}{bulanKinra.length ? '' : ' (belum ada, memakai 12 bulan lengkap terakhir/inventaris)'}, ditambah BBM 12 bulan terakhir dikonversi ke kWh setara (Dexlite 36 MJ/L, bensin 33 MJ/L).
           Rupiah dan CO₂ memakai parameter di bagian 03{kv.asumsi.length ? ` (masih asumsi: ${kv.asumsi.join(', ')})` : ''}.
         </p>
       </section>
@@ -329,12 +338,12 @@ export default async function Energi({ searchParams }: { searchParams: Promise<{
             <p className="muted small">Dump truck, sky lift, backhoe loader, road sweeper, damkar</p>
             <Grafik tinggi={280} label="BBM bulanan per tahun" spek={{
               jenis: 'batang', satuan: 'liter', kategori: BULAN,
-              seri: daftarTahun.filter((t) => data.some((d) => d.tahun === t && bbm.some((s) => s.kode === d.sumber_kode))).map((t, i, arr) => ({
+              seri: daftarTahun.filter((t) => data.some((d) => d.tahun === t && bbmKendaraan.some((s) => s.kode === d.sumber_kode))).map((t, i, arr) => ({
                 nama: String(t), warna: i === arr.length - 1 ? 's1' : 's3',
-                data: BULAN.map((_, b) => bbm.reduce<number | null>((acc, s) => { const v = nilai(t, b + 1, s.kode); return v === null ? acc : (acc ?? 0) + v }, null)),
+                data: BULAN.map((_, b) => bbmKendaraan.reduce<number | null>((acc, s) => { const v = nilai(t, b + 1, s.kode); return v === null ? acc : (acc ?? 0) + v }, null)),
               })),
             }} />
-            <p className="sumber">Sumber: Rekap BBM Operasional 2025–2026 (Dexlite). Faktor 36 MJ/liter adalah asumsi, verifikasi dengan data pemasok.</p>
+            <p className="sumber">Sumber: Rekap BBM Operasional (Dexlite dan bensin kendaraan; BBM genset IPAB/IPAL tidak termasuk). Faktor 36 MJ/liter adalah asumsi, verifikasi dengan data pemasok.</p>
           </div>
         </div>
       </section>

@@ -2,7 +2,7 @@
  * Model data Laporan Penilaian Kesiapan Audit (lembar cetak).
  * Murni perhitungan: semua masukan dibaca halaman server, fungsi ini hanya menyusun penilaian.
  */
-import { AMBANG, type HasilEnpi } from './enpi'
+import { AMBANG, type HasilEnpi, modelLayak } from './enpi'
 import { keadaan } from './kegiatan'
 import { adaBukti, INDUK_KLAUSUL, kesiapan, siapAudit, sudahFinal, nilaiKesiapan, terlambat, tonggakDari } from './status'
 import type { Dokumen, Isu, Kegiatan, Klausul, RencanaAksi, Sasaran, Temuan } from './types'
@@ -111,7 +111,8 @@ export function susunLaporan(m: {
   const statusEnpi = (h: HasilEnpi): { ok: boolean; ket: string } => {
     if (h.galat || !h.model) return { ok: false, ket: h.enpi.meter_kode?.length ? 'Menunggu data meter untuk baseline' : (h.galat ?? 'Model belum terbentuk') }
     if (h.ekstrapolasi) return { ok: false, ket: `${h.ekstrapolasi} bulan di luar rentang baseline (ekstrapolasi)` }
-    if (h.enpi.metode === 'regresi' && !((h.model.r2 ?? 0) >= AMBANG.r2 && (h.model.cvrmse ?? Infinity) <= AMBANG.cvrmse)) return { ok: false, ket: 'Model belum memenuhi ambang validitas' }
+    // Sama dengan halaman Kinerja: rasio dan regresi harus memenuhi ambang ISO 50006 (R², CV(RMSE), jumlah titik)
+    if (h.enpi.metode !== 'absolut' && !modelLayak(h.model)) return { ok: false, ket: 'Model belum memenuhi ambang validitas' }
     return { ok: true, ket: h.enpi.metode === 'absolut' ? 'Valid, belum ternormalisasi' : 'Valid' }
   }
   const enpiValid = enpiAktif.filter((h) => statusEnpi(h).ok)

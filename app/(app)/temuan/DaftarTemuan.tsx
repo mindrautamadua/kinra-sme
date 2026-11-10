@@ -27,7 +27,11 @@ export function DaftarTemuan({ temuan, klausul, dokumen, kini }: { temuan: Temua
 
   const tampil = temuan.filter((t) => (!jenis || t.jenis_audit === jenis) && (!status || t.status === status))
   const prefiks = (j: string) => (j === 'Internal' ? 'AI' : j === 'TÜV Stage 1' ? 'S1' : 'S2')
-  const nomorBaru = (j: string) => `${prefiks(j)}-${String(temuan.filter((t) => t.jenis_audit === j).length + 1).padStart(3, '0')}`
+  // Nomor terbesar + 1 (bukan jumlah + 1) agar tidak bentrok setelah ada temuan yang dihapus
+  const nomorBaru = (j: string) => {
+    const nomor = temuan.map((t) => t.nomor ?? '').filter((n) => n.startsWith(`${prefiks(j)}-`)).map((n) => Number(n.slice(prefiks(j).length + 1)) || 0)
+    return `${prefiks(j)}-${String(Math.max(0, ...nomor) + 1).padStart(3, '0')}`
+  }
   const dokMap = Object.fromEntries(dokumen.map((d) => [d.id, d]))
 
   function buka(t: Temuan | null) { setEdit(t); setGalat(null); dlg.current?.showModal() }
@@ -119,7 +123,7 @@ function FormTemuan({ edit, klausul, dokumen, nomorBaru, kini, galat, menunggu, 
         <label className="field"><span>Tanggal</span><input type="date" name="tanggal" defaultValue={edit?.tanggal ?? kini} /></label>
         <label className="field"><span>Klausul</span><select name="klausul_kode" defaultValue={edit?.klausul_kode ?? ''}><option value="">–</option>{klausul.filter((k) => k.kode !== 'P').map((k) => <option key={k.kode} value={k.kode}>{k.kode} · {k.judul}</option>)}</select></label>
         <label className="field"><span>Kategori</span><select name="kategori" defaultValue={edit?.kategori ?? 'Minor'}>{KATEGORI.map((k) => <option key={k}>{k}</option>)}</select></label>
-        <label className="field"><span>Status</span><select name="status" defaultValue={edit?.status ?? 'Terbuka'}>{STATUS_T.map((s) => <option key={s} disabled={s === 'Tertutup' && !bisaTutup}>{s}</option>)}</select></label>
+        <label className="field"><span>Status</span><select name="status" defaultValue={edit?.status ?? 'Terbuka'} disabled={edit?.status === 'Tertutup' && !bisaTutup} title={edit?.status === 'Tertutup' && !bisaTutup ? 'Temuan tertutup hanya dapat dibuka kembali oleh admin atau konsultan' : undefined}>{STATUS_T.map((s) => <option key={s} disabled={s === 'Tertutup' && !bisaTutup}>{s}</option>)}</select></label>
         <label className="field full"><span>Uraian temuan</span><textarea name="uraian" required defaultValue={edit?.uraian ?? ''} /></label>
         <label className="field full"><span>Bukti objektif</span><textarea name="bukti" defaultValue={edit?.bukti ?? ''} /></label>
         <label className="field"><span>Auditor</span><input name="auditor" defaultValue={edit?.auditor ?? ''} /></label>

@@ -138,7 +138,7 @@ export default async function TinjauanPage() {
                   const n = nilaiP(p.id, p.kwh)
                   return (
                     <tr key={p.id}>
-                      <td><b>{p.nama}</b><span className="upd">{p.dasar === 'meter' ? `rata-rata ${p.bulanData} bulan bacaan meter` : p.dasar === 'inventaris' ? 'perkiraan inventaris' : `rata-rata ${p.bulanData} bulan data BBM`}</span></td>
+                      <td><b>{p.nama}</b><span className="upd">{p.dasar === 'meter' ? `rata-rata ${p.bulanData} bulan lengkap terakhir` : p.dasar === 'inventaris' ? 'perkiraan inventaris' : `rata-rata ${p.bulanData} bulan data BBM`}</span></td>
                       <td className="num">{energiListrik(p.kwh)}</td>
                       <td className="num">{persen(p.porsi)}<span className="upd">{persen(p.kumulatif, 0)}</span></td>
                       <td className="num">{rupiahRingkas(n.rupiah)}<span className="upd">{tonCo2(n.kgCo2)}</span></td>

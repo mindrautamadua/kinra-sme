@@ -45,7 +45,9 @@ export function penggunaEnergi(opsi: {
       const r = perBulan.get(k) ?? { kwh: 0, n: 0 }
       perBulan.set(k, { kwh: r.kwh + v, n: r.n + 1 })
     }
-    const lengkap = [...perBulan.values()].filter((r) => ms.length > 0 && r.n >= ms.length)
+    // 12 bulan lengkap terakhir, sama dengan jendela BBM di bawah dan halaman Cerita Energi (bukan rata-rata seluruh riwayat)
+    const lengkap = [...perBulan.entries()].filter(([, r]) => ms.length > 0 && r.n >= ms.length)
+      .sort(([x], [y]) => x - y).slice(-12).map(([, r]) => r)
     if (lengkap.length) {
       mentah.push({ id: `aset:${a.kode}`, nama: a.nama, kwh: lengkap.reduce((t, r) => t + r.kwh, 0) / lengkap.length, dasar: 'meter', bulanData: lengkap.length })
     } else if (a.kwh_bulan) {

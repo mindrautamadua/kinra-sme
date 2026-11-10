@@ -44,10 +44,11 @@ const k = (t: number, b: number) => t * 12 + b - 1
 /** Bacaan meter WTP dengan gangguan buatan: faktor pengali kWh mulai bulan tertentu. */
 export function sisipkanGangguan(bacaan: PembacaanMeter[], meter: MeterEnergi[], jenis: JenisGangguan, mulai: { tahun: number; bulan: number }, besar: number) {
   if (jenis === 'tidak') return bacaan
-  const m = meter.find((x) => x.kode === METER_WTP)
+  // Gangguan diterapkan ke semua meter EnPI WTP (WTP + intake), agar besarnya sama dengan yang dipilih
   const awal = k(mulai.tahun, mulai.bulan)
   return bacaan.map((b) => {
-    if (b.meter_kode !== METER_WTP || !m) return b
+    const m = METER_WTP_SEMUA.includes(b.meter_kode) ? meter.find((x) => x.kode === b.meter_kode) : undefined
+    if (!m) return b
     const i = k(b.tahun, b.bulan) - awal
     if (i < 0 || (jenis === 'rusak' && i > 0)) return b
     // Kebocoran tumbuh bertahap sampai penuh dalam 3 bulan; bypass dan rusak langsung penuh

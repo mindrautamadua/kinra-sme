@@ -238,11 +238,11 @@ export default async function Ringkasan() {
         </div>
 
         <div className="insights hm-insights">
-          <Link href="/kesiapan" className={`insight ${progres >= 100 || keburu ? 'positif' : 'kritis'}`}>
-            <span className="area"><TrendingUp aria-hidden="true" />Proyeksi</span>
+          <Link href="/kesiapan" className={`insight ${skor >= 100 ? 'positif' : progres >= 100 || keburu ? 'perhatian' : 'kritis'}`}>
+            <span className="area"><TrendingUp aria-hidden="true" />Proyeksi evidence</span>
             <div className="angka tnum">{progres >= 100 ? 'Tuntas' : tgl100 ? tanggal(tgl100) : 'Mandek'}</div>
             <h3>{progres >= 100 ? 'Semua dokumen punya evidence' : tgl100 === null ? 'Skor tidak naik 14 hari terakhir' : keburu ? `Tuntas sebelum ${berikut?.nama}` : `${berikut ? selisihHari(tgl100) - hBerikut : 0} hari setelah ${berikut?.nama ?? 'audit'}`}</h3>
-            <p>{lajuPerlu !== null && progres < 100 ? `Butuh +${angka(lajuPerlu, 1)} poin/hari; laju sekarang ${laju === null ? '–' : `${angka(laju, 2)}`} poin/hari.` : 'Jaga evidence tetap lengkap dan mutakhir.'}</p>
+            <p>{lajuPerlu !== null && progres < 100 ? `Evidence butuh +${angka(lajuPerlu, 1)} poin/hari; laju sekarang ${laju === null ? '–' : `${angka(laju, 2)}`} poin/hari.` : 'Evidence lengkap.'}{skor < 100 ? ` Siap audit (Final + sah) baru ${persen(skor, 0)}: ${dokumen.length - nSiap} dokumen belum Final dengan berkas sah${berikut && hBerikut > 0 ? `, perlu ±${angka((dokumen.length - nSiap) / hBerikut, 1)} dokumen/hari` : ''}.` : ''}</p>
           </Link>
           <Link href="/kesiapan" className="insight positif">
             <span className="area"><Zap aria-hidden="true" />Quick win</span>

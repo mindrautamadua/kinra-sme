@@ -97,6 +97,9 @@ export async function simpanPicDokumen(id: string, pic: string): Promise<Hasil> 
 export async function ubahStatusDokumen(id: string, status: StatusDokumen): Promise<Hasil> {
   if (!['belum', 'draft', 'review', 'disetujui', 'final'].includes(status)) return { ok: false, pesan: 'Status tidak dikenal.' }
   const t = await tolak(status === 'disetujui' ? 'dokumen.setujui' : 'dokumen.status'); if (t) return t
+  // Mengubah dokumen yang sudah Disetujui hanya admin & konsultan (trigger 0045)
+  const lama = (await (await db()).from('dokumen_audit').select('status').eq('id', id).maybeSingle()).data?.status
+  if (lama === 'disetujui' && status !== 'disetujui') { const t2 = await tolak('dokumen.setujui'); if (t2) return t2 }
   // Final hanya bila ada berkas versi sah: yang ditunjukkan ke auditor harus dokumen yang sudah sah
   if (status === 'final' || status === 'disetujui') {
     const { count, error: e } = await (await db()).from('berkas').select('id', { count: 'exact', head: true }).eq('dokumen_id', id).eq('sah', true)
@@ -346,6 +349,7 @@ export async function hapusMeter(kode: string): Promise<Hasil> {
 export async function simpanBacaan(meter_kode: string, tahun: number, bulan: number, stand_awal: number | null, stand_akhir: number | null): Promise<Hasil> {
   const t = await tolak('aset.ubah'); if (t) return t
   if ([stand_awal, stand_akhir].some((v) => v !== null && (!Number.isFinite(v) || v < 0))) return { ok: false, pesan: 'Stand meter harus angka 0 atau lebih.' }
+  if (stand_awal !== null && stand_akhir !== null && stand_akhir < stand_awal) return { ok: false, pesan: 'Stand akhir lebih kecil dari stand awal. Bila meter diganti atau berputar ulang, isi kWh bulan itu sebagai kWh tagihan dan catat penggantiannya di register meter.' }
   const s = await db()
   if (stand_awal === null && stand_akhir === null) {
     // Baris yang punya kWh tagihan tidak dihapus; cukup kosongkan standnya
@@ -734,14 +738,25 @@ export async function simpanPeluang(kode: string, f: FormData): Promise<Hasil> {
 
 // ---------- Temuan ----------
 
+const statusTemuan = async (id: string | null) =>
+  id ? (((await (await db()).from('temuan').select('status').eq('id', id).maybeSingle()).data?.status as string | undefined) ?? null) : null
+
+/** Menutup atau membuka kembali temuan hanya untuk peran penutup (admin & konsultan), sama dengan trigger 0045. */
+const cekGantiStatusTemuan = async (lama: string | null, baru: string) =>
+  (baru === 'Tertutup') !== (lama === 'Tertutup') ? tolak('temuan.tutup') : null
+
 export async function simpanTemuan(id: string | null, f: FormData): Promise<Hasil> {
   const t = await tolak(id ? 'temuan.ubah' : 'temuan.tambah'); if (t) return t
+  // Pilihan status yang dinonaktifkan tidak ikut terkirim: pertahankan status lama, jangan jatuh ke 'Terbuka'
+  const lama = await statusTemuan(id)
+  const status = teks(f, 'status') ?? lama ?? 'Terbuka'
+  const tc = await cekGantiStatusTemuan(lama, status); if (tc) return tc
   const data = {
     nomor: teks(f, 'nomor'), jenis_audit: teks(f, 'jenis_audit'), tanggal: teks(f, 'tanggal'),
     klausul_kode: teks(f, 'klausul_kode'), kategori: teks(f, 'kategori'), uraian: teks(f, 'uraian'),
     bukti: teks(f, 'bukti'), auditor: teks(f, 'auditor'), auditee: teks(f, 'auditee'),
     akar_masalah: teks(f, 'akar_masalah'), tindakan: teks(f, 'tindakan'), pic: teks(f, 'pic'),
-    tenggat: teks(f, 'tenggat'), status: teks(f, 'status') ?? 'Terbuka', dokumen_id: teks(f, 'dokumen_id'),
+    tenggat: teks(f, 'tenggat'), status, dokumen_id: teks(f, 'dokumen_id'),
     diubah_at: new Date().toISOString(),
   }
   if (!data.nomor || !data.uraian || !data.kategori || !data.jenis_audit) return { ok: false, pesan: 'Nomor, jenis audit, kategori, dan uraian wajib diisi.' }
@@ -752,7 +767,8 @@ export async function simpanTemuan(id: string | null, f: FormData): Promise<Hasi
 }
 
 export async function ubahStatusTemuan(id: string, status: string): Promise<Hasil> {
-  const t = await tolak(status === 'Tertutup' ? 'temuan.tutup' : 'temuan.ubah'); if (t) return t
+  const t = await tolak('temuan.ubah'); if (t) return t
+  const tc = await cekGantiStatusTemuan(await statusTemuan(id), status); if (tc) return tc
   const { error } = await (await db()).from('temuan').update({ status, diubah_at: new Date().toISOString() }).eq('id', id)
   revalidatePath('/temuan')
   revalidatePath('/')
@@ -885,7 +901,8 @@ export async function masuk(_: unknown, f: FormData): Promise<{ pesan: string } 
   if (!data?.token) return { pesan: data?.galat ?? 'Gagal masuk.' }
   ;(await cookies()).set(COOKIE_SESI, data.token, KUKI)
   const tujuan = teks(f, 'lanjut')
-  redirect(tujuan?.startsWith('/') && !tujuan.startsWith('//') ? tujuan : '/')
+  // Hanya jalur internal: tolak '//host' dan '/\host' (browser memperlakukan '\' sebagai '/')
+  redirect(tujuan && /^\/(?![\/\\])/.test(tujuan) && !tujuan.includes('\\') ? tujuan : '/')
 }
 
 export async function keluar(): Promise<void> {

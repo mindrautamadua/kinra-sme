@@ -11,7 +11,7 @@ import { pilihEnpiUtama, ringkas } from '@/lib/enpi'
 import { angka, BULAN_PANJANG, energiListrik, hariIni, persen, selisihHari, tanggal } from '@/lib/format'
 import { nilaiEnergi, nilaiPengguna, rupiahRingkas, susunKonversi, tonCo2 } from '@/lib/konversi'
 import { LABEL_STATUS, susunPeta } from '@/lib/peta-smen'
-import { grupStatus, kesiapan, tonggakDari } from '@/lib/status'
+import { grupStatus, kesiapan, tahapSiap, tonggakDari } from '@/lib/status'
 import { penggunaEnergi } from '@/lib/tinjauan'
 
 export const dynamic = 'force-dynamic'
@@ -52,8 +52,8 @@ export default async function RingkasanDireksi() {
       ? { judul: 'Listrik PLN kawasan (termasuk tenant)', kini: nilai(th, bl, 'pln')!, lalu: nilai(th - 1, bl, 'pln')!, satuan: 'kWh', makna: 'Didorong pertumbuhan tenant; bukan ukuran kinerja SMEn KINRA.' } : null,
     nilai(th, bl, 'dexlite') && nilai(th - 1, bl, 'dexlite')
       ? { judul: 'BBM kendaraan operasional KINRA', kini: nilai(th, bl, 'dexlite')!, lalu: nilai(th - 1, bl, 'dexlite')!, satuan: 'liter', makna: 'Lingkup KINRA: perlu penjelasan penyebab (armada, jam operasi, pencatatan).' } : null,
-    variabel(th, bl, 'air_olahan') && variabel(th - 1, bl, 'air_olahan')
-      ? { judul: 'Distribusi air bersih WTP I', kini: variabel(th, bl, 'air_olahan')!, lalu: variabel(th - 1, bl, 'air_olahan')!, satuan: 'm³', makna: 'Beban WTP (SEU-01) ikut naik; pantau kWh per m³ setelah meter terbaca.' } : null,
+    variabel(th, bl, 'air_wtp1') && variabel(th - 1, bl, 'air_wtp1')
+      ? { judul: 'Air diolah WTP I (tanpa BTM)', kini: variabel(th, bl, 'air_wtp1')!, lalu: variabel(th - 1, bl, 'air_wtp1')!, satuan: 'm³', makna: 'Beban WTP (SEU-01) ikut naik; pantau kWh per m³ setelah meter terbaca.' } : null,
     nilai(th, bl, 'pltbg') && nilai(th - 1, bl, 'pltbg')
       ? { judul: 'Pasokan PLTBG (biogas)', kini: nilai(th, bl, 'pltbg')!, lalu: nilai(th - 1, bl, 'pltbg')!, satuan: 'kWh', makna: 'Memengaruhi bauran energi terbarukan kawasan.' } : null,
   ]
@@ -90,7 +90,7 @@ export default async function RingkasanDireksi() {
       <section>
         <h2 className="dr-judul">1 · Angka kunci</h2>
         <div className="dr-angka">
-          <div className="tile"><span className="label">Kesiapan audit</span><div className="nilai tnum">{angka(skorSiap, 0)}<small>%</small></div><div className="meta">Final + berkas sah · {dokumen.filter((d) => grupStatus(d.status) !== 'final' && (d.jumlah_berkas ?? 0) > 0).length} masih draf</div></div>
+          <div className="tile"><span className="label">Kesiapan audit</span><div className="nilai tnum">{angka(skorSiap, 0)}<small>%</small></div><div className="meta">Final + berkas sah · {dokumen.filter((d) => tahapSiap(d) === 'proses').length} masih draf/belum sah</div></div>
           <div className="tile"><span className="label">Energi KINRA per bulan</span><div className="nilai tnum">{angka(pakai.total / 1000, 0)}<small>MWh</small></div><div className="meta">±{rupiahRingkas(biayaKinra.rupiah)} · {tonCo2(biayaKinra.kgCo2)}</div></div>
           <div className="tile"><span className="label">EnPI utama</span>
             <div className="nilai tnum">{ru?.perbaikan == null ? '–' : utama!.ekstrapolasi ? '?' : `${ru.perbaikan >= 0 ? '+' : '−'}${angka(Math.abs(ru.perbaikan), 1)}%`}</div>

@@ -44,9 +44,8 @@ export function deteksiDeviasi(hasil: HasilEnpi[]): DeviasiTerdeteksi[] {
   for (const h of hasil) {
     if (!h.enpi.aktif || (h.enpi.lingkup ?? 'kinra') !== 'kinra' || h.galat || !h.model) continue
     const dasar = { enpi_kode: h.enpi.kode, enpi_nama: h.enpi.nama, satuan: h.satuan }
-    const latih = h.baseline.filter((t) => t.aktual !== null)
-    const rata = latih.length ? latih.reduce((s, t) => s + t.aktual!, 0) / latih.length : 0
-    const rmse = h.model.cvrmse !== null ? (h.model.cvrmse / 100) * rata : null
+    // RMSE langsung dari model (bulan latih saja), bukan CV(RMSE) × rata-rata semua bulan baseline
+    const rmse = h.model.rmse ?? null
 
     // Bulanan
     for (const t of h.laporan) {

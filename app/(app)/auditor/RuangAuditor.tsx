@@ -13,7 +13,7 @@ import type { Berkas, BerkasTampil, KelompokDokumen } from '@/lib/types'
 type BerkasRingkas = { id: string; nama: string; mime: string | null; ukuran: number | null; at: string; oleh: string | null; sah?: boolean }
 type DokAuditor = {
   id: string; kode: string; nama: string; kelompok: KelompokDokumen; nomor: string | null; pic: string | null; keterangan: string | null
-  wajib: boolean; bukti: boolean; masukan: string[]; berkas: BerkasRingkas[]
+  wajib: boolean; bukti: boolean; siap: boolean; masukan: string[]; berkas: BerkasRingkas[]
 }
 export type KlausulAuditor = {
   kode: string; judul: string; induk: string; dokumen: DokAuditor[]
