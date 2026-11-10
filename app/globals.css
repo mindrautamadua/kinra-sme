@@ -1940,3 +1940,41 @@ dialog.tj-ev-dlg { max-height: calc(100dvh - 32px); overflow-y: auto; overscroll
   .ce-m1, .ce-m2, .ce-m3, .ce-m4, .ce-daftar li, .ce-aksi li, .ce-batang span { animation: none; }
 }
 @media (max-width: 640px) { .ce-kendali { bottom: 3cqw; padding: 2px 4px; } .ce-titik button { width: 12px; } }
+
+/* Jembatan perubahan energi (kinerja, #mengapa) */
+.wf-cerita { font-size: 14.5px; line-height: 1.6; color: var(--ink); margin-bottom: 14px; max-width: 80ch; }
+.wf-total { display: flex; gap: 28px; flex-wrap: wrap; margin-bottom: 16px; }
+.wf-total span { display: block; font-size: 12px; color: var(--muted); }
+.wf-total b { font-size: 20px; }
+.wf-total small { font-size: 12px; font-weight: 500; }
+.wf-grafik { display: flex; flex-direction: column; }
+.wf-baris { display: grid; grid-template-columns: minmax(180px, 2fr) minmax(160px, 3fr) minmax(130px, auto); gap: 14px; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--line); }
+.wf-akhir { border-bottom: 0; border-top: 2px solid var(--line); }
+.wf-label { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.wf-label b { font-size: 13px; }
+.wf-plot { position: relative; height: 22px; }
+.wf-plot u { position: absolute; top: -9px; bottom: -9px; width: 1px; background: var(--muted); opacity: .5; }
+.wf-plot s { position: absolute; top: -10px; height: 10px; width: 0; border-left: 1px dashed var(--muted); opacity: .6; }
+.wf-plot i, .wf-legenda i { position: absolute; top: 3px; height: 16px; border-radius: 4px; background: var(--s3); animation: wf-masuk .6s cubic-bezier(.2,.7,.2,1) both; animation-delay: calc(var(--i, 0) * 70ms); transform-origin: left; }
+.wf-plot i.kinerja.hemat, .wf-legenda i.kinerja.hemat { background: var(--s1); }
+.wf-plot i.kinerja.boros, .wf-legenda i.kinerja.boros { background: var(--merah); }
+.wf-plot i.absolut, .wf-legenda i.absolut { background: repeating-linear-gradient(135deg, var(--jingga) 0 3px, color-mix(in srgb, var(--jingga) 35%, transparent) 3px 6px); }
+.wf-plot i.lain, .wf-plot i.struktur, .wf-legenda i.lain { background: color-mix(in srgb, var(--s3) 55%, transparent); }
+.wf-plot i.total { background: var(--tosca); }
+.wf-nilai { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.wf-nilai b { font-size: 13.5px; }
+.wf-legenda { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 12px; }
+.wf-legenda span { display: inline-flex; align-items: center; gap: 6px; }
+.wf-legenda i { position: static; display: inline-block; width: 12px; height: 8px; border-radius: 2px; animation: none; }
+.wf { min-width: 0; }
+.wf-tabel-wrap { overflow-x: auto; margin-top: 14px; }
+.wf-tabel { min-width: 560px; width: 100%; border-collapse: collapse; }
+.wf-tabel th, .wf-tabel td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); }
+.wf-tabel th { color: var(--muted); font-weight: 600; }
+.wf-tabel .n { text-align: right; font-variant-numeric: tabular-nums; }
+@keyframes wf-masuk { from { opacity: 0; transform: scaleX(.2); } }
+@media (max-width: 720px) {
+  .wf-baris { grid-template-columns: 1fr auto; }
+  .wf-plot { grid-column: 1 / -1; grid-row: 2; }
+}
+@media (prefers-reduced-motion: reduce) { .wf-plot i { animation: none; } }

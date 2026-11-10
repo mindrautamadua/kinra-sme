@@ -5,7 +5,8 @@ import { Chip } from '@/components/Chip'
 import { Grafik } from '@/components/charts/Grafik'
 import { SectionHead } from '@/components/SectionHead'
 import { Istilah } from '@/components/Istilah'
-import { ambilDeviasi, ambilKinerja, ambilParameter, ambilSasaran } from '@/lib/data'
+import { ambilDeviasi, ambilKinerja, ambilParameter, ambilSasaran, ambilSeu } from '@/lib/data'
+import { hitungDekomposisi, pilihLingkup, tahunTersedia } from '@/lib/dekomposisi'
 import { nilaiEnergi, rupiahRingkas, susunKonversi, tonCo2 } from '@/lib/konversi'
 import { deteksiDeviasi, gabungDeviasi, hariSejak, terbuka as deviasiTerbuka } from '@/lib/deviasi'
 import { hariIni } from '@/lib/format'
@@ -14,6 +15,7 @@ import { angka } from '@/lib/format'
 import { DaftarDeviasi } from './DaftarDeviasi'
 import { DaftarEnpi, DaftarVariabel } from './KelolaEnpi'
 import { TabelVariabel } from './TabelVariabel'
+import { Waterfall } from './Waterfall'
 
 export const dynamic = 'force-dynamic'
 
@@ -62,8 +64,8 @@ function SparkHemat({ h, tinggi = 40 }: { h: HasilEnpi; tinggi?: number }) {
   )
 }
 
-export default async function Kinerja({ searchParams }: { searchParams: Promise<{ tahun?: string }> }) {
-  const [{ sumber, energi, variabel, dataVariabel, enpi, hasil, meter }, register, { aksi }, param] = await Promise.all([ambilKinerja(), ambilDeviasi(), ambilSasaran(), ambilParameter()])
+export default async function Kinerja({ searchParams }: { searchParams: Promise<{ tahun?: string; banding?: string }> }) {
+  const [{ sumber, energi, variabel, dataVariabel, enpi, hasil, meter, bacaan }, register, { aksi }, param, { seu }] = await Promise.all([ambilKinerja(), ambilDeviasi(), ambilSasaran(), ambilParameter(), ambilSeu()])
   const kv = susunKonversi(param)
   const nilaiHemat = (h: HasilEnpi, v: number) => (h.satuan === 'TJ' ? null : nilaiEnergi(kv, Math.abs(v), h.satuan, h.enpi.sumber_kode[0]))
   const kini = hariIni()
@@ -79,6 +81,13 @@ export default async function Kinerja({ searchParams }: { searchParams: Promise<
   const daftarTahun = [...new Set([...energi.map((d) => d.tahun), new Date().getFullYear()])].sort()
   const tahun = Number(sp.tahun) || daftarTahun.at(-1)!
   const utama = pilihEnpiUtama(hasil)
+
+  // Jembatan perubahan energi: bandingkan dua tahun berurutan yang punya bacaan meter (default: dua tahun terakhir)
+  const tahunMeter = tahunTersedia(bacaan, pilihLingkup(hasil, meter))
+  const pasanganTahun = tahunMeter.slice(1).map((b) => ({ a: b - 1, b })).filter((p) => tahunMeter.includes(p.a))
+  const diminta = sp.banding?.match(/^(\d{4})-(\d{4})$/)
+  const banding = (diminta && pasanganTahun.find((p) => p.a === Number(diminta[1]) && p.b === Number(diminta[2]))) || pasanganTahun.at(-1)
+  const dekomposisi = banding ? hitungDekomposisi({ hasil, seu, meter, bacaan, variabelData: dataVariabel, tahunA: banding.a, tahunB: banding.b }) : null
   const ekstra = utama?.ekstrapolasi ?? 0
 
   // EnPI absolut yang "boros" padahal ada EnPI ternormalisasi untuk lingkup yang sama: jelaskan penyebabnya.
@@ -243,8 +252,17 @@ export default async function Kinerja({ searchParams }: { searchParams: Promise<
         </div>
       </section>
 
+      {dekomposisi && (
+        <section id="mengapa">
+          <SectionHead no="01" eyebrow={<>ISO 50006 & 50015 · dekomposisi perubahan energi</>} judul="Mengapa konsumsi listrik berubah?">
+            <p className="muted">Kenaikan kWh belum tentu pemborosan. Setiap perubahan dipecah menjadi kondisi operasi (mis. volume air yang diolah naik), kinerja sebenarnya setelah dinormalisasi oleh model EnPI tiap SEU, dan pengguna yang belum punya variabel relevan. Inilah jawaban untuk pertanyaan auditor “apa bukti kinerja energi membaik?”.</p>
+          </SectionHead>
+          <Waterfall d={dekomposisi} pasangan={pasanganTahun} tarif={kv.tarifListrik} />
+        </section>
+      )}
+
       <section id="deviasi">
-        <SectionHead no="01" eyebrow="Klausul 9.1 · Deviasi signifikan kinerja energi" judul={deviasiBuka.length ? `${deviasiBuka.length} deviasi signifikan perlu diselidiki` : 'Tidak ada deviasi signifikan terbuka'}>
+        <SectionHead no={dekomposisi ? '02' : '01'} eyebrow="Klausul 9.1 · Deviasi signifikan kinerja energi" judul={deviasiBuka.length ? `${deviasiBuka.length} deviasi signifikan perlu diselidiki` : 'Tidak ada deviasi signifikan terbuka'}>
           <p className="muted">ISO 50001 mewajibkan deviasi signifikan kinerja energi diselidiki dan ditanggapi. Aplikasi mendeteksinya otomatis dari model EnPI lingkup KINRA setiap bulan; tim mencatat penyebab, tindakan, dan verifikasinya di sini.</p>
         </SectionHead>
         <DaftarDeviasi baris={barisDeviasi.map((b) => ({ ...b, umur: hariSejak(b.d.tahun, b.d.bulan, kini) }))} sisa={sisaDeviasi}
@@ -252,7 +270,7 @@ export default async function Kinerja({ searchParams }: { searchParams: Promise<
       </section>
 
       <section id="variabel">
-        <SectionHead no="02" eyebrow="Variabel relevan · input bulanan" judul={`Data variabel ${tahun}`}>
+        <SectionHead no={dekomposisi ? '03' : '02'} eyebrow="Variabel relevan · input bulanan" judul={`Data variabel ${tahun}`}>
           <p className="muted">Variabel relevan adalah faktor terukur yang memengaruhi konsumsi energi secara signifikan dan rutin berubah. Tanpa data ini, EnPI tidak bisa dinormalisasi dan klaim penghematan sulit dibuktikan ke auditor.</p>
         </SectionHead>
         <div className="toolbar">
@@ -265,7 +283,7 @@ export default async function Kinerja({ searchParams }: { searchParams: Promise<
       </section>
 
       <section>
-        <SectionHead no="03" eyebrow="Definisi EnPI & EnB" judul={`${enpi.length} EnPI terdefinisi, ${aktif.length} aktif dipantau`}>
+        <SectionHead no={dekomposisi ? '04' : '03'} eyebrow="Definisi EnPI & EnB" judul={`${enpi.length} EnPI terdefinisi, ${aktif.length} aktif dipantau`}>
           <p className="muted">Tetapkan EnPI untuk organisasi dan untuk tiap SEU. Baseline disesuaikan bila ruang lingkup, fasilitas, atau variabel statis berubah signifikan (6.5); catat alasannya di kolom catatan.</p>
         </SectionHead>
         <DaftarEnpi enpi={enpi} sumber={sumber} variabel={variabel} meter={meter} />

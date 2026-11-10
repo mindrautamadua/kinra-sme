@@ -1,7 +1,8 @@
 import 'server-only'
 import { ambilAsetMeter, ambilDeviasi, ambilDokumen, ambilParameter, ambilIsu, ambilSeu, ambilKegiatan, ambilKinerja, ambilKlausul, ambilPeluang, ambilSasaran, ambilTemuan, rekapEnergi } from './data'
 import { LABEL_METODE, ringkas } from './enpi'
-import { angka, hariIni, persen, tanggal } from './format'
+import { ceritakan, hitungDekomposisi, pilihLingkup, tahunTersedia } from './dekomposisi'
+import { angka, energiListrik, hariIni, persen, tanggal } from './format'
 import { penggunaEnergi } from './tinjauan'
 import { susunKonversi } from './konversi'
 import { deteksiDeviasi, gabungDeviasi, terbuka as deviasiTerbuka } from './deviasi'
@@ -54,6 +55,16 @@ export async function konteksDashboard({ tanyaJawab = true }: { tanyaJawab?: boo
     const r = ringkas(h.laporan)
     const model = h.model ? `R² ${angka(h.model.r2, 3)}, CV(RMSE) ${persen(h.model.cvrmse)}` : (h.galat ?? 'model belum terbentuk')
     b.push(`- ${h.enpi.kode} ${h.enpi.nama} [${LABEL_METODE[h.enpi.metode]}], baseline ${tanggal(h.enpi.baseline_mulai)}–${tanggal(h.enpi.baseline_selesai)}: ${model}; ${r.bulan} bulan pelaporan, perbaikan ${persen(r.perbaikan)}, hemat ${angka(r.hemat, 2)} ${h.satuan}${h.enpi.utama ? '; EnPI UTAMA' : ''}; lingkup ${(h.enpi.lingkup ?? 'kinra') === 'kinra' ? 'KINRA' : 'kawasan termasuk tenant'}${h.enpi.aktif ? '' : '; NONAKTIF'}${h.ekstrapolasi ? `; PERINGATAN: ${h.ekstrapolasi} bulan pelaporan di luar rentang baseline, harapan = ekstrapolasi, penghematan belum boleh diklaim` : ''}`)
+  }
+
+  // Dekomposisi perubahan listrik KINRA dua tahun terakhir (kondisi operasi vs kinerja per SEU)
+  const thMeter = tahunTersedia(kinerja.bacaan, pilihLingkup(kinerja.hasil, kinerja.meter))
+  const thB = thMeter.at(-1)
+  if (thB !== undefined && thMeter.includes(thB - 1)) {
+    const dk = hitungDekomposisi({ hasil: kinerja.hasil, seu, meter: kinerja.meter, bacaan: kinerja.bacaan, variabelData: kinerja.dataVariabel, tahunA: thB - 1, tahunB: thB })
+    b.push(`\n## Mengapa listrik KINRA berubah (dekomposisi ISO 50006/50015, halaman Kinerja Energi bagian "Mengapa")\n${ceritakan(dk, energiListrik)}`)
+    for (const k of dk.komponen) b.push(`- ${k.label}: ${k.nilai >= 0 ? '+' : '−'}${energiListrik(Math.abs(k.nilai))}. ${k.ket}`)
+    for (const p of dk.peringatan) b.push(`- Catatan: ${p}`)
   }
 
   const dev = gabungDeviasi(deteksiDeviasi(kinerja.hasil), registerDeviasi).baris
