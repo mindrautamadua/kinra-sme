@@ -3,7 +3,7 @@ import type { PenggunaEnergi } from '@/lib/tinjauan'
 
 /** Grafik Pareto: batang konsumsi per pengguna energi + garis kumulatif + ambang kumulatif. Tanpa state. */
 export function ParetoGrafik({ daftar, ambangKumulatif }: { daftar: PenggunaEnergi[]; ambangKumulatif: number }) {
-  const L = 900, T = 300, KIRI = 56, KANAN = 48, ATAS = 20, BAWAH = 54
+  const L = 900, T = 300, KIRI = 56, KANAN = 48, ATAS = 20, BAWAH = 78
   const n = Math.max(1, daftar.length)
   const lebar = (L - KIRI - KANAN) / n
   const tinggi = T - ATAS - BAWAH
@@ -11,7 +11,26 @@ export function ParetoGrafik({ daftar, ambangKumulatif }: { daftar: PenggunaEner
   const y = (v: number) => ATAS + tinggi - (v / maks) * tinggi
   const yPersen = (p: number) => ATAS + tinggi - (p / 100) * tinggi
   const titik = daftar.map((p, i) => ({ x: KIRI + lebar * (i + 0.5), y: yPersen(p.kumulatif) }))
-  const potong = (s: string) => (s.length > 16 ? `${s.slice(0, 15)}…` : s)
+  // Nama dibungkus maksimal 3 baris selebar kolom (±6,4 px per huruf pada 11 px) agar tidak bertumpuk
+  const maksHuruf = Math.max(6, Math.floor((lebar * 0.94) / 6.4))
+  const bungkus = (s: string): string[] => {
+    const baris: string[] = []
+    let kini = ''
+    for (const kata of s.split(/\s+/)) {
+      const coba = kini ? `${kini} ${kata}` : kata
+      if (coba.length <= maksHuruf) { kini = coba; continue }
+      if (kini) baris.push(kini)
+      kini = kata
+      if (baris.length === 3) break
+    }
+    if (kini && baris.length < 3) baris.push(kini)
+    const sisa = baris.join(' ').length < s.length
+    return baris.slice(0, 3).map((b, i, a) => {
+      const akhir = i === a.length - 1 && sisa
+      const isi = b.length > maksHuruf || akhir ? b.slice(0, maksHuruf - 1).trimEnd() : b
+      return isi.length < b.length || akhir ? `${isi}…` : isi
+    })
+  }
 
   return (
     <svg viewBox={`0 0 ${L} ${T}`} className="tp-svg" role="img"
@@ -33,8 +52,11 @@ export function ParetoGrafik({ daftar, ambangKumulatif }: { daftar: PenggunaEner
               <title>{`${p.nama}: ${energiListrik(p.kwh)}/bulan · ${persen(p.porsi)} · kumulatif ${persen(p.kumulatif)}`}</title>
             </rect>
             <text x={x + w / 2} y={y(p.kwh) - 6} textAnchor="middle" className="tp-nilai">{persen(p.porsi, 0)}</text>
-            <text x={x + w / 2} y={ATAS + tinggi + 16} textAnchor="middle" className="tp-nama">{potong(p.nama)}</text>
-            <text x={x + w / 2} y={ATAS + tinggi + 30} textAnchor="middle" className="tp-sub">{p.dasar === 'meter' ? 'meter' : p.dasar === 'inventaris' ? 'perkiraan' : 'data BBM'}</text>
+            <text x={x + w / 2} y={ATAS + tinggi + 16} textAnchor="middle" className="tp-nama">
+              <title>{p.nama}</title>
+              {bungkus(p.nama).map((b, k) => <tspan key={k} x={x + w / 2} dy={k ? 13 : 0}>{b}</tspan>)}
+            </text>
+            <text x={x + w / 2} y={ATAS + tinggi + 57} textAnchor="middle" className="tp-sub">{p.dasar === 'meter' ? 'meter' : p.dasar === 'inventaris' ? 'perkiraan' : 'data BBM'}</text>
           </g>
         )
       })}
