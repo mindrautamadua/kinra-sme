@@ -9,6 +9,7 @@ import { useBoleh } from '@/components/Peran'
 import { waktu } from '@/lib/format'
 import { BUCKET_BUKTI, UKURAN_MAKS_BUKTI } from '@/lib/status'
 import type { BerkasTampil, PemilikBukti } from '@/lib/types'
+import { useKonfirmasiHapus } from '@/components/KonfirmasiHapus'
 
 type Tahap = 'antre' | 'siapkan' | 'unggah' | 'simpan' | 'sukses' | 'gagal'
 type Antrean = { id: string; file: File; tahap: Tahap; persen: number; pesan?: string; path?: string }
@@ -53,6 +54,7 @@ export function EvidenceBerkas({ dokumenId, pemilik, periode = null, berkas, mig
   berkas: BerkasTampil[]; migrasi?: boolean; onBerubah?: () => void; hanyaLihat?: boolean
 }) {
   const router = useRouter()
+  const mintaHapus = useKonfirmasiHapus()
   const bisa = useBoleh()
   const bisaUnggah = !hanyaLihat && (pemilik ? bisa('bukti.unggah') : bisa('dokumen.ubah'))
   const bisaHapus = !hanyaLihat && (pemilik ? bisa('bukti.hapus') : bisa('dokumen.ubah'))
@@ -121,8 +123,8 @@ export function EvidenceBerkas({ dokumenId, pemilik, periode = null, berkas, mig
     })
   }
 
-  function hapus(b: BerkasTampil) {
-    if (!confirm(`Hapus berkas ${b.nama_file}? Berkas akan terhapus permanen dari penyimpanan aplikasi.`)) return
+  async function hapus(b: BerkasTampil) {
+    if (!(await mintaHapus({ judul: `Hapus berkas ${b.nama_file}?`, kata: 'HAPUS', poin: ['Berkas terhapus permanen dari penyimpanan aplikasi.'] }))) return
     mulai(async () => {
       const h = pemilik ? await hapusBukti(b.id) : await hapusBerkas(b.id)
       if (!h.ok) return setGalat(h.pesan)

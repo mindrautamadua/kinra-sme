@@ -8,9 +8,11 @@ import { Chip } from '@/components/Chip'
 import { useBoleh } from '@/components/Peran'
 import { AMBANG_RISIKO, tingkatRisiko } from '@/lib/status'
 import type { Isu } from '@/lib/types'
+import { useKonfirmasiHapus } from '@/components/KonfirmasiHapus'
 
 export function RegisterIsu({ isu }: { isu: Isu[] }) {
   const router = useRouter()
+  const mintaHapus = useKonfirmasiHapus()
   const bisa = useBoleh()
   const dlg = useRef<HTMLDialogElement>(null)
   const [edit, setEdit] = useState<Isu | null>(null)
@@ -221,8 +223,8 @@ export function RegisterIsu({ isu }: { isu: Isu[] }) {
           <div className="toolbar" style={{ marginTop: 16, marginBottom: 0 }}>
             <button className="btn utama" type="submit" disabled={menunggu}>{menunggu ? 'Menyimpan…' : 'Simpan'}</button>
             <span style={{ flex: 1 }} />
-            {edit && bisa('register.hapus') && <button type="button" className="btn bahaya" disabled={menunggu} onClick={() => {
-              if (!confirm('Hapus isu ini?')) return
+            {edit && bisa('register.hapus') && <button type="button" className="btn bahaya" disabled={menunggu} onClick={async () => {
+              if (!(await mintaHapus({ judul: 'Hapus isu ini?', kata: 'HAPUS', poin: [edit.uraian] }))) return
               mulai(async () => { const h = await hapusIsu(edit.id); if (!h.ok) return setGalat(h.pesan); dlg.current?.close(); router.refresh() })
             }}><Trash2 aria-hidden="true" /> Hapus</button>}
           </div>

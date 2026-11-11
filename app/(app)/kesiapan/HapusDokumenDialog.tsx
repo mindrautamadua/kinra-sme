@@ -4,29 +4,32 @@ import { AlertTriangle, Trash2, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState, useTransition } from 'react'
 import { hapusDokumen } from '@/app/actions'
+import { cocokKata, KetikKonfirmasi } from '@/components/KetikKonfirmasi'
 import type { Dokumen } from '@/lib/types'
 
-/** Modal konfirmasi hapus satu item lembar Kesiapan. `d` null = tertutup. */
-export function HapusDokumenDialog({ d, onTutup }: { d: Dokumen | null; onTutup: () => void }) {
+/** Modal konfirmasi hapus satu item lembar Kesiapan. `d` null = tertutup. Pengguna harus mengetik kode item. */
+export function HapusDokumenDialog({ d, onTutup, onSelesai }: { d: Dokumen | null; onTutup: () => void; onSelesai?: () => void }) {
   const router = useRouter()
   const dlg = useRef<HTMLDialogElement>(null)
   const [galat, setGalat] = useState<string | null>(null)
   const [sibuk, mulai] = useTransition()
+  const [ketik, setKetik] = useState('')
+  const cocok = !!d && cocokKata(ketik, d.kode)
 
   useEffect(() => {
     const el = dlg.current
     if (!el) return
-    if (d && !el.open) { setGalat(null); el.showModal() }
+    if (d && !el.open) { setGalat(null); setKetik(''); el.showModal() }
     if (!d && el.open) el.close()
   }, [d])
 
   function hapus() {
-    if (!d) return
+    if (!d || !cocok) return
     mulai(async () => {
       const h = await hapusDokumen(d.id)
       if (!h.ok) { setGalat(h.pesan); return }
       onTutup()
-      router.refresh()
+      if (onSelesai) onSelesai(); else router.refresh()
     })
   }
 
@@ -57,10 +60,11 @@ export function HapusDokumenDialog({ d, onTutup }: { d: Dokumen | null; onTutup:
               </ul>
             </div>
           </div>
+          <KetikKonfirmasi kata={d.kode} nilai={ketik} onUbah={setKetik} onKirim={hapus} disabled={sibuk} />
           {galat && <p className="pesan galat small" role="alert">{galat}</p>}
           <div className="ks-catatan-aksi">
             <button type="button" className="btn" disabled={sibuk} onClick={() => dlg.current?.close()} autoFocus>Batal</button>
-            <button type="button" className="btn hapus-tegas" disabled={sibuk} onClick={hapus}>
+            <button type="button" className="btn hapus-tegas" disabled={sibuk || !cocok} onClick={hapus}>
               <Trash2 aria-hidden="true" /> {sibuk ? 'Menghapus…' : 'Hapus permanen'}
             </button>
           </div>

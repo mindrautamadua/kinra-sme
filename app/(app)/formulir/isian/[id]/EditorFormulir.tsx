@@ -12,6 +12,7 @@ import { kelengkapan, nilaiRumus, STATUS_FORMULIR } from '@/lib/formulir/isi'
 import { tabelTertaut } from '@/lib/formulir/tautan'
 import type { IsianFormulir, IsiFormulir, Kolom, RiwayatFormulir, StatusFormulir, Templat } from '@/lib/formulir/tipe'
 import { waktu } from '@/lib/format'
+import { useKonfirmasiHapus } from '@/components/KonfirmasiHapus'
 
 type Keadaan = 'bersih' | 'kotor' | 'menyimpan' | 'galat'
 const JEDA_SIMPAN = 4000
@@ -25,6 +26,7 @@ function jumlahBaris(v: string, lebar = 38) {
 
 export function EditorFormulir({ t, isian, riwayat }: { t: Templat; isian: IsianFormulir; riwayat: RiwayatFormulir[] }) {
   const router = useRouter()
+  const mintaHapus = useKonfirmasiHapus()
   const bisa = useBoleh()
   const [isi, setIsi] = useState(isian.isi)
   const [judul, setJudul] = useState(isian.judul)
@@ -191,8 +193,8 @@ export function EditorFormulir({ t, isian, riwayat }: { t: Templat; isian: Isian
           </Link>
           {bisa('formulir.isi') && <button type="button" className="btn" disabled={menunggu} onClick={salin} title="Buat isian baru dari salinan isian ini"><Copy aria-hidden="true" /> Salin</button>}
           {bisa('formulir.hapus') && (
-            <button type="button" className="btn bahaya btn-ikon" aria-label="Hapus isian" title="Hapus isian" disabled={menunggu} onClick={() => {
-              if (!confirm(`Hapus isian "${judul}"? Tindakan ini tidak dapat dibatalkan.`)) return
+            <button type="button" className="btn bahaya btn-ikon" aria-label="Hapus isian" title="Hapus isian" disabled={menunggu} onClick={async () => {
+              if (!(await mintaHapus({ judul: `Hapus isian “${judul}”?`, kata: 'HAPUS' }))) return
               mulai(async () => {
                 const h = await hapusIsian(isian.id)
                 if (!h.ok) return setPesan(h.pesan)

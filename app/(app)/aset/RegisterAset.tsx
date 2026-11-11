@@ -129,7 +129,7 @@ export function RegisterAset({ aset, meter }: { aset: Aset[]; meter: MeterEnergi
 
       <KonfirmasiHapus onTutup={() => setHapus(null)} onSelesai={() => router.refresh()}
         target={hapus && {
-          judul: `Hapus aset “${hapus.nama}”?`,
+          judul: `Hapus aset “${hapus.nama}”?`, kata: hapus.kode,
           poin: [
             `Aset ${hapus.kode} hilang dari register aset.`,
             meterAset(hapus.kode).length > 0

@@ -122,7 +122,7 @@ export function RegisterMeter({ meter, aset, sumber, jumlahBacaan }: {
 
       <KonfirmasiHapus onTutup={() => setHapus(null)} onSelesai={() => router.refresh()}
         target={hapus && {
-          judul: `Hapus meter ${hapus.kode}?`,
+          judul: `Hapus meter ${hapus.kode}?`, kata: hapus.kode,
           poin: [
             `Meter ${hapus.no_meter ?? hapus.kode} (${hapus.lokasi ?? 'tanpa lokasi'}) hilang dari register meter.`,
             (jumlahBacaan[hapus.kode] ?? 0) > 0 ? `${jumlahBacaan[hapus.kode]} bacaan stand bulanan meter ini ikut terhapus.` : 'Belum ada bacaan stand untuk meter ini.',

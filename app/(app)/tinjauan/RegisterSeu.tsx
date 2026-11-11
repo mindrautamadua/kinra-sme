@@ -147,7 +147,7 @@ export function RegisterSeu({ seu, aset, meter, sumber, variabel, enpi, porsi }:
 
       <KonfirmasiHapus onTutup={() => setHapus(null)} onSelesai={() => router.refresh()}
         target={hapus && {
-          judul: `Hapus ${hapus.kode} “${hapus.nama}”?`,
+          judul: `Hapus ${hapus.kode} “${hapus.nama}”?`, kata: hapus.kode,
           poin: ['SEU hilang dari register beserta alasan dan riwayat penetapannya.', 'Bila SEU tidak lagi signifikan, sebaiknya ubah status menjadi Dicabut agar jejaknya tetap ada untuk auditor.'],
           hapus: () => hapusSeu(hapus.kode),
         }} />

@@ -8,6 +8,7 @@ import { keluar } from '@/app/actions'
 import { Chatbot } from '@/components/Chatbot'
 import { Chip } from '@/components/Chip'
 import { Crumb, Navigasi } from '@/components/Navigasi'
+import { KonfirmasiHapusProvider } from '@/components/KonfirmasiHapus'
 import { PeranProvider } from '@/components/Peran'
 import { SidebarToggle } from '@/components/SidebarToggle'
 import { TemaToggle } from '@/components/TemaToggle'
@@ -31,6 +32,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
 
   return (
     <PeranProvider peran={saya.peran}>
+    <KonfirmasiHapusProvider>
       <div className="progress-top" aria-hidden="true" />
       <div className="aurora" aria-hidden="true"><i /><i /><i /></div>
       <div className="shell" data-ciut={ciut || undefined}>
@@ -90,6 +92,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
       </div>
       <Ungkap />
       {!galatDb && <Chatbot />}
+    </KonfirmasiHapusProvider>
     </PeranProvider>
   )
 }

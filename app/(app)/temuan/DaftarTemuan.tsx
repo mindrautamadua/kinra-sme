@@ -10,6 +10,7 @@ import { useBoleh } from '@/components/Peran'
 import { tanggal } from '@/lib/format'
 import { KATEGORI_TEMUAN_CHIP, TEMUAN_STATUS_CHIP } from '@/lib/status'
 import type { Klausul, Temuan } from '@/lib/types'
+import { useKonfirmasiHapus } from '@/components/KonfirmasiHapus'
 
 const JENIS = ['Internal', 'TÜV Stage 1', 'TÜV Stage 2'] as const
 const KATEGORI = ['Mayor', 'Minor', 'Observasi', 'OFI'] as const
@@ -17,6 +18,7 @@ const STATUS_T = ['Terbuka', 'Proses', 'Verifikasi', 'Tertutup'] as const
 
 export function DaftarTemuan({ temuan, klausul, dokumen, kini }: { temuan: Temuan[]; klausul: Klausul[]; dokumen: { id: string; kode: string; nama: string }[]; kini: string }) {
   const router = useRouter()
+  const mintaHapus = useKonfirmasiHapus()
   const bisa = useBoleh()
   const dlg = useRef<HTMLDialogElement>(null)
   const [edit, setEdit] = useState<Temuan | null>(null)
@@ -103,7 +105,7 @@ export function DaftarTemuan({ temuan, klausul, dokumen, kini }: { temuan: Temua
           tutup={() => dlg.current?.close()}
           simpan={(f) => mulai(async () => { const h = await simpanTemuan(edit?.id ?? null, f); if (!h.ok) return setGalat(h.pesan); dlg.current?.close(); router.refresh() })}
           bisaTutup={bisa('temuan.tutup')}
-          hapus={edit && bisa('temuan.hapus') ? () => { if (!confirm(`Hapus temuan ${edit.nomor}?`)) return; mulai(async () => { const h = await hapusTemuan(edit.id); if (!h.ok) return setGalat(h.pesan); dlg.current?.close(); router.refresh() }) } : undefined} />
+          hapus={edit && bisa('temuan.hapus') ? async () => { if (!(await mintaHapus({ judul: `Hapus temuan ${edit.nomor}?`, kata: edit.nomor }))) return; mulai(async () => { const h = await hapusTemuan(edit.id); if (!h.ok) return setGalat(h.pesan); dlg.current?.close(); router.refresh() }) } : undefined} />
       </dialog>
     </>
   )

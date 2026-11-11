@@ -14,6 +14,7 @@ import type { KodeChip } from '@/lib/status'
 import type { RencanaAksi, Sasaran, StatusAksi, StatusBukti, StatusSasaran } from '@/lib/types'
 import { tagUsulan, type UsulanAksi, type UsulanSasaran } from '@/lib/usulan-sasaran'
 import { PanelBukti, type TargetBukti } from './PanelBukti'
+import { useKonfirmasiHapus } from '@/components/KonfirmasiHapus'
 
 export type Capaian = {
   enpi: string
@@ -57,6 +58,7 @@ export function DaftarSasaran({ sasaran, aksi, capaian, enpi, peluang, kini, tar
   enpi: { kode: string; nama: string }[]; peluang: PeluangRingkas[]; kini: string
 }) {
   const router = useRouter()
+  const mintaHapus = useKonfirmasiHapus()
   const bisa = useBoleh()
   const dlgS = useRef<HTMLDialogElement>(null)
   const dlgA = useRef<HTMLDialogElement>(null)
@@ -444,8 +446,8 @@ export function DaftarSasaran({ sasaran, aksi, capaian, enpi, peluang, kini, tar
             <button className="btn utama" type="submit" disabled={menunggu}>{menunggu ? 'Menyimpan…' : 'Simpan'}</button>
             <span style={{ flex: 1 }} />
             {editS?.id && bisa('sasaran.hapus') && (
-              <button type="button" className="btn" onClick={() => {
-                if (!confirm(`Hapus sasaran ${editS.kode}? Rencana aksinya tetap ada tanpa sasaran.`)) return
+              <button type="button" className="btn" onClick={async () => {
+                if (!(await mintaHapus({ judul: `Hapus sasaran ${editS.kode}?`, kata: editS.kode ?? 'HAPUS', poin: ['Rencana aksinya tetap ada tanpa sasaran.', 'Bukti pelaksanaan khusus sasaran ini kehilangan pemiliknya.'] }))) return
                 mulai(async () => { const h = await hapusSasaran(editS.id!); if (!h.ok) return setGalat(h.pesan); dlgS.current?.close(); router.refresh() })
               }}><Trash2 aria-hidden="true" /><span className="teks">Hapus</span></button>
             )}
@@ -495,8 +497,8 @@ export function DaftarSasaran({ sasaran, aksi, capaian, enpi, peluang, kini, tar
             <button className="btn utama" type="submit" disabled={menunggu}>{menunggu ? 'Menyimpan…' : 'Simpan'}</button>
             <span style={{ flex: 1 }} />
             {editA?.id && bisa('sasaran.hapus') && (
-              <button type="button" className="btn" onClick={() => {
-                if (!confirm(`Hapus rencana aksi ${editA.kode}?`)) return
+              <button type="button" className="btn" onClick={async () => {
+                if (!(await mintaHapus({ judul: `Hapus rencana aksi ${editA.kode}?`, kata: editA.kode ?? 'HAPUS' }))) return
                 mulai(async () => { const h = await hapusAksi(editA.id!); if (!h.ok) return setGalat(h.pesan); dlgA.current?.close(); router.refresh() })
               }}><Trash2 aria-hidden="true" /><span className="teks">Hapus</span></button>
             )}

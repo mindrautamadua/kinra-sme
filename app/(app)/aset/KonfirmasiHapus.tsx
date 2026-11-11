@@ -2,24 +2,28 @@
 
 import { AlertTriangle, Trash2, X } from 'lucide-react'
 import { useEffect, useRef, useState, useTransition } from 'react'
+import { cocokKata, KetikKonfirmasi } from '@/components/KetikKonfirmasi'
 
-type Target = { judul: string; poin: string[]; hapus: () => Promise<{ ok: true } | { ok: false; pesan: string }> }
+/** `kata`: teks yang harus diketik pengguna sebelum hapus, biasanya kode item. */
+type Target = { judul: string; kata: string; poin: string[]; hapus: () => Promise<{ ok: true } | { ok: false; pesan: string }> }
 
 /** Modal konfirmasi hapus aset/meter. `target` null = tertutup. */
 export function KonfirmasiHapus({ target, onTutup, onSelesai }: { target: Target | null; onTutup: () => void; onSelesai: () => void }) {
   const dlg = useRef<HTMLDialogElement>(null)
   const [galat, setGalat] = useState<string | null>(null)
   const [sibuk, mulai] = useTransition()
+  const [ketik, setKetik] = useState('')
+  const cocok = !!target && cocokKata(ketik, target.kata)
 
   useEffect(() => {
     const el = dlg.current
     if (!el) return
-    if (target && !el.open) { setGalat(null); el.showModal() }
+    if (target && !el.open) { setGalat(null); setKetik(''); el.showModal() }
     if (!target && el.open) el.close()
   }, [target])
 
   function hapus() {
-    if (!target) return
+    if (!target || !cocok) return
     mulai(async () => {
       const h = await target.hapus()
       if (!h.ok) { setGalat(h.pesan); return }
@@ -45,10 +49,11 @@ export function KonfirmasiHapus({ target, onTutup, onSelesai }: { target: Target
               <ul>{target.poin.map((p) => <li key={p}>{p}</li>)}</ul>
             </div>
           </div>
+          <KetikKonfirmasi kata={target.kata} nilai={ketik} onUbah={setKetik} onKirim={hapus} disabled={sibuk} />
           {galat && <p className="pesan galat small" role="alert">{galat}</p>}
           <div className="ks-catatan-aksi">
             <button type="button" className="btn" disabled={sibuk} onClick={() => dlg.current?.close()} autoFocus>Batal</button>
-            <button type="button" className="btn hapus-tegas" disabled={sibuk} onClick={hapus}>
+            <button type="button" className="btn hapus-tegas" disabled={sibuk || !cocok} onClick={hapus}>
               <Trash2 aria-hidden="true" /> {sibuk ? 'Menghapus…' : 'Hapus permanen'}
             </button>
           </div>

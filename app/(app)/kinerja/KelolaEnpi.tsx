@@ -8,11 +8,13 @@ import { Chip } from '@/components/Chip'
 import { useBoleh } from '@/components/Peran'
 import { LABEL_METODE } from '@/lib/enpi'
 import type { Enpi, LingkupEnpi, MeterEnergi, MetodeEnpi, SumberEnergi, VariabelRelevan } from '@/lib/types'
+import { useKonfirmasiHapus } from '@/components/KonfirmasiHapus'
 
 const bulanIso = (d: string) => d.slice(0, 7)
 
 export function DaftarEnpi({ enpi, sumber, variabel, meter }: { enpi: Enpi[]; sumber: SumberEnergi[]; variabel: VariabelRelevan[]; meter: MeterEnergi[] }) {
   const router = useRouter()
+  const mintaHapus = useKonfirmasiHapus()
   const bisa = useBoleh()
   const dlg = useRef<HTMLDialogElement>(null)
   const [edit, setEdit] = useState<Enpi | null>(null)
@@ -53,7 +55,7 @@ export function DaftarEnpi({ enpi, sumber, variabel, meter }: { enpi: Enpi[]; su
         <FormEnpi key={edit?.kode ?? 'baru'} edit={edit} kodeBaru={kodeBaru} sumber={sumber} variabel={variabel} meter={meter} galat={galat} menunggu={menunggu}
           tutup={() => dlg.current?.close()}
           simpan={(f) => mulai(async () => { const h = await simpanEnpi(edit?.kode ?? null, f); if (!h.ok) return setGalat(h.pesan); dlg.current?.close(); router.refresh() })}
-          hapus={edit && bisa('enpi.hapus') ? () => { if (!confirm(`Hapus ${edit.kode}? Sasaran yang terkait akan kehilangan tautan EnPI.`)) return; mulai(async () => { const h = await hapusEnpi(edit.kode); if (!h.ok) return setGalat(h.pesan); dlg.current?.close(); router.refresh() }) } : undefined} />
+          hapus={edit && bisa('enpi.hapus') ? async () => { if (!(await mintaHapus({ judul: `Hapus ${edit.kode}?`, kata: edit.kode, poin: ['Sasaran yang terkait akan kehilangan tautan EnPI.'] }))) return; mulai(async () => { const h = await hapusEnpi(edit.kode); if (!h.ok) return setGalat(h.pesan); dlg.current?.close(); router.refresh() }) } : undefined} />
       </dialog>
     </div>
   )
@@ -163,6 +165,7 @@ function FormEnpi({ edit, kodeBaru, sumber, variabel, meter, galat, menunggu, tu
 
 export function DaftarVariabel({ variabel, terpakai }: { variabel: VariabelRelevan[]; terpakai: Record<string, string[]> }) {
   const router = useRouter()
+  const mintaHapus = useKonfirmasiHapus()
   const bisa = useBoleh()
   const dlg = useRef<HTMLDialogElement>(null)
   const [edit, setEdit] = useState<VariabelRelevan | null>(null)
@@ -213,8 +216,8 @@ export function DaftarVariabel({ variabel, terpakai }: { variabel: VariabelRelev
             <button className="btn utama" type="submit" disabled={menunggu}>{menunggu ? 'Menyimpan…' : 'Simpan'}</button>
             <span style={{ flex: 1 }} />
             {edit && bisa('enpi.hapus') && (
-              <button type="button" className="btn" onClick={() => {
-                if (!confirm(`Hapus variabel ${edit.nama} beserta semua data bulanannya?`)) return
+              <button type="button" className="btn" onClick={async () => {
+                if (!(await mintaHapus({ judul: `Hapus variabel ${edit.nama}?`, kata: edit.kode, poin: ['Semua data bulanan variabel ini ikut terhapus.'] }))) return
                 mulai(async () => { const h = await hapusVariabel(edit.kode); if (!h.ok) return setGalat(h.pesan); dlg.current?.close(); router.refresh() })
               }}><Trash2 aria-hidden="true" /><span className="teks">Hapus</span></button>
             )}

@@ -3,7 +3,8 @@
 import { Save, Trash2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState, useTransition } from 'react'
-import { hapusDokumen, simpanDokumen } from '@/app/actions'
+import { simpanDokumen } from '@/app/actions'
+import { HapusDokumenDialog } from '@/app/(app)/kesiapan/HapusDokumenDialog'
 import { useBoleh } from '@/components/Peran'
 import { KELOMPOK } from '@/lib/status'
 import type { Dokumen, Klausul } from '@/lib/types'
@@ -12,6 +13,7 @@ export function FormDokumen({ dokumen, klausul }: { dokumen: Dokumen | null; kla
   const router = useRouter()
   const bisa = useBoleh()
   const [pesan, setPesan] = useState<{ ok: boolean; teks: string } | null>(null)
+  const [hapus, setHapus] = useState(false)
   const [menunggu, mulai] = useTransition()
   const d = dokumen
   const bisaUbah = bisa(d ? 'dokumen.ubah' : 'dokumen.tambah')
@@ -58,15 +60,9 @@ export function FormDokumen({ dokumen, klausul }: { dokumen: Dokumen | null; kla
         {pesan && <span className={pesan.ok ? 'txt-good small' : 'txt-bad small'} role="status">{pesan.teks}</span>}
         <span style={{ flex: 1 }} />
         {d && bisa('dokumen.hapus') && (
-          <button type="button" className="btn bahaya" disabled={menunggu} onClick={() => {
-            if (!confirm(`Hapus dokumen ${d.kode}? Semua berkas evidence-nya ikut terhapus.`)) return
-            mulai(async () => {
-              const h = await hapusDokumen(d.id)
-              if (h.ok) router.replace('/kesiapan')
-              else setPesan({ ok: false, teks: h.pesan })
-            })
-          }}><Trash2 aria-hidden="true" /> Hapus</button>
+          <button type="button" className="btn bahaya" disabled={menunggu} onClick={() => setHapus(true)}><Trash2 aria-hidden="true" /> Hapus</button>
         )}
+        {d && <HapusDokumenDialog d={hapus ? d : null} onTutup={() => setHapus(false)} onSelesai={() => router.replace('/kesiapan')} />}
       </div>
     </form>
   )
