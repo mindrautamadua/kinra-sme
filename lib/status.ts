@@ -113,9 +113,12 @@ export const KATEGORI_TEMUAN_CHIP: Record<string, KodeChip> = {
   OFI: 'info',
 }
 
+/** Kategori risiko sesuai sheet Kriteria Risiko Formulir Risiko 6.1 (001/SOP-007): 1–4 Rendah, 5–9 Sedang, 10–14 Tinggi, 15–25 Ekstrem. */
+export const AMBANG_RISIKO = { sedang: 5, tinggi: 10, ekstrem: 15 }
 export function tingkatRisiko(skor: number): { label: string; chip: KodeChip } {
-  if (skor >= 15) return { label: 'Tinggi', chip: 'crit' }
-  if (skor >= 8) return { label: 'Sedang', chip: 'warn' }
+  if (skor >= AMBANG_RISIKO.ekstrem) return { label: 'Ekstrem', chip: 'crit' }
+  if (skor >= AMBANG_RISIKO.tinggi) return { label: 'Tinggi', chip: 'serious' }
+  if (skor >= AMBANG_RISIKO.sedang) return { label: 'Sedang', chip: 'warn' }
   return { label: 'Rendah', chip: 'good' }
 }
 

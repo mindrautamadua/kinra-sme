@@ -3,6 +3,7 @@ import { Istilah } from '@/components/Istilah'
 import { SectionHead } from '@/components/SectionHead'
 import { ambilIsu, ambilParameter, ambilPeluang, ambilSasaran } from '@/lib/data'
 import { angka, persen } from '@/lib/format'
+import { AMBANG_RISIKO } from '@/lib/status'
 import { nilaiEnergi, rupiahRingkas, susunKonversi, tonCo2 } from '@/lib/konversi'
 import { RegisterIsu } from './RegisterIsu'
 import { RegisterPeluang } from './RegisterPeluang'
@@ -13,8 +14,9 @@ export default async function Register() {
   const [isu, peluang, { aksi }, param] = await Promise.all([ambilIsu(), ambilPeluang(), ambilSasaran(), ambilParameter()])
   const kv = susunKonversi(param)
   const risiko = isu.filter((i) => i.jenis === 'Risiko')
-  const tinggi = risiko.filter((i) => i.skor >= 15)
-  const sedang = risiko.filter((i) => i.skor >= 8 && i.skor < 15)
+  const ekstrem = risiko.filter((i) => i.skor >= AMBANG_RISIKO.ekstrem)
+  const tinggi = risiko.filter((i) => i.skor >= AMBANG_RISIKO.tinggi && i.skor < AMBANG_RISIKO.ekstrem)
+  const sumber61 = [...new Set(isu.map((i) => i.sumber).filter((x): x is string => !!x))]
   const tertinggi = [...risiko].sort((a, b) => b.skor - a.skor)[0]
   const lengkap = isu.filter((i) => i.tindakan && i.evaluasi && i.pic).length
   const dinilai = peluang.filter((p) => p.prioritas !== null).length
@@ -33,8 +35,8 @@ export default async function Register() {
           </p>
         </SectionHead>
         <div className="tiles">
-          <div className="tile"><div className="tile-head"><span className="tile-ikon"><ShieldAlert aria-hidden="true" /></span><span className="label">Risiko tinggi / sedang</span></div>
-            <div className="nilai tnum">{tinggi.length}<small>/ {sedang.length}</small></div>
+          <div className="tile"><div className="tile-head"><span className="tile-ikon"><ShieldAlert aria-hidden="true" /></span><span className="label">Risiko ekstrem / tinggi</span></div>
+            <div className="nilai tnum">{ekstrem.length}<small>/ {tinggi.length}</small></div>
             <div className="meta">{tertinggi ? `Tertinggi skor ${tertinggi.skor}: ${tertinggi.uraian.slice(0, 60)}${tertinggi.uraian.length > 60 ? '…' : ''}` : 'Belum ada risiko'}</div></div>
           <div className="tile"><div className="tile-head"><span className="tile-ikon"><CircleCheck aria-hidden="true" /></span><span className="label">Siklus lengkap</span></div>
             <div className="nilai tnum">{lengkap}<small>dari {isu.length} isu</small></div>
@@ -50,7 +52,7 @@ export default async function Register() {
 
       <section>
         <SectionHead no="01" eyebrow="Klausul 4.1 & 6.1 · Isu internal dan eksternal" judul="Peta risiko dan prioritas penanganan">
-          <p className="muted">Setiap titik adalah satu isu, ditempatkan menurut dampak × kemungkinan (skala 1–5). Zona hijau &lt; 8, kuning 8–14, merah ≥ 15. Klik titik atau sel untuk menyaring tabel. Sumber: Formulir Isu Internal Eksternal 001/SOP-003/KINRA/SMEn/X/2026.</p>
+          <p className="muted">Setiap titik adalah satu isu, ditempatkan menurut risiko awal dampak × kemungkinan (skala 1–5). Kategori mengikuti Kriteria Risiko formulir 6.1: rendah 1–4, sedang 5–9, tinggi 10–14, ekstrem 15–25. Klik titik atau sel untuk menyaring tabel. Sumber risiko: {sumber61.length ? 'Formulir Risiko Keberhasilan SMEn 001/SOP-007/KINRA/SMEn/X/2026 (bagian Korporasi dan Akuntansi & Keuangan)' : 'Formulir Isu Internal Eksternal 001/SOP-003/KINRA/SMEn/X/2026'}; peluang tanpa bagian berasal dari Formulir Isu Internal Eksternal 001/SOP-003.</p>
         </SectionHead>
         <RegisterIsu isu={isu} />
       </section>

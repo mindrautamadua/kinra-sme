@@ -7,6 +7,7 @@ import { LABEL_METODE } from '@/lib/enpi'
 import { angka, BULAN_PANJANG, energiListrik, hariIni, persen, tanggal, waktu } from '@/lib/format'
 import { susunKisah, type BatasPr, type Kisah, type Pr } from '@/lib/kisah-energi'
 import { rupiahRingkas, susunKonversi } from '@/lib/konversi'
+import { AMBANG_RISIKO } from '@/lib/status'
 
 export const dynamic = 'force-dynamic'
 
@@ -395,7 +396,7 @@ export default async function KisahEnergi() {
             </>
           )}
           <Kotak jenis="kira"><p>Risiko adalah hal yang bisa menggagalkan sistem energi, misalnya data meter tidak lengkap atau SEU belum ditetapkan. Peluang adalah kesempatan berhemat, misalnya optimasi pompa atau submeter. Keduanya dinilai (kemungkinan × dampak), lalu yang penting diberi tindakan.</p></Kotak>
-          <p className="lp-p">KINRA punya {k.risiko.length} risiko dan {k.isuPeluang.length} peluang di register isu, serta {k.peluang.length} peluang penghematan{k.peluang.length ? ` (${k.peluang[0].kode} s.d. ${k.peluang.at(-1)!.kode})` : ''}.{k.hematTerverifikasi > 0 ? ` Penghematan terverifikasi dari aksi yang selesai: ${angka(k.hematTerverifikasi)} kWh.` : ''}</p>
+          <p className="lp-p">KINRA punya {k.risiko.length} risiko ({k.risiko.filter((r) => r.skor >= AMBANG_RISIKO.ekstrem).length} ekstrem, {k.risiko.filter((r) => r.skor >= AMBANG_RISIKO.tinggi && r.skor < AMBANG_RISIKO.ekstrem).length} tinggi menurut kriteria risiko formulir 6.1) dan {k.isuPeluang.length} peluang di register isu, serta {k.peluang.length} peluang penghematan{k.peluang.length ? ` (${k.peluang[0].kode} s.d. ${k.peluang.at(-1)!.kode})` : ''}.{k.hematTerverifikasi > 0 ? ` Penghematan terverifikasi dari aksi yang selesai: ${angka(k.hematTerverifikasi)} kWh.` : ''}</p>
           <Kotak jenis="auditor">
             <Tanya q="Bagaimana sasaran ini dipantau?">Setiap sasaran terhubung ke satu EnPI di aplikasi. Capaiannya terlihat tiap bulan di halaman Sasaran & Aksi, dan rencana aksinya punya PIC, sumber daya, tenggat, serta metode verifikasi.</Tanya>
             {risikoSkorSama && <Tanya q="Mengapa semua risiko bernilai sama?">(Jangan sampai pertanyaan ini muncul. Lihat pekerjaan rumah di bawah.)</Tanya>}

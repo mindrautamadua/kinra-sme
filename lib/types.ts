@@ -97,6 +97,16 @@ export type Isu = {
   tindakan: string | null
   evaluasi: string | null
   pic: string | null
+  /** Kolom Formulir Risiko 6.1 (migrasi 0046); undefined bila migrasi belum dijalankan */
+  bagian?: string | null
+  proses?: string | null
+  dampak_residual?: number | null
+  kemungkinan_residual?: number | null
+  skor_residual?: number | null
+  signifikan?: boolean | null
+  target?: string | null
+  /** Dokumen asal baris ini, mis. 'Formulir Risiko 6.1 001/SOP-007/… · Korporasi' */
+  sumber?: string | null
 }
 
 export type Peluang = {

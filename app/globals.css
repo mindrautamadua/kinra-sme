@@ -1734,7 +1734,8 @@ dialog.tj-ev-dlg { max-height: calc(100dvh - 32px); overflow-y: auto; overscroll
 .rg-sumbu-x { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); font-size: 10.5px; color: var(--muted); font-family: var(--font-mono), monospace; letter-spacing: .08em; text-transform: uppercase; }
 .rg-sel { position: relative; min-height: 68px; border-radius: 10px; border: 1px solid var(--line); padding: 6px; cursor: pointer; transition: transform .15s, box-shadow .15s; --z: var(--good); background: color-mix(in srgb, var(--z) 10%, var(--surface)); }
 .rg-sel.z-sedang { --z: var(--warn); background: color-mix(in srgb, var(--z) 14%, var(--surface)); }
-.rg-sel.z-tinggi { --z: var(--crit); background: color-mix(in srgb, var(--z) 16%, var(--surface)); }
+.rg-sel.z-tinggi { --z: var(--serious); background: color-mix(in srgb, var(--z) 15%, var(--surface)); }
+.rg-sel.z-ekstrem { --z: var(--crit); background: color-mix(in srgb, var(--z) 17%, var(--surface)); }
 .rg-sel:hover { box-shadow: inset 0 0 0 1px var(--z); }
 .rg-sel.aktif { box-shadow: inset 0 0 0 2px var(--brand); }
 .rg-skor { position: absolute; right: 6px; bottom: 4px; font-family: var(--font-mono), monospace; font-size: 10px; color: color-mix(in srgb, var(--z) 70%, var(--muted)); opacity: .8; }
@@ -1749,7 +1750,7 @@ dialog.tj-ev-dlg { max-height: calc(100dvh - 32px); overflow-y: auto; overscroll
 .rg-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--warn); display: inline-block; }
 .rg-dot.peluang { background: transparent; box-shadow: inset 0 0 0 1.5px var(--s1); }
 .rg-zona { width: 14px; height: 10px; border-radius: 3px; display: inline-block; }
-.rg-zona.z-rendah { background: color-mix(in srgb, var(--good) 35%, transparent); } .rg-zona.z-sedang { background: color-mix(in srgb, var(--warn) 40%, transparent); } .rg-zona.z-tinggi { background: color-mix(in srgb, var(--crit) 40%, transparent); }
+.rg-zona.z-rendah { background: color-mix(in srgb, var(--good) 35%, transparent); } .rg-zona.z-sedang { background: color-mix(in srgb, var(--warn) 40%, transparent); } .rg-zona.z-tinggi { background: color-mix(in srgb, var(--serious) 40%, transparent); } .rg-zona.z-ekstrem { background: color-mix(in srgb, var(--crit) 40%, transparent); }
 .rg-prioritas { list-style: none; margin: 10px 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
 .rg-prioritas button { width: 100%; display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; text-align: left; border: 1px solid var(--line); background: var(--surface-2); border-radius: 10px; padding: 8px 10px; cursor: pointer; font: inherit; color: var(--ink); }
 .rg-prioritas button:hover { border-color: var(--brand); }

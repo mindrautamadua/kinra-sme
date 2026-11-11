@@ -706,9 +706,12 @@ export async function simpanIsu(id: number | null, f: FormData): Promise<Hasil> 
     asal: teks(f, 'asal'), jenis: teks(f, 'jenis'), uraian: teks(f, 'uraian'),
     dampak: bil(f, 'dampak'), kemungkinan: bil(f, 'kemungkinan'),
     tindakan: teks(f, 'tindakan'), evaluasi: teks(f, 'evaluasi'), pic: teks(f, 'pic'),
+    bagian: teks(f, 'bagian'), proses: teks(f, 'proses'), target: teks(f, 'target'),
+    dampak_residual: bil(f, 'dampak_residual'), kemungkinan_residual: bil(f, 'kemungkinan_residual'),
     diubah_at: new Date().toISOString(),
   }
   if (!data.uraian || !data.dampak || !data.kemungkinan) return { ok: false, pesan: 'Uraian, dampak, dan kemungkinan wajib diisi.' }
+  if ((data.dampak_residual === null) !== (data.kemungkinan_residual === null)) return { ok: false, pesan: 'Isi dampak dan kemungkinan residual bersama-sama, atau kosongkan keduanya.' }
   const { error } = id ? await (await db()).from('isu').update(data).eq('id', id) : await (await db()).from('isu').insert(data)
   revalidatePath('/register')
   return gagal(error)

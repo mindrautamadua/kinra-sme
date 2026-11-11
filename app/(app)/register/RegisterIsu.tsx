@@ -6,7 +6,7 @@ import { useRef, useState, useTransition } from 'react'
 import { hapusIsu, simpanIsu } from '@/app/actions'
 import { Chip } from '@/components/Chip'
 import { useBoleh } from '@/components/Peran'
-import { tingkatRisiko } from '@/lib/status'
+import { AMBANG_RISIKO, tingkatRisiko } from '@/lib/status'
 import type { Isu } from '@/lib/types'
 
 export function RegisterIsu({ isu }: { isu: Isu[] }) {
@@ -35,7 +35,7 @@ export function RegisterIsu({ isu }: { isu: Isu[] }) {
       && (!sel || (i.dampak === sel[0] && i.kemungkinan === sel[1]))
       && (status !== 'tanpa-tindakan' || !i.tindakan)
       && (status !== 'belum-evaluasi' || !i.evaluasi)
-      && (!q || [i.uraian, i.tindakan, i.pic, i.asal].some((v) => v?.toLowerCase().includes(q))))
+      && (!q || [i.uraian, i.proses, i.bagian, i.tindakan, i.pic, i.asal].some((v) => v?.toLowerCase().includes(q))))
     .sort((a, b) => b.skor - a.skor)
   const prioritas = [...risiko].sort((a, b) => b.skor - a.skor).slice(0, 5)
   const pct = (n: number) => (isu.length ? (n / isu.length) * 100 : 0)
@@ -56,9 +56,11 @@ export function RegisterIsu({ isu }: { isu: Isu[] }) {
   if (tanpaEvaluasi) catatan.push({ kode: 'warn', teks: `${tanpaEvaluasi} isu sudah punya tindakan tetapi belum ada cara mengevaluasi efektivitasnya.` })
   const eksternal = isu.filter((i) => i.asal === 'Eksternal').length
   if (isu.length && eksternal / isu.length < 0.25) catatan.push({ kode: 'info', teks: `Hanya ${eksternal} isu eksternal. Pertimbangkan regulasi konservasi energi, tarif, pasokan PLTBG/PLTS, dan kebutuhan tenant (klausul 4.1–4.2).` })
-  if (!risiko.some((i) => i.skor >= 15) && risiko.length) catatan.push({ kode: 'info', teks: 'Tidak ada risiko tinggi. Pastikan ini hasil penilaian nyata, misalnya risiko SEU belum ditetapkan atau EnPI belum punya data menjelang audit.' })
+  if (!risiko.some((i) => i.skor >= AMBANG_RISIKO.tinggi) && risiko.length) catatan.push({ kode: 'info', teks: 'Tidak ada risiko tinggi atau ekstrem. Pastikan ini hasil penilaian nyata, misalnya risiko SEU belum ditetapkan atau EnPI belum punya data menjelang audit.' })
+  const tanpaResidual = risiko.filter((i) => i.skor >= AMBANG_RISIKO.tinggi && i.skor_residual == null).length
+  if (tanpaResidual && risiko.some((i) => i.skor_residual != null)) catatan.push({ kode: 'warn', teks: `${tanpaResidual} risiko tinggi/ekstrem belum punya nilai risiko residual. Kriteria risiko meminta rencana penurunan untuk skor ≥ ${AMBANG_RISIKO.tinggi}.` })
 
-  const zona = (d: number, k: number) => (d * k >= 15 ? 'z-tinggi' : d * k >= 8 ? 'z-sedang' : 'z-rendah')
+  const zona = (d: number, k: number) => (d * k >= AMBANG_RISIKO.ekstrem ? 'z-ekstrem' : d * k >= AMBANG_RISIKO.tinggi ? 'z-tinggi' : d * k >= AMBANG_RISIKO.sedang ? 'z-sedang' : 'z-rendah')
 
   function buka(i: Isu | null) { setEdit(i); setGalat(null); dlg.current?.showModal() }
   function pilihTitik(i: Isu) {
@@ -109,7 +111,7 @@ export function RegisterIsu({ isu }: { isu: Isu[] }) {
             <div className="rg-baris rg-bawah" aria-hidden="true"><span className="rg-ax" />{[1, 2, 3, 4, 5].map((k) => <span key={k} className="rg-ax">{k}</span>)}</div>
             <span className="rg-sumbu-x" aria-hidden="true">Kemungkinan →</span>
           </div>
-          <div className="rg-legenda"><span><i className="rg-dot" />Risiko</span><span><i className="rg-dot peluang" />Peluang</span><span><i className="rg-zona z-rendah" />Rendah</span><span><i className="rg-zona z-sedang" />Sedang</span><span><i className="rg-zona z-tinggi" />Tinggi</span></div>
+          <div className="rg-legenda"><span><i className="rg-dot" />Risiko</span><span><i className="rg-dot peluang" />Peluang</span><span><i className="rg-zona z-rendah" />Rendah</span><span><i className="rg-zona z-sedang" />Sedang</span><span><i className="rg-zona z-tinggi" />Tinggi</span><span><i className="rg-zona z-ekstrem" />Ekstrem</span></div>
         </div>
 
         <div className="rg-kanan">
@@ -124,8 +126,8 @@ export function RegisterIsu({ isu }: { isu: Isu[] }) {
                     <button type="button" onClick={() => pilihTitik(i)}>
                       <span className={`rg-lencana ${t.chip}`}>{label.get(i.id)}</span>
                       <span className="rg-prio-isi">
-                        <b>{i.uraian}</b>
-                        <span className="muted small">Skor {i.skor} · {i.asal}{i.pic ? ` · ${i.pic}` : ''}</span>
+                        <b>{i.proses ?? i.uraian}</b>
+                        <span className="muted small">Skor {i.skor}{i.skor_residual != null ? ` → residual ${i.skor_residual}` : ''} · {i.bagian ?? i.asal}</span>
                       </span>
                       <span className="rg-prio-status">
                         {!i.tindakan ? <Chip kode="crit" label="Tanpa tindakan" /> : !i.evaluasi ? <Chip kode="warn" label="Belum dievaluasi" /> : <Chip kode="good" label="Siklus lengkap" />}
@@ -167,7 +169,7 @@ export function RegisterIsu({ isu }: { isu: Isu[] }) {
         </div>
         <div className="table-wrap tall">
           <table className="tbl">
-            <thead><tr><th>#</th><th>Isu</th><th className="num">D×K</th><th>Tingkat</th><th>Tindakan & evaluasi</th><th /></tr></thead>
+            <thead><tr><th>#</th><th>Isu</th><th className="num" title="Awal → residual">D×K</th><th>Tingkat</th><th>Tindakan & evaluasi</th><th /></tr></thead>
             <tbody>
               {tampil.length === 0 && <tr className="kosong"><td colSpan={6}>Tidak ada isu yang cocok.</td></tr>}
               {tampil.map((i) => {
@@ -175,12 +177,13 @@ export function RegisterIsu({ isu }: { isu: Isu[] }) {
                 return (
                   <tr key={i.id} id={`isu-${i.id}`} className={sorot === i.id ? 'rg-sorot' : undefined}>
                     <td><span className={`rg-lencana ${i.jenis === 'Peluang' ? 'info' : t.chip}`}>{label.get(i.id)}</span></td>
-                    <td style={{ maxWidth: 340 }}>{i.uraian}<span className="upd">{i.asal} · {i.jenis}{i.pic && ` · ${i.pic}`}</span></td>
-                    <td className="num">{i.dampak}×{i.kemungkinan}<span className="upd">{i.skor}</span></td>
+                    <td style={{ maxWidth: 340 }}>{i.proses && <b style={{ display: 'block' }}>{i.proses}</b>}{i.uraian}<span className="upd">{[i.bagian, i.asal, i.jenis, i.pic].filter(Boolean).join(' · ')}</span></td>
+                    <td className="num">{i.dampak}×{i.kemungkinan}<span className="upd">{i.skor}</span>{i.skor_residual != null && <span className="upd" title="Risiko residual setelah pengendalian">→ {i.dampak_residual}×{i.kemungkinan_residual} = {i.skor_residual}</span>}</td>
                     <td>{i.jenis === 'Risiko' ? <Chip kode={t.chip} label={t.label} /> : <Chip kode="info" label="Peluang" />}</td>
                     <td className="small" style={{ maxWidth: 380 }}>
                       {i.tindakan ?? <span className="txt-bad">Belum ada tindakan</span>}
                       <span className="upd">Evaluasi: {i.evaluasi ?? <span className="txt-bad">belum</span>}</span>
+                      {i.target && <span className="upd">Target: {i.target}</span>}
                     </td>
                     <td>{bisa('register.ubah') && <button type="button" className="btn btn-ikon" aria-label={`Ubah isu ${label.get(i.id)}`} onClick={() => buka(i)}><Pencil aria-hidden="true" /></button>}</td>
                   </tr>
@@ -202,12 +205,17 @@ export function RegisterIsu({ isu }: { isu: Isu[] }) {
           <div className="form-grid">
             <label className="field"><span>Asal</span><select name="asal" defaultValue={edit?.asal ?? 'Internal'}><option>Internal</option><option>Eksternal</option></select></label>
             <label className="field"><span>Jenis</span><select name="jenis" defaultValue={edit?.jenis ?? 'Risiko'}><option>Risiko</option><option>Peluang</option></select></label>
-            <label className="field full"><span>Isu yang diidentifikasi</span><textarea name="uraian" required defaultValue={edit?.uraian ?? ''} /></label>
-            <label className="field"><span>Dampak (1–5)</span><input type="number" name="dampak" min={1} max={5} required defaultValue={edit?.dampak ?? 3} /></label>
-            <label className="field"><span>Kemungkinan (1–5)</span><input type="number" name="kemungkinan" min={1} max={5} required defaultValue={edit?.kemungkinan ?? 2} /></label>
+            <label className="field"><span>Bagian</span><input name="bagian" placeholder="mis. Korporasi" defaultValue={edit?.bagian ?? ''} /></label>
+            <label className="field"><span>Proses</span><input name="proses" defaultValue={edit?.proses ?? ''} /></label>
+            <label className="field full"><span>Isu / risiko yang diidentifikasi</span><textarea name="uraian" required defaultValue={edit?.uraian ?? ''} /></label>
+            <label className="field"><span>Dampak awal (1–5)</span><input type="number" name="dampak" min={1} max={5} required defaultValue={edit?.dampak ?? 3} /></label>
+            <label className="field"><span>Kemungkinan awal (1–5)</span><input type="number" name="kemungkinan" min={1} max={5} required defaultValue={edit?.kemungkinan ?? 2} /></label>
+            <label className="field"><span>Dampak residual (1–5)</span><input type="number" name="dampak_residual" min={1} max={5} defaultValue={edit?.dampak_residual ?? ''} /></label>
+            <label className="field"><span>Kemungkinan residual (1–5)</span><input type="number" name="kemungkinan_residual" min={1} max={5} defaultValue={edit?.kemungkinan_residual ?? ''} /></label>
             <label className="field full"><span>Tindakan</span><textarea name="tindakan" defaultValue={edit?.tindakan ?? ''} /></label>
             <label className="field full"><span>Evaluasi efektivitas</span><textarea name="evaluasi" defaultValue={edit?.evaluasi ?? ''} /></label>
             <label className="field"><span>PIC</span><input name="pic" defaultValue={edit?.pic ?? ''} /></label>
+            <label className="field"><span>Target penyelesaian</span><input name="target" defaultValue={edit?.target ?? ''} /></label>
           </div>
           {galat && <p className="pesan galat" role="alert" style={{ marginTop: 12 }}>{galat}</p>}
           <div className="toolbar" style={{ marginTop: 16, marginBottom: 0 }}>
