@@ -363,6 +363,10 @@ a.list-item:hover b { color: var(--brand); }
 dialog.panel { border: 0; padding: 0; background: transparent; color: var(--ink); max-width: min(720px, calc(100vw - 32px)); width: 100%; }
 dialog.panel::backdrop { background: rgba(0, 0, 0, .45); backdrop-filter: blur(6px); }
 dialog.panel .card { animation: pop .2s var(--ease); }
+/* Kepala dialog: judul panjang tidak boleh mendorong tombol tutup ke baris baru */
+dialog.panel .card > .row:first-child { flex-wrap: nowrap; }
+dialog.panel .card > .row:first-child > div:first-child { flex: 1; }
+dialog.panel .card > .row:first-child > .btn-ikon:last-child { flex-shrink: 0; }
 @keyframes pop { from { opacity: 0; transform: translateY(-8px) scale(.98); } }
 
 /* Evidence: daftar berkas, zona unggah, penampil */
