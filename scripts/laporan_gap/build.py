@@ -138,7 +138,9 @@ peristiwa = ''.join(f'<tr><td class="nw">{tgl(d)} 2026</td><td>{e(t)}</td><td>{"
 
 css = open(os.path.join(os.path.dirname(__file__), 'gaya.css')).read().replace('{FONT}', FONT)
 tpl = open(os.path.join(os.path.dirname(__file__), 'isi.html')).read()
+LOGO = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'public', 'logo-kinra.png'))
 ganti = {
+ '{LOGO}': LOGO,
  '{CSS}': css, '{TOTAL0}': fmt(total0), '{TOTAL}': fmt(total), '{NI}': str(len(items)), '{NAIK}': str(naik),
  '{NT}': str(hit("st", "T")), '{NS}': str(hit("st", "S")), '{NB}': str(hit("st", "B")),
  '{NT0}': str(hit("st0", "T")), '{NS0}': str(hit("st0", "S")), '{NB0}': str(hit("st0", "B")),

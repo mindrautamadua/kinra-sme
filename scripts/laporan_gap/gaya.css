@@ -1,44 +1,55 @@
 @font-face { font-family: 'Nunito Sans'; src: url('file://{FONT}/nunito-sans-latin.woff2') format('woff2'); font-weight: 400 700; }
 @font-face { font-family: 'Plex Mono'; src: url('file://{FONT}/ibm-plex-mono-500.woff2') format('woff2'); font-weight: 500; }
 @page { size: A4; margin: 18mm 16mm 18mm 16mm;
-  @bottom-left { content: "Laporan Gap Analysis dan Penutupan Gap ISO 50001:2018 · PT KINRA · Draf untuk pengesahan"; font: 7.5pt 'Nunito Sans'; color: #6b7c7d; }
+  @top-right { content: "PT Kawasan Industri Nusantara · KINRA Sei Mangkei"; font: 600 7.5pt 'Nunito Sans'; color: #008187; }
+  @bottom-left { content: "Laporan Gap Analysis dan Penutupan Gap ISO 50001:2018 · Draf untuk pengesahan"; font: 7.5pt 'Nunito Sans'; color: #6d7a7b; }
   @bottom-right { content: "Halaman " counter(page) " dari " counter(pages); font: 7.5pt 'Nunito Sans'; color: #6b7c7d; } }
-@page :first { margin: 0; @bottom-left { content: none } @bottom-right { content: none } }
-:root { --ink: #12282a; --ink2: #3d5456; --muted: #6b7c7d; --rule: #d9e2e2; --soft: #f2f6f6; --tosca: #008187; --tosca-d: #005f63;
-  --ok: #2f8f5b; --mid: #c98a12; --low: #c4452a; }
+@page :first { margin: 0; @top-right { content: none } @bottom-left { content: none } @bottom-right { content: none } }
+:root { /* Kinra Brand Identity Guideline 2022 + panduan-ui-ux-kinra.md */
+  --tosca: #008187; --tosca-d: #00666b; --merah: #f15a22; --jingga: #fcaf17; --biru: #32a3dc; --abu: #4d4d4f;
+  --ink: #0f2629; --ink2: #4d4d4f; --muted: #6d7a7b; --rule: #dbe4e4; --soft: #eef5f5;
+  --s1: #2a96d0; --s3: #7d8f91; --ok: #0e9258; --mid: #b77b06; --low: #d92d20; }
 * { box-sizing: border-box; }
 html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-body { margin: 0; font: 9.6pt/1.5 'Nunito Sans', sans-serif; color: var(--ink); }
+body { margin: 0; font: 9.6pt/1.5 'Nunito Sans', sans-serif; color: var(--abu); }
+b, strong { color: var(--ink); }
 h1, h2, h3 { margin: 0; line-height: 1.2; }
-h2 { font-size: 17pt; font-weight: 700; color: var(--ink); margin: 0 0 4pt; }
+h2 { font-size: 17pt; font-weight: 700; color: var(--ink); margin: 0 0 4pt; letter-spacing: -.01em; }
+h3 { color: var(--tosca-d); }
 h3 { font-size: 11pt; font-weight: 700; margin: 14pt 0 5pt; }
 p { margin: 0 0 7pt; }
-.eyebrow { font: 500 7.5pt 'Plex Mono', monospace; letter-spacing: .14em; text-transform: uppercase; color: var(--tosca); margin-bottom: 6pt; }
+.eyebrow { font: 500 7.5pt 'Plex Mono', monospace; letter-spacing: .14em; text-transform: uppercase; color: var(--tosca); margin-bottom: 8pt; padding-top: 7pt; background: linear-gradient(90deg, var(--merah) 0 14pt, var(--jingga) 14pt 28pt, var(--biru) 28pt 42pt, transparent 42pt) top left / 100% 2.4pt no-repeat; }
 .lead { font-size: 11pt; line-height: 1.5; color: var(--ink2); margin-bottom: 12pt; }
 .muted { color: var(--muted); }
 section { break-before: page; }
 .nobreak { break-inside: avoid; }
 
-/* Sampul */
-.cover { height: 297mm; width: 210mm; position: relative; background: #0d2f31; color: #eaf3f3; padding: 26mm 20mm; overflow: hidden; }
-.cover .band { position: absolute; left: 0; right: 0; bottom: 0; height: 92mm; background: #08393c; }
-.cover .band::before { content: ""; position: absolute; left: 20mm; top: 0; width: 34mm; height: 3pt; background: #f15a22; }
-.cover .org { font: 500 8pt 'Plex Mono', monospace; letter-spacing: .18em; text-transform: uppercase; color: #8cc9cb; }
-.cover h1 { font-size: 31pt; font-weight: 700; margin: 46mm 0 8mm; line-height: 1.1; max-width: 150mm; color: #fff; }
-.cover .sub { font-size: 12.5pt; color: #b9d6d7; max-width: 140mm; }
-.cover .meta { position: absolute; left: 20mm; right: 20mm; bottom: 22mm; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8mm; font-size: 8.5pt; }
-.cover .meta b { display: block; font: 500 7pt 'Plex Mono', monospace; letter-spacing: .14em; text-transform: uppercase; color: #8cc9cb; margin-bottom: 3pt; font-weight: 500; }
-.cover .verdict { position: absolute; left: 20mm; bottom: 60mm; right: 20mm; font-size: 12pt; color: #fff; }
-.cover .verdict span { color: #ffb38f; font-weight: 700; }
+/* Sampul: logo di atas putih, blok Tosca, motif lingkaran bertumpuk */
+.cover { height: 297mm; width: 210mm; position: relative; background: #fff; overflow: hidden; }
+.cover .logo { position: absolute; left: 20mm; top: 20mm; width: 58mm; }
+.cover .doc { position: absolute; right: 20mm; top: 24mm; text-align: right; font: 500 7.5pt 'Plex Mono', monospace; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); line-height: 1.7; }
+.cover .blok { position: absolute; left: 0; right: 0; top: 70mm; bottom: 0; background: var(--tosca); color: #fff; padding: 30mm 20mm 0; }
+.cover .motif { position: absolute; right: -62mm; top: 26mm; width: 150mm; height: 150mm; }
+.cover .motif i { position: absolute; border-radius: 50%; }
+.cover .motif .m1 { width: 92mm; height: 92mm; left: 0; top: 18mm; background: var(--jingga); }
+.cover .motif .m2 { width: 92mm; height: 92mm; left: 40mm; top: 0; background: var(--merah); opacity: .92; }
+.cover .motif .m3 { width: 92mm; height: 92mm; left: 30mm; top: 52mm; background: var(--biru); opacity: .9; }
+.cover .eyebrow-c { font: 500 8pt 'Plex Mono', monospace; letter-spacing: .18em; text-transform: uppercase; color: #bfe3e4; position: relative; }
+.cover h1 { font-size: 30pt; font-weight: 700; margin: 6mm 0 7mm; line-height: 1.1; max-width: 108mm; color: #fff; letter-spacing: -.02em; position: relative; }
+.cover .sub { font-size: 12pt; color: #d9eeee; max-width: 100mm; position: relative; }
+.cover .verdict { position: absolute; left: 20mm; right: 20mm; bottom: 52mm; font-size: 12pt; color: #fff; border-left: 3pt solid var(--jingga); padding-left: 10pt; max-width: 98mm; }
+.cover .verdict span { color: var(--jingga); font-weight: 700; }
+.cover .meta { position: absolute; left: 20mm; right: 20mm; bottom: 18mm; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8mm; font-size: 8.5pt; border-top: .6pt solid rgba(255,255,255,.35); padding-top: 6mm; color: #fff; }
+.cover .meta b { display: block; font: 500 7pt 'Plex Mono', monospace; letter-spacing: .14em; text-transform: uppercase; color: #bfe3e4; margin-bottom: 3pt; font-weight: 500; }
 
 /* Ringkasan */
 .kpis { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 8pt; margin: 4pt 0 12pt; }
 .kpi { border: 1px solid var(--rule); border-radius: 6pt; padding: 9pt 11pt; }
 .kpi .n { font-size: 22pt; font-weight: 700; line-height: 1.05; }
 .kpi .l { font-size: 8pt; color: var(--muted); }
-.kpi.main { background: var(--soft); border-color: var(--soft); }
-.kpi.main .n { color: var(--mid); font-size: 19pt; white-space: nowrap; }
-.verdict-box { border-left: 3pt solid var(--tosca); background: var(--soft); padding: 10pt 13pt; margin: 0 0 12pt; font-size: 10.5pt; }
+.kpi.main { background: var(--tosca); border-color: var(--tosca); } .kpi.main .l { color: #d9eeee; }
+.kpi.main .n { color: #fff; font-size: 19pt; white-space: nowrap; }
+.verdict-box { border-left: 3pt solid var(--merah); background: var(--soft); padding: 10pt 13pt; margin: 0 0 12pt; font-size: 10.5pt; }
 .verdict-box b { color: var(--tosca-d); }
 ol.top { padding-left: 15pt; margin: 0 0 8pt; }
 ol.top li { margin-bottom: 5pt; }
@@ -52,18 +63,18 @@ ol.top li { margin-bottom: 5pt; }
 .chart .cs, .chart .ax, .chart .mini, .chart .cnt { font-size: 9.5px; fill: var(--muted); }
 .chart .lab { font-size: 11px; fill: var(--ink); }
 .chart .lab.bold { font-weight: 700; }
-.chart .labno { font-weight: 700; fill: var(--tosca-d); }
+.chart .labno { font-weight: 700; fill: var(--ink); }
 .chart .val { font-size: 10.5px; font-weight: 700; fill: var(--ink); }
 .chart .grid { stroke: var(--rule); stroke-width: .7; }
 .chart .ref { stroke: var(--ink2); stroke-width: 1; stroke-dasharray: 3 3; }
 .chart .refl { font-size: 9px; fill: var(--ink2); }
 .chart .track { fill: var(--soft); }
-.chart .bar-ok { fill: var(--tosca); }
+.chart .bar-ok { fill: var(--ok); }
 .chart .bar-mid { fill: #e0a83a; }
 .chart .bar-low { fill: var(--low); }
-.chart .span { fill: var(--tosca); fill-opacity: .22; stroke: var(--tosca); stroke-width: 1; }
-.chart .ms { fill: var(--tosca); }
-.chart .gate { fill: #f15a22; }
+.chart .span { fill: var(--s1); fill-opacity: .2; stroke: var(--s1); stroke-width: 1; }
+.chart .ms { fill: var(--s1); }
+.chart .gate { fill: var(--merah); }
 .caption { font-size: 7.5pt; color: var(--muted); margin: 0 0 10pt; }
 
 /* Peta status */
@@ -82,7 +93,7 @@ ol.top li { margin-bottom: 5pt; }
 /* Tabel */
 table { width: 100%; border-collapse: collapse; font-size: 8.2pt; line-height: 1.38; }
 thead { display: table-header-group; }
-th { text-align: left; font: 500 7pt 'Plex Mono', monospace; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); border-bottom: 1.2pt solid var(--ink); padding: 5pt 5pt; }
+th { text-align: left; font: 500 7pt 'Plex Mono', monospace; letter-spacing: .1em; text-transform: uppercase; color: #fff; background: var(--tosca); padding: 5pt 5pt; }
 td { border-bottom: .6pt solid var(--rule); padding: 6pt 5pt; vertical-align: top; }
 tr { break-inside: avoid; }
 td.kk { font-weight: 700; color: var(--tosca-d); }
@@ -95,7 +106,7 @@ td.nw { white-space: nowrap; }
 .pri { border: .8pt solid currentColor; background: none; }
 .pri.p-K { color: var(--low); } .pri.p-M { color: #a06c08; } .pri.p-R { color: var(--muted); }
 .tbl-detail { table-layout: fixed; } .tbl-detail th:nth-child(1) { width: 15%; } .tbl-detail th:nth-child(2) { width: 24%; } .tbl-detail th:nth-child(3) { width: 25%; } .tbl-detail th:nth-child(4) { width: 36%; }
-.tbl-aksi { table-layout: fixed; } .tbl-aksi th:nth-child(1) { width: 7%; } .tbl-aksi th:nth-child(2) { width: 11%; } .tbl-aksi th:nth-child(3) { width: 33%; } .tbl-aksi th:nth-child(4) { width: 27%; } .tbl-aksi th:nth-child(5) { width: 12%; } .tbl-aksi th:nth-child(6) { width: 10%; }
+.tbl-aksi { table-layout: fixed; } .tbl-aksi th:nth-child(1) { width: 7%; } .tbl-aksi th:nth-child(2) { width: 11%; } .tbl-aksi th:nth-child(3) { width: 31%; } .tbl-aksi th:nth-child(4) { width: 26%; } .tbl-aksi th:nth-child(5) { width: 12%; } .tbl-aksi th:nth-child(6) { width: 13%; }
 
 .two { display: grid; grid-template-columns: 1fr 1fr; gap: 12pt; }
 .box { border: 1px solid var(--rule); border-radius: 6pt; padding: 9pt 11pt; break-inside: avoid; }
@@ -104,16 +115,16 @@ ul.tight { padding-left: 13pt; margin: 0; } ul.tight li { margin-bottom: 3pt; }
 .kv { display: grid; grid-template-columns: 34mm 1fr; gap: 3pt 10pt; font-size: 9pt; margin: 4pt 0 10pt; }
 .kv dt { color: var(--muted); } .kv dd { margin: 0; }
 .ttd { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10pt; margin-top: 14pt; }
-.ttd div { border-top: .8pt solid var(--ink); padding-top: 4pt; font-size: 8.5pt; height: 34mm; display: flex; flex-direction: column; justify-content: flex-end; }
+.ttd div { border-top: .8pt solid var(--tosca); padding-top: 4pt; font-size: 8.5pt; height: 34mm; display: flex; flex-direction: column; justify-content: flex-end; }
 .ttd b { font-size: 9pt; }
 .skala td:first-child { width: 22%; }
 .chart .db-line { stroke-width: 3; stroke-linecap: round; }
-.chart .db-line.ok { stroke: var(--tosca); stroke-opacity: .45; } .chart .db-line.mid { stroke: #e0a83a; stroke-opacity: .55; } .chart .db-line.low { stroke: var(--low); stroke-opacity: .5; }
+.chart .db-line.ok { stroke: var(--ok); stroke-opacity: .4; } .chart .db-line.mid { stroke: var(--jingga); stroke-opacity: .55; } .chart .db-line.low { stroke: var(--low); stroke-opacity: .5; }
 .chart .db-awal { fill: #fff; stroke: var(--muted); stroke-width: 1.4; }
-.chart .db-kini.ok { fill: var(--tosca); } .chart .db-kini.mid { fill: #e0a83a; } .chart .db-kini.low { fill: var(--low); }
-.chart .prog { fill: none; stroke: var(--tosca); stroke-width: 2.2; }
-.chart .prog-dot { fill: var(--tosca); }
-.chart .gate-span { fill: #f15a22; fill-opacity: .25; stroke: #f15a22; }
+.chart .db-kini.ok { fill: var(--ok); } .chart .db-kini.mid { fill: var(--jingga); } .chart .db-kini.low { fill: var(--low); }
+.chart .prog { fill: none; stroke: var(--s1); stroke-width: 2.2; }
+.chart .prog-dot { fill: var(--s1); }
+.chart .gate-span { fill: var(--merah); fill-opacity: .25; stroke: var(--merah); }
 .integritas { border: 1px solid #f0c9bd; background: #fdf3ef; border-radius: 6pt; padding: 9pt 12pt; break-inside: avoid; }
 .integritas h3 { margin-top: 0; color: #9a3412; }
 .chart .mini, .chart .val { paint-order: stroke; stroke: #fff; stroke-width: 3px; stroke-linejoin: round; }
