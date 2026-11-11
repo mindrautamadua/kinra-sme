@@ -181,6 +181,18 @@ export type Sasaran = {
   pic: string | null
   status: StatusSasaran
   catatan: string | null
+  /** Kolom Formulir Objective dan Target per bagian (6.2, migrasi 0048); undefined bila migrasi belum dijalankan */
+  bagian?: string | null
+  aktivitas?: string | null
+  aspek?: string | null
+  /** Target dalam kalimat, mis. '100% personel mengikuti sosialisasi …' (sasaran tanpa EnPI) */
+  target_teks?: string | null
+  program?: string | null
+  batas_waktu?: string | null
+  /** Pencapaian dari sheet 'Pencapaian <bulan>' formulir, per tanggal pencapaian_per */
+  pencapaian?: string | null
+  pencapaian_per?: string | null
+  sumber?: string | null
 }
 
 export type StatusAksi = 'Rencana' | 'Berjalan' | 'Selesai' | 'Ditunda' | 'Batal'
@@ -201,6 +213,13 @@ export type RencanaAksi = {
   hemat_terverifikasi_kwh: number | null
   tanggal_verifikasi: string | null
   catatan: string | null
+  /** Kolom Formulir Rencana Tindakan 6.2 (migrasi 0050); undefined bila migrasi belum dijalankan */
+  deskripsi?: string | null
+  seu_terkait?: string | null
+  /** Isian 'Bagian dari sasaran energi' di formulir */
+  sasaran_teks?: string | null
+  tanggal_identifikasi?: string | null
+  sumber?: string | null
 }
 
 /** Aset gedung/fasilitas KINRA (migrasi 0022). */

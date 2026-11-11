@@ -599,6 +599,10 @@ export async function simpanSasaran(id: number | null, f: FormData): Promise<Has
     kode: teks(f, 'kode'), uraian: teks(f, 'uraian'), enpi_kode: teks(f, 'enpi_kode'),
     target_persen: bil(f, 'target_persen'), tahun_target: bil(f, 'tahun_target'),
     pic: teks(f, 'pic'), status: teks(f, 'status') ?? 'Aktif', catatan: teks(f, 'catatan'),
+    ...(f.has('bagian') ? {
+      bagian: teks(f, 'bagian'), aktivitas: teks(f, 'aktivitas'), target_teks: teks(f, 'target_teks'),
+      program: teks(f, 'program'), batas_waktu: teks(f, 'batas_waktu'), pencapaian: teks(f, 'pencapaian'),
+    } : {}),
     diubah_at: new Date().toISOString(),
   }
   if (!data.kode || !data.uraian) return { ok: false, pesan: 'Kode dan uraian sasaran wajib diisi.' }
@@ -623,6 +627,7 @@ export async function simpanAksi(id: number | null, f: FormData): Promise<Hasil>
     estimasi_hemat_kwh: bil(f, 'estimasi_hemat_kwh'), metode_verifikasi: teks(f, 'metode_verifikasi'),
     status: teks(f, 'status') ?? 'Rencana', hemat_terverifikasi_kwh: bil(f, 'hemat_terverifikasi_kwh'),
     tanggal_verifikasi: teks(f, 'tanggal_verifikasi'), catatan: teks(f, 'catatan'), diubah_at: new Date().toISOString(),
+    ...(f.has('deskripsi') ? { deskripsi: teks(f, 'deskripsi'), seu_terkait: teks(f, 'seu_terkait'), sasaran_teks: teks(f, 'sasaran_teks') } : {}),
   }
   if (!data.kode || !data.uraian) return { ok: false, pesan: 'Kode dan uraian aksi wajib diisi.' }
   if (data.hemat_terverifikasi_kwh !== null && !data.tanggal_verifikasi) return { ok: false, pesan: 'Isi tanggal verifikasi untuk penghematan terverifikasi.' }

@@ -52,6 +52,11 @@ export function DaftarSasaran({ sasaran, aksi, capaian, enpi, peluang, kini, tar
   const [menunggu, mulai] = useTransition()
 
   const tanpaSasaran = aksi.filter((a) => a.sasaran_id === null || !sasaran.some((s) => s.id === a.sasaran_id))
+  // Sasaran per bagian dari Formulir Objective dan Target (6.2) ditampilkan sebagai tabel; sasaran lain (EnPI) sebagai kartu
+  const sasaranBagian = sasaran.filter((s) => s.bagian)
+  const sasaranKartu = sasaran.filter((s) => !s.bagian)
+  const grupBagian = [...new Set(sasaranBagian.map((s) => s.bagian!))].map((b) => ({ bagian: b, daftar: sasaranBagian.filter((s) => s.bagian === b) }))
+  const perBagian = sasaranBagian.find((s) => s.pencapaian_per)?.pencapaian_per ?? null
   const sudahJadiAksi = new Set(aksi.map((a) => a.peluang_kode).filter(Boolean))
   const peluangSiap = peluang.filter((p) => (p.status === 'Disetujui' || p.status === 'Berjalan') && !sudahJadiAksi.has(p.kode))
   const hidup = aksi.filter((a) => a.status !== 'Batal')
@@ -113,6 +118,10 @@ export function DaftarSasaran({ sasaran, aksi, capaian, enpi, peluang, kini, tar
               <tr key={a.id} id={`aksi-${a.kode}`} className={lewat(a) ? 'lewat' : undefined}>
                 <td className="kode">{a.kode}{a.peluang_kode && <span className="upd">dari {a.peluang_kode}</span>}</td>
                 <td style={{ maxWidth: 360 }}>{a.uraian}
+                  {a.deskripsi && <span className="upd">{a.deskripsi}</span>}
+                  {a.seu_terkait && <span className="upd">SEU: {a.seu_terkait}</span>}
+                  {a.sasaran_teks && <span className="upd">Sasaran: {a.sasaran_teks}</span>}
+                  {a.sumber && a.catatan && <span className="upd">Keterangan: {a.catatan}</span>}
                   {a.sumber_daya && <span className="upd">Sumber daya: {a.sumber_daya}</span>}
                   {a.metode_verifikasi && <span className="upd">Verifikasi: {a.metode_verifikasi}</span>}
                 </td>
@@ -200,7 +209,39 @@ export function DaftarSasaran({ sasaran, aksi, capaian, enpi, peluang, kini, tar
         {sasaran.length === 0 && (
           <div className="card"><p className="muted">Belum ada sasaran. Contoh: &ldquo;Menurunkan konsumsi listrik kawasan ternormalisasi 3% pada 2026 dibanding baseline 2025&rdquo; dengan EnPI-02 dan target 3%.</p></div>
         )}
-        {sasaran.map((s) => {
+        {grupBagian.length > 0 && (
+          <div className="card" id="sasaran-bagian">
+            <div className="row">
+              <div>
+                <span className="eyebrow">Formulir Objective dan Target Manajemen · 001/SOP-008/KINRA/SMEn/X/2026</span>
+                <h3>Sasaran & target per bagian · {sasaranBagian.length} sasaran di {grupBagian.length} bagian</h3>
+                <p className="muted small">{sasaranBagian.filter((s) => s.status === 'Tercapai').length} tercapai{perBagian ? ` menurut lembar pencapaian per ${tanggal(perBagian)}` : ''}. Sasaran ini berupa target perilaku dan kepatuhan, belum terhubung ke EnPI.</p>
+              </div>
+            </div>
+            <div className="table-wrap">
+              <table className="tbl">
+                <thead><tr><th>Kode</th><th>Aktivitas · tujuan</th><th>Target</th><th>Program</th><th>Batas · PIC</th><th>Pencapaian</th><th /></tr></thead>
+                {grupBagian.map((g) => (
+                  <tbody key={g.bagian}>
+                    <tr className="ss-sub"><th colSpan={7}>{g.bagian} <span className="muted">· {g.daftar.length} sasaran</span></th></tr>
+                    {g.daftar.map((s) => (
+                      <tr key={s.id} id={`sasaran-${s.kode}`}>
+                        <td className="kode">{s.kode}</td>
+                        <td style={{ maxWidth: 300 }}><b>{s.aktivitas ?? s.uraian}</b>{s.aktivitas && <span className="upd">{s.uraian}</span>}{s.aspek && <span className="upd">Aspek: {s.aspek}</span>}</td>
+                        <td className="small" style={{ maxWidth: 260 }}>{s.target_teks ?? '–'}</td>
+                        <td className="small" style={{ maxWidth: 260 }}>{s.program ?? '–'}</td>
+                        <td className="small">{s.batas_waktu ?? '–'}<span className="upd">{s.pic ?? '–'}</span></td>
+                        <td><Chip kode={s.status === 'Tercapai' ? 'good' : CHIP_S[s.status]} label={s.pencapaian ?? s.status} /></td>
+                        <td>{bisa('sasaran.ubah') && <button type="button" className="btn btn-ikon" aria-label={`Ubah ${s.kode}`} onClick={() => bukaS(s)}><Pencil aria-hidden="true" /></button>}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                ))}
+              </table>
+            </div>
+          </div>
+        )}
+        {sasaranKartu.map((s) => {
           const c = capaian[s.id]
           const daftar = aksi.filter((a) => a.sasaran_id === s.id)
           return (
@@ -297,7 +338,13 @@ export function DaftarSasaran({ sasaran, aksi, capaian, enpi, peluang, kini, tar
           <div className="form-grid">
             <label className="field"><span>Kode</span><input name="kode" required defaultValue={editS?.kode ?? kodeBerikut('S', sasaran)} /></label>
             <label className="field"><span>Status</span><select name="status" defaultValue={editS?.status ?? 'Aktif'}>{STATUS_S.map((s) => <option key={s}>{s}</option>)}</select></label>
-            <label className="field full"><span>Sasaran energi</span><textarea name="uraian" required defaultValue={editS?.uraian ?? ''} placeholder="mis. Menurunkan intensitas energi WTP" /></label>
+            <label className="field full"><span>{editS?.bagian ? 'Tujuan' : 'Sasaran energi'}</span><textarea name="uraian" required defaultValue={editS?.uraian ?? ''} placeholder="mis. Menurunkan intensitas energi WTP" /></label>
+            <label className="field"><span>Bagian</span><input name="bagian" defaultValue={editS?.bagian ?? ''} placeholder="Kosongkan untuk sasaran kinerja energi" /></label>
+            <label className="field"><span>Aktivitas</span><input name="aktivitas" defaultValue={editS?.aktivitas ?? ''} /></label>
+            <label className="field full"><span>Target (kalimat)</span><textarea name="target_teks" defaultValue={editS?.target_teks ?? ''} placeholder="Untuk sasaran tanpa EnPI, mis. 100% personel mengikuti sosialisasi" /></label>
+            <label className="field full"><span>Program</span><textarea name="program" defaultValue={editS?.program ?? ''} /></label>
+            <label className="field"><span>Batas waktu</span><input name="batas_waktu" defaultValue={editS?.batas_waktu ?? ''} placeholder="mis. Desember 2026" /></label>
+            <label className="field"><span>Pencapaian</span><input name="pencapaian" defaultValue={editS?.pencapaian ?? ''} placeholder="mis. Belum tercapai" /></label>
             <label className="field full"><span>EnPI pengukur</span>
               <select name="enpi_kode" defaultValue={editS?.enpi_kode ?? ''}>
                 <option value="">Belum ditentukan</option>
@@ -334,6 +381,9 @@ export function DaftarSasaran({ sasaran, aksi, capaian, enpi, peluang, kini, tar
             <label className="field"><span>Kode</span><input name="kode" required defaultValue={editA?.kode ?? kodeBerikut('RA', aksi)} /></label>
             <label className="field"><span>Status</span><select name="status" defaultValue={editA?.status ?? 'Rencana'}>{STATUS_A.map((s) => <option key={s}>{s}</option>)}</select></label>
             <label className="field full"><span>Uraian aksi</span><textarea name="uraian" required defaultValue={editA?.uraian ?? ''} /></label>
+            <label className="field full"><span>Deskripsi</span><textarea name="deskripsi" defaultValue={editA?.deskripsi ?? ''} /></label>
+            <label className="field"><span>Terkait SEU</span><input name="seu_terkait" defaultValue={editA?.seu_terkait ?? ''} /></label>
+            <label className="field"><span>Bagian dari sasaran energi</span><input name="sasaran_teks" defaultValue={editA?.sasaran_teks ?? ''} /></label>
             <label className="field"><span>Sasaran</span>
               <select name="sasaran_id" defaultValue={editA?.sasaran_id ?? ''}>
                 <option value="">Tanpa sasaran</option>

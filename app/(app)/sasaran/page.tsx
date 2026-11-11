@@ -1,20 +1,18 @@
 import { ChevronRight } from 'lucide-react'
 import { Istilah } from '@/components/Istilah'
 import { SectionHead } from '@/components/SectionHead'
-import { ambilAsetMeter, ambilKinerja, ambilParameter, ambilPeluang, ambilSasaran, ambilSeu } from '@/lib/data'
+import { ambilKinerja, ambilParameter, ambilPeluang, ambilSasaran, ambilSeu } from '@/lib/data'
 import { ringkas } from '@/lib/enpi'
 import { angka, BULAN, hariIni, tanggal } from '@/lib/format'
 import { nilaiEnergi, rupiahRingkas, susunKonversi } from '@/lib/konversi'
 import { LABEL_PROYEKSI, proyeksiSasaran } from '@/lib/proyeksi-sasaran'
-import { penggunaEnergi } from '@/lib/tinjauan'
-import { susunUsulan } from '@/lib/usulan-sasaran'
 import { DaftarSasaran, type Capaian } from './DaftarSasaran'
 
 export const dynamic = 'force-dynamic'
 
 export default async function SasaranPage() {
-  const [{ sasaran, aksi }, kinerja, peluang, param, { seu }, { aset }] = await Promise.all([
-    ambilSasaran(), ambilKinerja(), ambilPeluang(), ambilParameter(), ambilSeu(), ambilAsetMeter(),
+  const [{ sasaran, aksi }, kinerja, peluang, param, { seu }] = await Promise.all([
+    ambilSasaran(), ambilKinerja(), ambilPeluang(), ambilParameter(), ambilSeu(),
   ])
   const { hasil } = kinerja
   const kv = susunKonversi(param)
@@ -46,8 +44,6 @@ export default async function SasaranPage() {
   const terverifikasi = aksi.reduce((t, a) => t + (a.hemat_terverifikasi_kwh ?? 0), 0)
   const seuTetap = seu.filter((s) => s.status === 'Ditetapkan')
 
-  const pakai = penggunaEnergi({ aset, meter: kinerja.meter, bacaan: kinerja.bacaan, sumber: kinerja.sumber, energi: kinerja.energi, seu, ambangPersen: 10, ambangKumulatif: 80 })
-  const usulan = susunUsulan({ hasil, pakai: pakai.daftar, peluang, sasaran, aksi, kini })
 
   // Rantai 6.2: dari fokus (SEU) sampai bukti penghematan
   const rantai = [
@@ -61,7 +57,7 @@ export default async function SasaranPage() {
   // Catatan analis
   const catatan: { kode: 'crit' | 'warn' | 'info'; teks: string }[] = []
   if (!aktif.length) catatan.push({ kode: 'crit', teks: 'Belum ada sasaran energi aktif. Klausul 6.2 mewajibkan sasaran dan target energi yang terukur, konsisten dengan kebijakan energi, beserta rencana aksinya. Tanpa ini, temuan mayor sangat mungkin.' })
-  else if (!sasKinra.length) catatan.push({ kode: 'warn', teks: 'Sasaran aktif belum terhubung ke EnPI lingkup KINRA, sehingga capaiannya tidak dapat diukur dalam batas SMEn.' })
+  else if (!sasKinra.length) catatan.push({ kode: 'crit', teks: `Belum ada sasaran kinerja energi yang terhubung ke EnPI lingkup KINRA.${sasaran.some((s) => s.bagian) ? ' Sasaran per bagian dari formulir 6.2 berupa target perilaku dan kepatuhan (sosialisasi, pelatihan, kepatuhan SOP).' : ''} Klausul 6.2 meminta target energi yang terukur dan mempertimbangkan SEU; auditor dapat menilai ini sebagai ketidaksesuaian. Tetapkan target kinerja energi di formulir, lalu catat di sini.` })
   if (!hidup.length) catatan.push({ kode: 'crit', teks: 'Belum ada rencana aksi: apa yang dilakukan, sumber daya, siapa, kapan, dan cara verifikasi hasilnya (6.2).' })
   const tanpaVerifikasi = hidup.filter((a) => !a.metode_verifikasi).length
   if (tanpaVerifikasi) catatan.push({ kode: 'warn', teks: `${tanpaVerifikasi} rencana aksi belum punya metode verifikasi penghematan.` })
@@ -71,7 +67,6 @@ export default async function SasaranPage() {
   if (estimasi && terverifikasi < estimasi * 0.2 && hidup.some((a) => a.status === 'Selesai')) catatan.push({ kode: 'info', teks: `Penghematan terverifikasi baru ${angka((terverifikasi / estimasi) * 100, 0)}% dari estimasi. Catat hasil verifikasi untuk aksi yang sudah selesai.` })
   const terancam = aktif.filter((s) => capaian[s.id]?.proyeksi && ['sulit', 'berisiko'].includes(capaian[s.id].proyeksi!.status))
   if (terancam.length) catatan.push({ kode: terancam.some((s) => capaian[s.id].proyeksi!.status === 'sulit') ? 'crit' : 'warn', teks: `Proyeksi akhir tahun: ${terancam.map((s) => `${s.kode} ${LABEL_PROYEKSI[capaian[s.id].proyeksi!.status].toLowerCase()}`).join(', ')}. Percepat rencana aksi atau tinjau ulang target bersama manajemen (klausul 6.2, 9.3).` })
-  if (usulan.sasaran.length || usulan.aksi.length) catatan.push({ kode: 'info', teks: `Tersedia ${usulan.sasaran.length} usulan sasaran dan ${usulan.aksi.length} usulan rencana aksi dari data aplikasi di bawah. Tinjau bersama Tim Energi lalu simpan.` })
 
   // Timeline aksi (mulai–tenggat)
   const berjadwal = hidup.filter((a) => a.mulai || a.tenggat).sort((a, b) => (a.mulai ?? a.tenggat!).localeCompare(b.mulai ?? b.tenggat!))
@@ -90,7 +85,9 @@ export default async function SasaranPage() {
     <>
       <section>
         <SectionHead hero eyebrow={<>Klausul 6.2 · <Istilah kata="Sasaran & target energi" /> & <Istilah kata="Rencana aksi" /></>}
-          judul={aktif.length
+          judul={aktif.length && !terukur.length
+            ? <>{aktif.length} sasaran aktif, <span className="kj-sorot-buruk">belum ada yang terukur dengan EnPI</span></>
+            : aktif.length
             ? <>{aktif.length} sasaran aktif, <span className="ks-sorot">{onTrack} dari {terukur.length}</span> yang terukur sudah memenuhi target</>
             : <>Belum ada sasaran energi: <span className="kj-sorot-buruk">klausul 6.2 belum terpenuhi</span></>}>
           <p className="muted">
@@ -148,7 +145,6 @@ export default async function SasaranPage() {
           <p className="muted">Capaian dihitung dari perbaikan EnPI pada tahun target dibanding target perbaikan sasaran.</p>
         </SectionHead>
         <DaftarSasaran sasaran={sasaran} aksi={aksi} capaian={capaian} kini={kini} tarif={kv.tarifListrik} ef={kv.efListrik}
-          usulanS={usulan.sasaran} usulanA={usulan.aksi}
           enpi={hasil.map((h) => ({ kode: h.enpi.kode, nama: h.enpi.nama }))}
           peluang={peluang.map((p) => ({ kode: p.kode, uraian: p.uraian, status: p.status, estimasi_kwh: p.estimasi_kwh, pemilik: p.pemilik }))} />
       </section>

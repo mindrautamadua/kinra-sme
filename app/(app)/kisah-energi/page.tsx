@@ -380,8 +380,8 @@ export default async function KisahEnergi() {
           <p className="lp-lead">Setelah tahu siapa pemakan listriknya dan punya penggarisnya, saatnya berjanji. KIRA mengingatkan: “Janji yang baik itu bisa dicek. ‘Kita akan berhemat’ itu bukan sasaran. ‘Turunkan kWh per m³ air WTP 1 sebesar 5% pada 2027’ itu baru sasaran.”</p>
           <h3 className="lp-h3">{k.sasaran.length} sasaran energi KINRA</h3>
           <table className="lp-tbl lp-rapat">
-            <thead><tr><th>EnPI</th><th>Sasaran</th><th className="angka">Target</th><th>Tahun</th><th>PIC</th><th>Status</th></tr></thead>
-            <tbody>{k.sasaran.map((s) => <tr key={s.id}><th>{s.enpi_kode ?? s.kode}</th><td>{s.uraian}</td><td className="angka">{s.target_persen !== null ? `${angka(s.target_persen, 1)}%` : '–'}</td><td>{s.tahun_target ?? '–'}</td><td>{s.pic ?? '–'}</td><td>{s.status}</td></tr>)}</tbody>
+            <thead><tr><th>{k.sasaran.some((s) => s.bagian) ? 'Bagian · kode' : 'EnPI'}</th><th>Sasaran</th><th>Target</th><th>Batas</th><th>Status</th></tr></thead>
+            <tbody>{k.sasaran.map((s) => <tr key={s.id}><th>{s.bagian ? <>{s.bagian}<br /><span className="mono">{s.kode}</span></> : (s.enpi_kode ?? s.kode)}</th><td>{s.aktivitas ?? s.uraian}</td><td>{s.target_teks ?? (s.target_persen !== null ? `${angka(s.target_persen, 1)}% (${s.enpi_kode})` : '–')}</td><td>{s.batas_waktu ?? s.tahun_target ?? '–'}</td><td>{s.pencapaian ?? s.status}</td></tr>)}</tbody>
           </table>
           {k.aksiUnggulan && (
             <>
