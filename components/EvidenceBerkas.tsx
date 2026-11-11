@@ -3,12 +3,12 @@
 import { CircleAlert, CircleCheck, Download, LoaderCircle, RotateCw, Trash2, Upload, X, BadgeCheck } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useRef, useState, useTransition } from 'react'
-import { catatBerkas, hapusBerkas, siapkanUnggah, tandaiSah } from '@/app/actions'
+import { catatBerkas, catatBukti, hapusBerkas, hapusBukti, siapkanUnggah, siapkanUnggahBukti, tandaiSah } from '@/app/actions'
 import { IkonBerkas, PenampilBerkas, ukuranBerkas, unduhUrl } from '@/components/PenampilBerkas'
 import { useBoleh } from '@/components/Peran'
 import { waktu } from '@/lib/format'
 import { BUCKET_BUKTI, UKURAN_MAKS_BUKTI } from '@/lib/status'
-import type { BerkasTampil } from '@/lib/types'
+import type { BerkasTampil, PemilikBukti } from '@/lib/types'
 
 type Tahap = 'antre' | 'siapkan' | 'unggah' | 'simpan' | 'sukses' | 'gagal'
 type Antrean = { id: string; file: File; tahap: Tahap; persen: number; pesan?: string; path?: string }
@@ -45,11 +45,18 @@ function kirim(path: string, token: string, file: File, onPersen: (p: number) =>
 /**
  * Daftar berkas evidence + unggah banyak berkas (dengan progres per berkas) + penampil langsung di aplikasi.
  * `hanyaLihat`: daftar dan penampil saja, tanpa unggah atau hapus (unggah hanya di Kesiapan Audit).
+ * `pemilik`: mode bukti pelaksanaan sasaran/aksi (migrasi 0051). Unggah oleh Admin & Tim KINRA, hapus oleh Admin,
+ * tanpa penanda versi sah; berkas baru dicatat dengan `periode` ('YYYY-MM').
  */
-export function EvidenceBerkas({ dokumenId, berkas, migrasi = false, onBerubah, hanyaLihat = false }: { dokumenId: string; berkas: BerkasTampil[]; migrasi?: boolean; onBerubah?: () => void; hanyaLihat?: boolean }) {
+export function EvidenceBerkas({ dokumenId, pemilik, periode = null, berkas, migrasi = false, onBerubah, hanyaLihat = false }: {
+  dokumenId?: string; pemilik?: PemilikBukti; periode?: string | null
+  berkas: BerkasTampil[]; migrasi?: boolean; onBerubah?: () => void; hanyaLihat?: boolean
+}) {
   const router = useRouter()
   const bisa = useBoleh()
-  const bisaUbah = !hanyaLihat && bisa('dokumen.ubah')
+  const bisaUnggah = !hanyaLihat && (pemilik ? bisa('bukti.unggah') : bisa('dokumen.ubah'))
+  const bisaHapus = !hanyaLihat && (pemilik ? bisa('bukti.hapus') : bisa('dokumen.ubah'))
+  const bisaSah = !hanyaLihat && !pemilik && bisa('dokumen.ubah')
   const [antrean, setAntrean] = useState<Antrean[]>([])
   const [galat, setGalat] = useState<string | null>(null)
   const [seret, setSeret] = useState(false)
@@ -65,7 +72,7 @@ export function EvidenceBerkas({ dokumenId, berkas, migrasi = false, onBerubah, 
     const { id, file } = item
     if (file.size > UKURAN_MAKS_BUKTI) return ubah(id, { tahap: 'gagal', pesan: `Melebihi batas ${UKURAN_MAKS_BUKTI / 1024 / 1024} MB` })
     ubah(id, { tahap: 'siapkan', persen: 0, pesan: undefined })
-    const s = await siapkanUnggah(dokumenId, file.name, file.size)
+    const s = pemilik ? await siapkanUnggahBukti(pemilik, file.name, file.size) : await siapkanUnggah(dokumenId!, file.name, file.size)
     if (!s.ok || !s.path || !s.token) return ubah(id, { tahap: 'gagal', pesan: s.ok ? 'Gagal menyiapkan unggahan' : s.pesan })
     ubah(id, { tahap: 'unggah' })
     try {
@@ -74,7 +81,8 @@ export function EvidenceBerkas({ dokumenId, berkas, migrasi = false, onBerubah, 
       return ubah(id, { tahap: 'gagal', pesan: e instanceof Error ? e.message : 'Unggah gagal' })
     }
     ubah(id, { tahap: 'simpan', persen: 100 })
-    const c = await catatBerkas(dokumenId, { path: s.path, nama_file: file.name, mime: file.type, ukuran: file.size })
+    const meta = { path: s.path, nama_file: file.name, mime: file.type, ukuran: file.size }
+    const c = pemilik ? await catatBukti(pemilik, periode, meta) : await catatBerkas(dokumenId!, meta)
     if (!c.ok) return ubah(id, { tahap: 'gagal', pesan: c.pesan })
     ubah(id, { tahap: 'sukses', path: s.path })
     onBerubah?.()
@@ -116,7 +124,7 @@ export function EvidenceBerkas({ dokumenId, berkas, migrasi = false, onBerubah, 
   function hapus(b: BerkasTampil) {
     if (!confirm(`Hapus berkas ${b.nama_file}? Berkas akan terhapus permanen dari penyimpanan aplikasi.`)) return
     mulai(async () => {
-      const h = await hapusBerkas(b.id)
+      const h = pemilik ? await hapusBukti(b.id) : await hapusBerkas(b.id)
       if (!h.ok) return setGalat(h.pesan)
       setBuka(null)
       onBerubah?.()
@@ -125,7 +133,7 @@ export function EvidenceBerkas({ dokumenId, berkas, migrasi = false, onBerubah, 
   }
 
   if (migrasi) {
-    return <p className="pesan small">Unggah berkas belum aktif. Jalankan <code>supabase/migrations/0010_evidence_storage.sql</code> di SQL Editor Supabase.</p>
+    return <p className="pesan small">Unggah berkas belum aktif. Jalankan <code>supabase/migrations/{pemilik ? '0051_bukti_pelaksanaan_sasaran.sql' : '0010_evidence_storage.sql'}</code> di SQL Editor Supabase.</p>
   }
 
   const berjalan = antrean.filter((x) => x.tahap !== 'sukses' && x.tahap !== 'gagal').length
@@ -143,29 +151,29 @@ export function EvidenceBerkas({ dokumenId, berkas, migrasi = false, onBerubah, 
                 <span className="berkas-ikon"><IkonBerkas b={b} /></span>
                 <span className="grow">
                   <b>{b.nama_file}{b.sah ? <span className="berkas-sah" title={b.sah_oleh ? `Ditandai: ${b.sah_oleh}` : undefined}><BadgeCheck aria-hidden="true" />Versi sah{b.sah_oleh?.startsWith('Otomatis') ? ' · otomatis' : ''}</span> : berkas.some((x) => x.sah) ? <span className="berkas-draf">Draf / pendukung</span> : null}</b>
-                  <span className="muted small">{ukuranBerkas(b.ukuran)} · {waktu(b.diunggah_at)}{b.diunggah_oleh && ` · ${b.diunggah_oleh}`}</span>
+                  <span className="muted small">{b.periode && <>Periode {b.periode} · </>}{ukuranBerkas(b.ukuran)} · {waktu(b.diunggah_at)}{b.diunggah_oleh && ` · ${b.diunggah_oleh}`}</span>
                 </span>
               </button>
-              {bisaUbah && (
+              {bisaSah && (
                 <button type="button" className={`btn kecil berkas-tanda${b.sah ? ' aktif' : ''}`} disabled={menunggu} onClick={() => sah(b)}
                   aria-pressed={!!b.sah} title={b.sah ? 'Lepas penanda versi sah' : 'Tandai sebagai versi sah yang ditunjukkan ke auditor'}>
                   <BadgeCheck aria-hidden="true" /><span className="teks">{b.sah ? 'Sah' : 'Tandai sah'}</span>
                 </button>
               )}
               {b.url && <a className="btn btn-ikon kecil" href={unduhUrl(b)!} aria-label={`Unduh ${b.nama_file}`} title="Unduh"><Download aria-hidden="true" /></a>}
-              {bisaUbah && <button type="button" className="btn btn-ikon kecil bahaya" disabled={menunggu} onClick={() => hapus(b)} aria-label={`Hapus ${b.nama_file}`} title="Hapus"><Trash2 aria-hidden="true" /></button>}
+              {bisaHapus && <button type="button" className="btn btn-ikon kecil bahaya" disabled={menunggu} onClick={() => hapus(b)} aria-label={`Hapus ${b.nama_file}`} title="Hapus"><Trash2 aria-hidden="true" /></button>}
             </div>
           ))}
         </div>
       ) : (
-        <p className="muted small" style={{ margin: '0 0 12px' }}>Belum ada berkas evidence yang diunggah.</p>
+        <p className="muted small" style={{ margin: '0 0 12px' }}>{pemilik ? 'Belum ada bukti pelaksanaan yang diunggah.' : 'Belum ada berkas evidence yang diunggah.'}</p>
       )}
-      {berkas.length > 0 && !berkas.some((x) => x.sah) && (
+      {!pemilik && berkas.length > 0 && !berkas.some((x) => x.sah) && (
         <p className="pesan small" style={{ margin: '0 0 12px' }}>Belum ada berkas bertanda <b>versi sah</b>. Tandai PDF yang sudah disahkan/ditandatangani (atau rekaman yang lengkap) agar item dapat berstatus Final dan dihitung siap audit.</p>
       )}
       {info && <p className="pesan small" role="status" style={{ margin: '0 0 12px' }}>{info}</p>}
 
-      {bisaUbah && (
+      {bisaUnggah && (
         <label
           className={`unggah-zona${seret ? ' seret' : ''}${berjalan ? ' sibuk' : ''}`}
           onDragOver={(e) => { e.preventDefault(); setSeret(true) }}

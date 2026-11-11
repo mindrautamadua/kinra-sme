@@ -1,6 +1,6 @@
 'use client'
 
-import { ArrowRight, Check, Pencil, Plus, Trash2, X } from 'lucide-react'
+import { ArrowRight, Check, Paperclip, Pencil, Plus, Trash2, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useRef, useState, useTransition } from 'react'
 import { hapusAksi, hapusSasaran, hubungkanAksi, simpanAksi, simpanSasaran, ubahStatusAksi } from '@/app/actions'
@@ -13,6 +13,7 @@ import { CHIP_PROYEKSI, LABEL_PROYEKSI, type ProyeksiSasaran } from '@/lib/proye
 import type { KodeChip } from '@/lib/status'
 import type { RencanaAksi, Sasaran, StatusAksi, StatusSasaran } from '@/lib/types'
 import { tagUsulan, type UsulanAksi, type UsulanSasaran } from '@/lib/usulan-sasaran'
+import { PanelBukti, type TargetBukti } from './PanelBukti'
 
 export type Capaian = {
   enpi: string
@@ -50,6 +51,12 @@ export function DaftarSasaran({ sasaran, aksi, capaian, enpi, peluang, kini, tar
   const [editA, setEditA] = useState<Partial<RencanaAksi> | null>(null)
   const [galat, setGalat] = useState<string | null>(null)
   const [menunggu, mulai] = useTransition()
+  const [bukti, setBukti] = useState<TargetBukti | null>(null)
+  const tombolBukti = (t: TargetBukti, n: number | undefined) => (
+    <button type="button" className={`btn kecil${n ? '' : ' ss-tanpa-bukti'}`} onClick={() => setBukti(t)} title={n ? `${n} berkas bukti` : 'Belum ada bukti pelaksanaan'}>
+      <Paperclip aria-hidden="true" /><span className="tnum">{n ?? 0}</span>
+    </button>
+  )
 
   const tanpaSasaran = aksi.filter((a) => a.sasaran_id === null || !sasaran.some((s) => s.id === a.sasaran_id))
   // Sasaran per bagian dari Formulir Objective dan Target (6.2) ditampilkan sebagai tabel; sasaran lain (EnPI) sebagai kartu
@@ -111,9 +118,9 @@ export function DaftarSasaran({ sasaran, aksi, capaian, enpi, peluang, kini, tar
   const tabelAksi = (daftar: RencanaAksi[]) => (
       <div className="table-wrap">
         <table className="tbl">
-          <thead><tr><th>Kode</th><th>Aksi</th><th>PIC · tenggat</th><th className="num">Estimasi</th><th className="num">Terverifikasi</th><th>Status</th><th /></tr></thead>
+          <thead><tr><th>Kode</th><th>Aksi</th><th>PIC · tenggat</th><th className="num">Estimasi</th><th className="num">Terverifikasi</th><th>Status</th><th>Bukti</th><th /></tr></thead>
           <tbody>
-            {daftar.length === 0 && <tr className="kosong"><td colSpan={7}>Belum ada rencana aksi.</td></tr>}
+            {daftar.length === 0 && <tr className="kosong"><td colSpan={8}>Belum ada rencana aksi.</td></tr>}
             {daftar.map((a) => (
               <tr key={a.id} id={`aksi-${a.kode}`} className={lewat(a) ? 'lewat' : undefined}>
                 <td className="kode">{a.kode}{a.peluang_kode && <span className="upd">dari {a.peluang_kode}</span>}</td>
@@ -138,6 +145,7 @@ export function DaftarSasaran({ sasaran, aksi, capaian, enpi, peluang, kini, tar
                     </label>
                   )}
                 </td>
+                <td>{tombolBukti({ jenis: 'aksi', id: a.id, kode: a.kode, judul: a.uraian, status: a.status }, a.jumlah_bukti)}</td>
                 <td>{bisa('aksi.ubah') && <button type="button" className="btn btn-ikon" aria-label={`Ubah ${a.kode}`} onClick={() => bukaA(a)}><Pencil aria-hidden="true" /></button>}</td>
               </tr>
             ))}
@@ -215,15 +223,15 @@ export function DaftarSasaran({ sasaran, aksi, capaian, enpi, peluang, kini, tar
               <div>
                 <span className="eyebrow">Formulir Objective dan Target Manajemen · 001/SOP-008/KINRA/SMEn/X/2026</span>
                 <h3>Sasaran & target per bagian · {sasaranBagian.length} sasaran di {grupBagian.length} bagian</h3>
-                <p className="muted small">{sasaranBagian.filter((s) => s.status === 'Tercapai').length} tercapai{perBagian ? ` menurut lembar pencapaian per ${tanggal(perBagian)}` : ''}. Sasaran ini berupa target perilaku dan kepatuhan, belum terhubung ke EnPI.</p>
+                <p className="muted small">{sasaranBagian.filter((s) => s.status === 'Tercapai').length} tercapai{perBagian ? ` menurut lembar pencapaian per ${tanggal(perBagian)}` : ''} · <b>{sasaranBagian.filter((s) => s.jumlah_bukti).length} dari {sasaranBagian.length}</b> sudah punya bukti pelaksanaan. Sasaran ini berupa target perilaku dan kepatuhan, belum terhubung ke EnPI.</p>
               </div>
             </div>
             <div className="table-wrap">
               <table className="tbl">
-                <thead><tr><th>Kode</th><th>Aktivitas · tujuan</th><th>Target</th><th>Program</th><th>Batas · PIC</th><th>Pencapaian</th><th /></tr></thead>
+                <thead><tr><th>Kode</th><th>Aktivitas · tujuan</th><th>Target</th><th>Program</th><th>Batas · PIC</th><th>Pencapaian</th><th>Bukti</th><th /></tr></thead>
                 {grupBagian.map((g) => (
                   <tbody key={g.bagian}>
-                    <tr className="ss-sub"><th colSpan={7}>{g.bagian} <span className="muted">· {g.daftar.length} sasaran</span></th></tr>
+                    <tr className="ss-sub"><th colSpan={8}>{g.bagian} <span className="muted">· {g.daftar.length} sasaran</span></th></tr>
                     {g.daftar.map((s) => (
                       <tr key={s.id} id={`sasaran-${s.kode}`}>
                         <td className="kode">{s.kode}</td>
@@ -231,7 +239,8 @@ export function DaftarSasaran({ sasaran, aksi, capaian, enpi, peluang, kini, tar
                         <td className="small" style={{ maxWidth: 260 }}>{s.target_teks ?? '–'}</td>
                         <td className="small" style={{ maxWidth: 260 }}>{s.program ?? '–'}</td>
                         <td className="small">{s.batas_waktu ?? '–'}<span className="upd">{s.pic ?? '–'}</span></td>
-                        <td><Chip kode={s.status === 'Tercapai' ? 'good' : CHIP_S[s.status]} label={s.pencapaian ?? s.status} /></td>
+                        <td><Chip kode={s.status === 'Tercapai' ? 'good' : CHIP_S[s.status]} label={s.status === 'Tercapai' ? 'Tercapai' : (s.pencapaian ?? s.status)} /></td>
+                        <td>{tombolBukti({ jenis: 'sasaran', id: s.id, kode: s.kode, judul: s.aktivitas ?? s.uraian, target: s.target_teks, status: s.status }, s.jumlah_bukti)}</td>
                         <td>{bisa('sasaran.ubah') && <button type="button" className="btn btn-ikon" aria-label={`Ubah ${s.kode}`} onClick={() => bukaS(s)}><Pencil aria-hidden="true" /></button>}</td>
                       </tr>
                     ))}
@@ -258,6 +267,7 @@ export function DaftarSasaran({ sasaran, aksi, capaian, enpi, peluang, kini, tar
                 </div>
                 <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                   <Chip kode={CHIP_S[s.status]} label={s.status} />
+                  {tombolBukti({ jenis: 'sasaran', id: s.id, kode: s.kode, judul: s.uraian, status: s.status }, s.jumlah_bukti)}
                   {bisa('sasaran.ubah') && <button type="button" className="btn btn-ikon" aria-label={`Ubah ${s.kode}`} onClick={() => bukaS(s)}><Pencil aria-hidden="true" /></button>}
                 </div>
               </div>
@@ -328,6 +338,8 @@ export function DaftarSasaran({ sasaran, aksi, capaian, enpi, peluang, kini, tar
         )}
       </div>
 
+      <PanelBukti target={bukti} kini={kini} onTutup={() => { setBukti(null); router.refresh() }} />
+
       <dialog ref={dlgS} className="panel" onClose={() => setEditS(null)}>
         <form className="card" key={`${editS?.id ?? 'baru'}-${nomorBuka}`} action={(f) => mulai(async () => {
           const h = await simpanSasaran(editS?.id ?? null, f)
@@ -337,7 +349,9 @@ export function DaftarSasaran({ sasaran, aksi, capaian, enpi, peluang, kini, tar
           <div className="row"><h3>{editS?.id ? `Ubah ${editS.kode}` : editS?.uraian ? 'Sasaran baru dari usulan' : 'Sasaran baru'}</h3><button type="button" className="btn btn-ikon" aria-label="Tutup" onClick={() => dlgS.current?.close()}><X aria-hidden="true" /></button></div>
           <div className="form-grid">
             <label className="field"><span>Kode</span><input name="kode" required defaultValue={editS?.kode ?? kodeBerikut('S', sasaran)} /></label>
-            <label className="field"><span>Status</span><select name="status" defaultValue={editS?.status ?? 'Aktif'}>{STATUS_S.map((s) => <option key={s}>{s}</option>)}</select></label>
+            <label className="field"><span>Status</span><select name="status" defaultValue={editS?.status ?? 'Aktif'}>{STATUS_S.map((s) => (
+              <option key={s} value={s} disabled={s === 'Tercapai' && !editS?.jumlah_bukti && editS?.status !== 'Tercapai'}>{s}{s === 'Tercapai' && !editS?.jumlah_bukti ? ' (unggah bukti dulu)' : ''}</option>
+            ))}</select></label>
             <label className="field full"><span>{editS?.bagian ? 'Tujuan' : 'Sasaran energi'}</span><textarea name="uraian" required defaultValue={editS?.uraian ?? ''} placeholder="mis. Menurunkan intensitas energi WTP" /></label>
             <label className="field"><span>Bagian</span><input name="bagian" defaultValue={editS?.bagian ?? ''} placeholder="Kosongkan untuk sasaran kinerja energi" /></label>
             <label className="field"><span>Aktivitas</span><input name="aktivitas" defaultValue={editS?.aktivitas ?? ''} /></label>

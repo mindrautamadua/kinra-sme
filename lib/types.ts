@@ -38,10 +38,17 @@ export type Berkas = {
   ukuran: number | null
   diunggah_oleh: string | null
   diunggah_at: string
+  /** Bukti pelaksanaan sasaran / rencana aksi beserta periodenya 'YYYY-MM' (migrasi 0051) */
+  sasaran_id?: number | null
+  aksi_id?: number | null
+  periode?: string | null
   /** Versi sah yang ditunjukkan ke auditor (migrasi 0031) */
   sah?: boolean
   sah_oleh?: string | null
 }
+
+/** Pemilik bukti pelaksanaan: satu sasaran atau satu rencana aksi (migrasi 0051) */
+export type PemilikBukti = { jenis: 'sasaran' | 'aksi'; id: number }
 
 /** Berkas dengan signed URL (berlaku 1 jam) untuk ditampilkan */
 export type BerkasTampil = Berkas & { url: string | null }
@@ -193,6 +200,8 @@ export type Sasaran = {
   pencapaian?: string | null
   pencapaian_per?: string | null
   sumber?: string | null
+  /** Jumlah berkas bukti pelaksanaan (migrasi 0051), dihitung saat dibaca */
+  jumlah_bukti?: number
 }
 
 export type StatusAksi = 'Rencana' | 'Berjalan' | 'Selesai' | 'Ditunda' | 'Batal'
@@ -220,6 +229,8 @@ export type RencanaAksi = {
   sasaran_teks?: string | null
   tanggal_identifikasi?: string | null
   sumber?: string | null
+  /** Jumlah berkas bukti pelaksanaan (migrasi 0051), dihitung saat dibaca */
+  jumlah_bukti?: number
 }
 
 /** Aset gedung/fasilitas KINRA (migrasi 0022). */

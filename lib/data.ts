@@ -198,9 +198,16 @@ export async function ambilSasaran(): Promise<{ sasaran: Sasaran[]; aksi: Rencan
     s.from('rencana_aksi').select('*').order('kode'),
   ])
   const n = (v: unknown) => (v === null || v === undefined ? null : Number(v))
+  // Jumlah bukti pelaksanaan per sasaran/aksi (migrasi 0051); kolom belum ada = 0
+  const bk = await s.from('berkas').select('sasaran_id, aksi_id').or('sasaran_id.not.is.null,aksi_id.not.is.null').limit(10000)
+  const nS = new Map<number, number>(), nA = new Map<number, number>()
+  for (const x of (bk.error ? [] : bk.data ?? []) as { sasaran_id: number | null; aksi_id: number | null }[]) {
+    if (x.sasaran_id) nS.set(x.sasaran_id, (nS.get(x.sasaran_id) ?? 0) + 1)
+    if (x.aksi_id) nA.set(x.aksi_id, (nA.get(x.aksi_id) ?? 0) + 1)
+  }
   return {
-    sasaran: cek<Sasaran[]>(a, 'sasaran').map((x) => ({ ...x, target_persen: n(x.target_persen) })),
-    aksi: cek<RencanaAksi[]>(b, 'rencana_aksi').map((x) => ({ ...x, estimasi_hemat_kwh: n(x.estimasi_hemat_kwh), hemat_terverifikasi_kwh: n(x.hemat_terverifikasi_kwh) })),
+    sasaran: cek<Sasaran[]>(a, 'sasaran').map((x) => ({ ...x, target_persen: n(x.target_persen), jumlah_bukti: nS.get(x.id) ?? 0 })),
+    aksi: cek<RencanaAksi[]>(b, 'rencana_aksi').map((x) => ({ ...x, estimasi_hemat_kwh: n(x.estimasi_hemat_kwh), hemat_terverifikasi_kwh: n(x.hemat_terverifikasi_kwh), jumlah_bukti: nA.get(x.id) ?? 0 })),
   }
 }
 

@@ -1837,6 +1837,7 @@ dialog.tj-ev-dlg { max-height: calc(100dvh - 32px); overflow-y: auto; overscroll
 @media (prefers-reduced-motion: reduce) { .tp-batang rect, .tp-kumulatif, .tp-titik, .ti-bar i { animation: none; } }
 
 /* ---------- Sasaran & aksi ---------- */
+.ss-tanpa-bukti { color: var(--crit); border-color: color-mix(in srgb, var(--crit) 45%, var(--line)); }
 .tbl tr.ss-sub th { background: var(--surface-2); color: var(--brand); font-size: 12px; font-weight: 700; text-align: left; padding-top: 8px; padding-bottom: 8px; }
 .ss-rantai { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; }
 .ss-rantai li { position: relative; display: flex; align-items: center; animation: rg-muncul .5s var(--ease) backwards; animation-delay: calc(var(--i) * 90ms); }

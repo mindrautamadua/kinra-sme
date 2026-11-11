@@ -6,10 +6,10 @@ import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import type { Aksi } from '@/lib/akses'
 import { ambilBerkas } from '@/lib/data'
-import { cekAkses } from '@/lib/sesi'
+import { cekAkses, penggunaSaya } from '@/lib/sesi'
 import { COOKIE_SESI, db } from '@/lib/supabase'
 import { BUCKET_BUKTI, UKURAN_MAKS_BUKTI } from '@/lib/status'
-import type { BerkasTampil, StatusAksi, StatusDokumen, StatusKegiatan } from '@/lib/types'
+import type { BerkasTampil, PemilikBukti, StatusAksi, StatusDokumen, StatusKegiatan } from '@/lib/types'
 import { ambilIsian, ambilTemplat } from '@/lib/formulir/data'
 import { isiAwal, selaraskan } from '@/lib/formulir/isi'
 import { tabelDariData } from '@/lib/formulir/sumber-data'
@@ -213,6 +213,60 @@ export async function tandaiSah(id: string, sah: boolean): Promise<Hasil & { per
     if (!count && (dok?.status === 'final' || dok?.status === 'disetujui')) return { ok: true, peringatan: 'Item ini berstatus Final tetapi tidak lagi punya berkas sah, sehingga tidak dihitung siap audit.' }
   }
   return { ok: true }
+}
+
+// ---------- Bukti pelaksanaan sasaran & rencana aksi (migrasi 0051) ----------
+
+const kolomPemilik = (p: PemilikBukti) => (p.jenis === 'sasaran' ? 'sasaran_id' : 'aksi_id')
+const prefiksBukti = (p: PemilikBukti) => `pelaksanaan/${p.jenis}-${p.id}/`
+const pemilikSah = (p: PemilikBukti) => (p.jenis === 'sasaran' || p.jenis === 'aksi') && Number.isInteger(p.id) && p.id > 0
+
+/** Daftar bukti satu sasaran/aksi beserta signed URL (berlaku 1 jam). */
+export async function ambilBukti(p: PemilikBukti): Promise<Hasil & { berkas?: BerkasTampil[]; migrasi?: boolean }> {
+  // Semua peran yang login boleh melihat, termasuk Pembaca (auditor); RLS tetap berlaku
+  if (!(await penggunaSaya())) return { ok: false, pesan: 'Sesi berakhir. Silakan masuk kembali.' }
+  if (!pemilikSah(p)) return { ok: false, pesan: 'Pemilik bukti tidak valid.' }
+  const s = await db()
+  const r = await s.from('berkas').select('*').eq(kolomPemilik(p), p.id).order('periode', { ascending: false }).order('diunggah_at', { ascending: false })
+  if (r.error?.code === '42703' || r.error?.code === 'PGRST204') return { ok: true, berkas: [], migrasi: true }
+  if (r.error) return gagal(r.error)
+  const daftar = (r.data ?? []) as BerkasTampil[]
+  const { data: tanda } = daftar.length ? await s.storage.from(BUCKET_BUKTI).createSignedUrls(daftar.map((b) => b.path), 3600) : { data: [] }
+  return { ok: true, berkas: daftar.map((b) => ({ ...b, url: tanda?.find((x) => x.path === b.path)?.signedUrl ?? null })) }
+}
+
+export async function siapkanUnggahBukti(p: PemilikBukti, nama: string, ukuran: number): Promise<Hasil & { path?: string; token?: string }> {
+  const t = await tolak('bukti.unggah'); if (t) return t
+  if (!pemilikSah(p)) return { ok: false, pesan: 'Pemilik bukti tidak valid.' }
+  if (ukuran > UKURAN_MAKS_BUKTI) return { ok: false, pesan: `${nama} melebihi batas ${UKURAN_MAKS_BUKTI / 1024 / 1024} MB.` }
+  const path = `${prefiksBukti(p)}${randomUUID()}-${namaAman(nama)}`
+  const { data, error } = await (await db()).storage.from(BUCKET_BUKTI).createSignedUploadUrl(path)
+  return error ? gagal(error) : { ok: true, path: data.path, token: data.token }
+}
+
+export async function catatBukti(p: PemilikBukti, periode: string | null, b: { path: string; nama_file: string; mime: string; ukuran: number }): Promise<Hasil> {
+  const t = await tolak('bukti.unggah'); if (t) return t
+  if (!pemilikSah(p) || !b.path.startsWith(prefiksBukti(p))) return { ok: false, pesan: 'Path berkas tidak sesuai pemilik bukti.' }
+  if (periode && !/^\d{4}-(0[1-9]|1[0-2])$/.test(periode)) return { ok: false, pesan: 'Periode harus berformat tahun-bulan.' }
+  const { error } = await (await db()).from('berkas').insert({
+    [kolomPemilik(p)]: p.id, periode, path: b.path, nama_file: b.nama_file, mime: b.mime || null, ukuran: b.ukuran, folder: 'Pelaksanaan',
+  })
+  revalidatePath('/sasaran')
+  if (error?.code === '42703' || error?.code === 'PGRST204') return { ok: false, pesan: 'Kolom bukti pelaksanaan belum ada. Jalankan migrasi 0051_bukti_pelaksanaan_sasaran.sql di Supabase.' }
+  return gagal(error)
+}
+
+export async function hapusBukti(id: string): Promise<Hasil> {
+  const t = await tolak('bukti.hapus'); if (t) return t
+  const s = await db()
+  const { data: b, error: e1 } = await s.from('berkas').select('path, sasaran_id, aksi_id').eq('id', id).maybeSingle()
+  if (e1 || !b) return { ok: false, pesan: e1?.message ?? 'Berkas tidak ditemukan.' }
+  if (!b.sasaran_id && !b.aksi_id) return { ok: false, pesan: 'Berkas ini bukan bukti pelaksanaan.' }
+  const { error: e2 } = await s.storage.from(BUCKET_BUKTI).remove([b.path])
+  if (e2) return gagal(e2)
+  const { error } = await s.from('berkas').delete().eq('id', id)
+  revalidatePath('/sasaran')
+  return gagal(error)
 }
 
 export async function hapusBerkas(id: string): Promise<Hasil> {
@@ -607,6 +661,10 @@ export async function simpanSasaran(id: number | null, f: FormData): Promise<Has
   }
   if (!data.kode || !data.uraian) return { ok: false, pesan: 'Kode dan uraian sasaran wajib diisi.' }
   if (data.enpi_kode && (data.target_persen === null || data.tahun_target === null)) return { ok: false, pesan: 'Sasaran yang terkait EnPI butuh target (%) dan tahun target agar dapat diukur.' }
+  if (data.status === 'Tercapai') {
+    const n = id ? (await (await db()).from('berkas').select('id', { count: 'exact', head: true }).eq('sasaran_id', id)).count ?? 0 : 0
+    if (!n) return { ok: false, pesan: 'Unggah minimal satu bukti pelaksanaan sebelum menandai sasaran Tercapai.' }
+  }
   const { error } = id ? await (await db()).from('sasaran').update(data).eq('id', id) : await (await db()).from('sasaran').insert(data)
   revalidasiKinerja()
   return gagal(error && { message: /duplicate key/.test(error.message) ? 'Kode sasaran sudah dipakai.' : error.message })

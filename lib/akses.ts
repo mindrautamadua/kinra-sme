@@ -1,4 +1,4 @@
-/** Matriks hak akses. Sinkron dengan policy RLS di supabase/migrations/0006_login_peran.sql, 0007, 0009, 0011, 0014, 0019, 0020, 0021, 0022, 0027, 0028, 0030, dan 0042. */
+/** Matriks hak akses. Sinkron dengan policy RLS di supabase/migrations/0006_login_peran.sql, 0007, 0009, 0011, 0014, 0019, 0020, 0021, 0022, 0027, 0028, 0030, 0042, dan 0051. */
 export type Peran = 'admin' | 'konsultan' | 'tim_kinra' | 'pembaca'
 
 export const LABEL_PERAN: Record<Peran, string> = { admin: 'Admin', konsultan: 'Konsultan', tim_kinra: 'Tim KINRA', pembaca: 'Pembaca' }
@@ -31,6 +31,8 @@ export const AKSES = {
   'sasaran.ubah': SEMUA,
   'aksi.ubah': SEMUA,
   'sasaran.hapus': ['admin'],                   // sasaran & rencana aksi
+  'bukti.unggah': ['admin', 'tim_kinra'],      // bukti pelaksanaan sasaran & aksi (migrasi 0051)
+  'bukti.hapus': ['admin'],
   'kegiatan.ubah': SEMUA,
   'register.ubah': SEMUA,
   'register.hapus': ['admin'],
@@ -57,7 +59,7 @@ export const LABEL_AKSI: Record<Aksi, string> = {
   'parameter.ubah': 'Ubah tarif & faktor emisi',
   'seu.ubah': 'Usulkan & isi SEU', 'seu.tetapkan': 'Tetapkan SEU & setujui tinjauan energi', 'seu.hapus': 'Hapus SEU',
   'enpi.tambah': 'Tambah EnPI & variabel relevan', 'enpi.ubah': 'Ubah EnPI, baseline & variabel', 'enpi.hapus': 'Hapus EnPI & variabel',
-  'sasaran.tambah': 'Tambah sasaran energi', 'sasaran.ubah': 'Ubah sasaran energi', 'aksi.ubah': 'Isi rencana aksi', 'sasaran.hapus': 'Hapus sasaran & aksi', 'kegiatan.ubah': 'Tandai kegiatan timeline',
+  'sasaran.tambah': 'Tambah sasaran energi', 'sasaran.ubah': 'Ubah sasaran energi', 'aksi.ubah': 'Isi rencana aksi', 'sasaran.hapus': 'Hapus sasaran & aksi', 'bukti.unggah': 'Unggah bukti pelaksanaan sasaran & aksi', 'bukti.hapus': 'Hapus bukti pelaksanaan', 'kegiatan.ubah': 'Tandai kegiatan timeline',
   'register.ubah': 'Isi isu & peluang', 'register.hapus': 'Hapus isu', 'temuan.tambah': 'Catat temuan',
   'temuan.ubah': 'Tindak lanjut temuan', 'temuan.tutup': 'Tutup temuan', 'temuan.hapus': 'Hapus temuan',
   'formulir.isi': 'Isi & ajukan formulir', 'formulir.setujui': 'Setujui formulir', 'formulir.hapus': 'Hapus isian formulir',
