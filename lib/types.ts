@@ -27,6 +27,8 @@ export type Dokumen = {
   jumlah_berkas?: number
   /** Jumlah berkas bertanda versi sah (migrasi 0031) */
   jumlah_sah?: number
+  /** Jumlah bukti pelaksanaan sasaran/rencana aksi yang ditautkan ke item ini (migrasi 0056) */
+  jumlah_terkait?: number
 }
 
 export type Berkas = {
@@ -49,6 +51,9 @@ export type Berkas = {
 
 /** Pemilik bukti pelaksanaan: satu sasaran atau satu rencana aksi (migrasi 0051) */
 export type PemilikBukti = { jenis: 'sasaran' | 'aksi'; id: number }
+
+/** Bukti pelaksanaan satu sasaran/aksi yang ditautkan ke rekaman Kesiapan (migrasi 0056) */
+export type BuktiTerkait = PemilikBukti & { kode: string; judul: string; berkas: BerkasTampil[] }
 
 /** Berkas dengan signed URL (berlaku 1 jam) untuk ditampilkan */
 export type BerkasTampil = Berkas & { url: string | null }
@@ -202,7 +207,18 @@ export type Sasaran = {
   sumber?: string | null
   /** Jumlah berkas bukti pelaksanaan (migrasi 0051), dihitung saat dibaca */
   jumlah_bukti?: number
+  /** Penilaian kelengkapan bukti terhadap ukuran target (migrasi 0055); baris dipisah '\n' */
+  bukti_status?: StatusBukti | null
+  bukti_tersedia?: string | null
+  bukti_kurang?: string | null
+  bukti_diperiksa?: string | null
+  /** Rekaman Kesiapan yang dibuktikan oleh bukti pelaksanaan sasaran ini (migrasi 0056) */
+  dokumen_kode?: string | null
+  /** Jumlah berkas evidence di rekaman tautan (bukti bersama, mis. daftar hadir lintas bagian), dihitung saat dibaca */
+  jumlah_bukti_rekaman?: number
 }
+
+export type StatusBukti = 'Lengkap' | 'Sebagian' | 'Belum'
 
 export type StatusAksi = 'Rencana' | 'Berjalan' | 'Selesai' | 'Ditunda' | 'Batal'
 
@@ -231,6 +247,10 @@ export type RencanaAksi = {
   sumber?: string | null
   /** Jumlah berkas bukti pelaksanaan (migrasi 0051), dihitung saat dibaca */
   jumlah_bukti?: number
+  /** Rekaman Kesiapan yang dibuktikan oleh bukti pelaksanaan aksi ini (migrasi 0056) */
+  dokumen_kode?: string | null
+  /** Jumlah berkas evidence di rekaman tautan, dihitung saat dibaca */
+  jumlah_bukti_rekaman?: number
 }
 
 /** Aset gedung/fasilitas KINRA (migrasi 0022). */

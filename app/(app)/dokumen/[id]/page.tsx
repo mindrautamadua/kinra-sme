@@ -5,7 +5,7 @@ import { notFound } from 'next/navigation'
 import { Chip } from '@/components/Chip'
 import { SectionHead } from '@/components/SectionHead'
 import { boleh } from '@/lib/akses'
-import { ambilBerkas, ambilKlausul } from '@/lib/data'
+import { ambilBerkas, ambilBuktiTerkait, ambilKlausul } from '@/lib/data'
 import { penggunaSaya } from '@/lib/sesi'
 import { waktu } from '@/lib/format'
 import { KATEGORI_TEMUAN_CHIP, KELOMPOK, LABEL_TAHAP_SIAP, tahapSiap, TEMUAN_STATUS_CHIP } from '@/lib/status'
@@ -45,7 +45,9 @@ export default async function HalamanDokumen({ params }: { params: Promise<{ id:
   ])
   if (!dok) notFound()
   const jumlahBerkas = berkas.length
-  const tahap = tahapSiap({ status: dok.status, jumlah_berkas: jumlahBerkas, jumlah_sah: berkas.filter((b) => b.sah).length })
+  // Bukti pelaksanaan sasaran/aksi yang ditautkan (migrasi 0056) ikut dihitung, sama seperti di tabel Kesiapan
+  const jumlahTerkait = (await ambilBuktiTerkait(dok.kode).catch(() => [])).reduce((t, g) => t + g.berkas.length, 0)
+  const tahap = tahapSiap({ status: dok.status, jumlah_berkas: jumlahBerkas, jumlah_sah: berkas.filter((b) => b.sah).length, jumlah_terkait: jumlahTerkait })
   const k = klausul.find((x) => x.kode === dok.klausul_kode)
   const templat = templatUntukDokumen(dok.kode).map((kode) => ambilTemplat(kode)).filter((x) => x !== null)
   const { data: isian } = templat.length

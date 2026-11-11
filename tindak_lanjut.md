@@ -54,7 +54,6 @@ Migrasi 0018–0030 sudah dijalankan di Supabase (6 November 2026). File 0027–
 - [ ] **Bea Cukai.** Pastikan meter Bea Cukai 1 melayani Pos sisi timur dan Bea Cukai 2 melayani sisi barat. Saat ini tautannya disimpulkan dari kemiripan angka kWh.
 - [ ] **Gudang limbah 8x6 m.** Periksa apakah aset no. 3 (96 m²) dan no. 21 (48 m²) adalah bangunan yang sama.
 - [ ] **Data aset kosong atau janggal.** Lengkapi luas WTP, jumlah ruangan Kantor PLTBS (tercatat 0), dan luas Gardu Pengukuran PLN (tercatat 0).
-- [ ] **Salah ketik nama aset.** Perbaiki "Pusat Inovasi Kelapa Sawi" dan "PT Sheel Oil".
 - [ ] **Kolom register meter yang masih kosong.** Lengkapi akurasi atau kelas, tanggal kalibrasi atau verifikasi terakhir dan berikutnya, PIC area, PIC data, dan bukti pendukung (klausul 7.1.5 dan 9.1).
 
 ## 5. Rencana submeter SEU (rencana pengumpulan data energi, klausul 6.6 dan 9.1)

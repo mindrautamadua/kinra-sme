@@ -3,7 +3,7 @@ import { hitungEnpi } from './enpi'
 import { BUCKET_BUKTI } from './status'
 import { BAWAAN, type ParameterEnergi } from './konversi'
 import { db } from './supabase'
-import type { Deviasi, JamOperasiPompa, Pompa, Seu, TinjauanEnergi, Aset, MeterEnergi, PembacaanMeter, Berkas, BerkasTampil, Dokumen, EnergiBulanan, Enpi, Isu, JejakBukti, Kegiatan, Klausul, Peluang, RencanaAksi, Sasaran, SumberEnergi, Temuan, VariabelBulanan, VariabelRelevan } from './types'
+import type { Deviasi, JamOperasiPompa, Pompa, Seu, TinjauanEnergi, Aset, MeterEnergi, PembacaanMeter, Berkas, BerkasTampil, BuktiTerkait, Dokumen, EnergiBulanan, Enpi, Isu, JejakBukti, Kegiatan, Klausul, Peluang, RencanaAksi, Sasaran, SumberEnergi, Temuan, VariabelBulanan, VariabelRelevan } from './types'
 
 /** Tabel belum ada (PGRST205) dianggap kosong; layout menampilkan panduan migrasi. Galat lain dilempar. */
 function cek<T>(r: { data: T | null; error: { message: string; code?: string } | null }, tabel: string): T {
@@ -25,7 +25,57 @@ export async function ambilDokumen(): Promise<Dokumen[]> {
   const sah = await s.from('berkas').select('dokumen_id').eq('sah', true)
   const nSah = new Map<string, number>()
   for (const x of (sah.error ? [] : sah.data ?? []) as { dokumen_id: string | null }[]) if (x.dokumen_id) nSah.set(x.dokumen_id, (nSah.get(x.dokumen_id) ?? 0) + 1)
-  return cek(r, 'dokumen_audit').map(({ berkas, ...d }: Dokumen & { berkas?: { count: number }[] }) => ({ ...d, jumlah_berkas: berkas?.[0]?.count ?? 0, jumlah_sah: nSah.get(d.id) ?? 0 }))
+  const nTerkait = await hitungBuktiTerkait()
+  return cek(r, 'dokumen_audit').map(({ berkas, ...d }: Dokumen & { berkas?: { count: number }[] }) => ({ ...d, jumlah_berkas: berkas?.[0]?.count ?? 0, jumlah_sah: nSah.get(d.id) ?? 0, jumlah_terkait: nTerkait.get(d.kode) ?? 0 }))
+}
+
+/** Jumlah bukti pelaksanaan sasaran/aksi per kode rekaman tautannya (migrasi 0056). Kolom/tabel belum ada = peta kosong. */
+async function hitungBuktiTerkait(): Promise<Map<string, number>> {
+  const s = await db()
+  const [sa, ak, bk] = await Promise.all([
+    s.from('sasaran').select('id, dokumen_kode').not('dokumen_kode', 'is', null),
+    s.from('rencana_aksi').select('id, dokumen_kode').not('dokumen_kode', 'is', null),
+    s.from('berkas').select('sasaran_id, aksi_id').or('sasaran_id.not.is.null,aksi_id.not.is.null').limit(10000),
+  ])
+  const n = new Map<string, number>()
+  if (bk.error) return n
+  const kodeS = new Map(((sa.error ? [] : sa.data ?? []) as { id: number; dokumen_kode: string }[]).map((x) => [x.id, x.dokumen_kode]))
+  const kodeA = new Map(((ak.error ? [] : ak.data ?? []) as { id: number; dokumen_kode: string }[]).map((x) => [x.id, x.dokumen_kode]))
+  for (const x of (bk.data ?? []) as { sasaran_id: number | null; aksi_id: number | null }[]) {
+    const k = x.sasaran_id ? kodeS.get(x.sasaran_id) : x.aksi_id ? kodeA.get(x.aksi_id) : undefined
+    if (k) n.set(k, (n.get(k) ?? 0) + 1)
+  }
+  return n
+}
+
+/** Bukti pelaksanaan sasaran/aksi yang ditautkan ke satu rekaman, dikelompokkan per pemilik, beserta signed URL (1 jam). */
+export async function ambilBuktiTerkait(dokumenKode: string): Promise<BuktiTerkait[]> {
+  const s = await db()
+  const [sa, ak] = await Promise.all([
+    s.from('sasaran').select('id, kode, uraian').eq('dokumen_kode', dokumenKode).order('kode'),
+    s.from('rencana_aksi').select('id, kode, uraian').eq('dokumen_kode', dokumenKode).order('kode'),
+  ])
+  // Kolom dokumen_kode belum ada (migrasi 0056 belum dijalankan): tidak ada tautan
+  if (sa.error?.code === '42703' || ak.error?.code === '42703') return []
+  if (sa.error) throw new Error(`Gagal membaca sasaran: ${sa.error.message}`)
+  if (ak.error) throw new Error(`Gagal membaca rencana aksi: ${ak.error.message}`)
+  const pS = (sa.data ?? []) as { id: number; kode: string; uraian: string }[]
+  const pA = (ak.data ?? []) as { id: number; kode: string; uraian: string }[]
+  if (!pS.length && !pA.length) return []
+  const [bS, bA] = await Promise.all([
+    pS.length ? s.from('berkas').select('*').in('sasaran_id', pS.map((x) => x.id)).order('periode', { ascending: false }).order('diunggah_at', { ascending: false }) : null,
+    pA.length ? s.from('berkas').select('*').in('aksi_id', pA.map((x) => x.id)).order('periode', { ascending: false }).order('diunggah_at', { ascending: false }) : null,
+  ])
+  if (bS?.error) throw new Error(`Gagal membaca bukti sasaran: ${bS.error.message}`)
+  if (bA?.error) throw new Error(`Gagal membaca bukti rencana aksi: ${bA.error.message}`)
+  const daftar = [...((bS?.data ?? []) as Berkas[]), ...((bA?.data ?? []) as Berkas[])]
+  const { data: tanda } = daftar.length ? await s.storage.from(BUCKET_BUKTI).createSignedUrls(daftar.map((b) => b.path), 3600) : { data: [] }
+  const url = new Map((tanda ?? []).map((t) => [t.path, t.signedUrl]))
+  const tampil = (b: Berkas): BerkasTampil => ({ ...b, url: url.get(b.path) ?? null })
+  return [
+    ...pS.map((x) => ({ jenis: 'sasaran' as const, id: x.id, kode: x.kode, judul: x.uraian, berkas: daftar.filter((b) => b.sasaran_id === x.id).map(tampil) })),
+    ...pA.map((x) => ({ jenis: 'aksi' as const, id: x.id, kode: x.kode, judul: x.uraian, berkas: daftar.filter((b) => b.aksi_id === x.id).map(tampil) })),
+  ]
 }
 
 /** Berkas evidence satu dokumen beserta signed URL (bucket privat, berlaku 1 jam). `migrasi` true bila tabel berkas belum ada. */
@@ -38,6 +88,17 @@ export async function ambilBerkas(dokumenId: string): Promise<{ berkas: BerkasTa
   // Versi sah lebih dulu agar yang ditunjukkan ke auditor adalah dokumen yang benar
   const urut = [...daftar].sort((a, b) => Number(!!b.sah) - Number(!!a.sah))
   return { berkas: urut.map((b) => ({ ...b, url: tanda?.find((t) => t.path === b.path)?.signedUrl ?? null })), migrasi: false }
+}
+
+/** Berkas evidence rekaman tautan satu sasaran/aksi (migrasi 0056), untuk dilihat di panel bukti pelaksanaan. */
+export async function ambilBerkasRekaman(p: { jenis: 'sasaran' | 'aksi'; id: number }): Promise<{ kode: string; nama: string; berkas: BerkasTampil[] } | null> {
+  const s = await db()
+  const r = await s.from(p.jenis === 'sasaran' ? 'sasaran' : 'rencana_aksi').select('dokumen_kode').eq('id', p.id).maybeSingle<{ dokumen_kode: string | null }>()
+  if (r.error || !r.data?.dokumen_kode) return null
+  const d = await s.from('dokumen_audit').select('id, kode, nama').eq('kode', r.data.dokumen_kode).maybeSingle<{ id: string; kode: string; nama: string }>()
+  if (d.error || !d.data) return null
+  const { berkas } = await ambilBerkas(d.data.id)
+  return { kode: d.data.kode, nama: d.data.nama, berkas }
 }
 
 /** Metadata semua berkas evidence (tanpa signed URL; URL dibuat saat berkas dibuka). */
@@ -205,9 +266,14 @@ export async function ambilSasaran(): Promise<{ sasaran: Sasaran[]; aksi: Rencan
     if (x.sasaran_id) nS.set(x.sasaran_id, (nS.get(x.sasaran_id) ?? 0) + 1)
     if (x.aksi_id) nA.set(x.aksi_id, (nA.get(x.aksi_id) ?? 0) + 1)
   }
+  // Berkas evidence rekaman Kesiapan yang ditautkan (migrasi 0056): bukti bersama seperti daftar hadir lintas bagian
+  const nRek = new Map<string, number>()
+  const rek = await s.from('dokumen_audit').select('kode, berkas(count)')
+  for (const x of (rek.error ? [] : rek.data ?? []) as { kode: string; berkas?: { count: number }[] }[]) nRek.set(x.kode, x.berkas?.[0]?.count ?? 0)
+  const nR = (k: string | null | undefined) => (k ? nRek.get(k) ?? 0 : 0)
   return {
-    sasaran: cek<Sasaran[]>(a, 'sasaran').map((x) => ({ ...x, target_persen: n(x.target_persen), jumlah_bukti: nS.get(x.id) ?? 0 })),
-    aksi: cek<RencanaAksi[]>(b, 'rencana_aksi').map((x) => ({ ...x, estimasi_hemat_kwh: n(x.estimasi_hemat_kwh), hemat_terverifikasi_kwh: n(x.hemat_terverifikasi_kwh), jumlah_bukti: nA.get(x.id) ?? 0 })),
+    sasaran: cek<Sasaran[]>(a, 'sasaran').map((x) => ({ ...x, target_persen: n(x.target_persen), jumlah_bukti: nS.get(x.id) ?? 0, jumlah_bukti_rekaman: nR(x.dokumen_kode) })),
+    aksi: cek<RencanaAksi[]>(b, 'rencana_aksi').map((x) => ({ ...x, estimasi_hemat_kwh: n(x.estimasi_hemat_kwh), hemat_terverifikasi_kwh: n(x.hemat_terverifikasi_kwh), jumlah_bukti: nA.get(x.id) ?? 0, jumlah_bukti_rekaman: nR(x.dokumen_kode) })),
   }
 }
 

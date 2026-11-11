@@ -1,13 +1,14 @@
 'use client'
 
-import { X } from 'lucide-react'
+import { Link2, X } from 'lucide-react'
+import Link from 'next/link'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { ambilBukti } from '@/app/actions'
+import { ambilBukti, ambilBuktiRekaman } from '@/app/actions'
 import { EvidenceBerkas } from '@/components/EvidenceBerkas'
 import { useBoleh } from '@/components/Peran'
 import type { BerkasTampil, PemilikBukti } from '@/lib/types'
 
-export type TargetBukti = PemilikBukti & { kode: string; judul: string; target?: string | null; status?: string | null }
+export type TargetBukti = PemilikBukti & { kode: string; judul: string; target?: string | null; status?: string | null; rekaman?: string | null }
 
 /**
  * Panel unggah & lihat bukti pelaksanaan satu sasaran atau satu rencana aksi (klausul 6.2, 9.1).
@@ -20,16 +21,19 @@ export function PanelBukti({ target, kini, onTutup }: { target: TargetBukti | nu
   const [berkas, setBerkas] = useState<BerkasTampil[] | null>(null)
   const [migrasi, setMigrasi] = useState(false)
   const [galat, setGalat] = useState<string | null>(null)
+  // Bukti bersama di rekaman Kesiapan tautan (migrasi 0056), mis. daftar hadir sosialisasi lintas bagian
+  const [rekaman, setRekaman] = useState<{ kode: string; nama: string; berkas: BerkasTampil[] } | null>(null)
 
   const muat = useCallback(async (t: TargetBukti) => {
-    const h = await ambilBukti({ jenis: t.jenis, id: t.id })
+    const [h, r] = await Promise.all([ambilBukti({ jenis: t.jenis, id: t.id }), ambilBuktiRekaman({ jenis: t.jenis, id: t.id })])
+    setRekaman(r.ok ? r.rekaman ?? null : null)
     if (!h.ok) { setGalat(h.pesan); setBerkas([]); return }
     setGalat(null); setMigrasi(!!h.migrasi); setBerkas(h.berkas ?? [])
   }, [])
 
   useEffect(() => {
     if (!target) return
-    setBerkas(null); setGalat(null); setPeriode(kini.slice(0, 7))
+    setBerkas(null); setRekaman(null); setGalat(null); setPeriode(kini.slice(0, 7))
     dlg.current?.showModal()
     void muat(target)
   }, [target, kini, muat])
@@ -69,6 +73,19 @@ export function PanelBukti({ target, kini, onTutup }: { target: TargetBukti | nu
           {berkas === null
             ? <p className="muted small">Memuat bukti…</p>
             : <EvidenceBerkas key={`${target.jenis}-${target.id}`} pemilik={{ jenis: target.jenis, id: target.id }} periode={periode} berkas={berkas} migrasi={migrasi} onBerubah={() => void muat(target)} />}
+          {rekaman && (
+            <section className="ks-terkait" aria-labelledby="judul-rekaman">
+              <h4 id="judul-rekaman"><Link2 aria-hidden="true" /> Bukti bersama di rekaman {rekaman.kode}</h4>
+              <p className="muted small">
+                {rekaman.nama}. Berkas ini diunggah sekali di <Link href={`/kesiapan?klausul=${encodeURIComponent(rekaman.kode.split('-')[1] ?? '')}`}>Kesiapan Audit</Link> dan
+                berlaku untuk semua sasaran yang ditautkan, jadi tidak perlu diunggah ulang di sini. Bukti bersama membuktikan pelaksanaan;
+                untuk menandai sasaran Tercapai tetap unggah bukti hasil khusus sasaran ini (mis. rekap nilai tes bagian).
+              </p>
+              {rekaman.berkas.length
+                ? <EvidenceBerkas berkas={rekaman.berkas} hanyaLihat />
+                : <p className="muted small">Rekaman ini belum punya berkas.</p>}
+            </section>
+          )}
         </div>
       )}
     </dialog>

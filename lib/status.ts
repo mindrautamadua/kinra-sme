@@ -35,7 +35,7 @@ export const PILIHAN_STATUS: StatusDokumen[] = ['belum', 'draft', 'final']
 export type GrupStatus = 'belum' | 'draft' | 'final'
 export const grupStatus = (s: StatusDokumen): GrupStatus => (s === 'review' ? 'draft' : s === 'disetujui' ? 'final' : s)
 
-type DokBukti = Pick<Dokumen, 'jumlah_berkas' | 'status' | 'jumlah_sah'>
+type DokBukti = Pick<Dokumen, 'jumlah_berkas' | 'status' | 'jumlah_sah' | 'jumlah_terkait'>
 
 /** Status Final (status lama "Disetujui" disetarakan dengan Final). */
 export const sudahFinal = (d: Pick<Dokumen, 'status'>) => grupStatus(d.status) === 'final'
@@ -59,7 +59,7 @@ export function kesiapan(dokumen: DokBukti[]): number {
 }
 
 /** Kemajuan evidence 0–100: persentase dokumen yang sudah punya berkas apa pun (termasuk draf). */
-export function kemajuan(dokumen: Pick<Dokumen, 'jumlah_berkas'>[]): number {
+export function kemajuan(dokumen: Pick<Dokumen, 'jumlah_berkas' | 'jumlah_terkait'>[]): number {
   if (!dokumen.length) return 0
   return (dokumen.filter(adaBukti).length / dokumen.length) * 100
 }
@@ -159,8 +159,11 @@ export function kesiapanPerKlausul(dokumen: Dokumen[], klausul: Klausul[], kini:
   }).filter((k) => k.n > 0)
 }
 
-/** Dokumen dianggap sudah punya evidence bila ada minimal satu berkas terunggah di Kesiapan Audit. Isian formulir tidak dihitung. */
-export const adaBukti = (d: Pick<Dokumen, 'jumlah_berkas'>) => (d.jumlah_berkas ?? 0) > 0
+/**
+ * Dokumen dianggap sudah punya evidence bila ada minimal satu berkas terunggah di Kesiapan Audit, atau bukti pelaksanaan
+ * sasaran/rencana aksi yang ditautkan ke item ini (migrasi 0056). Isian formulir tidak dihitung.
+ */
+export const adaBukti = (d: Pick<Dokumen, 'jumlah_berkas' | 'jumlah_terkait'>) => (d.jumlah_berkas ?? 0) + (d.jumlah_terkait ?? 0) > 0
 
 /** Bucket Storage privat untuk berkas evidence (migrasi 0010). */
 export const BUCKET_BUKTI = 'smen-evidence'

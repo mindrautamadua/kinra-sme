@@ -1434,6 +1434,12 @@ a.insight:hover h3 { color: var(--brand); }
 
 /* Hapus item di lembar Kesiapan */
 .ks-aksi-baris { display: inline-flex; gap: 6px; align-items: center; justify-content: flex-end; }
+/* Bukti pelaksanaan sasaran yang ditautkan ke rekaman (migrasi 0056) */
+.ks-terkait { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); }
+.ks-terkait h4 { display: flex; align-items: center; gap: 6px; margin: 0 0 4px; }
+.ks-terkait h4 svg { width: 16px; height: 16px; }
+.ks-terkait > p { margin: 0 0 10px; }
+.ks-terkait-grup > p { margin: 0 0 6px; }
 .ks-aksi-baris .btn.bahaya { opacity: .5; }
 .tbl tr:hover .ks-aksi-baris .btn.bahaya, .ks-aksi-baris .btn.bahaya:focus-visible { opacity: 1; }
 @media (hover: none) { .ks-aksi-baris .btn.bahaya { opacity: 1; } }
@@ -1839,6 +1845,12 @@ dialog.tj-ev-dlg { max-height: calc(100dvh - 32px); overflow-y: auto; overscroll
 /* ---------- Sasaran & aksi ---------- */
 .ss-tanpa-bukti { color: var(--crit); border-color: color-mix(in srgb, var(--crit) 45%, var(--line)); }
 .tbl tr.ss-sub th { background: var(--surface-2); color: var(--brand); font-size: 12px; font-weight: 700; text-align: left; padding-top: 8px; padding-bottom: 8px; }
+.ss-ringkas-bukti { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 6px; color: var(--muted); }
+.ss-status-bukti { display: block; margin-top: 4px; }
+.tbl tr.ss-punya-rinci td { border-bottom: 0; }
+.tbl tr.ss-rinci-bukti td { padding-top: 0; font-size: 12px; line-height: 1.45; }
+.tbl tr.ss-rinci-bukti .kurang { color: var(--crit); }
+.tbl tr.ss-rinci-bukti .ada { color: var(--muted); margin-top: 2px; }
 .ss-rantai { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; }
 .ss-rantai li { position: relative; display: flex; align-items: center; animation: rg-muncul .5s var(--ease) backwards; animation-delay: calc(var(--i) * 90ms); }
 .ss-rantai a { flex: 1; display: flex; flex-direction: column; gap: 2px; padding: 14px; margin-right: 18px; border-radius: 14px; text-decoration: none; color: var(--ink);

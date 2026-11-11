@@ -59,9 +59,10 @@ export default async function SasaranPage() {
   if (!aktif.length) catatan.push({ kode: 'crit', teks: 'Belum ada sasaran energi aktif. Klausul 6.2 mewajibkan sasaran dan target energi yang terukur, konsisten dengan kebijakan energi, beserta rencana aksinya. Tanpa ini, temuan mayor sangat mungkin.' })
   else if (!sasKinra.length) catatan.push({ kode: 'crit', teks: `Belum ada sasaran kinerja energi yang terhubung ke EnPI lingkup KINRA.${sasaran.some((s) => s.bagian) ? ' Sasaran per bagian dari formulir 6.2 berupa target perilaku dan kepatuhan (sosialisasi, pelatihan, kepatuhan SOP).' : ''} Klausul 6.2 meminta target energi yang terukur dan mempertimbangkan SEU; auditor dapat menilai ini sebagai ketidaksesuaian. Tetapkan target kinerja energi di formulir, lalu catat di sini.` })
   if (!hidup.length) catatan.push({ kode: 'crit', teks: 'Belum ada rencana aksi: apa yang dilakukan, sumber daya, siapa, kapan, dan cara verifikasi hasilnya (6.2).' })
-  const tanpaBukti = sasaran.filter((s) => s.status !== 'Draft' && !s.jumlah_bukti)
+  // Bukti bersama di rekaman Kesiapan tautan (migrasi 0056) ikut dihitung sebagai bukti pelaksanaan
+  const tanpaBukti = sasaran.filter((s) => s.status !== 'Draft' && !s.jumlah_bukti && !s.jumlah_bukti_rekaman)
   if (tanpaBukti.length) catatan.push({ kode: tanpaBukti.length === sasaran.length ? 'crit' : 'warn', teks: `${tanpaBukti.length} dari ${sasaran.length} sasaran belum punya bukti pelaksanaan (daftar hadir, hasil tes, checklist inspeksi). Auditor Stage 2 memeriksa penerapan; unggah lewat tombol bukti di setiap baris.` })
-  const aksiTanpaBukti = hidup.filter((a) => (a.status === 'Selesai' || a.status === 'Berjalan') && !a.jumlah_bukti).length
+  const aksiTanpaBukti = hidup.filter((a) => (a.status === 'Selesai' || a.status === 'Berjalan') && !a.jumlah_bukti && !a.jumlah_bukti_rekaman).length
   if (aksiTanpaBukti) catatan.push({ kode: 'warn', teks: `${aksiTanpaBukti} rencana aksi berjalan/selesai belum punya bukti pelaksanaan.` })
   const tanpaVerifikasi = hidup.filter((a) => !a.metode_verifikasi).length
   if (tanpaVerifikasi) catatan.push({ kode: 'warn', teks: `${tanpaVerifikasi} rencana aksi belum punya metode verifikasi penghematan.` })

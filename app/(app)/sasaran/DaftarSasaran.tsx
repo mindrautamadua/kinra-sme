@@ -2,7 +2,7 @@
 
 import { ArrowRight, Check, Paperclip, Pencil, Plus, Trash2, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useRef, useState, useTransition } from 'react'
+import { Fragment, useRef, useState, useTransition } from 'react'
 import { hapusAksi, hapusSasaran, hubungkanAksi, simpanAksi, simpanSasaran, ubahStatusAksi } from '@/app/actions'
 import { Grafik } from '@/components/charts/Grafik'
 import { Chip } from '@/components/Chip'
@@ -11,7 +11,7 @@ import { angka, tanggal } from '@/lib/format'
 import { rupiahRingkas, tonCo2 } from '@/lib/konversi'
 import { CHIP_PROYEKSI, LABEL_PROYEKSI, type ProyeksiSasaran } from '@/lib/proyeksi-sasaran'
 import type { KodeChip } from '@/lib/status'
-import type { RencanaAksi, Sasaran, StatusAksi, StatusSasaran } from '@/lib/types'
+import type { RencanaAksi, Sasaran, StatusAksi, StatusBukti, StatusSasaran } from '@/lib/types'
 import { tagUsulan, type UsulanAksi, type UsulanSasaran } from '@/lib/usulan-sasaran'
 import { PanelBukti, type TargetBukti } from './PanelBukti'
 
@@ -35,7 +35,16 @@ const STATUS_A: StatusAksi[] = ['Rencana', 'Berjalan', 'Selesai', 'Ditunda', 'Ba
 const CHIP_S: Record<StatusSasaran, KodeChip> = { Draft: 'na', Aktif: 'info', Tercapai: 'good', 'Tidak tercapai': 'crit' }
 const CHIP_A: Record<StatusAksi, KodeChip> = { Rencana: 'na', Berjalan: 'info', Selesai: 'good', Ditunda: 'warn', Batal: 'na' }
 
-const kodeBerikut = (prefiks: string, daftar: { kode: string }[]) =>
+const STATUS_BUKTI: StatusBukti[] = ['Lengkap', 'Sebagian', 'Belum']
+const CHIP_BUKTI: Record<StatusBukti, KodeChip> = { Lengkap: 'good', Sebagian: 'warn', Belum: 'crit' }
+const KET_BUKTI: Record<StatusBukti, string> = {
+  Lengkap: 'Pelaksanaan dan ukuran target sudah terbukti.',
+  Sebagian: 'Pelaksanaan terbukti, ukuran target (nilai tes, persentase, hasil inspeksi) belum.',
+  Belum: 'Belum ada rekaman pelaksanaan maupun hasil.',
+}
+const baris = (t: string | null | undefined) => (t ?? '').split('\n').map((x) => x.trim()).filter(Boolean)
+
+const kodeBerikut =(prefiks: string, daftar: { kode: string }[]) =>
   `${prefiks}-${String(Math.max(0, ...daftar.map((x) => Number(x.kode.replace(/\D/g, '')) || 0)) + 1).padStart(2, '0')}`
 
 export function DaftarSasaran({ sasaran, aksi, capaian, enpi, peluang, kini, tarif, ef, usulanS = [], usulanA = [] }: {
@@ -52,9 +61,11 @@ export function DaftarSasaran({ sasaran, aksi, capaian, enpi, peluang, kini, tar
   const [galat, setGalat] = useState<string | null>(null)
   const [menunggu, mulai] = useTransition()
   const [bukti, setBukti] = useState<TargetBukti | null>(null)
-  const tombolBukti = (t: TargetBukti, n: number | undefined) => (
-    <button type="button" className={`btn kecil${n ? '' : ' ss-tanpa-bukti'}`} onClick={() => setBukti(t)} title={n ? `${n} berkas bukti` : 'Belum ada bukti pelaksanaan'}>
-      <Paperclip aria-hidden="true" /><span className="tnum">{n ?? 0}</span>
+  // n = bukti khusus sasaran/aksi ini; r = berkas bersama di rekaman Kesiapan tautannya (migrasi 0056)
+  const tombolBukti = (t: TargetBukti, n: number | undefined, r: number | undefined) => (
+    <button type="button" className={`btn kecil${n || r ? '' : ' ss-tanpa-bukti'}`} onClick={() => setBukti(t)}
+      title={[n ? `${n} bukti khusus` : 'Belum ada bukti khusus', r ? `${r} berkas bersama di rekaman ${t.rekaman ?? 'tautan'}` : ''].filter(Boolean).join(' · ')}>
+      <Paperclip aria-hidden="true" /><span className="tnum">{n ?? 0}{r ? ` + ${r}` : ''}</span>
     </button>
   )
 
@@ -64,6 +75,7 @@ export function DaftarSasaran({ sasaran, aksi, capaian, enpi, peluang, kini, tar
   const sasaranKartu = sasaran.filter((s) => !s.bagian)
   const grupBagian = [...new Set(sasaranBagian.map((s) => s.bagian!))].map((b) => ({ bagian: b, daftar: sasaranBagian.filter((s) => s.bagian === b) }))
   const perBagian = sasaranBagian.find((s) => s.pencapaian_per)?.pencapaian_per ?? null
+  const diperiksa = sasaranBagian.reduce<string | null>((m, s) => (s.bukti_diperiksa && (!m || s.bukti_diperiksa > m) ? s.bukti_diperiksa : m), null)
   const sudahJadiAksi = new Set(aksi.map((a) => a.peluang_kode).filter(Boolean))
   const peluangSiap = peluang.filter((p) => (p.status === 'Disetujui' || p.status === 'Berjalan') && !sudahJadiAksi.has(p.kode))
   const hidup = aksi.filter((a) => a.status !== 'Batal')
@@ -145,7 +157,7 @@ export function DaftarSasaran({ sasaran, aksi, capaian, enpi, peluang, kini, tar
                     </label>
                   )}
                 </td>
-                <td>{tombolBukti({ jenis: 'aksi', id: a.id, kode: a.kode, judul: a.uraian, status: a.status }, a.jumlah_bukti)}</td>
+                <td>{tombolBukti({ jenis: 'aksi', id: a.id, kode: a.kode, judul: a.uraian, status: a.status, rekaman: a.dokumen_kode }, a.jumlah_bukti, a.jumlah_bukti_rekaman)}</td>
                 <td>{bisa('aksi.ubah') && <button type="button" className="btn btn-ikon" aria-label={`Ubah ${a.kode}`} onClick={() => bukaA(a)}><Pencil aria-hidden="true" /></button>}</td>
               </tr>
             ))}
@@ -223,7 +235,13 @@ export function DaftarSasaran({ sasaran, aksi, capaian, enpi, peluang, kini, tar
               <div>
                 <span className="eyebrow">Formulir Objective dan Target Manajemen · 001/SOP-008/KINRA/SMEn/X/2026</span>
                 <h3>Sasaran & target per bagian · {sasaranBagian.length} sasaran di {grupBagian.length} bagian</h3>
-                <p className="muted small">{sasaranBagian.filter((s) => s.status === 'Tercapai').length} tercapai{perBagian ? ` menurut lembar pencapaian per ${tanggal(perBagian)}` : ''} · <b>{sasaranBagian.filter((s) => s.jumlah_bukti).length} dari {sasaranBagian.length}</b> sudah punya bukti pelaksanaan. Sasaran ini berupa target perilaku dan kepatuhan, belum terhubung ke EnPI.</p>
+                <p className="muted small">{sasaranBagian.filter((s) => s.status === 'Tercapai').length} tercapai{perBagian ? ` menurut lembar pencapaian per ${tanggal(perBagian)}` : ''} · <b>{sasaranBagian.filter((s) => s.jumlah_bukti || s.jumlah_bukti_rekaman).length} dari {sasaranBagian.length}</b> sudah punya berkas bukti di aplikasi (khusus atau bersama). Sasaran ini berupa target perilaku dan kepatuhan, belum terhubung ke EnPI.</p>
+                {sasaranBagian.some((s) => s.bukti_status) && (
+                  <p className="small ss-ringkas-bukti">
+                    Penilaian tim atas kelengkapan bukti terhadap ukuran target{diperiksa ? ` (diperiksa ${tanggal(diperiksa)})` : ''}, terpisah dari jumlah berkas di aplikasi:{' '}
+                    {STATUS_BUKTI.map((k) => <Chip key={k} kode={CHIP_BUKTI[k]} label={`${sasaranBagian.filter((s) => s.bukti_status === k).length} ${k.toLowerCase()}`} />)}
+                  </p>
+                )}
               </div>
             </div>
             <div className="table-wrap">
@@ -232,18 +250,35 @@ export function DaftarSasaran({ sasaran, aksi, capaian, enpi, peluang, kini, tar
                 {grupBagian.map((g) => (
                   <tbody key={g.bagian}>
                     <tr className="ss-sub"><th colSpan={8}>{g.bagian} <span className="muted">· {g.daftar.length} sasaran</span></th></tr>
-                    {g.daftar.map((s) => (
-                      <tr key={s.id} id={`sasaran-${s.kode}`}>
+                    {g.daftar.map((s) => {
+                      const ada = baris(s.bukti_tersedia), kurang = baris(s.bukti_kurang)
+                      return (
+                      <Fragment key={s.id}>
+                      <tr id={`sasaran-${s.kode}`} className={ada.length || kurang.length ? 'ss-punya-rinci' : undefined}>
                         <td className="kode">{s.kode}</td>
                         <td style={{ maxWidth: 300 }}><b>{s.aktivitas ?? s.uraian}</b>{s.aktivitas && <span className="upd">{s.uraian}</span>}{s.aspek && <span className="upd">Aspek: {s.aspek}</span>}</td>
                         <td className="small" style={{ maxWidth: 260 }}>{s.target_teks ?? '–'}</td>
                         <td className="small" style={{ maxWidth: 260 }}>{s.program ?? '–'}</td>
                         <td className="small">{s.batas_waktu ?? '–'}<span className="upd">{s.pic ?? '–'}</span></td>
                         <td><Chip kode={s.status === 'Tercapai' ? 'good' : CHIP_S[s.status]} label={s.status === 'Tercapai' ? 'Tercapai' : (s.pencapaian ?? s.status)} /></td>
-                        <td>{tombolBukti({ jenis: 'sasaran', id: s.id, kode: s.kode, judul: s.aktivitas ?? s.uraian, target: s.target_teks, status: s.status }, s.jumlah_bukti)}</td>
+                        <td>
+                          {tombolBukti({ jenis: 'sasaran', id: s.id, kode: s.kode, judul: s.aktivitas ?? s.uraian, target: s.target_teks, status: s.status, rekaman: s.dokumen_kode }, s.jumlah_bukti, s.jumlah_bukti_rekaman)}
+                          {s.bukti_status && <span className="ss-status-bukti" title={`Penilaian tim${s.bukti_diperiksa ? ` ${tanggal(s.bukti_diperiksa)}` : ''} atas kecukupan bukti terhadap ukuran target, termasuk dokumen yang belum diunggah. ${KET_BUKTI[s.bukti_status]}`}><Chip kode={CHIP_BUKTI[s.bukti_status]} label={`Dinilai: ${s.bukti_status.toLowerCase()}`} /></span>}
+                        </td>
                         <td>{bisa('sasaran.ubah') && <button type="button" className="btn btn-ikon" aria-label={`Ubah ${s.kode}`} onClick={() => bukaS(s)}><Pencil aria-hidden="true" /></button>}</td>
                       </tr>
-                    ))}
+                      {(ada.length > 0 || kurang.length > 0) && (
+                        <tr className="ss-rinci-bukti">
+                          <td />
+                          <td colSpan={7}>
+                            {kurang.length > 0 && <div className="kurang"><b>Bukti kurang:</b> {kurang.join(' · ')}</div>}
+                            {ada.length > 0 && <div className="ada"><b>Sudah ada:</b> {ada.join(' · ')}</div>}
+                          </td>
+                        </tr>
+                      )}
+                      </Fragment>
+                      )
+                    })}
                   </tbody>
                 ))}
               </table>
@@ -267,7 +302,7 @@ export function DaftarSasaran({ sasaran, aksi, capaian, enpi, peluang, kini, tar
                 </div>
                 <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                   <Chip kode={CHIP_S[s.status]} label={s.status} />
-                  {tombolBukti({ jenis: 'sasaran', id: s.id, kode: s.kode, judul: s.uraian, status: s.status }, s.jumlah_bukti)}
+                  {tombolBukti({ jenis: 'sasaran', id: s.id, kode: s.kode, judul: s.uraian, status: s.status, rekaman: s.dokumen_kode }, s.jumlah_bukti, s.jumlah_bukti_rekaman)}
                   {bisa('sasaran.ubah') && <button type="button" className="btn btn-ikon" aria-label={`Ubah ${s.kode}`} onClick={() => bukaS(s)}><Pencil aria-hidden="true" /></button>}
                 </div>
               </div>
@@ -359,6 +394,18 @@ export function DaftarSasaran({ sasaran, aksi, capaian, enpi, peluang, kini, tar
             <label className="field full"><span>Program</span><textarea name="program" defaultValue={editS?.program ?? ''} /></label>
             <label className="field"><span>Batas waktu</span><input name="batas_waktu" defaultValue={editS?.batas_waktu ?? ''} placeholder="mis. Desember 2026" /></label>
             <label className="field"><span>Pencapaian</span><input name="pencapaian" defaultValue={editS?.pencapaian ?? ''} placeholder="mis. Belum tercapai" /></label>
+            {/* Kolom bukti_* hanya ada setelah migrasi 0055; tanpa kolom itu field disembunyikan agar simpan tidak gagal */}
+            {editS?.bagian && editS.bukti_status !== undefined && <>
+              <label className="field"><span>Kelengkapan bukti</span>
+                <select name="bukti_status" defaultValue={editS.bukti_status ?? ''}>
+                  <option value="">Belum dinilai</option>
+                  {STATUS_BUKTI.map((k) => <option key={k} value={k}>{k}</option>)}
+                </select>
+              </label>
+              <span className="field" />
+              <label className="field full"><span>Bukti sudah ada (satu per baris)</span><textarea name="bukti_tersedia" defaultValue={editS.bukti_tersedia ?? ''} /></label>
+              <label className="field full"><span>Bukti kurang (satu per baris)</span><textarea name="bukti_kurang" defaultValue={editS.bukti_kurang ?? ''} placeholder="mis. Rekap nilai post-test per peserta" /></label>
+            </>}
             <label className="field full"><span>EnPI pengukur</span>
               <select name="enpi_kode" defaultValue={editS?.enpi_kode ?? ''}>
                 <option value="">Belum ditentukan</option>

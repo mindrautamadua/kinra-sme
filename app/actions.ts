@@ -5,11 +5,11 @@ import { revalidatePath } from 'next/cache'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import type { Aksi } from '@/lib/akses'
-import { ambilBerkas } from '@/lib/data'
+import { ambilBerkas, ambilBerkasRekaman, ambilBuktiTerkait } from '@/lib/data'
 import { cekAkses, penggunaSaya } from '@/lib/sesi'
 import { COOKIE_SESI, db } from '@/lib/supabase'
 import { BUCKET_BUKTI, UKURAN_MAKS_BUKTI } from '@/lib/status'
-import type { BerkasTampil, PemilikBukti, StatusAksi, StatusDokumen, StatusKegiatan } from '@/lib/types'
+import type { BerkasTampil, BuktiTerkait, PemilikBukti, StatusAksi, StatusDokumen, StatusKegiatan } from '@/lib/types'
 import { ambilIsian, ambilTemplat } from '@/lib/formulir/data'
 import { isiAwal, selaraskan } from '@/lib/formulir/isi'
 import { tabelDariData } from '@/lib/formulir/sumber-data'
@@ -145,6 +145,16 @@ export async function lihatBerkas(dokumenId: string): Promise<Hasil & { berkas?:
   }
 }
 
+/** Bukti pelaksanaan sasaran/aksi yang ditautkan ke satu rekaman Kesiapan (migrasi 0056), hanya untuk dilihat. */
+export async function lihatBuktiTerkait(dokumenKode: string): Promise<Hasil & { grup?: BuktiTerkait[] }> {
+  if (!(await penggunaSaya())) return { ok: false, pesan: 'Sesi berakhir. Silakan masuk kembali.' }
+  try {
+    return { ok: true, grup: await ambilBuktiTerkait(dokumenKode) }
+  } catch (e) {
+    return { ok: false, pesan: e instanceof Error ? e.message : 'Gagal memuat bukti sasaran terkait.' }
+  }
+}
+
 /** Langkah 1 unggah: server membuat signed upload URL; browser lalu mengunggah langsung ke Storage (tidak lewat server Next). */
 export type EvidenceDokumen = { id: string; kode: string; nama: string; wajib: boolean; status: StatusDokumen; posisiDraf: string | null; berkas: BerkasTampil[] }
 
@@ -220,6 +230,17 @@ export async function tandaiSah(id: string, sah: boolean): Promise<Hasil & { per
 const kolomPemilik = (p: PemilikBukti) => (p.jenis === 'sasaran' ? 'sasaran_id' : 'aksi_id')
 const prefiksBukti = (p: PemilikBukti) => `pelaksanaan/${p.jenis}-${p.id}/`
 const pemilikSah = (p: PemilikBukti) => (p.jenis === 'sasaran' || p.jenis === 'aksi') && Number.isInteger(p.id) && p.id > 0
+
+/** Berkas evidence rekaman Kesiapan yang ditautkan ke satu sasaran/aksi (migrasi 0056), hanya untuk dilihat. */
+export async function ambilBuktiRekaman(p: PemilikBukti): Promise<Hasil & { rekaman?: { kode: string; nama: string; berkas: BerkasTampil[] } | null }> {
+  if (!(await penggunaSaya())) return { ok: false, pesan: 'Sesi berakhir. Silakan masuk kembali.' }
+  if (!pemilikSah(p)) return { ok: false, pesan: 'Pemilik bukti tidak valid.' }
+  try {
+    return { ok: true, rekaman: await ambilBerkasRekaman(p) }
+  } catch (e) {
+    return { ok: false, pesan: e instanceof Error ? e.message : 'Gagal memuat bukti bersama.' }
+  }
+}
 
 /** Daftar bukti satu sasaran/aksi beserta signed URL (berlaku 1 jam). */
 export async function ambilBukti(p: PemilikBukti): Promise<Hasil & { berkas?: BerkasTampil[]; migrasi?: boolean }> {
@@ -656,6 +677,10 @@ export async function simpanSasaran(id: number | null, f: FormData): Promise<Has
     ...(f.has('bagian') ? {
       bagian: teks(f, 'bagian'), aktivitas: teks(f, 'aktivitas'), target_teks: teks(f, 'target_teks'),
       program: teks(f, 'program'), batas_waktu: teks(f, 'batas_waktu'), pencapaian: teks(f, 'pencapaian'),
+    } : {}),
+    ...(f.has('bukti_status') ? {
+      bukti_status: teks(f, 'bukti_status'), bukti_tersedia: teks(f, 'bukti_tersedia'), bukti_kurang: teks(f, 'bukti_kurang'),
+      bukti_diperiksa: teks(f, 'bukti_status') ? new Date().toISOString().slice(0, 10) : null,
     } : {}),
     diubah_at: new Date().toISOString(),
   }

@@ -553,7 +553,7 @@ export default async function CetakKesiapan() {
                 <tr key={d.id}>
                   <td title={judulKlausul[d.klausul_kode]}>{d.klausul_kode}</td><td className="mono">{d.kode}{d.wajib_iso && <span className="lp-bintang" title="Informasi terdokumentasi wajib ISO 50001"> ★</span>}</td><td>{d.nama}</td>
                   <td className="mono">{d.nomor_dokumen ?? '–'}</td><td>{d.pic ?? '–'}</td>
-                  <td className={`angka${siapAudit(d) ? '' : ' buruk'}`}>{adaBukti(d) ? `${d.jumlah_berkas} berkas${(d.jumlah_sah ?? 0) ? ` · ${d.jumlah_sah} sah` : ''}` : 'Tidak ada'}{adaBukti(d) && !siapAudit(d) && <div className="kecil">{grupStatus(d.status) === 'final' ? 'tanpa berkas sah' : 'belum Final'}</div>}</td>
+                  <td className={`angka${siapAudit(d) ? '' : ' buruk'}`}>{adaBukti(d) ? `${d.jumlah_berkas ?? 0} berkas${(d.jumlah_sah ?? 0) ? ` · ${d.jumlah_sah} sah` : ''}${(d.jumlah_terkait ?? 0) ? ` · ${d.jumlah_terkait} bukti sasaran` : ''}` : 'Tidak ada'}{adaBukti(d) && !siapAudit(d) && <div className="kecil">{grupStatus(d.status) === 'final' ? 'tanpa berkas sah' : 'belum Final'}</div>}</td>
                   <td className={terlambat(d, kini) ? 'buruk' : undefined}>{tanggal(d.tenggat)}</td>
                 </tr>
               ))}

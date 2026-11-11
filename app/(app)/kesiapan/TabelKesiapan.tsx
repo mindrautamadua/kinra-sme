@@ -1,20 +1,26 @@
 'use client'
 
-import { Download, Eye, Search, Trash2, Upload, X, BadgeCheck } from 'lucide-react'
+import { Download, Eye, Search, Trash2, Upload, X, BadgeCheck, Link2 } from 'lucide-react'
 import Link from 'next/link'
 import { useMemo, useRef, useState } from 'react'
-import { lihatBerkas } from '@/app/actions'
+import { lihatBerkas, lihatBuktiTerkait } from '@/app/actions'
 import { Chip } from '@/components/Chip'
 import { EvidenceBerkas } from '@/components/EvidenceBerkas'
 import { useBoleh } from '@/components/Peran'
 import { selisihHari, tanggal } from '@/lib/format'
 import { adaBukti, siapAudit, tahapSiap, grupStatus, type GrupStatus, KELOMPOK, kesiapan, STATUS_DOKUMEN, terlambat } from '@/lib/status'
-import type { BerkasTampil, Dokumen, KelompokDokumen, Klausul } from '@/lib/types'
+import type { BerkasTampil, BuktiTerkait, Dokumen, KelompokDokumen, Klausul } from '@/lib/types'
 import { CatatanDokumen } from './CatatanDokumen'
 import { HapusDokumenDialog } from './HapusDokumenDialog'
 import { PanelKesiapan } from './PanelKesiapan'
 import { PicDokumen } from './PicDokumen'
 import { StatusDokumenSel } from './StatusDokumenSel'
+
+/** Label tombol evidence: berkas dokumen sendiri dan/atau bukti sasaran yang ditautkan. */
+function labelBukti(d: Dokumen) {
+  const nB = d.jumlah_berkas ?? 0, nT = d.jumlah_terkait ?? 0
+  return [nB && `${nB} berkas`, nT && `${nT} bukti sasaran`].filter(Boolean).join(' + ')
+}
 
 export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal }: {
   dokumen: Dokumen[]; klausul: Klausul[]; kini: string; klausulAwal: string
@@ -41,7 +47,7 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal }: {
   const saranPic = useMemo(() => [...new Set(rows.map((d) => d.pic?.trim()).filter((p): p is string => !!p))].sort(), [rows])
   // Panel evidence: satu-satunya tempat melihat, mengunggah, dan menghapus berkas evidence
   const dlg = useRef<HTMLDialogElement>(null)
-  const [panel, setPanel] = useState<{ d: Dokumen; berkas: BerkasTampil[] } | null>(null)
+  const [panel, setPanel] = useState<{ d: Dokumen; berkas: BerkasTampil[]; terkait: BuktiTerkait[] } | null>(null)
   const [memuat, setMemuat] = useState<string | null>(null)
 
   async function muatBerkas(d: Dokumen) {
@@ -53,10 +59,12 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal }: {
   async function bukaPanel(d: Dokumen) {
     setGalat(null)
     setMemuat(d.id)
-    const berkas = await muatBerkas(d)
+    // Bukti pelaksanaan sasaran/aksi yang ditautkan ke item ini (migrasi 0056), dimuat bersamaan
+    const [berkas, t] = await Promise.all([muatBerkas(d), (d.jumlah_terkait ?? 0) > 0 ? lihatBuktiTerkait(d.kode) : null])
     setMemuat(null)
     if (!berkas) return
-    setPanel({ d, berkas })
+    if (t && !t.ok) setGalat(`Bukti sasaran terkait ${d.kode} gagal dimuat: ${t.pesan}`)
+    setPanel({ d, berkas, terkait: t?.ok ? t.grup ?? [] : [] })
     dlg.current?.showModal()
   }
 
@@ -214,9 +222,9 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal }: {
                     </td>
                     <td className="num">
                       <span className="ks-aksi-baris">
-                      {(d.jumlah_berkas ?? 0) > 0
-                        ? <button type="button" className="btn kecil" disabled={memuat === d.id} onClick={() => bukaPanel(d)} aria-label={`Lihat ${d.jumlah_berkas} berkas evidence ${d.kode}`}>
-                            <Eye aria-hidden="true" /> {memuat === d.id ? 'Memuat…' : `${d.jumlah_berkas} berkas`}
+                      {adaBukti(d)
+                        ? <button type="button" className="btn kecil" disabled={memuat === d.id} onClick={() => bukaPanel(d)} aria-label={`Lihat evidence ${d.kode}: ${labelBukti(d)}`}>
+                            {(d.jumlah_berkas ?? 0) > 0 ? <Eye aria-hidden="true" /> : <Link2 aria-hidden="true" />} {memuat === d.id ? 'Memuat…' : labelBukti(d)}
                             {(d.jumlah_sah ?? 0) > 0 ? <BadgeCheck aria-label="ada versi sah" className="txt-good" /> : null}
                           </button>
                         : bisaUnggah
@@ -254,6 +262,21 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal }: {
               <button type="button" className="btn btn-ikon" aria-label="Tutup" onClick={() => dlg.current?.close()}><X aria-hidden="true" /></button>
             </div>
             <EvidenceBerkas key={panel.d.id} dokumenId={panel.d.id} berkas={panel.berkas} onBerubah={segarkanPanel} />
+            {panel.terkait.length > 0 && (
+              <section className="ks-terkait" aria-labelledby="judul-terkait">
+                <h4 id="judul-terkait"><Link2 aria-hidden="true" /> Bukti pelaksanaan sasaran terkait</h4>
+                <p className="muted small">
+                  Diunggah di halaman <Link href="/sasaran">Sasaran</Link> dan ikut dihitung sebagai evidence item ini, jadi tidak perlu diunggah ulang.
+                  Hanya untuk dilihat di sini. Versi sah tetap harus ditandai pada berkas evidence di atas.
+                </p>
+                {panel.terkait.map((g) => (
+                  <div key={`${g.jenis}-${g.id}`} className="ks-terkait-grup">
+                    <p className="small"><b className="mono">{g.kode}</b> {g.judul} <span className="muted">· {g.berkas.length ? `${g.berkas.length} berkas` : 'belum ada bukti'}</span></p>
+                    {g.berkas.length > 0 && <EvidenceBerkas pemilik={{ jenis: g.jenis, id: g.id }} berkas={g.berkas} hanyaLihat />}
+                  </div>
+                ))}
+              </section>
+            )}
           </div>
         )}
       </dialog>
