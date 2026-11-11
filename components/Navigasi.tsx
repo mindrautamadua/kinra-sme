@@ -1,6 +1,6 @@
 'use client'
 
-import { Activity, Presentation, BookA, BookHeart, Building2, Clapperboard, Crosshair, Fan, FlaskConical, Map as IkonPeta, BookOpen, MessagesSquare, CalendarRange, ClipboardCheck, FileText, Gauge, LayoutDashboard, Network, ScanSearch, SearchCheck, ShieldAlert, Target, Users } from 'lucide-react'
+import { Activity, Presentation, BookA, BookHeart, Building2, Clapperboard, Crosshair, Fan, FlaskConical, Map as IkonPeta, BookOpen, MessagesSquare, CalendarRange, ClipboardCheck, FileText, Gauge, LayoutDashboard, Network, ScanSearch, SearchCheck, ShieldAlert, Target, Users, Waypoints } from 'lucide-react'
 import Link from 'next/link'
 import { Fragment } from 'react'
 import { usePathname } from 'next/navigation'
@@ -28,6 +28,7 @@ export const GRUP_MENU: GrupMenu[] = [
   ] },
   { kode: 'check', judul: 'Check · Periksa', ket: 'Data & kinerja energi', item: [
     { href: '/energi', label: 'Data Energi', ikon: Gauge },
+    { href: '/aliran-energi', label: 'Aliran Energi', ikon: Waypoints },
     { href: '/kinerja', label: 'Kinerja Energi', ikon: Activity },
   ] },
   { kode: 'audit', judul: 'Check · Audit', ket: 'Kesiapan & latihan audit', item: [

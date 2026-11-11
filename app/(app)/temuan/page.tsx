@@ -15,7 +15,7 @@ export default async function Temuan() {
     <section>
       <SectionHead eyebrow="Klausul 9.2 & 10.1 · Temuan audit dan tindakan perbaikan"
         judul={temuan.length ? `${buka.length} dari ${temuan.length} temuan masih terbuka, ${lewat} melewati tenggat` : 'Belum ada temuan audit tercatat'}>
-        <p className="muted">Catat temuan Internal Audit (5–24 Nov 2026), TÜV Stage 1 (20 Nov) dan Stage 2 (10–11 Des). Setiap temuan mengikuti alur Terbuka → Proses → Verifikasi → Tertutup dan dapat ditautkan ke dokumen bukti perbaikan.</p>
+        <p className="muted">Catat temuan Internal Audit (5–12 Nov 2026), TÜV Stage 1 (20 Nov) dan Stage 2 (10–11 Des). Setiap temuan mengikuti alur Terbuka → Proses → Verifikasi → Tertutup dan dapat ditautkan ke dokumen bukti perbaikan.</p>
       </SectionHead>
       <DaftarTemuan temuan={temuan} klausul={klausul} dokumen={dokumen.map((d) => ({ id: d.id, kode: d.kode, nama: d.nama }))} kini={kini} />
     </section>

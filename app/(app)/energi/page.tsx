@@ -247,6 +247,7 @@ export default async function Energi({ searchParams }: { searchParams: Promise<{
             Kiri: seluruh listrik kawasan {tahun}, termasuk yang disalurkan ke tenant (di luar lingkup SMEn). Kanan: energi dalam lingkup KINRA, diperbesar, dipecah ke pengguna terbesarnya (kandidat <Istilah kata="SEU" />).
             Arahkan kursor ke pita untuk melihat angkanya.
           </p>
+          <Link className="btn kecil" href="/aliran-energi" style={{ marginTop: 8 }}>Buka diagram aliran interaktif per bulan</Link>
         </SectionHead>
         <div className="sk-dua">
           <div className="card">

@@ -43,7 +43,7 @@ Aplikasi ini menjawab lima pertanyaan:
 |---|---|---|
 | ia | Internal Audit | 2026-11-05 |
 | s1 | TÜV Stage 1 | 2026-11-20 |
-| tm | Tinjauan Manajemen | 2026-11-24 |
+| tm | Tinjauan Manajemen | 2026-11-13 |
 | s2 | TÜV Stage 2 | 2026-12-10 |
 
 ---
