@@ -204,6 +204,8 @@ export type Sasaran = {
   /** Pencapaian dari sheet 'Pencapaian <bulan>' formulir, per tanggal pencapaian_per */
   pencapaian?: string | null
   pencapaian_per?: string | null
+  /** Pencapaian setiap sheet 'Pencapaian <bulan>' formulir (migrasi 0058), urut periode */
+  pencapaian_riwayat?: PencapaianBulan[] | null
   sumber?: string | null
   /** Jumlah berkas bukti pelaksanaan (migrasi 0051), dihitung saat dibaca */
   jumlah_bukti?: number
@@ -217,6 +219,8 @@ export type Sasaran = {
   /** Jumlah berkas evidence di rekaman tautan (bukti bersama, mis. daftar hadir lintas bagian), dihitung saat dibaca */
   jumlah_bukti_rekaman?: number
 }
+
+export type PencapaianBulan = { periode: string; tanggal: string; hasil: string }
 
 export type StatusBukti = 'Lengkap' | 'Sebagian' | 'Belum'
 

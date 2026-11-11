@@ -7,7 +7,7 @@ import { hapusAksi, hapusSasaran, hubungkanAksi, simpanAksi, simpanSasaran, ubah
 import { Grafik } from '@/components/charts/Grafik'
 import { Chip } from '@/components/Chip'
 import { useBoleh } from '@/components/Peran'
-import { angka, tanggal } from '@/lib/format'
+import { angka, BULAN, BULAN_PANJANG, tanggal } from '@/lib/format'
 import { rupiahRingkas, tonCo2 } from '@/lib/konversi'
 import { CHIP_PROYEKSI, LABEL_PROYEKSI, type ProyeksiSasaran } from '@/lib/proyeksi-sasaran'
 import type { KodeChip } from '@/lib/status'
@@ -42,6 +42,10 @@ const KET_BUKTI: Record<StatusBukti, string> = {
   Sebagian: 'Pelaksanaan terbukti, ukuran target (nilai tes, persentase, hasil inspeksi) belum.',
   Belum: 'Belum ada rekaman pelaksanaan maupun hasil.',
 }
+// Pencapaian utama: sheet terakhir yang tanggalnya sudah lewat; sheet bertanggal di masa depan hanya ditampilkan di riwayat
+const pencapaianKini = (s: Sasaran, kini: string) =>
+  [...(s.pencapaian_riwayat ?? [])].reverse().find((r) => r.tanggal <= kini) ?? (s.pencapaian ? { hasil: s.pencapaian, tanggal: s.pencapaian_per ?? '' } : null)
+const chipHasil = (h: string): KodeChip => (/^tercapai$/i.test(h.trim()) ? 'good' : /belum|tidak/i.test(h) ? 'warn' : 'info')
 const baris = (t: string | null | undefined) => (t ?? '').split('\n').map((x) => x.trim()).filter(Boolean)
 
 const kodeBerikut =(prefiks: string, daftar: { kode: string }[]) =>
@@ -260,7 +264,25 @@ export function DaftarSasaran({ sasaran, aksi, capaian, enpi, peluang, kini, tar
                         <td className="small" style={{ maxWidth: 260 }}>{s.target_teks ?? '–'}</td>
                         <td className="small" style={{ maxWidth: 260 }}>{s.program ?? '–'}</td>
                         <td className="small">{s.batas_waktu ?? '–'}<span className="upd">{s.pic ?? '–'}</span></td>
-                        <td><Chip kode={s.status === 'Tercapai' ? 'good' : CHIP_S[s.status]} label={s.status === 'Tercapai' ? 'Tercapai' : (s.pencapaian ?? s.status)} /></td>
+                        <td>
+                          {(() => {
+                            const p = s.status === 'Tercapai' ? null : pencapaianKini(s, kini)
+                            return <Chip kode={s.status === 'Tercapai' ? 'good' : p ? chipHasil(p.hasil) : CHIP_S[s.status]} label={s.status === 'Tercapai' ? 'Tercapai' : (p?.hasil ?? s.status)} />
+                          })()}
+                          {(s.pencapaian_riwayat?.length ?? 0) > 0 && (
+                            <ul className="ss-riwayat" aria-label={`Pencapaian per lembar formulir ${s.kode}`}>
+                              {s.pencapaian_riwayat!.map((r) => {
+                                const nanti = r.tanggal > kini
+                                return (
+                                  <li key={r.periode} className={nanti ? 'nanti' : undefined}
+                                    title={`Sheet Pencapaian ${BULAN_PANJANG[Number(r.periode.slice(5)) - 1]} · tanggal ${tanggal(r.tanggal)}${nanti ? ' · belum jatuh tempo' : ''}`}>
+                                    <span>{BULAN[Number(r.periode.slice(5)) - 1]}</span> <b className={chipHasil(r.hasil) === 'good' ? 'txt-good' : undefined}>{r.hasil}</b>{nanti && <em> · per {tanggal(r.tanggal)}</em>}
+                                  </li>
+                                )
+                              })}
+                            </ul>
+                          )}
+                        </td>
                         <td>
                           {tombolBukti({ jenis: 'sasaran', id: s.id, kode: s.kode, judul: s.aktivitas ?? s.uraian, target: s.target_teks, status: s.status, rekaman: s.dokumen_kode }, s.jumlah_bukti, s.jumlah_bukti_rekaman)}
                           {s.bukti_status && <span className="ss-status-bukti" title={`Penilaian tim${s.bukti_diperiksa ? ` ${tanggal(s.bukti_diperiksa)}` : ''} atas kecukupan bukti terhadap ukuran target, termasuk dokumen yang belum diunggah. ${KET_BUKTI[s.bukti_status]}`}><Chip kode={CHIP_BUKTI[s.bukti_status]} label={`Dinilai: ${s.bukti_status.toLowerCase()}`} /></span>}
