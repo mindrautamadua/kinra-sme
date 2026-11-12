@@ -14,7 +14,7 @@ export const GRUP_MENU: GrupMenu[] = [
   { kode: 'mulai', judul: null, item: [
     { href: '/', label: 'Ringkasan', ikon: LayoutDashboard },
     { href: '/peta', label: 'Peta SMEn', ikon: IkonPeta },
-    { href: '/komitmen', label: 'Komitmen SMEn', ikon: HeartHandshake },
+    { href: '/komitmen', label: 'Komitmen & Kebijakan', ikon: HeartHandshake },
     { href: '/direksi', label: 'Ringkasan Direksi', ikon: Presentation },
   ] },
   { kode: 'plan', judul: 'Plan · Rencanakan', ket: 'Risiko, SEU, target', item: [
