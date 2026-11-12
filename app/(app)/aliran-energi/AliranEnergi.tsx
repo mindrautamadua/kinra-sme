@@ -214,6 +214,8 @@ export function AliranEnergi({ data }: { data: DataAliran }) {
   const tata = useTataBergerak(target)
   const H = skala.tinggi
   const total = useMemo(() => simpul.filter((s) => s.kolom === 0).reduce((t, s) => t + (periode.nilai[s.id]?.kwh ?? 0), 0), [simpul, periode])
+  // Rincian kartu lingkup KINRA: listrik meter aset vs BBM (kWh setara), agar beda dengan simpul "Listrik" terbaca
+  const listrikAset = periode.nilai['src:listrik']?.kwh ?? 0
 
   // Putar otomatis bulan demi bulan
   const urutan = useRef(bulanan)
@@ -283,7 +285,8 @@ export function AliranEnergi({ data }: { data: DataAliran }) {
         {tampilan === 'kinra' ? (
           <>
             <div><span>Energi lingkup KINRA</span><b className="tnum"><AngkaGeser nilai={total} format={energiListrik} /></b>
-              <small className="muted">{totalSebelum ? `${delta(((total - totalSebelum) / totalSebelum) * 100)} vs ${sebelum!.ringkas}` : 'kWh setara'}</small></div>
+              <small className="muted">{totalSebelum ? `${delta(((total - totalSebelum) / totalSebelum) * 100)} vs ${sebelum!.ringkas}` : 'kWh setara'}</small>
+              <small className="muted">listrik {energiListrik(listrikAset)} + BBM {energiListrik(total - listrikAset)} setara</small></div>
             <div><span>Lewat SEU</span><b className="tnum"><AngkaGeser nilai={total ? (lewatSeu / total) * 100 : 0} format={(v) => persen(v)} /></b>
               <small className="muted">{energiListrik(lewatSeu)}</small></div>
             <div><span>Biaya</span><b className="tnum"><AngkaGeser nilai={biaya} format={rupiahRingkas} /></b><small className="muted">listrik + BBM</small></div>
