@@ -2,7 +2,7 @@
 
 import { type ReactNode, useState } from 'react'
 
-/** Tab "Bank soal" dan "Simulasi bersama KIRA" di halaman Tanya Jawab Audit. */
+/** Tab "Bank soal" dan "Simulasi bersama KIRA" di halaman Simulasi Implementasi. */
 export function TabTanyaJawab({ bank, simulasi }: { bank: ReactNode; simulasi: ReactNode }) {
   const [tab, setTab] = useState<'bank' | 'simulasi'>('bank')
   return (

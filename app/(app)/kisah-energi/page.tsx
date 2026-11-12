@@ -543,7 +543,7 @@ export default async function KisahEnergi() {
               <tr><th>Pengendali dokumen</th><td>Penomoran, versi, persetujuan, distribusi dokumen</td><td>Daftar Induk Dokumen, Kesiapan Audit</td></tr>
             </tbody>
           </table>
-          <Kotak jenis="latihan"><p>Buka menu Tanya Jawab Audit atau tombol Tanya KIRA untuk simulasi wawancara. KIRA akan berperan sebagai auditor dan bertanya sesuai data terbaru. Targetnya: setiap unit auditee berlatih minimal sekali sebelum {s1 && s1.tanggal >= kini ? tglTg(s1) : tglTg(s2)}.</p></Kotak>
+          <Kotak jenis="latihan"><p>Buka menu Simulasi Implementasi atau tombol Tanya KIRA untuk simulasi wawancara. KIRA akan berperan sebagai auditor dan bertanya sesuai data terbaru. Targetnya: setiap unit auditee berlatih minimal sekali sebelum {s1 && s1.tanggal >= kini ? tglTg(s1) : tglTg(s2)}.</p></Kotak>
         </Bab>
 
         {/* ── Lampiran A ───────────────────────────────────────── */}

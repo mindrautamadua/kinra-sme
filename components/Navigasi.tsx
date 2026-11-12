@@ -36,7 +36,7 @@ export const GRUP_MENU: GrupMenu[] = [
     { href: '/kesiapan', label: 'Kesiapan Audit', ikon: ClipboardCheck },
     { href: '/dependensi', label: 'Peta Evidence', ikon: Network },
     { href: '/auditor', label: 'Ruang Auditor', ikon: ScanSearch },
-    { href: '/tanya-jawab', label: 'Tanya Jawab Audit', ikon: MessagesSquare },
+    { href: '/tanya-jawab', label: 'Simulasi Implementasi', ikon: MessagesSquare },
   ] },
   { kode: 'act', judul: 'Act · Perbaiki', ket: 'Tindak lanjut temuan', item: [
     { href: '/temuan', label: 'Temuan Audit', ikon: SearchCheck },

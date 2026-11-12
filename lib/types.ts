@@ -132,6 +132,13 @@ export type Peluang = {
   prioritas: number | null
   estimasi_kwh: number | null
   status: string
+  /** Isian formulir peluang 002/005 (migrasi 0067); undefined bila migrasi belum dijalankan */
+  deskripsi?: string | null
+  seu_terkait?: string | null
+  sasaran_teks?: string | null
+  tanggal_identifikasi?: string | null
+  sumber?: string | null
+  kunci?: string | null
 }
 
 export type Temuan = {

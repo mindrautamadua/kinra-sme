@@ -158,7 +158,7 @@ export async function lihatBuktiTerkait(dokumenKode: string): Promise<Hasil & { 
 /** Langkah 1 unggah: server membuat signed upload URL; browser lalu mengunggah langsung ke Storage (tidak lewat server Next). */
 export type EvidenceDokumen = { id: string; kode: string; nama: string; wajib: boolean; status: StatusDokumen; posisiDraf: string | null; berkas: BerkasTampil[] }
 
-/** Daftar dokumen satu klausul beserta berkas evidence-nya (signed URL 1 jam). Dipakai modal di halaman Tanya Jawab. */
+/** Daftar dokumen satu klausul beserta berkas evidence-nya (signed URL 1 jam). Dipakai modal di halaman Simulasi Implementasi. */
 export async function evidenceKlausul(kode: string): Promise<Hasil & { judul?: string; dokumen?: EvidenceDokumen[] }> {
   try {
     const s = await db()

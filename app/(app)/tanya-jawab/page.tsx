@@ -14,7 +14,7 @@ export default async function TanyaJawab() {
   const jumlah = UNIT_AUDIT.reduce((n, u) => n + u.tanya.length, 0)
   return (
     <section>
-      <SectionHead eyebrow="Audit internal · ISO 50001:2018" judul={`Tanya jawab audit: ${UNIT_AUDIT.length} unit, ${jumlah} pertanyaan`}>
+      <SectionHead eyebrow="Audit internal · ISO 50001:2018" judul={`Simulasi implementasi: ${UNIT_AUDIT.length} unit, ${jumlah} pertanyaan`}>
         <p className="muted">
           Contoh pertanyaan auditor beserta jawaban, bukti objektif, dan indikator untuk persiapan auditor internal dan auditee.
           Jawaban adalah respons yang diharapkan, bukan pernyataan bahwa KINRA sudah memenuhi persyaratan: sesuaikan dengan kondisi aktual dan dokumen terkendali.

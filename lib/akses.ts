@@ -36,6 +36,7 @@ export const AKSES = {
   'kegiatan.ubah': SEMUA,
   'register.ubah': SEMUA,
   'register.hapus': ['admin'],
+  'register.sinkron': ['admin'],               // sinkron isu & peluang dari formulir upload (bisa menghapus baris)
   'temuan.tambah': ['admin', 'konsultan'],
   'temuan.ubah': SEMUA,
   'temuan.tutup': ['admin', 'konsultan'],
@@ -62,7 +63,7 @@ export const LABEL_AKSI: Record<Aksi, string> = {
   'seu.ubah': 'Usulkan & isi SEU', 'seu.tetapkan': 'Tetapkan SEU & setujui tinjauan energi', 'seu.hapus': 'Hapus SEU',
   'enpi.tambah': 'Tambah EnPI & variabel relevan', 'enpi.ubah': 'Ubah EnPI, baseline & variabel', 'enpi.hapus': 'Hapus EnPI & variabel',
   'sasaran.tambah': 'Tambah sasaran energi', 'sasaran.ubah': 'Ubah sasaran energi', 'aksi.ubah': 'Isi rencana aksi', 'sasaran.hapus': 'Hapus sasaran & aksi', 'bukti.unggah': 'Unggah bukti pelaksanaan sasaran & aksi', 'bukti.hapus': 'Hapus bukti pelaksanaan', 'kegiatan.ubah': 'Tandai kegiatan timeline',
-  'register.ubah': 'Isi isu & peluang', 'register.hapus': 'Hapus isu', 'temuan.tambah': 'Catat temuan',
+  'register.ubah': 'Isi isu & peluang', 'register.hapus': 'Hapus isu', 'register.sinkron': 'Sinkron register dari formulir upload', 'temuan.tambah': 'Catat temuan',
   'temuan.ubah': 'Tindak lanjut temuan', 'temuan.tutup': 'Tutup temuan', 'temuan.hapus': 'Hapus temuan',
   'formulir.isi': 'Isi & ajukan formulir', 'formulir.setujui': 'Setujui formulir', 'formulir.hapus': 'Hapus isian formulir',
   'simulasi.simpan': 'Simpan hasil simulasi audit', 'sandi.ganti': 'Ganti sandi sendiri',

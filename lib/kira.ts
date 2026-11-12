@@ -15,7 +15,7 @@ Selalu ingatkan bahwa jawaban di materi adalah contoh yang harus disesuaikan den
 
 const MATERI_TIDAK = `Materi tanya jawab audit internal tidak dimuat untuk pertanyaan ini. Bila pengguna menanyakan pertanyaan atau bukti audit internal, minta ia menanyakannya ulang dengan menyebut kata "audit" atau nama unit kerjanya.`
 
-/** Kata kunci yang menandakan pertanyaan butuh materi tanya jawab audit (menu Tanya Jawab Audit). */
+/** Kata kunci yang menandakan pertanyaan butuh materi tanya jawab audit (menu Simulasi Implementasi). */
 const POLA_AUDIT = /\b(audit\w*|auditee|klausul|bukti|evidence|indikator|latih\w*|tanya ?jawab|pertanyaan|unit( kerja)?|spi|mr|steering|manajemen puncak|direksi|manajer energi|koordinator energi|dokumen kontrol|sekretari\w*|hukum|tjsl|akuntansi|keuangan|sdm|pengadaan|risiko|ti|pengembangan|pemasaran|penjualan|produksi|mekanikal|elektrikal|m&e|fasilitas|pengamanan|u\d{1,2}q\d|\d{1,2}\.\d)\b/i
 
 /** Chat teks: muat materi bila pertanyaan terakhir (atau sebelumnya, untuk lanjutan) relevan, atau KIRA sedang merujuk/melatih dari materi. */

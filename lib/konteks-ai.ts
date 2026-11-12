@@ -93,7 +93,7 @@ export async function konteksDashboard({ tanyaJawab = true }: { tanyaJawab?: boo
   return b.join('\n')
 }
 
-/** Seluruh materi tanya jawab audit internal (menu Tanya Jawab Audit) dalam format ringkas untuk KIRA. */
+/** Seluruh materi tanya jawab audit internal (menu Simulasi Implementasi) dalam format ringkas untuk KIRA. */
 export function konteksTanyaJawab(): string {
   const b: string[] = [
     `## Materi tanya jawab audit internal (${SUMBER_TANYA_JAWAB})`,

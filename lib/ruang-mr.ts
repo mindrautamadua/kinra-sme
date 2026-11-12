@@ -264,7 +264,7 @@ export const TANYA_MR: TanyaMr[] = [
       'Audit internal mencakup seluruh klausul dan seluruh lingkup sebelum Stage 2.',
     ],
     bukti: 'Program dan rencana audit internal, checklist, laporan audit, bukti kompetensi auditor.',
-    halaman: [{ href: '/tanya-jawab', label: 'Tanya Jawab Audit' }, { href: '/temuan', label: 'Temuan Audit' }] },
+    halaman: [{ href: '/tanya-jawab', label: 'Simulasi Implementasi' }, { href: '/temuan', label: 'Temuan Audit' }] },
   { id: 'E2', fungsi: 'audit', klausul: ['10.1'], stage: 'Stage 2',
     tanya: 'Berapa temuan audit internal yang masih terbuka, dan mengapa?',
     jawab: [

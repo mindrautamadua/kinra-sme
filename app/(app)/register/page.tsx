@@ -7,6 +7,7 @@ import { AMBANG_RISIKO } from '@/lib/status'
 import { nilaiEnergi, rupiahRingkas, susunKonversi, tonCo2 } from '@/lib/konversi'
 import { RegisterIsu } from './RegisterIsu'
 import { RegisterPeluang } from './RegisterPeluang'
+import { SinkronFormulir } from './SinkronFormulir'
 
 export const dynamic = 'force-dynamic'
 
@@ -33,6 +34,11 @@ export default async function Register() {
             Halaman ini menjawab tiga pertanyaan auditor klausul 6.1: risiko apa yang dapat menggagalkan SMEn, apa tindakannya, dan bagaimana efektivitasnya dievaluasi.
             Peluang peningkatan kinerja energi dinilai prioritasnya lalu dijadikan rencana aksi (6.2).
           </p>
+          <div className="toolbar sf-toolbar">
+            <span className="muted small">Sumber data: formulir 4.1, 6.1, dan peluang 002/005 yang diupload di Kesiapan Audit{sumber61.length ? ` · ${sumber61.length} sumber formulir tercatat` : ''}.</span>
+            <span style={{ flex: 1 }} />
+            <SinkronFormulir />
+          </div>
         </SectionHead>
         <div className="tiles">
           <div className="tile"><div className="tile-head"><span className="tile-ikon"><ShieldAlert aria-hidden="true" /></span><span className="label">Risiko ekstrem / tinggi</span></div>
