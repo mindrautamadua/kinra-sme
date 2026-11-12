@@ -1,6 +1,6 @@
 'use client'
 
-import { Activity, Droplets, Presentation, BookA, BookHeart, Building2, Clapperboard, Crosshair, Fan, FlaskConical, Map as IkonPeta, BookOpen, MessagesSquare, CalendarRange, ClipboardCheck, FileText, Gauge, LayoutDashboard, Network, ScanSearch, SearchCheck, ShieldAlert, Target, Users, Waypoints } from 'lucide-react'
+import { Activity, BadgeCheck, ShieldCheck, Droplets, Presentation, BookA, BookHeart, Building2, Clapperboard, Crosshair, Fan, FlaskConical, Map as IkonPeta, BookOpen, MessagesSquare, CalendarRange, ClipboardCheck, FileText, Gauge, LayoutDashboard, Network, ScanSearch, SearchCheck, ShieldAlert, Target, Users, Waypoints } from 'lucide-react'
 import Link from 'next/link'
 import { Fragment } from 'react'
 import { usePathname } from 'next/navigation'
@@ -56,16 +56,22 @@ export const MENU: ItemMenu[] = GRUP_MENU.flatMap((g) => g.item)
 
 export const MENU_ADMIN = { href: '/pengguna', label: 'Pengguna', ikon: Users }
 
+/** Hanya admin & Tim KINRA (akses 'ruangmr.lihat'). */
+export const MENU_MR = { href: '/ruang-mr', label: 'Ruang MR', ikon: BadgeCheck }
+/** Hanya admin & Tim KINRA (akses 'ruangmrti.lihat'). */
+export const MENU_MRTI = { href: '/ruang-mrti', label: 'Ruang Risiko & TI', ikon: ShieldCheck }
+
 function aktif(path: string, href: string) {
   return href === '/' ? path === '/' : path === href || path.startsWith(`${href}/`) ||
     (href === '/kesiapan' && path.startsWith('/dokumen'))
 }
 
-export function Navigasi({ varian, admin }: { varian: 'sidebar' | 'mobile'; admin: boolean }) {
+export function Navigasi({ varian, admin, ruangMr, ruangMrti }: { varian: 'sidebar' | 'mobile'; admin: boolean; ruangMr: boolean; ruangMrti: boolean }) {
   const path = usePathname()
-  const grup = admin
-    ? GRUP_MENU.map((g) => (g.kode === 'bantuan' ? { ...g, item: [...g.item, MENU_ADMIN] } : g))
-    : GRUP_MENU
+  const grup = GRUP_MENU.map((g) =>
+    g.kode === 'bantuan' && admin ? { ...g, item: [...g.item, MENU_ADMIN] }
+      : g.kode === 'audit' ? { ...g, item: [...g.item, ...(ruangMr ? [MENU_MR] : []), ...(ruangMrti ? [MENU_MRTI] : [])] }
+        : g)
   if (varian === 'mobile') {
     return (
       <nav className="mobile-nav" aria-label="Navigasi utama">
@@ -108,6 +114,6 @@ export function Navigasi({ varian, admin }: { varian: 'sidebar' | 'mobile'; admi
 
 export function Crumb() {
   const path = usePathname()
-  const m = [...MENU, MENU_ADMIN].find((x) => aktif(path, x.href))
+  const m = [...MENU, MENU_ADMIN, MENU_MR, MENU_MRTI].find((x) => aktif(path, x.href))
   return <b>{m?.label ?? 'SMEn'}</b>
 }

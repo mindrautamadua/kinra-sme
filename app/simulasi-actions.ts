@@ -105,6 +105,8 @@ export async function simpanSimulasi(d: { unitNo: number; mode: ModeSimulasi; ha
     jawaban: d.hasil.map((h) => ({ tanya: h.soal.tanya, sumber: h.soal.sumber, klausul: h.soal.klausul, jawaban: h.jawaban.slice(0, MAKS_JAWABAN), skor: h.skor, alasan: h.alasan, bukti: h.bukti })),
   })
   revalidatePath('/tanya-jawab')
+  revalidatePath('/ruang-mr')
+  revalidatePath('/ruang-mrti')
   if (error?.code === 'PGRST205' || error?.code === '42P01') return { ok: false, pesan: 'Tabel riwayat belum ada. Jalankan migrasi 0029_simulasi_audit.sql di Supabase.' }
   return error ? { ok: false, pesan: error.message } : { ok: true }
 }

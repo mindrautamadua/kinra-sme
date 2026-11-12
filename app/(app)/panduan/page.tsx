@@ -1,4 +1,4 @@
-import { Droplets, Activity, BookA, BookOpen, Clapperboard, Fan, FlaskConical, MessagesSquare, Bot, CalendarRange, CircleCheck, ClipboardCheck, FileText, Gauge, KeyRound, LayoutDashboard, Minus, Network, ScanSearch, SearchCheck, ShieldAlert, Target, Users, Building2, Crosshair, Map as IkonPeta, Presentation } from 'lucide-react'
+import { Droplets, Activity, BadgeCheck, ShieldCheck, BookA, BookOpen, Clapperboard, Fan, FlaskConical, MessagesSquare, Bot, CalendarRange, CircleCheck, ClipboardCheck, FileText, Gauge, KeyRound, LayoutDashboard, Minus, Network, ScanSearch, SearchCheck, ShieldAlert, Target, Users, Building2, Crosshair, Map as IkonPeta, Presentation } from 'lucide-react'
 import { FITUR_FORMULIR } from '@/lib/fitur'
 import Link from 'next/link'
 import { Chip } from '@/components/Chip'
@@ -28,6 +28,8 @@ const MODUL = [
   { href: '/auditor', ikon: ScanSearch, nama: 'Ruang Auditor', klausul: 'Klausul 9.2 · Stage 1', isi: 'Tampilan hanya-baca per klausul untuk auditor internal dan TÜV: dokumen wajib di atas, berkas evidence langsung dibuka, temuan terbuka, dan dokumen yang menjadi dasarnya.' },
   ...(FITUR_FORMULIR ? [{ href: '/formulir', ikon: FileText, nama: 'Formulir', klausul: 'Klausul 4–10', isi: 'Semua formulir SMEn diisi langsung di aplikasi: buat isian, isi tabel, ajukan, setujui, lalu cetak atau simpan sebagai PDF.' }] : []),
   { href: '/tanya-jawab', ikon: MessagesSquare, nama: 'Tanya Jawab Audit', klausul: 'Klausul 4–10', isi: '65 contoh pertanyaan auditor internal per unit kerja, lengkap dengan jawaban, bukti objektif, dan indikator. Jawaban disembunyikan untuk latihan.' },
+  { href: '/ruang-mr', ikon: BadgeCheck, nama: 'Ruang MR', klausul: 'Klausul 5.3, 9.2, 9.3, 10.1', isi: 'Bahan persiapan audit eksternal khusus MR/Steering Committee: pertanyaan auditor per fungsi MR di SK Tim SMEn, contoh jawaban, bukti, kesalahan yang dihindari, angka hidup yang harus dihafal, simulasi bersama KIRA, dan daftar periksa pribadi.' },
+  { href: '/ruang-mrti', ikon: ShieldCheck, nama: 'Ruang Manajemen Risiko & TI', klausul: 'Klausul 4.1, 6.1, 6.6, 7.5', isi: 'Bahan persiapan audit untuk Bagian Manajemen Risiko & TI sebagai auditee: pertanyaan auditor tentang risiko, data energi, sistem informasi, dan dokumen digital, dengan contoh jawaban, angka hidup bagian, simulasi bersama KIRA, dan daftar periksa.' },
   { href: '/energi', ikon: Gauge, nama: 'Data Energi', klausul: 'Klausul 6.3', isi: 'Input konsumsi bulanan per sumber (PLN, PLTBG, PLTS, BBM), aliran energi, peta panas, dan tren antar tahun dalam Terajoule.' },
   { href: '/aset', ikon: Building2, nama: 'Aset & Meter', klausul: 'Klausul 6.3, 6.6, 9.1', isi: 'Register aset gedung/fasilitas dan sembilan meter energi KINRA, bacaan stand bulanan dengan faktor kali (mis. WTP ×200), jadwal kalibrasi meter, serta pemeriksaan otomatis kualitas data bacaan (bulan kosong, stand janggal, konsumsi di luar pola).' },
   { href: '/tinjauan', ikon: Crosshair, nama: 'Tinjauan Energi & SEU', klausul: 'Klausul 6.3', isi: 'Pareto pengguna energi KINRA, kandidat dan register SEU beserta alasan, variabel, EnPI, PIC, dan personel; kualitas data dan catatan tinjauan berkala. Penetapan SEU dan persetujuan tinjauan hanya oleh admin atau konsultan.' },
@@ -101,7 +103,7 @@ export default async function Panduan() {
           <p className="muted">Dashboard Sistem Manajemen Energi PT Kawasan Industri Nusantara (KEK Sei Mangkei). Aplikasi ini menggantikan spreadsheet terpisah untuk monitoring dokumen, data energi, EnPI, sasaran, risiko, temuan, dan jadwal pendampingan.</p>
         </SectionHead>
         <div className="pd-modul">
-          {MODUL.map((m, i) => (
+          {MODUL.filter((m) => (m.href !== '/ruang-mr' || boleh(peran, 'ruangmr.lihat')) && (m.href !== '/ruang-mrti' || boleh(peran, 'ruangmrti.lihat'))).map((m, i) => (
             <Link key={m.href} href={m.href} className="pd-modul-item" style={{ '--i': i } as React.CSSProperties}>
               <span className="tile-ikon"><m.ikon aria-hidden="true" /></span>
               <span className="eyebrow">{m.klausul}</span>

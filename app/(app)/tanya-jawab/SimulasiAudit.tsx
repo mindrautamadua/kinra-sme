@@ -17,9 +17,9 @@ const CHIP_TEMUAN = { Mayor: 'crit', Minor: 'warn', OFI: 'info' } as const
 
 type Nilai = { skor: number; alasan: string; bukti_kurang: string; lanjut: string | null }
 
-export function SimulasiAudit({ riwayat, bolehSimpan }: { riwayat: SimulasiTersimpan[]; bolehSimpan: boolean }) {
+export function SimulasiAudit({ riwayat, bolehSimpan, unitAwal = 3 }: { riwayat: SimulasiTersimpan[]; bolehSimpan: boolean; unitAwal?: number }) {
   const router = useRouter()
-  const [unit, setUnit] = useState(3)
+  const [unit, setUnit] = useState(unitAwal)
   const [mode, setMode] = useState<ModeSimulasi>('stage2')
   const [jumlah, setJumlah] = useState(5)
   const [soal, setSoal] = useState<Soal[] | null>(null)

@@ -46,6 +46,8 @@ export const AKSES = {
   'simulasi.simpan': SEMUA,                     // riwayat simulasi audit (migrasi 0042)
   'sandi.ganti': SEMUA,                         // akun pembaca dipakai bersama: sandi hanya diatur ulang admin (migrasi 0042)
   'pengguna.kelola': ['admin'],
+  'ruangmr.lihat': ['admin', 'tim_kinra'],     // menu Ruang MR (persiapan audit MR)
+  'ruangmrti.lihat': ['admin', 'tim_kinra'],   // menu Ruang Manajemen Risiko & TI (auditee)
 } satisfies Record<string, Peran[]>
 
 export type Aksi = keyof typeof AKSES
@@ -65,6 +67,8 @@ export const LABEL_AKSI: Record<Aksi, string> = {
   'formulir.isi': 'Isi & ajukan formulir', 'formulir.setujui': 'Setujui formulir', 'formulir.hapus': 'Hapus isian formulir',
   'simulasi.simpan': 'Simpan hasil simulasi audit', 'sandi.ganti': 'Ganti sandi sendiri',
   'pengguna.kelola': 'Kelola pengguna',
+  'ruangmr.lihat': 'Buka Ruang MR',
+  'ruangmrti.lihat': 'Buka Ruang Manajemen Risiko & TI',
 }
 
 export function boleh(peran: Peran | null | undefined, aksi: Aksi): boolean {

@@ -47,7 +47,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
             <b>KINRA</b>
             <span className="brand-sub">Sistem Manajemen Energi</span>
           </div>
-          <Navigasi varian="sidebar" admin={boleh(saya.peran, 'pengguna.kelola')} />
+          <Navigasi varian="sidebar" admin={boleh(saya.peran, 'pengguna.kelola')} ruangMr={boleh(saya.peran, 'ruangmr.lihat')} ruangMrti={boleh(saya.peran, 'ruangmrti.lihat')} />
           <div className="side-card">
             <span className="eyebrow">Standar</span>
             <b>ISO 50001:2018</b>
@@ -73,7 +73,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
             </div>
             <TemaToggle />
           </header>
-          <Navigasi varian="mobile" admin={boleh(saya.peran, 'pengguna.kelola')} />
+          <Navigasi varian="mobile" admin={boleh(saya.peran, 'pengguna.kelola')} ruangMr={boleh(saya.peran, 'ruangmr.lihat')} ruangMrti={boleh(saya.peran, 'ruangmrti.lihat')} />
           <main className="konten">
             {galatDb ? (
               <section className="card" style={{ maxWidth: 760 }}>
