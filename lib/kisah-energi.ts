@@ -69,7 +69,13 @@ export function susunKisah(o: KisahInput) {
 
   // ── Bab 2: batas ──────────────────────────────────────────────
   const kawasanPenuh = tahunPenuh !== null ? o.energi.filter((d) => d.tahun === tahunPenuh && SUMBER_KAWASAN.includes(d.sumber_kode)).reduce((s, d) => s + d.nilai, 0) : 0
-  const namaMeter = (m: MeterEnergi) => o.aset.find((a) => a.kode === m.aset_kode)?.nama ?? m.lokasi ?? m.kode
+  // Satu aset bisa punya beberapa meter (WTP: meter WTP + meter Intake), jadi nama aset saja tidak membedakan barisnya.
+  const namaMeter = (m: MeterEnergi) => {
+    const namaAset = o.aset.find((a) => a.kode === m.aset_kode)?.nama
+    const asetBersama = meterKwh.filter((x) => x.aset_kode === m.aset_kode).length > 1
+    if (namaAset && !asetBersama) return namaAset
+    return (m.area_dilayani ?? m.lokasi ?? namaAset ?? m.kode).split(':')[0].trim()
+  }
   const seuMeter = (kode: string) => o.seu.find((s) => s.status !== 'Dicabut' && s.meter_kode.includes(kode))?.kode ?? null
   const meterBatas = tahunPenuh !== null ? meterTahun(tahunPenuh) : meterKwh.map((m) => m.kode)
 
