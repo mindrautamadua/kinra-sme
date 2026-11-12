@@ -22,7 +22,7 @@ const kunci = (t: number, b: number) => t * 12 + b - 1
 const BULAN = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des']
 const label = (k: number) => `${BULAN[k % 12]} ${Math.floor(k / 12)}`
 
-const NAMA_ASET: Record<string, string> = { 'KINRA-MTR-005': 'Pengolahan air bersih (WTP 1 + intake)', 'KINRA-MTR-004': 'Pengolahan air limbah (WWTP)' }
+const NAMA_ASET: Record<string, string> = { 'KINRA-MTR-005': 'Pengolahan air bersih (WTP 1 + intake)', 'KINRA-MTR-004': 'Pengolahan air limbah (WWTP)', 'KINRA-MTR-009': 'Tank Farm (kawasan)' }
 /** Meter intake (terpisah sejak migrasi 0043) digabung ke bagian WTP 1. */
 const WTP = 'KINRA-MTR-005', INTAKE = 'KINRA-MTR-008'
 

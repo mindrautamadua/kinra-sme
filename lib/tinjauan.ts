@@ -20,6 +20,8 @@ export type PenggunaEnergi = {
 }
 
 const TJ_PER_KWH = 3.6e-6
+// Meter Tank Farm (KINRA-MTR-009) mengukur seluruh kawasan, bukan hanya kantor (aset induk KINRA-AST-035)
+const NAMA_PENGGUNA: Record<string, string> = { 'KINRA-AST-035': 'Tank Farm (kawasan)' }
 
 /** Sumber energi di luar listrik kawasan yang langsung dipakai KINRA (mis. BBM kendaraan operasional). */
 const SUMBER_KINRA = ['dexlite', 'dexlite_genset', 'bensin']
@@ -49,7 +51,7 @@ export function penggunaEnergi(opsi: {
     const lengkap = [...perBulan.entries()].filter(([, r]) => ms.length > 0 && r.n >= ms.length)
       .sort(([x], [y]) => x - y).slice(-12).map(([, r]) => r)
     if (lengkap.length) {
-      mentah.push({ id: `aset:${a.kode}`, nama: a.nama, kwh: lengkap.reduce((t, r) => t + r.kwh, 0) / lengkap.length, dasar: 'meter', bulanData: lengkap.length })
+      mentah.push({ id: `aset:${a.kode}`, nama: NAMA_PENGGUNA[a.kode] ?? a.nama, kwh: lengkap.reduce((t, r) => t + r.kwh, 0) / lengkap.length, dasar: 'meter', bulanData: lengkap.length })
     } else if (a.kwh_bulan) {
       mentah.push({ id: `aset:${a.kode}`, nama: a.nama, kwh: a.kwh_bulan, dasar: 'inventaris', bulanData: 0 })
     } else {

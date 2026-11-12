@@ -66,7 +66,7 @@ const BBM: Record<string, { sumber: string; pengguna: string }> = {
 }
 
 /** Nama ringkas aset yang paling sering muncul agar label diagram tidak terlalu panjang. */
-const NAMA_RINGKAS: Record<string, string> = { 'KINRA-AST-005': 'WTP (air bersih)', 'KINRA-AST-019': 'WWTP (air limbah)' }
+const NAMA_RINGKAS: Record<string, string> = { 'KINRA-AST-005': 'WTP (air bersih)', 'KINRA-AST-019': 'WWTP (air limbah)', 'KINRA-AST-035': 'Tank Farm (kawasan)' }
 
 export function susunAliran(o: {
   sumber: SumberEnergi[]; energi: EnergiBulanan[]; aset: Aset[]; meter: MeterEnergi[]; bacaan: PembacaanMeter[]; seu: Seu[]; kv: Konversi

@@ -77,7 +77,7 @@ export function CeritaEnergiPlayer({ c }: { c: CeritaEnergi }) {
               <p className="ce-kecil ce-m1">Dalam 12 bulan terakhir, KINRA memakai</p>
               <p className="ce-raksasa ce-m2"><HitungNaik ke={c.totalKwh} aktif format={juta} /><span className="ce-satuan">juta kWh</span></p>
               <p className="ce-sedang ce-m3">setara {rpMiliar(c.rupiah)} dan {angka(c.tonCo2, 0)} ton CO₂</p>
-              <p className="ce-sumber ce-m4">Listrik 7 meter aset + BBM, {c.periode.mulai} – {c.periode.selesai} · tanpa listrik tenant</p>
+              <p className="ce-sumber ce-m4">Listrik meter aset KINRA + BBM, {c.periode.mulai} – {c.periode.selesai} · tanpa listrik tenant</p>
             </div>
           )}
           {i === 1 && (

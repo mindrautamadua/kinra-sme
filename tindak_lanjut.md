@@ -46,7 +46,9 @@ Migrasi 0018–0030 sudah dijalankan di Supabase (6 November 2026). File 0027–
 - [ ] **PLTBG dan PLTS.** Siapa pemiliknya, siapa pemakainya, dan apakah termasuk lingkup SMEn KINRA? Untuk sementara keduanya dicatat sebagai pasokan kawasan.
 - [ ] **Data PLTBG September 2026.** Nilainya 245 ribu kWh, sekitar 75% di bawah bulan-bulan lain (0,6–1,0 juta kWh). Pastikan apakah datanya belum lengkap atau pembangkit sedang gangguan atau perawatan.
 - [ ] **Meter air baku WTP.** Apakah ada meter air baku atau produksi WTP? Saat ini yang tercatat hanya distribusi, sehingga kehilangan air tidak diketahui.
-- [ ] **Ruang Boiler Tank Farm (895 m²).** Siapa pemilik dan operatornya, apa bahan bakarnya, dan berapa konsumsinya per bulan? Bila dioperasikan KINRA, boiler ini berpotensi menjadi SEU ketiga.
+- [ ] **Ruang Boiler Tank Farm (895 m²).** Tank Farm dikelola KINRA (konfirmasi 12 Nov 2026) dan listriknya kini tercatat di meter KINRA-MTR-009 (migrasi 0063). Yang belum diketahui: apa bahan bakar boiler dan berapa konsumsinya per bulan. Boiler ini berpotensi menjadi SEU ketiga.
+- [ ] **Meter Tank Farm (KINRA-MTR-009).** Minta nomor meter, merek, dan faktor kali ke Bagian M/E, dan pastikan cakupannya: seluruh kawasan Tank Farm (kantor, pos, ruang boiler, pompa buffer/transfer) atau hanya sebagian. Aplikasi saat ini menganggapnya seluruh kawasan. Sementara faktor kali diisi 1 dan kWh diambil langsung dari sheet Konsumsi Energi.
+- [ ] **Rumus rusak di Pelacak Konsumsi Energi.** Penyisipan baris Tank Farm menggeser rujukan: rasio Air Baku I 2026 (sheet Variabel yang Relevan) kini menghitung Tank Farm ÷ Air Baku I, dan rasio baris 88 sheet Konsumsi Energi kini WTP ÷ Tank Farm. Total tahunan (kolom R) juga belum memuat Tank Farm dan Intake. Minta pengelola workbook memperbaikinya.
 - [ ] **Kolom "PLTS" di sheet air 2026.** Pastikan apakah itu unit KINRA atau tenant. Saat ini kolom tersebut tidak dihitung sebagai tenant.
 
 ## 4. Perbaikan data aset dan meter
