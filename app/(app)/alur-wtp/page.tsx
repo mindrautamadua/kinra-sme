@@ -60,7 +60,7 @@ export default async function AlurWtp() {
             <ul className="aw-daftar">
               <li><b>Pembagi ENPI-05 mungkin terlalu kecil.</b> Pembaginya hanya distribusi ke kawasan. Jalur PKS punya {pks?.pompa.length ?? 0} pompa ({angka(pks?.kwTerpasang, 1)} kW) dengan estimasi {angka(pks?.kwhEstimasi, 0)} kWh/bulan; bila terukur di MTR-005, kWh-nya terhitung tetapi volumenya tidak.</li>
               <li><b>Beban siaga perlu dipisah.</b> Pompa hydrant dan pompa damkar tidak ikut volume produksi. Uji rutin menambah beban tetap yang tidak bisa dihemat lewat pengaturan produksi.</li>
-              <li><b>Air baku bisa diukur.</b> Dua water meter tampak di depan settling pit: FM1a dari kolam Water Intake dan FM1b langsung dari sungai. Bila terpasang dan dicatat, kehilangan air (air baku dikurangi air keluar) bisa dihitung. Air backwash dikembalikan ke settling pit, jadi airnya tidak hilang tetapi ikut dipompa ulang.</li>
+              <li><b>Air baku sudah terukur.</b> Air Baku I adalah jumlah water meter FM1a (kolam Water Intake) dan FM1b (langsung dari sungai), dan MTR-008 mengukur pompa kedua sumber itu (konfirmasi M/E, 12 Nov 2026). Jadi kWh intake per m³ air baku dan kehilangan air proses (air baku dikurangi air keluar) bisa dihitung. Air backwash dikembalikan ke settling pit, jadi airnya tidak hilang tetapi ikut dipompa ulang.</li>
               <li><b>Prioritas submeter.</b> Distribusi ({dist ? persen(dist.porsi, 0) : '–'} estimasi beban), intake ({intake ? persen(intake.porsi, 0) : '–'}), lalu jalur PKS dan hydrant.</li>
             </ul>
           </div>

@@ -179,7 +179,7 @@ export function DiagramWtp({ tahap }: { tahap: HasilTahap[] }) {
 
             {/* Meter listrik */}
             <g className="aw-lap aw-l-listrik">
-              <Kwh x={170} y={398} label="MTR-008 ?" w={94} />
+              <Kwh x={170} y={398} label="MTR-008" pasti w={74} />
               <Kwh x={660} y={170} label="MTR-005" pasti />
               <Kwh x={936} y={452} label="MTR-005" pasti w={64} />
               <Kwh x={456} y={196} label="kWh ?" w={58} />

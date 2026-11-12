@@ -29,9 +29,9 @@ export type TahapWtp = {
 }
 
 export const TAHAP_WTP: TahapWtp[] = [
-  { no: 1, id: 'intake', nama: 'Intake air baku', ringkas: 'Dua sumber paralel ke settling pit: 2 pompa di Sungai Bah Tongguran langsung ke pit (water meter FM1b), dan 2 pompa dari kolam Water Intake (water meter FM1a). Register mencatat 4 pompa submersible di lokasi ini.',
-    lokasiPompa: ['Water Intake'], beban: 'Ikut volume air baku dan muka air sungai', meter: { label: 'MTR-008 (cakupan belum pasti)', status: 'belum-jelas' },
-    dataAir: 'Air Baku I (air_baku1); FM1a + FM1b kandidat sumbernya', sifat: 'volume' },
+  { no: 1, id: 'intake', nama: 'Intake air baku', ringkas: 'Dua sumber paralel ke settling pit: 2 pompa di Sungai Bah Tongguran langsung ke pit (water meter FM1b), dan 2 pompa dari kolam Water Intake (water meter FM1a). Dulu air sungai masuk ke kolam Water Intake; sekarang langsung ke settling pit. Register mencatat 4 pompa submersible di lokasi ini.',
+    lokasiPompa: ['Water Intake'], beban: 'Ikut volume air baku dan muka air sungai', meter: { label: 'MTR-008 (sungai + kolam intake)', status: 'pasti' },
+    dataAir: 'Air Baku I (air_baku1) = FM1a + FM1b', sifat: 'volume' },
   { no: 2, id: 'settling', nama: 'Water Settling Pit', ringkas: 'Bak pengendap 1.650 m³, 5 kompartemen, titik injeksi kimia. Menerima air backwash dari lamella dan filter melalui pipa back wash. Di bawahnya 2 pompa pengisian mobil damkar.',
     lokasiPompa: [], beban: 'Tanpa beban proses; pompa damkar sesekali', meter: { label: 'Belum jelas', status: 'belum-jelas' }, dataAir: '–', sifat: 'pasif' },
   { no: 3, id: 'lamella', nama: 'Lamella (Water Settler Tube)', ringkas: 'Pompa raw water dari settling pit ke modul tube settler, dengan dosing tawas dan soda ash.',
@@ -53,8 +53,7 @@ export const TAHAP_WTP: TahapWtp[] = [
 ]
 
 export const PERTANYAAN_ME = [
-  'MTR-008 mengukur pompa di sungai, pompa di kolam Water Intake, atau keduanya?',
-  'Angka Air Baku I di sheet berasal dari FM1a (kolam intake), FM1b (sungai), atau jumlah keduanya?',
+  'Selisih Air Baku I dan IPAB I tepat 1,0% setiap bulan pada 2025. Apakah IPAB I 2025 diukur meter atau dihitung dari air baku?',
   'Pompa jalur PKS (Ruang PKS30) di meter mana, dan volumenya masuk distribusi WTP I, IPAB II, atau tidak tercatat?',
   'WTP II / Air Baku II tidak tampak di gambar. Apakah gambar ini hanya WTP I?',
   'Pompa hydrant digerakkan listrik atau diesel, di meter mana, dan seberapa sering diuji?',
