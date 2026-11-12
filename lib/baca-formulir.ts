@@ -345,3 +345,45 @@ export function bacaFormulir(namaFile: string, buf: Uint8Array): HasilBaca | nul
   }
   return null
 }
+
+// ---------- Gabungan peluang 002 + 005 ----------
+
+/**
+ * Pemetaan awal peluang lama (seed P-01..P-10) ke nama di formulir, dipakai sekali saat baris lama belum punya `kunci`.
+ * Sesudah sinkron pertama, pencocokan memakai kolom `kunci`.
+ */
+export const ALIAS_PELUANG: [RegExp, string][] = [
+  [/tata udara|hvac/, 'P-01'], [/\bled\b/, 'P-02'], [/pompa/, 'P-03'], [/submeter/, 'P-04'], [/beban puncak|faktor daya/, 'P-05'],
+  [/pemeliharaan preventif/, 'P-06'], [/pelatihan|kampanye|perilaku/, 'P-08'], [/penerangan jalan/, 'P-10'],
+]
+
+/** Dua nama peluang dianggap sama bila satu awalan yang lain ("… melalui SCADA") atau kata-katanya hampir sama. */
+export function namaSerupa(a: string, b: string): boolean {
+  if (a === b || a.startsWith(`${b} `) || b.startsWith(`${a} `)) return true
+  const ka = new Set(a.split(' ')), kb = new Set(b.split(' '))
+  const irisan = [...ka].filter((x) => kb.has(x)).length
+  return irisan / new Set([...ka, ...kb]).size >= 0.75
+}
+
+/** Gabungkan peluang formulir 002 (docx) dan 005 (xlsx) berdasarkan nama. Estimasi kWh 0 ("belum dihitung") disimpan kosong. */
+export function gabungPeluang(p002: PeluangFormulir[], p005: PeluangFormulir[]): (PeluangFormulir & { sumber: string })[] {
+  const isi = (a: string | null, b: string | null) => (a && a.trim() ? a : b)
+  const peta = new Map<string, PeluangFormulir & { asal: Set<string> }>()
+  for (const [asal, daftar] of [['005/SOP-008', p005], ['002/SOP-007', p002]] as const) {
+    for (const p of daftar) {
+      const k = kunciNama(p.nama)
+      const ada = peta.get(k) ?? [...peta].find(([k2]) => namaSerupa(k, k2))?.[1]
+      if (!ada) { peta.set(k, { ...p, asal: new Set([asal]) }); continue }
+      ada.asal.add(asal)
+      // 002 (docx) lebih lengkap untuk penanggung jawab, kWh, dan metode; 005 melengkapi yang kosong
+      const prefer002 = asal === '002/SOP-007'
+      const [a, b] = prefer002 ? [p, ada] : [ada, p]
+      Object.assign(ada, {
+        deskripsi: isi(a.deskripsi, b.deskripsi), seu_terkait: isi(a.seu_terkait, b.seu_terkait), sasaran_teks: isi(a.sasaran_teks, b.sasaran_teks),
+        pemilik: isi(a.pemilik, b.pemilik), tanggal_identifikasi: a.tanggal_identifikasi ?? b.tanggal_identifikasi,
+        estimasi_kwh: a.estimasi_kwh || b.estimasi_kwh || null, metode: isi(a.metode, b.metode),
+      })
+    }
+  }
+  return [...peta.values()].map(({ asal, ...p }) => ({ ...p, estimasi_kwh: p.estimasi_kwh || null, sumber: `Formulir Peluang ${[...asal].sort().join(' + ')}` }))
+}

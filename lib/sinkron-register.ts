@@ -1,5 +1,5 @@
 import 'server-only'
-import { bacaFormulir, type HasilBaca, type IsuFormulir, kunciNama, LABEL_FORMULIR, type PeluangFormulir } from './baca-formulir'
+import { ALIAS_PELUANG, bacaFormulir, gabungPeluang, type HasilBaca, type IsuFormulir, kunciNama, LABEL_FORMULIR, type PeluangFormulir } from './baca-formulir'
 import { BUCKET_BUKTI } from './status'
 import { db } from './supabase'
 import type { Isu, Peluang } from './types'
@@ -9,6 +9,9 @@ import type { Isu, Peluang } from './types'
  * Per formulir dipakai berkas bertanda versi sah; bila tidak ada, berkas yang paling baru diunggah.
  * Pratinjau menghitung selisih; penerapan menghitung ulang di server lalu menulis hanya sumber yang dipilih.
  */
+
+type HasilIsu = Extract<HasilBaca, { isu: IsuFormulir[] }>
+type HasilPeluang = Extract<HasilBaca, { peluang: PeluangFormulir[] }>
 
 type BerkasCalon = { id: string; path: string; nama_file: string; sah: boolean; diunggah_at: string; dokumen: string }
 
@@ -59,15 +62,6 @@ const KOLOM_PELUANG: [keyof Peluang, string][] = [
   ['tanggal_identifikasi', 'tanggal identifikasi'], ['estimasi_kwh', 'estimasi kWh'], ['metode', 'metode'], ['sumber', 'sumber'], ['kunci', 'kunci'],
 ]
 
-/**
- * Pemetaan awal peluang lama (seed P-01..P-10) ke nama di formulir, dipakai sekali saat baris lama belum punya `kunci`.
- * Sesudah sinkron pertama, pencocokan memakai kolom `kunci`.
- */
-const ALIAS_PELUANG: [RegExp, string][] = [
-  [/tata udara|hvac/, 'P-01'], [/\bled\b/, 'P-02'], [/pompa/, 'P-03'], [/submeter/, 'P-04'], [/beban puncak|faktor daya/, 'P-05'],
-  [/pemeliharaan preventif/, 'P-06'], [/pelatihan|kampanye|perilaku/, 'P-08'], [/penerangan jalan/, 'P-10'],
-]
-
 async function unduhSemua(galat: string[]): Promise<{ calon: BerkasCalon; hasil: HasilBaca | null }[]> {
   const s = await db()
   const dok = await s.from('dokumen_audit').select('id, kode, nama, klausul_kode')
@@ -102,7 +96,7 @@ function pilih<T extends { calon: BerkasCalon }>(daftar: T[]): { dipakai: T; lai
 
 const infoBerkas = (c: BerkasCalon) => ({ nama: c.nama_file, sah: c.sah, at: c.diunggah_at, dokumen: c.dokumen })
 
-function bandingIsu(kunci: string, judul: string, baru: IsuFormulir[], lama: Isu[], identitas: (x: { proses: string | null; uraian: string }) => string): { info: Omit<SumberSinkron, 'berkas' | 'diabaikan' | 'dilewati' | 'catatan'>; rencana: RencanaIsu } {
+function bandingIsu(kunci: string, judul: string, baru: IsuFormulir[], lama: Isu[], identitas: (x: { proses?: string | null; uraian: string }) => string): { info: Omit<SumberSinkron, 'berkas' | 'diabaikan' | 'dilewati' | 'catatan'>; rencana: RencanaIsu } {
   const sisa = new Map<string, Isu[]>()
   for (const l of lama) { const k = identitas(l); sisa.set(k, [...(sisa.get(k) ?? []), l]) }
   const rencana: RencanaIsu = { kunci, tambah: [], ubah: [], hapus: [] }
@@ -117,28 +111,6 @@ function bandingIsu(kunci: string, judul: string, baru: IsuFormulir[], lama: Isu
   }
   for (const l of [...sisa.values()].flat()) { rencana.hapus.push(l.id); info.hapus.push({ label: potong(l.proses ?? l.uraian), detail: `${l.jenis} · skor ${l.skor}` }) }
   return { info, rencana }
-}
-
-function gabungPeluang(p002: PeluangFormulir[], p005: PeluangFormulir[]): (PeluangFormulir & { sumber: string })[] {
-  const isi = (a: string | null, b: string | null) => (a && a.trim() ? a : b)
-  const peta = new Map<string, PeluangFormulir & { asal: Set<string> }>()
-  for (const [asal, daftar] of [['005/SOP-008', p005], ['002/SOP-007', p002]] as const) {
-    for (const p of daftar) {
-      const k = kunciNama(p.nama)
-      const ada = peta.get(k)
-      if (!ada) { peta.set(k, { ...p, asal: new Set([asal]) }); continue }
-      ada.asal.add(asal)
-      // 002 (docx) lebih lengkap untuk penanggung jawab, kWh, dan metode; 005 melengkapi yang kosong
-      const prefer002 = asal === '002/SOP-007'
-      const [a, b] = prefer002 ? [p, ada] : [ada, p]
-      Object.assign(ada, {
-        deskripsi: isi(a.deskripsi, b.deskripsi), seu_terkait: isi(a.seu_terkait, b.seu_terkait), sasaran_teks: isi(a.sasaran_teks, b.sasaran_teks),
-        pemilik: isi(a.pemilik, b.pemilik), tanggal_identifikasi: a.tanggal_identifikasi ?? b.tanggal_identifikasi,
-        estimasi_kwh: a.estimasi_kwh ?? b.estimasi_kwh, metode: isi(a.metode, b.metode),
-      })
-    }
-  }
-  return [...peta.values()].map(({ asal, ...p }) => ({ ...p, sumber: `Formulir Peluang ${[...asal].sort().join(' + ')}` }))
 }
 
 async function hitung(): Promise<{ pratinjau: Pratinjau; rencana: Rencana[] }> {
@@ -169,7 +141,7 @@ async function hitung(): Promise<{ pratinjau: Pratinjau; rencana: Rencana[] }> {
   const bagianTerbaca = new Set<string>()
   for (const [k, daftar] of [...kelompok].filter(([k]) => k.startsWith('risiko61:')).sort()) {
     const { dipakai, lain } = pilih(daftar)
-    const h = dipakai.hasil as Extract<HasilBaca, { jenis: 'risiko61' }>
+    const h = dipakai.hasil as HasilIsu
     const kb = kunciNama(h.bagian ?? '')
     bagianTerbaca.add(kb)
     const lama = isu.filter((x) => x.sumber?.startsWith(PRA_RISIKO) && kunciNama(x.bagian ?? '') === kb)
@@ -183,7 +155,7 @@ async function hitung(): Promise<{ pratinjau: Pratinjau; rencana: Rencana[] }> {
   const g41 = kelompok.get('isu41')
   if (g41) {
     const { dipakai, lain } = pilih(g41)
-    const h = dipakai.hasil as Extract<HasilBaca, { jenis: 'isu41' }>
+    const h = dipakai.hasil as HasilIsu
     const kunciBaru = new Set(h.isu.map((x) => kunciNama(x.uraian)))
     // Baris lama: hasil sinkron sebelumnya, ditambah baris seed 0002 (sumber kosong) yang uraiannya ada di formulir
     const lama = isu.filter((x) => x.sumber?.startsWith(PRA_ISU41) || (!x.sumber && kunciBaru.has(kunciNama(x.uraian))))
@@ -200,8 +172,8 @@ async function hitung(): Promise<{ pratinjau: Pratinjau; rencana: Rencana[] }> {
   const g002 = kelompok.get('peluang002'), g005 = kelompok.get('peluang005')
   if (g002 || g005) {
     const p002 = g002 ? pilih(g002) : null, p005 = g005 ? pilih(g005) : null
-    const daftar002 = p002 ? (p002.dipakai.hasil as Extract<HasilBaca, { jenis: 'peluang002' }>).peluang : []
-    const daftar005 = p005 ? (p005.dipakai.hasil as Extract<HasilBaca, { jenis: 'peluang005' }>).peluang : []
+    const daftar002 = p002 ? (p002.dipakai.hasil as HasilPeluang).peluang : []
+    const daftar005 = p005 ? (p005.dipakai.hasil as HasilPeluang).peluang : []
     const gabung = gabungPeluang(daftar002, daftar005)
     const catatan: string[] = []
     const migrasi = peluang.length === 0 || 'kunci' in peluang[0]

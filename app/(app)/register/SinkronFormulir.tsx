@@ -25,7 +25,7 @@ export function SinkronFormulir() {
 
   function periksa() {
     setPesan(null); setData(null)
-    dlg.current?.showModal()
+    if (!dlg.current?.open) dlg.current?.showModal()
     mulai(async () => {
       const r = await pratinjauSinkron()
       if (!r.ok) { setPesan({ jenis: 'galat', teks: r.pesan }); return }
