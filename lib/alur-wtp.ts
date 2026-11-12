@@ -72,56 +72,69 @@ export type AlurWtp = {
   jumlahPompa: number
 }
 
-const kunci = (t: number, b: number) => t * 12 + b - 1
-const dariKunci = (k: number) => ({ tahun: Math.floor(k / 12), bulan: (k % 12) + 1 })
+export const kunci = (t: number, b: number) => t * 12 + b - 1
+export const dariKunci = (k: number) => ({ tahun: Math.floor(k / 12), bulan: (k % 12) + 1 })
 
-/** Rata-rata per bulan selama 12 bulan terakhir yang punya bacaan meter WTP. */
-export function susunAlurWtp(o: {
-  meter: MeterEnergi[]; bacaan: PembacaanMeter[]; pompa: Pompa[]; jam: JamOperasiPompa[]; variabel: VariabelBulanan[]
-}): AlurWtp {
-  const perMeter = (kode: string) => {
-    const m = o.meter.find((x) => x.kode === kode)
-    const peta = new Map<number, number>()
-    if (!m) return peta
-    for (const b of o.bacaan) {
-      if (b.meter_kode !== kode) continue
-      const v = konsumsiBacaan(b, m)
-      if (v !== null) peta.set(kunci(b.tahun, b.bulan), v)
-    }
-    return peta
+/** kWh per bulan sebuah meter, dikunci tahun×12+bulan. */
+export function kwhPerMeter(kode: string, meter: MeterEnergi[], bacaan: PembacaanMeter[]) {
+  const m = meter.find((x) => x.kode === kode)
+  const peta = new Map<number, number>()
+  if (!m) return peta
+  for (const b of bacaan) {
+    if (b.meter_kode !== kode) continue
+    const v = konsumsiBacaan(b, m)
+    if (v !== null) peta.set(kunci(b.tahun, b.bulan), v)
   }
-  const wtp = perMeter(METER_WTP), intake = perMeter(METER_INTAKE)
-  const jendela = [...wtp.keys()].sort((a, b) => a - b).slice(-12)
+  return peta
+}
+
+/** Rata-rata nilai peta di bulan-bulan jendela yang punya data. */
+export function rataJendela(peta: Map<number, number>, jendela: number[]) {
+  const v = jendela.filter((k) => peta.has(k))
+  return v.length ? v.reduce((s, k) => s + peta.get(k)!, 0) / v.length : null
+}
+
+export function petaVariabel(variabel: VariabelBulanan[], kode: string) {
+  return new Map(variabel.filter((d) => d.variabel_kode === kode).map((d) => [kunci(d.tahun, d.bulan), Number(d.nilai)]))
+}
+
+/** Pasangkan pompa satu unit ke tahapnya (berdasarkan lokasi register) dan hitung estimasi kWh = kW pengenal × jam operasi rata-rata. */
+export function bebanTahap<T extends TahapWtp>(defs: T[], pompaUnit: Pompa[], jam: JamOperasiPompa[], jendela: number[]) {
   const n = jendela.length
-  const rata = (peta: Map<number, number>) => {
-    const v = jendela.filter((k) => peta.has(k))
-    return v.length ? v.reduce((s, k) => s + peta.get(k)!, 0) / v.length : null
-  }
-  const varPeta = (kode: string) => new Map(o.variabel.filter((d) => d.variabel_kode === kode).map((d) => [kunci(d.tahun, d.bulan), Number(d.nilai)]))
-
   const setJendela = new Set(jendela)
   const jamPompa = new Map<string, number>()
-  for (const j of o.jam) {
+  for (const j of jam) {
     if (!setJendela.has(kunci(j.tahun, j.bulan)) || j.jam === null) continue
     jamPompa.set(j.pompa_kode, (jamPompa.get(j.pompa_kode) ?? 0) + Number(j.jam))
   }
-  const ipab = o.pompa.filter((p) => p.unit === 'IPAB I')
-  const tahap = TAHAP_WTP.map((t) => {
-    const pompa = ipab.filter((p) => p.lokasi && t.lokasiPompa.includes(p.lokasi)).map((p) => {
+  const tahap = defs.map((t) => {
+    const pompa = pompaUnit.filter((p) => p.lokasi && t.lokasiPompa.includes(p.lokasi)).map((p) => {
       const jamBulan = n ? (jamPompa.get(p.kode) ?? 0) / n : 0
       return { ...p, jamBulan, kwhBulan: (p.daya_kw ?? 0) * jamBulan }
     })
     return { ...t, pompa, kwTerpasang: pompa.reduce((s, p) => s + (p.daya_kw ?? 0), 0), kwhEstimasi: pompa.reduce((s, p) => s + p.kwhBulan, 0), porsi: 0 }
   })
-  const kwhEstimasiTotal = tahap.reduce((s, t) => s + t.kwhEstimasi, 0)
-  for (const t of tahap) t.porsi = kwhEstimasiTotal ? (t.kwhEstimasi / kwhEstimasiTotal) * 100 : 0
+  const total = tahap.reduce((s, t) => s + t.kwhEstimasi, 0)
+  for (const t of tahap) t.porsi = total ? (t.kwhEstimasi / total) * 100 : 0
+  return { tahap, total }
+}
+
+/** Rata-rata per bulan selama 12 bulan terakhir yang punya bacaan meter WTP. */
+export function susunAlurWtp(o: {
+  meter: MeterEnergi[]; bacaan: PembacaanMeter[]; pompa: Pompa[]; jam: JamOperasiPompa[]; variabel: VariabelBulanan[]
+}): AlurWtp {
+  const wtp = kwhPerMeter(METER_WTP, o.meter, o.bacaan), intake = kwhPerMeter(METER_INTAKE, o.meter, o.bacaan)
+  const jendela = [...wtp.keys()].sort((a, b) => a - b).slice(-12)
+  const n = jendela.length
+  const ipab = o.pompa.filter((p) => p.unit === 'IPAB I')
+  const { tahap, total } = bebanTahap(TAHAP_WTP, ipab, o.jam, jendela)
 
   return {
     periode: n ? { mulai: dariKunci(jendela[0]), selesai: dariKunci(jendela[n - 1]), bulan: n } : null,
     tahap,
-    kwhMeter: { wtp: rata(wtp), intake: rata(intake) },
-    kwhEstimasiTotal,
-    air: { distribusi: rata(varPeta('air_wtp1')), baku: rata(varPeta('air_baku1')) },
+    kwhMeter: { wtp: rataJendela(wtp, jendela), intake: rataJendela(intake, jendela) },
+    kwhEstimasiTotal: total,
+    air: { distribusi: rataJendela(petaVariabel(o.variabel, 'air_wtp1'), jendela), baku: rataJendela(petaVariabel(o.variabel, 'air_baku1'), jendela) },
     jumlahPompa: ipab.length,
   }
 }

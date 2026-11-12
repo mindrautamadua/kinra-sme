@@ -1,6 +1,6 @@
 'use client'
 
-import { Activity, HeartHandshake, BadgeCheck, ShieldCheck, Droplets, Presentation, BookA, BookHeart, Building2, Clapperboard, Crosshair, Fan, FlaskConical, Map as IkonPeta, BookOpen, MessagesSquare, CalendarRange, ClipboardCheck, FileText, Gauge, LayoutDashboard, Network, ScanSearch, SearchCheck, ShieldAlert, Target, Users, Waypoints } from 'lucide-react'
+import { Activity, Waves, HeartHandshake, BadgeCheck, ShieldCheck, Droplets, Presentation, BookA, BookHeart, Building2, Clapperboard, Crosshair, Fan, FlaskConical, Map as IkonPeta, BookOpen, MessagesSquare, CalendarRange, ClipboardCheck, FileText, Gauge, LayoutDashboard, Network, ScanSearch, SearchCheck, ShieldAlert, Target, Users, Waypoints } from 'lucide-react'
 import Link from 'next/link'
 import { Fragment } from 'react'
 import { usePathname } from 'next/navigation'
@@ -21,6 +21,7 @@ export const GRUP_MENU: GrupMenu[] = [
     { href: '/register', label: 'Isu & Peluang', ikon: ShieldAlert },
     { href: '/tinjauan', label: 'Tinjauan Energi & SEU', ikon: Crosshair },
     { href: '/alur-wtp', label: 'Alur Proses WTP', ikon: Droplets },
+    { href: '/alur-wwtp', label: 'Alur Proses WWTP', ikon: Waves },
     { href: '/sasaran', label: 'Sasaran & Aksi', ikon: Target },
   ] },
   { kode: 'do', judul: 'Do · Lakukan', ket: 'Aset, meter, program', item: [

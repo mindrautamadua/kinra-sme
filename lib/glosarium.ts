@@ -123,7 +123,7 @@ export const GLOSARIUM: Istilah[] = [
     arti: 'Kawasan dengan fasilitas khusus; ruang lingkup SMEn adalah KEK Sei Mangkei.' },
   { istilah: 'WTP', asli: 'Water Treatment Plant · IPAB (Instalasi Pengolahan Air Bersih)', kategori: 'aplikasi', href: '/alur-wtp',
     arti: 'Instalasi pengolahan air bersih kawasan. WTP I dikelola KINRA: SEU-01, meter KINRA-MTR-005 ditambah meter intake KINRA-MTR-008, dipantau ENPI-05. WTP II adalah BTM (Bangun Tirta Medan) milik pihak ketiga; airnya dibeli KINRA sehingga energinya di luar lingkup SMEn. Di sheet sumber dan register pompa disebut IPAB I dan IPAB II.' },
-  { istilah: 'WWTP', asli: 'Wastewater Treatment Plant · IPAL (Instalasi Pengolahan Air Limbah)', kategori: 'aplikasi',
+  { istilah: 'WWTP', asli: 'Wastewater Treatment Plant · IPAL (Instalasi Pengolahan Air Limbah)', kategori: 'aplikasi', href: '/alur-wwtp',
     arti: 'Instalasi pengolahan air limbah kawasan. IPAL I dikelola KINRA: SEU-02, meter KINRA-MTR-004, dipantau ENPI-06 (kWh per m³ inlet IPAL I). IPAL II beroperasi sejak Jun 2026 dan tidak dikelola KINRA, sehingga di luar lingkup SMEn.' },
   { istilah: 'Tim energi', asli: 'Energy management team', kategori: 'aplikasi', klausul: '5.3',
     arti: 'Orang yang ditunjuk manajemen puncak untuk menerapkan SMEn dan meningkatkan kinerja energi.' },

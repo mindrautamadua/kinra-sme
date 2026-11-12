@@ -309,7 +309,7 @@ export const TANYA_MR: TanyaMr[] = [
       'Penetapan teknisnya oleh Manajer Energi; saya memastikan tinjauan dilakukan dan diperbarui berkala.',
     ],
     bukti: 'Laporan tinjauan energi, register SEU.',
-    halaman: [{ href: '/tinjauan', label: 'Tinjauan Energi & SEU' }, { href: '/alur-wtp', label: 'Alur Proses WTP' }] },
+    halaman: [{ href: '/tinjauan', label: 'Tinjauan Energi & SEU' }, { href: '/alur-wtp', label: 'Alur Proses WTP' }, { href: '/alur-wwtp', label: 'Alur Proses WWTP' }] },
   { id: 'F3', fungsi: 'kinerja', klausul: ['6.6'], stage: 'Stage 2',
     tanya: 'Bagaimana keakuratan data energi dijamin?',
     jawab: [
@@ -326,7 +326,7 @@ export const TANYA_MR: TanyaMr[] = [
       'Anggota Tim Operasional/Fasilitas dan Teknik/Pemeliharaan memantau kepatuhan dan melaporkan penyimpangan.',
     ],
     bukti: 'SOP operasi SEU, log operasi, rekaman pemeliharaan.',
-    halaman: [{ href: '/alur-wtp', label: 'Alur Proses WTP' }] },
+    halaman: [{ href: '/alur-wtp', label: 'Alur Proses WTP' }, { href: '/alur-wwtp', label: 'Alur Proses WWTP' }] },
   { id: 'F5', fungsi: 'kinerja', klausul: ['8.2', '8.3'], stage: 'Stage 2',
     tanya: 'Bagaimana kinerja energi dipertimbangkan saat desain dan pengadaan?',
     jawab: [
