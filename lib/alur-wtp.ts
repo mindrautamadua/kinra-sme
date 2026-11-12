@@ -44,7 +44,7 @@ export const TAHAP_WTP: TahapWtp[] = [
     lokasiPompa: [], beban: 'Tanpa beban listrik', meter: { label: '–', status: 'tidak-ada' }, dataAir: '–', sifat: 'pasif' },
   { no: 7, id: 'distribusi', nama: 'Distribusi kawasan', ringkas: 'Pompa distribusi di Ruang Distribusi 01 dan 02 (VSD), tangki tekan, water meter FM3 ke tenant.',
     lokasiPompa: ['Ruang Distribusi-01', 'Ruang Distribusi-02'], beban: 'Ikut volume dan tekanan jaringan', meter: { label: 'MTR-005', status: 'pasti' },
-    dataAir: 'Distribusi WTP I (air_olahan), pembagi ENPI-05', sifat: 'volume' },
+    dataAir: 'Air diolah WTP I tanpa BTM (air_wtp1), pembagi ENPI-05', sifat: 'volume' },
   { no: 8, id: 'hydrant', nama: 'Fire hydrant', ringkas: '3 pompa hydrant mengisap dari settling pit ke jaringan hydrant Industrial Estate.',
     lokasiPompa: [], beban: 'Siaga dan uji berkala; tidak ikut produksi air', meter: { label: 'Belum jelas', status: 'belum-jelas' }, dataAir: 'Tidak relevan untuk EnPI', sifat: 'siaga' },
   { no: 9, id: 'pks', nama: 'Jalur PKS', ringkas: 'Water Basin 300 m³, 2 pompa ke Sand Filter 1–2 (≈68 m³), Clean Water Tank Tower dan Processing Water Tank Tower ke PKS 30 ton TBS/jam (FM4), serta 2 tangki air bersih ke PKS 45 ton TBS/jam (FM5–FM7).',
@@ -54,8 +54,7 @@ export const TAHAP_WTP: TahapWtp[] = [
 
 export const PERTANYAAN_ME = [
   'Selisih Air Baku I dan IPAB I tepat 1,0% setiap bulan pada 2025. Apakah IPAB I 2025 diukur meter atau dihitung dari air baku?',
-  'Pompa jalur PKS (Ruang PKS30) di meter mana, dan volumenya masuk distribusi WTP I, IPAB II, atau tidak tercatat?',
-  'WTP II / Air Baku II tidak tampak di gambar. Apakah gambar ini hanya WTP I?',
+  'Pompa jalur PKS (Ruang PKS30) di meter mana, dan apakah volumenya sudah termasuk air diolah WTP I?',
   'Pompa hydrant digerakkan listrik atau diesel, di meter mana, dan seberapa sering diuji?',
   'Water meter FM1a–FM7: mana yang terpasang dan dicatat bulanan?',
   'Volume menara tangki dan tangki air bersih PKS 45 belum terbaca jelas di gambar.',
@@ -122,7 +121,7 @@ export function susunAlurWtp(o: {
     tahap,
     kwhMeter: { wtp: rata(wtp), intake: rata(intake) },
     kwhEstimasiTotal,
-    air: { distribusi: rata(varPeta('air_olahan')), baku: rata(varPeta('air_baku1')) },
+    air: { distribusi: rata(varPeta('air_wtp1')), baku: rata(varPeta('air_baku1')) },
     jumlahPompa: ipab.length,
   }
 }

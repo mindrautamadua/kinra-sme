@@ -22,8 +22,8 @@ const kunci = (t: number, b: number) => t * 12 + b - 1
 const BULAN = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des']
 const label = (k: number) => `${BULAN[k % 12]} ${Math.floor(k / 12)}`
 
-const NAMA_ASET: Record<string, string> = { 'KINRA-MTR-005': 'Pengolahan air bersih (WTP 1 + intake)', 'KINRA-MTR-004': 'Pengolahan air limbah (WWTP)', 'KINRA-MTR-009': 'Tank Farm (kawasan)' }
-/** Meter intake (terpisah sejak migrasi 0043) digabung ke bagian WTP 1. */
+const NAMA_ASET: Record<string, string> = { 'KINRA-MTR-005': 'Pengolahan air bersih (WTP I + intake)', 'KINRA-MTR-004': 'Pengolahan air limbah (WWTP)', 'KINRA-MTR-009': 'Tank Farm (kawasan)' }
+/** Meter intake (terpisah sejak migrasi 0043) digabung ke bagian WTP I. */
 const WTP = 'KINRA-MTR-005', INTAKE = 'KINRA-MTR-008'
 
 export function susunCerita(o: { meter: MeterEnergi[]; bacaan: PembacaanMeter[]; aset: Aset[]; energi: EnergiBulanan[]; dataVariabel: VariabelBulanan[]; kv: Konversi }): CeritaEnergi | null {
@@ -44,7 +44,7 @@ export function susunCerita(o: { meter: MeterEnergi[]; bacaan: PembacaanMeter[];
   const akhir = lengkap.at(-1)!
   const jendela = lengkap.filter((k) => k > akhir - 12)
 
-  // Intake dijumlahkan ke WTP 1 per bulan
+  // Intake dijumlahkan ke WTP I per bulan
   for (const mp of perBulan.values()) if (mp.has(INTAKE) && mp.has(WTP)) { mp.set(WTP, mp.get(WTP)! + mp.get(INTAKE)!); mp.delete(INTAKE) }
   const perMeter = new Map<string, number>()
   for (const k of jendela) for (const [kode, v] of perBulan.get(k)!) perMeter.set(kode, (perMeter.get(kode) ?? 0) + v)
@@ -55,7 +55,7 @@ export function susunCerita(o: { meter: MeterEnergi[]; bacaan: PembacaanMeter[];
   })
   let rupiah = 0, kg = 0
   for (const m of meterKwh) { const n = nilaiEnergi(o.kv, perMeter.get(m.kode) ?? 0, 'kWh'); rupiah += n.rupiah; kg += n.kgCo2 }
-  for (const [kode, nama] of [['dexlite', 'BBM Dexlite kendaraan & alat berat'], ['dexlite_genset', 'BBM Dexlite genset IPAB & IPAL'], ['bensin', 'BBM bensin kendaraan']] as const) {
+  for (const [kode, nama] of [['dexlite', 'BBM Dexlite kendaraan & alat berat'], ['dexlite_genset', 'BBM Dexlite genset WTP & WWTP'], ['bensin', 'BBM bensin kendaraan']] as const) {
     const liter = o.energi.filter((d) => d.sumber_kode === kode && jendela.includes(kunci(d.tahun, d.bulan))).reduce((s, d) => s + d.nilai, 0)
     if (!liter) continue
     bagianMentah.push({ id: kode, nama, kwh: liter * KWH_PER_LITER[kode], kelompok: 'bbm' })
@@ -68,7 +68,7 @@ export function susunCerita(o: { meter: MeterEnergi[]; bacaan: PembacaanMeter[];
   const total = sisa.reduce((s, b) => s + b.kwh, 0)
   const bagian = sisa.map((b) => ({ ...b, porsi: total ? (b.kwh / total) * 100 : 0 })).sort((a, b) => b.kwh - a.kwh)
 
-  // Intensitas WTP 1: hanya bulan yang punya data air WTP 1 (tanpa air BTM)
+  // Intensitas WTP I: hanya bulan yang punya data air WTP I (tanpa air BTM)
   const air = new Map(o.dataVariabel.filter((d) => d.variabel_kode === 'air_wtp1').map((d) => [kunci(d.tahun, d.bulan), d.nilai]))
   const kWtp = jendela.filter((k) => air.has(k) && perBulan.get(k)!.has('KINRA-MTR-005'))
   const wtpKwh = perMeter.get('KINRA-MTR-005')

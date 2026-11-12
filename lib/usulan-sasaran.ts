@@ -43,8 +43,8 @@ export function susunUsulan(d: { hasil: HasilEnpi[]; pakai: PenggunaEnergi[]; pe
     pic: 'Manajer Energi', catatan: 'Selaras dengan kebijakan energi; WTP dan WWTP (SEU-01, SEU-02) menyerap sebagian besar listrik KINRA.',
     alasan: 'EnPI organisasi lingkup KINRA; target 3% per tahun lazim untuk tahun pertama SMEn.',
   })
-  if (e05) s.push({ dipakai: dipakaiS('ENPI-05', 'Menurunkan intensitas energi WTP 1 (kWh per m³ air diolah)'),
-    uraian: 'Menurunkan intensitas energi WTP 1 (kWh per m³ air diolah)', enpi_kode: 'ENPI-05', target_persen: 5, tahun_target: thTarget(e05),
+  if (e05) s.push({ dipakai: dipakaiS('ENPI-05', 'Menurunkan intensitas energi WTP I (kWh per m³ air diolah)'),
+    uraian: 'Menurunkan intensitas energi WTP I (kWh per m³ air diolah)', enpi_kode: 'ENPI-05', target_persen: 5, tahun_target: thTarget(e05),
     pic: 'Bagian M/E', catatan: 'SEU-01. VSD pompa distribusi sudah termasuk baseline; dicapai melalui set point tekanan, penjadwalan pompa, pompa intake, dan standardisasi pola operasi efisien Feb–Jun 2026.',
     alasan: 'WTP adalah pengguna energi terbesar; EnPI rasio sudah ditetapkan.',
   })
@@ -69,23 +69,23 @@ export function susunUsulan(d: { hasil: HasilEnpi[]; pakai: PenggunaEnergi[]; pe
     alasan: 'Tanpa submeter, penghematan WTP tidak dapat dibuktikan.', enpi: 'ENPI-05',
   })
   if (e05) a.push({
-    kunci: 'deviasi-wtp-2026', uraian: 'Selidiki penurunan intensitas WTP 1 Feb–Jun 2026 dan bakukan pola operasi efisiennya dalam SOP',
+    kunci: 'deviasi-wtp-2026', uraian: 'Selidiki penurunan intensitas WTP I Feb–Jun 2026 dan bakukan pola operasi efisiennya dalam SOP',
     peluang_kode: ada('P-03') ? 'P-03' : null, pic: 'Manajer Energi', sumber_daya: 'Log operasi pompa (jam operasi, frekuensi VSD, tekanan header), data air baku dan tagihan BTM',
     mulai: kini, tenggat: tambahBulan(kini, 1), estimasi_hemat_kwh: null,
-    metode_verifikasi: 'Penyebab tercatat di register deviasi; bila operasional, kWh/m³ WTP 1 (EnPI-05) setelah SOP berlaku dibanding baseline',
+    metode_verifikasi: 'Penyebab tercatat di register deviasi; bila operasional, kWh/m³ WTP I (EnPI-05) setelah SOP berlaku dibanding baseline',
     catatan: 'Intensitas turun sekitar 13% lalu kembali ke level baseline Agu–Okt 2026. Bila penyebabnya pola operasi, ini peluang hemat tanpa investasi.',
     alasan: 'Kinerja lebih baik yang pernah tercapai adalah peluang termurah untuk diulang.', enpi: 'ENPI-05',
   })
   if (wtp) a.push({
-    kunci: 'tekanan-pompa-wtp', uraian: 'Optimasi set point tekanan header dan penjadwalan pompa distribusi WTP 1 (VSD terpasang)',
+    kunci: 'tekanan-pompa-wtp', uraian: 'Optimasi set point tekanan header dan penjadwalan pompa distribusi WTP I (VSD terpasang)',
     peluang_kode: ada('P-03') ? 'P-03' : null, pic: 'Bagian M/E', sumber_daya: 'Data tekanan titik kritis jaringan dan debit per jam, setelan VSD, operator WTP',
     mulai: tambahBulan(kini, 1), tenggat: tambahBulan(kini, 6), estimasi_hemat_kwh: Math.round(wtp * 0.05),
-    metode_verifikasi: 'Bandingkan kWh/m³ WTP 1 (EnPI-05) 3 bulan sebelum dan sesudah, dinormalisasi volume air; tekanan titik kritis tetap memenuhi layanan',
+    metode_verifikasi: 'Bandingkan kWh/m³ WTP I (EnPI-05) 3 bulan sebelum dan sesudah, dinormalisasi volume air; tekanan titik kritis tetap memenuhi layanan',
     catatan: 'Tiga VSD pompa distribusi (2022, Jan 2024, Agu 2025) sudah bagian baseline 2025; penghematan hanya dari menurunkan set point tekanan dan pola operasi. Estimasi awal 5% konsumsi WTP; perbarui setelah kajian.',
     alasan: 'VSD hanya menghemat bila set point tekanannya tidak berlebih.', enpi: 'ENPI-05', alias: ['vsd-pompa-wtp'],
   })
   if (wtp) a.push({
-    kunci: 'pompa-intake-wtp', uraian: 'Kajian efisiensi pompa intake (air baku) WTP 1 dan kelayakan kontrol kecepatan',
+    kunci: 'pompa-intake-wtp', uraian: 'Kajian efisiensi pompa intake (air baku) WTP I dan kelayakan kontrol kecepatan',
     peluang_kode: ada('P-03') ? 'P-03' : null, pic: 'Bagian M/E', sumber_daya: 'Bacaan meter intake KINRA-MTR-008, uji debit-tekanan pompa, kalkulator Pompa VSD',
     mulai: tambahBulan(kini, 2), tenggat: tambahBulan(kini, 5), estimasi_hemat_kwh: null,
     metode_verifikasi: 'kWh intake (KINRA-MTR-008) per m³ air baku sebelum dan sesudah tindakan',

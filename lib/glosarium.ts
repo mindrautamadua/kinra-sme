@@ -70,7 +70,7 @@ export const GLOSARIUM: Istilah[] = [
   { istilah: 'Efisiensi energi', asli: 'Energy efficiency', kategori: 'kinerja', klausul: '3.5.3',
     arti: 'Rasio antara keluaran (kinerja, layanan, barang) dengan masukan energi.' },
   { istilah: 'VSD', asli: 'Variable Speed Drive / inverter / VFD', kategori: 'kinerja', href: '/pompa-vsd',
-    arti: 'Pengatur kecepatan motor listrik dengan mengubah frekuensi listrik. Pada pompa, menurunkan putaran 20% dapat memangkas daya hingga sekitar separuh (hukum afinitas). Di WTP 1 terpasang 3 VSD pada pompa distribusi 75 kW.' },
+    arti: 'Pengatur kecepatan motor listrik dengan mengubah frekuensi listrik. Pada pompa, menurunkan putaran 20% dapat memangkas daya hingga sekitar separuh (hukum afinitas). Di WTP I terpasang 3 VSD pada pompa distribusi 75 kW.' },
 
   // Data & analisis
   { istilah: 'CUSUM', asli: 'Cumulative Sum', kategori: 'analisis',
@@ -121,6 +121,10 @@ export const GLOSARIUM: Istilah[] = [
     arti: 'Pengelola KEK Sei Mangkei dan pemilik SMEn ini.' },
   { istilah: 'KEK', asli: 'Kawasan Ekonomi Khusus', kategori: 'aplikasi',
     arti: 'Kawasan dengan fasilitas khusus; ruang lingkup SMEn adalah KEK Sei Mangkei.' },
+  { istilah: 'WTP', asli: 'Water Treatment Plant · IPAB (Instalasi Pengolahan Air Bersih)', kategori: 'aplikasi', href: '/alur-wtp',
+    arti: 'Instalasi pengolahan air bersih kawasan. WTP I dikelola KINRA: SEU-01, meter KINRA-MTR-005 ditambah meter intake KINRA-MTR-008, dipantau ENPI-05. WTP II adalah BTM (Bangun Tirta Medan) milik pihak ketiga; airnya dibeli KINRA sehingga energinya di luar lingkup SMEn. Di sheet sumber dan register pompa disebut IPAB I dan IPAB II.' },
+  { istilah: 'WWTP', asli: 'Wastewater Treatment Plant · IPAL (Instalasi Pengolahan Air Limbah)', kategori: 'aplikasi',
+    arti: 'Instalasi pengolahan air limbah kawasan. IPAL I dikelola KINRA: SEU-02, meter KINRA-MTR-004, dipantau ENPI-06 (kWh per m³ inlet IPAL I). IPAL II beroperasi sejak Jun 2026 dan tidak dikelola KINRA, sehingga di luar lingkup SMEn.' },
   { istilah: 'Tim energi', asli: 'Energy management team', kategori: 'aplikasi', klausul: '5.3',
     arti: 'Orang yang ditunjuk manajemen puncak untuk menerapkan SMEn dan meningkatkan kinerja energi.' },
   { istilah: 'PIC', asli: 'Person in Charge', kategori: 'aplikasi',

@@ -1,5 +1,6 @@
 import { Droplets, Gauge, PlugZap, Wrench } from 'lucide-react'
 import { SectionHead } from '@/components/SectionHead'
+import { Istilah } from '@/components/Istilah'
 import { ambilAsetMeter, ambilPompa, ambilVariabel } from '@/lib/data'
 import { PERTANYAAN_ME, susunAlurWtp } from '@/lib/alur-wtp'
 import { angka, BULAN, persen } from '@/lib/format'
@@ -22,7 +23,7 @@ export default async function AlurWtp() {
   return (
     <>
       <section>
-        <SectionHead hero eyebrow={<>SEU-01 · WTP 1 · Klausul 6.3, 6.6</>}
+        <SectionHead hero eyebrow={<>SEU-01 · <Istilah kata="WTP">WTP I (IPAB I)</Istilah> · Klausul 6.3, 6.6</>}
           judul={<>Alur proses WTP KEK Sei Mangkei: 9 tahap, {a.jumlahPompa} pompa terdaftar, <span className="ks-sorot">{dist ? persen(dist.porsi, 0) : '–'}</span> beban pompa di distribusi</>}>
           <p className="muted">
             Gambar alir pengolahan air bersih yang dipaparkan tim KINRA (12 Nov 2026), digambar ulang lalu dipetakan ke register pompa IPAB I,
@@ -34,12 +35,12 @@ export default async function AlurWtp() {
           <div className="tile"><div className="tile-head"><span className="tile-ikon"><PlugZap aria-hidden="true" /></span><span className="label">Listrik WTP + intake</span></div>
             <div className="nilai tnum">{angka(kwhMeter / 1000, 1)}<small>MWh/bulan</small></div>
             <div className="meta">MTR-005 {angka(a.kwhMeter.wtp, 0)} · MTR-008 {angka(a.kwhMeter.intake, 0)} kWh</div></div>
-          <div className="tile"><div className="tile-head"><span className="tile-ikon"><Droplets aria-hidden="true" /></span><span className="label">Distribusi WTP I</span></div>
+          <div className="tile"><div className="tile-head"><span className="tile-ikon"><Droplets aria-hidden="true" /></span><span className="label">Air diolah WTP I</span></div>
             <div className="nilai tnum">{angka(a.air.distribusi, 0)}<small>m³/bulan</small></div>
-            <div className="meta">Air baku I {angka(a.air.baku, 0)} m³/bulan</div></div>
+            <div className="meta">tanpa air WTP II (BTM) · air baku {angka(a.air.baku, 0)} m³/bulan</div></div>
           <div className="tile"><div className="tile-head"><span className="tile-ikon"><Gauge aria-hidden="true" /></span><span className="label">Intensitas</span></div>
             <div className="nilai tnum">{angka(intensitas, 3)}<small>kWh/m³</small></div>
-            <div className="meta">kWh WTP + intake per m³ terdistribusi</div></div>
+            <div className="meta">kWh WTP + intake per m³ air diolah WTP I</div></div>
           <div className="tile"><div className="tile-head"><span className="tile-ikon"><Wrench aria-hidden="true" /></span><span className="label">Estimasi beban pompa</span></div>
             <div className="nilai tnum">{angka(a.kwhEstimasiTotal / 1000, 1)}<small>MWh/bulan</small></div>
             <div className="meta">kW pengenal × jam operasi · {rasioEstimasi !== null ? `${persen(rasioEstimasi, 0)} dari meter` : '–'}</div></div>
@@ -58,7 +59,7 @@ export default async function AlurWtp() {
         <div className="grid-2 aw-dua">
           <div className="card">
             <ul className="aw-daftar">
-              <li><b>Pembagi ENPI-05 mungkin terlalu kecil.</b> Pembaginya hanya distribusi ke kawasan. Jalur PKS punya {pks?.pompa.length ?? 0} pompa ({angka(pks?.kwTerpasang, 1)} kW) dengan estimasi {angka(pks?.kwhEstimasi, 0)} kWh/bulan; bila terukur di MTR-005, kWh-nya terhitung tetapi volumenya tidak.</li>
+              <li><b>Pembagi ENPI-05 mungkin terlalu kecil.</b> Pembaginya air diolah WTP I. Jalur PKS punya {pks?.pompa.length ?? 0} pompa ({angka(pks?.kwTerpasang, 1)} kW) dengan estimasi {angka(pks?.kwhEstimasi, 0)} kWh/bulan; bila terukur di MTR-005, kWh-nya terhitung tetapi volumenya tidak.</li>
               <li><b>Beban siaga perlu dipisah.</b> Pompa hydrant dan pompa damkar tidak ikut volume produksi. Uji rutin menambah beban tetap yang tidak bisa dihemat lewat pengaturan produksi.</li>
               <li><b>Air baku sudah terukur.</b> Air Baku I adalah jumlah water meter FM1a (kolam Water Intake) dan FM1b (langsung dari sungai), dan MTR-008 mengukur pompa kedua sumber itu (konfirmasi M/E, 12 Nov 2026). Jadi kWh intake per m³ air baku dan kehilangan air proses (air baku dikurangi air keluar) bisa dihitung. Air backwash dikembalikan ke settling pit, jadi airnya tidak hilang tetapi ikut dipompa ulang.</li>
               <li><b>Prioritas submeter.</b> Distribusi ({dist ? persen(dist.porsi, 0) : '–'} estimasi beban), intake ({intake ? persen(intake.porsi, 0) : '–'}), lalu jalur PKS dan hydrant.</li>

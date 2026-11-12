@@ -145,7 +145,7 @@ export function DiagramWtp({ tahap }: { tahap: HasilTahap[] }) {
             <Fm x={500} y={100} label="FM3" />
             <rect className="aw-kotak olah" x="350" y="142" width="140" height="44" rx="4" />
             <text className="aw-lbl kecil" x="420" y="160" textAnchor="middle">Tenant / kawasan</text>
-            <text className="aw-sub" x="420" y="176" textAnchor="middle">air_olahan · ENPI-05</text>
+            <text className="aw-sub" x="420" y="176" textAnchor="middle">distribusi kawasan</text>
 
             {/* Jalur PKS */}
             <Pompa x={815} y={232} jenis="olah" /><Pompa x={815} y={262} jenis="olah" />

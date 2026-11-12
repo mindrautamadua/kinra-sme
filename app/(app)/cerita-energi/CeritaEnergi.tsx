@@ -97,14 +97,14 @@ export function CeritaEnergiPlayer({ c }: { c: CeritaEnergi }) {
           )}
           {i === 2 && (
             <div className="ce-a ce-a2">
-              <p className="ce-kecil ce-m1">Setiap 1 m³ air bersih yang diolah dan dipompa WTP 1</p>
+              <p className="ce-kecil ce-m1">Setiap 1 m³ air bersih yang diolah dan dipompa WTP I</p>
               {c.wtp?.kwhPerM3 ? (
                 <p className="ce-raksasa ce-m2"><HitungNaik ke={c.wtp.kwhPerM3} aktif format={(v) => angka(v, 2)} /><span className="ce-satuan">kWh</span></p>
               ) : (
                 <p className="ce-raksasa ce-m2"><HitungNaik ke={(wtp?.kwh ?? 0) / c.periode.bulan / 1000} aktif format={(v) => angka(v, 0)} /><span className="ce-satuan">ribu kWh/bulan</span></p>
               )}
               <p className="ce-sedang ce-m3">Pompa air baku, pengolahan, dan pompa distribusi bekerja 24 jam. Setiap kebocoran berarti listrik yang ikut terbuang.</p>
-              <p className="ce-sumber ce-m4">{c.wtp?.kwhPerM3 ? `Meter WTP 1 dibagi air diolah WTP 1 (tanpa air WTP 2/BTM), ${c.wtp.bulanAir} bulan data` : 'Meter WTP 1, rata-rata per bulan'}</p>
+              <p className="ce-sumber ce-m4">{c.wtp?.kwhPerM3 ? `Meter WTP I dibagi air diolah WTP I (tanpa air WTP II (BTM)), ${c.wtp.bulanAir} bulan data` : 'Meter WTP I, rata-rata per bulan'}</p>
             </div>
           )}
           {i === 3 && (

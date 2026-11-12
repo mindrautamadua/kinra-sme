@@ -344,7 +344,7 @@ export default async function KisahEnergi() {
           {k.enpiKawasan.length > 0 && <p className="lp-catatan">{k.enpiKawasan.join(' dan ')} (lingkup kawasan, termasuk tenant) hanya dipantau dan tidak dipakai untuk sasaran KINRA.</p>}
 
           <h3 className="lp-h3">Kisah kecil tentang data yang lengkap</h3>
-          <p className="lp-p">Awal November 2026, aplikasi menandai EnPI-05 “hemat” lima bulan berturut-turut dengan penurunan 12,6% sampai 14,8% dibanding baseline. Tim sempat senang. Lalu Bagian M/E mengonfirmasi bahwa meter intake WTP 1 ternyata terpisah dari meter WTP. Setelah kWh intake ikut dihitung, penurunannya tinggal 3,4% sampai 6,5%, di bawah ambang deviasi, dan statusnya diubah menjadi “Bukan deviasi”.</p>
+          <p className="lp-p">Awal November 2026, aplikasi menandai EnPI-05 “hemat” lima bulan berturut-turut dengan penurunan 12,6% sampai 14,8% dibanding baseline. Tim sempat senang. Lalu Bagian M/E mengonfirmasi bahwa meter intake WTP I ternyata terpisah dari meter WTP. Setelah kWh intake ikut dihitung, penurunannya tinggal 3,4% sampai 6,5%, di bawah ambang deviasi, dan statusnya diubah menjadi “Bukan deviasi”.</p>
           <p className="lp-p">“Ini justru cerita bagus untuk auditor,” kata KIRA. “Kita tidak menyembunyikan koreksi. Kita menunjukkan bahwa data diperiksa, kesalahan ditemukan, dan keputusan diperbarui. Itulah sistem yang hidup.”</p>
 
           {d && d.bulan.length > 0 && (
@@ -377,7 +377,7 @@ export default async function KisahEnergi() {
 
         {/* ── 06 Sasaran ───────────────────────────────────────── */}
         <Bab no="06" eyebrow="Bab enam" judul="Janji yang bisa diukur" acuan="Klausul 6.1 dan 6.2 · Risiko & peluang, sasaran, target, rencana aksi">
-          <p className="lp-lead">Setelah tahu siapa pemakan listriknya dan punya penggarisnya, saatnya berjanji. KIRA mengingatkan: “Janji yang baik itu bisa dicek. ‘Kita akan berhemat’ itu bukan sasaran. ‘Turunkan kWh per m³ air WTP 1 sebesar 5% pada 2027’ itu baru sasaran.”</p>
+          <p className="lp-lead">Setelah tahu siapa pemakan listriknya dan punya penggarisnya, saatnya berjanji. KIRA mengingatkan: “Janji yang baik itu bisa dicek. ‘Kita akan berhemat’ itu bukan sasaran. ‘Turunkan kWh per m³ air WTP I sebesar 5% pada 2027’ itu baru sasaran.”</p>
           <h3 className="lp-h3">{k.sasaran.length} sasaran energi KINRA</h3>
           <table className="lp-tbl lp-rapat">
             <thead><tr><th>{k.sasaran.some((s) => s.bagian) ? 'Bagian · kode' : 'EnPI'}</th><th>Sasaran</th><th>Target</th><th>Batas</th><th>Status</th></tr></thead>

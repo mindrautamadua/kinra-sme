@@ -61,7 +61,7 @@ const LISTRIK_KAWASAN: Record<string, { label: string; warna: string }> = {
 }
 const BBM: Record<string, { sumber: string; pengguna: string }> = {
   dexlite: { sumber: 'Dexlite', pengguna: 'Kendaraan & alat berat' },
-  dexlite_genset: { sumber: 'Dexlite genset', pengguna: 'Genset IPAB & IPAL' },
+  dexlite_genset: { sumber: 'Dexlite genset', pengguna: 'Genset WTP & WWTP' },
   bensin: { sumber: 'Bensin', pengguna: 'Kendaraan bensin' },
 }
 
@@ -75,7 +75,7 @@ export function susunAliran(o: {
   if (!meterKwh.length) return null
   const seuAktif = o.seu.filter((s) => s.status !== 'Dicabut').sort((a, b) => a.urutan - b.urutan || a.kode.localeCompare(b.kode))
 
-  // Pengguna listrik = aset (meter digabung per aset, mis. intake WTP ke WTP 1); meter tanpa aset berdiri sendiri
+  // Pengguna listrik = aset (meter digabung per aset, mis. intake WTP ke WTP I); meter tanpa aset berdiri sendiri
   const idPengguna = (m: MeterEnergi) => (m.aset_kode ? `aset:${m.aset_kode}` : `meter:${m.kode}`)
   const penggunaListrik = new Map<string, { label: string; meter: string[]; aset: string | null }>()
   for (const m of meterKwh) {

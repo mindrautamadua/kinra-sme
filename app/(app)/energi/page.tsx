@@ -27,7 +27,7 @@ export default async function Energi({ searchParams }: { searchParams: Promise<{
   const tahun = Number(sp.tahun) || daftarTahun.at(-1) || new Date().getFullYear()
   const listrik = sumber.filter((s) => s.satuan === 'kWh')
   const bbm = sumber.filter((s) => s.satuan !== 'kWh')
-  /** BBM kendaraan saja (genset IPAB/IPAL bukan kendaraan) */
+  /** BBM kendaraan saja (genset WTP/WWTP bukan kendaraan) */
   const bbmKendaraan = bbm.filter((s) => s.kode !== 'dexlite_genset')
 
   const nilai = (th: number, b: number, k: string) => data.find((d) => d.tahun === th && d.bulan === b && d.sumber_kode === k)?.nilai ?? null
@@ -344,7 +344,7 @@ export default async function Energi({ searchParams }: { searchParams: Promise<{
                 data: BULAN.map((_, b) => bbmKendaraan.reduce<number | null>((acc, s) => { const v = nilai(t, b + 1, s.kode); return v === null ? acc : (acc ?? 0) + v }, null)),
               })),
             }} />
-            <p className="sumber">Sumber: Rekap BBM Operasional (Dexlite dan bensin kendaraan; BBM genset IPAB/IPAL tidak termasuk). Faktor 36 MJ/liter adalah asumsi, verifikasi dengan data pemasok.</p>
+            <p className="sumber">Sumber: Rekap BBM Operasional (Dexlite dan bensin kendaraan; BBM genset WTP/WWTP (IPAB/IPAL) tidak termasuk). Faktor 36 MJ/liter adalah asumsi, verifikasi dengan data pemasok.</p>
           </div>
         </div>
       </section>

@@ -17,7 +17,7 @@ const persenTanda = (p: number | null) => (p === null ? '–' : `${p >= 0 ? '+' 
 export function LabEnpi({ data }: { data: Data }) {
   const adaWtp1 = data.dataVariabel.some((d) => d.variabel_kode === 'air_wtp1')
   const adaMeter = data.meter.length > 0 && data.bacaan.length > 0
-  if (!adaMeter) return <div className="card"><p className="muted">Data meter WTP 1 belum tersedia. Jalankan migrasi 0035 (kWh tagihan meter aset) terlebih dahulu.</p></div>
+  if (!adaMeter) return <div className="card"><p className="muted">Data meter WTP I belum tersedia. Jalankan migrasi 0035 (kWh tagihan meter aset) terlebih dahulu.</p></div>
   return (
     <div className="lab">
       <Eksperimen data={data} adaWtp1={adaWtp1} />
@@ -52,9 +52,9 @@ function Eksperimen({ data, adaWtp1 }: { data: Data; adaWtp1: boolean }) {
 
   const catatan: string[] = []
   if (metode === 'absolut') catatan.push('Metode absolut membandingkan kWh dengan bulan yang sama di baseline tanpa melihat volume air. Kenaikan air yang dipompa ikut terbaca sebagai boros, dan penghematan dari VSD bisa tertutup.')
-  if (metode !== 'absolut' && variabel === 'air_olahan') catatan.push('Distribusi total memuat air WTP 2 (BTM) yang dibeli dari pihak ketiga. Energinya tidak tercatat di meter WTP 1, sehingga pembaginya terlalu besar dan muncul penghematan semu. Ini kesalahan yang paling mudah dibantah auditor.')
-  if (metode !== 'absolut' && variabel === 'air_wtp1') catatan.push('Air WTP 1 tanpa BTM menyamakan pembilang dan penyebut: keduanya hanya WTP 1. Nov 2025 – Jan 2026 tidak dibandingkan karena air BTM periode itu tertagih sekaligus di Jan 2026.')
-  if (kodeBase === '2025') catatan.push('Baseline Jan–Des 2025 adalah baseline ENPI-05. Nov–Des 2025 tidak punya data air WTP 1, sehingga model dibentuk dari 10 bulan, di bawah 12 bulan yang disarankan ISO 50006. Ketiga VSD (2022, Jan 2024, Agu 2025) sudah beroperasi dan menjadi bagian kondisi baseline.')
+  if (metode !== 'absolut' && variabel === 'air_olahan') catatan.push('Distribusi total memuat air WTP II (BTM) yang dibeli dari pihak ketiga. Energinya tidak tercatat di meter WTP I, sehingga pembaginya terlalu besar dan muncul penghematan semu. Ini kesalahan yang paling mudah dibantah auditor.')
+  if (metode !== 'absolut' && variabel === 'air_wtp1') catatan.push('Air WTP I tanpa BTM menyamakan pembilang dan penyebut: keduanya hanya WTP I. Nov 2025 – Jan 2026 tidak dibandingkan karena air BTM periode itu tertagih sekaligus di Jan 2026.')
+  if (kodeBase === '2025') catatan.push('Baseline Jan–Des 2025 adalah baseline ENPI-05. Nov–Des 2025 tidak punya data air WTP I, sehingga model dibentuk dari 10 bulan, di bawah 12 bulan yang disarankan ISO 50006. Ketiga VSD (2022, Jan 2024, Agu 2025) sudah beroperasi dan menjadi bagian kondisi baseline.')
   if (kodeBase === '2024') catatan.push('Baseline 2024 dibentuk saat volume air jauh lebih kecil. Kondisi operasi 2026 sangat berbeda, sehingga perbandingan banyak berupa ekstrapolasi.')
   if (kodeBase === '2024-2025') catatan.push('Menggabungkan dua tahun menambah titik data, tetapi intensitas 2024 (±0,56 kWh/m³) lebih rendah dari 2025 (±0,67). Bila kondisi kedua tahun berbeda, model gabungan justru kurang mewakili; lihat CV(RMSE).')
   if (metode === 'regresi' && h.ekstrapolasi > 0) catatan.push('Regresi hanya sahih di dalam rentang variabel baseline. Volume air 2026 lebih tinggi dari baseline, jadi garis harapan diperpanjang ke luar data (ekstrapolasi).')
@@ -62,7 +62,7 @@ function Eksperimen({ data, adaWtp1 }: { data: Data; adaWtp1: boolean }) {
   return (
     <div className="card lab-blok">
       <div className="lab-judul"><span className="eyebrow">Eksperimen 1</span><h2>Satu data, tiga kesimpulan</h2>
-        <p className="muted">Data kWh WTP 1 sama untuk semua pilihan. Yang berubah hanya cara menghitung harapan. Coba urutan ini: absolut, lalu rasio dengan distribusi total, lalu rasio dengan air WTP 1.</p></div>
+        <p className="muted">Data kWh WTP I sama untuk semua pilihan. Yang berubah hanya cara menghitung harapan. Coba urutan ini: absolut, lalu rasio dengan distribusi total, lalu rasio dengan air WTP I.</p></div>
 
       <div className="lab-kendali">
         <div><span className="lab-lbl">Metode</span>
@@ -72,9 +72,9 @@ function Eksperimen({ data, adaWtp1 }: { data: Data; adaWtp1: boolean }) {
         <div><span className="lab-lbl">Variabel relevan</span>
           <nav className="seg" aria-label="Variabel relevan">
             <button type="button" disabled={metode === 'absolut'} aria-pressed={metode !== 'absolut' && variabel === 'air_olahan'} onClick={() => setVariabel('air_olahan')}>Distribusi total (termasuk BTM)</button>
-            <button type="button" disabled={metode === 'absolut' || !adaWtp1} aria-pressed={metode !== 'absolut' && variabel === 'air_wtp1'} onClick={() => setVariabel('air_wtp1')} title={adaWtp1 ? undefined : 'Jalankan migrasi 0038 untuk variabel air WTP 1'}>Air WTP 1 (tanpa BTM)</button>
+            <button type="button" disabled={metode === 'absolut' || !adaWtp1} aria-pressed={metode !== 'absolut' && variabel === 'air_wtp1'} onClick={() => setVariabel('air_wtp1')} title={adaWtp1 ? undefined : 'Jalankan migrasi 0038 untuk variabel air WTP I'}>Air WTP I (tanpa BTM)</button>
           </nav>
-          {!adaWtp1 && <span className="muted small">Variabel air WTP 1 belum ada: jalankan migrasi 0038.</span>}</div>
+          {!adaWtp1 && <span className="muted small">Variabel air WTP I belum ada: jalankan migrasi 0038.</span>}</div>
         <div><span className="lab-lbl">Periode baseline</span>
           <nav className="seg" aria-label="Periode baseline">
             {PRESET_BASELINE.map((b) => <button key={b.kode} type="button" aria-pressed={kodeBase === b.kode} onClick={() => setKodeBase(b.kode)} title={b.ket}>{b.label}</button>)}
@@ -93,7 +93,7 @@ function Eksperimen({ data, adaWtp1 }: { data: Data; adaWtp1: boolean }) {
       </div>
       {metode !== 'absolut' && m && <p className="muted small">Model {modelLayak(m) ? 'memenuhi' : 'belum memenuhi'} ambang ISO 50006 (R² ≥ {angka(AMBANG.r2, 2)}, CV(RMSE) ≤ {AMBANG.cvrmse}%, n ≥ {AMBANG.nMin}). Baseline {m.n} bulan.</p>}
 
-      {!h.galat && <Grafik tinggi={280} label="Konsumsi listrik WTP 1 aktual dibanding harapan baseline" spek={spek} />}
+      {!h.galat && <Grafik tinggi={280} label="Konsumsi listrik WTP I aktual dibanding harapan baseline" spek={spek} />}
 
       <div className="lab-catatan">
         {catatan.map((c) => <p key={c}>{c}</p>)}
@@ -141,7 +141,7 @@ function LatihanDeviasi({ data, adaWtp1 }: { data: Data; adaWtp1: boolean }) {
   return (
     <div className="card lab-blok">
       <div className="lab-judul"><span className="eyebrow">Eksperimen 2</span><h2>Seberapa cepat pemborosan ketahuan?</h2>
-        <p className="muted">Memakai EnPI rasio WTP 1 dengan baseline Jan–Des 2025 (sama dengan ENPI-05). Suntikkan gangguan buatan pada kWh, lalu lihat kapan CUSUM berbelok dan kapan aplikasi mencatat deviasi. Aturan deteksi sama dengan register deviasi: bulanan bila selisih melebihi maks(2 × RMSE, {AMBANG_DEVIASI.persen}%), tren bila {AMBANG_DEVIASI.trenBulan} bulan berturut-turut di atas harapan.</p></div>
+        <p className="muted">Memakai EnPI rasio WTP I dengan baseline Jan–Des 2025 (sama dengan ENPI-05). Suntikkan gangguan buatan pada kWh, lalu lihat kapan CUSUM berbelok dan kapan aplikasi mencatat deviasi. Aturan deteksi sama dengan register deviasi: bulanan bila selisih melebihi maks(2 × RMSE, {AMBANG_DEVIASI.persen}%), tren bila {AMBANG_DEVIASI.trenBulan} bulan berturut-turut di atas harapan.</p></div>
 
       <div className="lab-kendali">
         <div><span className="lab-lbl">Gangguan</span>

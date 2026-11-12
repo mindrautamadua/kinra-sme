@@ -228,7 +228,7 @@ export default async function AsetPage({ searchParams }: { searchParams: Promise
       </section>
 
       <section>
-        <SectionHead no="06" eyebrow="Jam operasi pompa & motor" judul="Pompa IPAB, IPAL, dan Tangki Timbun">
+        <SectionHead no="06" eyebrow="Jam operasi pompa & motor" judul="Pompa WTP (IPAB), WWTP (IPAL), dan Tangki Timbun">
           <p className="muted">Jam operasi bulanan per pompa/motor beserta daya dan kapasitasnya. Dipakai untuk menelusuri perubahan konsumsi SEU WTP dan WWTP, dan sebagai calon variabel relevan EnPI.</p>
         </SectionHead>
         <JamOperasiPompa pompa={pompa} jam={jam} kwhMeter={kwhMeterPompa} />
