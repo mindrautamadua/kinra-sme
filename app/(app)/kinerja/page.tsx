@@ -10,7 +10,7 @@ import { hitungDekomposisi, pilihLingkup, tahunTersedia } from '@/lib/dekomposis
 import { nilaiEnergi, rupiahRingkas, susunKonversi, tonCo2 } from '@/lib/konversi'
 import { deteksiDeviasi, gabungDeviasi, hariSejak, terbuka as deviasiTerbuka } from '@/lib/deviasi'
 import { hariIni } from '@/lib/format'
-import { AMBANG, cusum, type HasilEnpi, LABEL_METODE, modelLayak, pasangan, pilihEnpiUtama, ringkas, rumus } from '@/lib/enpi'
+import { AMBANG, cusum, type HasilEnpi, LABEL_METODE, modelLayak, pasangan, pilihEnpiUtama, ringkas, rumus, type Titik } from '@/lib/enpi'
 import { angka } from '@/lib/format'
 import { DaftarDeviasi } from './DaftarDeviasi'
 import { DaftarEnpi, DaftarVariabel } from './KelolaEnpi'
@@ -354,6 +354,8 @@ function KartuEnpi({ h }: { h: HasilEnpi }) {
         </>
       )}
 
+      {!h.galat && <TabelBulanan h={h} />}
+
       {(rm || h.peringatan.length > 0) && (
         <div style={{ marginTop: 14, display: 'flex', flexDirection: 'column', gap: 8 }}>
           {rm && <p className="small"><span className="mono">{rm}</span>{m && <span className="muted"> · n = {m.n} bulan</span>} {m && h.enpi.metode !== 'absolut' && <Chip kode={valid ? 'good' : 'warn'} label={valid ? 'Model layak' : 'Model perlu ditinjau'} />}</p>}
@@ -361,5 +363,61 @@ function KartuEnpi({ h }: { h: HasilEnpi }) {
         </div>
       )}
     </div>
+  )
+}
+
+/** Tabel efisiensi per bulan: aktual, harapan, hemat, dan intensitas (bila EnPI punya satu variabel). */
+function TabelBulanan({ h }: { h: HasilEnpi }) {
+  const d = desimal(h.satuan)
+  const v = h.variabel.length === 1 ? h.variabel[0] : null
+  const fmtI = (x: number | null) => (x === null ? '–' : angka(x, Math.abs(x) < 10 ? 3 : 1))
+  const intensitas = (e: number | null, x: number | null | undefined) => (v && e !== null && x ? e / x : null)
+  // Intensitas baseline sebagai acuan: total energi baseline dibagi total variabel baseline
+  const bl = h.baseline.filter((t) => t.aktual !== null && (!v || t.x[0]))
+  const iBaseline = v && bl.length ? bl.reduce((s, t) => s + t.aktual!, 0) / bl.reduce((s, t) => s + (t.x[0] ?? 0), 0) : null
+  const baris: { t: Titik; fase: 'laporan' | 'baseline' }[] = [
+    ...[...h.laporan].reverse().map((t) => ({ t, fase: 'laporan' as const })),
+    ...[...h.baseline].reverse().map((t) => ({ t, fase: 'baseline' as const })),
+  ]
+  if (!baris.length) return null
+  const satuanI = v ? `${h.satuan}/${v.satuan}` : ''
+  return (
+    <details className="kj-bulanan">
+      <summary>Tabel efisiensi per bulan ({h.laporan.length} bulan pelaporan{h.baseline.length ? `, ${h.baseline.length} bulan baseline` : ''})</summary>
+      {iBaseline !== null && <p className="muted small">Intensitas baseline: <b className="tnum">{fmtI(iBaseline)}</b> {satuanI}. Hemat = harapan − aktual; positif berarti lebih efisien dari baseline.</p>}
+      <div className="kj-bulanan-gulir">
+        <table className="tbl">
+          <thead>
+            <tr>
+              <th>Bulan</th>
+              {v && <th className="num">{v.nama} ({v.satuan})</th>}
+              <th className="num">Aktual ({h.satuan})</th>
+              <th className="num">Harapan ({h.satuan})</th>
+              <th className="num">Hemat ({h.satuan})</th>
+              <th className="num">Hemat %</th>
+              {v && <th className="num">Intensitas ({satuanI})</th>}
+            </tr>
+          </thead>
+          <tbody>
+            {baris.map(({ t, fase }) => {
+              const hemat = t.aktual !== null && t.harapan !== null ? t.harapan - t.aktual : null
+              const pr = hemat !== null && t.harapan ? (hemat / t.harapan) * 100 : null
+              const kelas = pr === null ? '' : pr >= 0 ? 'txt-good' : 'txt-bad'
+              return (
+                <tr key={`${fase}-${t.tahun}-${t.bulan}`} className={fase === 'baseline' ? 'kj-baseline' : undefined}>
+                  <td>{t.label}{fase === 'baseline' && <span className="upd">baseline</span>}</td>
+                  {v && <td className="num">{t.x[0] === null || t.x[0] === undefined ? '–' : angka(t.x[0], t.x[0] < 100 ? 2 : 0)}</td>}
+                  <td className="num">{t.aktual === null ? '–' : angka(t.aktual, d)}</td>
+                  <td className="num">{t.harapan === null ? '–' : angka(t.harapan, d)}</td>
+                  <td className={`num ${kelas}`}>{hemat === null ? '–' : `${hemat < 0 ? '−' : ''}${angka(Math.abs(hemat), d)}`}</td>
+                  <td className={`num ${kelas}`}>{pr === null ? '–' : `${pr < 0 ? '−' : '+'}${angka(Math.abs(pr), 1)}%`}</td>
+                  {v && <td className="num">{fmtI(intensitas(t.aktual, t.x[0]))}</td>}
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      </div>
+    </details>
   )
 }

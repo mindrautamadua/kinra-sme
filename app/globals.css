@@ -2312,3 +2312,13 @@ dialog.tj-ev-dlg { max-height: calc(100dvh - 32px); overflow-y: auto; overscroll
 .aw-daftar b { color: var(--ink); }
 @media (max-width: 900px) { .aw-dua { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: reduce) { .aw-lap, .aw-nomor circle { transition: none; } }
+
+/* Tabel efisiensi per bulan di kartu EnPI (/kinerja) */
+.kj-bulanan { margin-top: 14px; border-top: 1px solid var(--line); padding-top: 12px; }
+.kj-bulanan summary { cursor: pointer; font-size: 13px; font-weight: 600; color: var(--ink-2); }
+.kj-bulanan summary:hover { color: var(--ink); }
+.kj-bulanan summary:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; border-radius: 4px; }
+.kj-bulanan > p { margin: 10px 0 0; }
+.kj-bulanan-gulir { overflow-x: auto; max-height: 420px; overflow-y: auto; margin-top: 10px; }
+.kj-bulanan .tbl { min-width: 640px; }
+.kj-bulanan .kj-baseline td { color: var(--muted); }
