@@ -1,4 +1,4 @@
-import { Droplets, Activity, BadgeCheck, ShieldCheck, BookA, BookOpen, Clapperboard, Fan, FlaskConical, MessagesSquare, Bot, CalendarRange, CircleCheck, ClipboardCheck, FileText, Gauge, KeyRound, LayoutDashboard, Minus, Network, ScanSearch, SearchCheck, ShieldAlert, Target, Users, Building2, Crosshair, Map as IkonPeta, Presentation } from 'lucide-react'
+import { Droplets, HeartHandshake, Activity, BadgeCheck, ShieldCheck, BookA, BookOpen, Clapperboard, Fan, FlaskConical, MessagesSquare, Bot, CalendarRange, CircleCheck, ClipboardCheck, FileText, Gauge, KeyRound, LayoutDashboard, Minus, Network, ScanSearch, SearchCheck, ShieldAlert, Target, Users, Building2, Crosshair, Map as IkonPeta, Presentation } from 'lucide-react'
 import { FITUR_FORMULIR } from '@/lib/fitur'
 import Link from 'next/link'
 import { Chip } from '@/components/Chip'
@@ -23,6 +23,7 @@ const MODUL = [
   { href: '/', ikon: LayoutDashboard, nama: 'Ringkasan', klausul: 'Gambaran besar', isi: 'Skor kesiapan, tren & proyeksi menuju audit, insight prioritas, beban PIC, aktivitas terbaru, dan cuplikan kinerja energi.' },
   { href: '/direksi', ikon: Presentation, nama: 'Ringkasan Direksi', klausul: 'Klausul 5.1, 7.4, 9.3', isi: 'Satu halaman siap cetak untuk direksi: angka kunci (termasuk rupiah dan CO₂), perubahan terbesar bulan ini, keputusan yang dibutuhkan, dan status menuju sertifikasi.' },
   { href: '/peta', ikon: IkonPeta, nama: 'Peta SMEn', klausul: 'Klausul 4–10', isi: 'Mulai di sini bila baru mengenal SMEn: 12 langkah siklus PDCA dengan penjelasan awam, kondisi KINRA saat ini, pertanyaan auditor, dan langkah berikutnya.' },
+  { href: '/komitmen', ikon: HeartHandshake, nama: 'Komitmen SMEn', klausul: 'Klausul 5.1, 5.2, 7.3', isi: 'Poster komitmen penerapan SMEn: empat komitmen kebijakan energi, dasar hukum, siklus SMEn, dan langkah hemat energi untuk setiap karyawan. Poster bisa diunduh untuk dicetak.' },
   { href: '/kesiapan', ikon: ClipboardCheck, nama: 'Kesiapan Audit', klausul: 'Klausul 4–10', isi: 'Lembar monitoring semua dokumen dan rekaman yang akan diperiksa auditor: PIC, tenggat, berkas evidence, penanda versi sah, status Final, unduh CSV. Skor kesiapan = dokumen Final yang punya berkas versi sah.' },
   { href: '/dependensi', ikon: Network, nama: 'Peta Evidence', klausul: 'Klausul 4–10', isi: 'Diagram hubungan antardokumen: dokumen mana yang menjadi masukan bagi dokumen lain, status evidence masing-masing, dan dokumen yang tertahan karena masukannya belum lengkap.' },
   { href: '/auditor', ikon: ScanSearch, nama: 'Ruang Auditor', klausul: 'Klausul 9.2 · Stage 1', isi: 'Tampilan hanya-baca per klausul untuk auditor internal dan TÜV: dokumen wajib di atas, berkas evidence langsung dibuka, temuan terbuka, dan dokumen yang menjadi dasarnya.' },

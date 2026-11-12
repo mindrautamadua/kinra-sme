@@ -1,6 +1,6 @@
 'use client'
 
-import { Activity, BadgeCheck, ShieldCheck, Droplets, Presentation, BookA, BookHeart, Building2, Clapperboard, Crosshair, Fan, FlaskConical, Map as IkonPeta, BookOpen, MessagesSquare, CalendarRange, ClipboardCheck, FileText, Gauge, LayoutDashboard, Network, ScanSearch, SearchCheck, ShieldAlert, Target, Users, Waypoints } from 'lucide-react'
+import { Activity, HeartHandshake, BadgeCheck, ShieldCheck, Droplets, Presentation, BookA, BookHeart, Building2, Clapperboard, Crosshair, Fan, FlaskConical, Map as IkonPeta, BookOpen, MessagesSquare, CalendarRange, ClipboardCheck, FileText, Gauge, LayoutDashboard, Network, ScanSearch, SearchCheck, ShieldAlert, Target, Users, Waypoints } from 'lucide-react'
 import Link from 'next/link'
 import { Fragment } from 'react'
 import { usePathname } from 'next/navigation'
@@ -14,6 +14,7 @@ export const GRUP_MENU: GrupMenu[] = [
   { kode: 'mulai', judul: null, item: [
     { href: '/', label: 'Ringkasan', ikon: LayoutDashboard },
     { href: '/peta', label: 'Peta SMEn', ikon: IkonPeta },
+    { href: '/komitmen', label: 'Komitmen SMEn', ikon: HeartHandshake },
     { href: '/direksi', label: 'Ringkasan Direksi', ikon: Presentation },
   ] },
   { kode: 'plan', judul: 'Plan · Rencanakan', ket: 'Risiko, SEU, target', item: [
