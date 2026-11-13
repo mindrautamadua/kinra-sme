@@ -20,7 +20,7 @@ export default async function Pengguna() {
       <SectionHead eyebrow="Kelola pengguna"
         judul={`${daftar.filter((d) => d.aktif).length} pengguna aktif: ${DAFTAR_PERAN.map((p) => `${per(p)} ${LABEL_PERAN[p]}`).join(', ')}`}>
         <p className="muted">
-          Admin mengelola semua data dan pengguna. Konsultan mereview dan menyetujui dokumen, mencatat dan menutup temuan.
+          Admin mengelola semua data dan pengguna. Konsultan dapat melakukan semua yang dilakukan Tim KINRA atas data dan dokumen, ditambah menyetujui dokumen, mencatat dan menutup temuan.
           Tim KINRA melengkapi dokumen dan evidence, mengisi data energi, dan menindaklanjuti temuan. Pengguna baru wajib mengganti sandi saat login pertama.
         </p>
       </SectionHead>

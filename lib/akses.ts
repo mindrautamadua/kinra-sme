@@ -1,4 +1,4 @@
-/** Matriks hak akses. Sinkron dengan policy RLS di supabase/migrations/0006_login_peran.sql, 0007, 0009, 0011, 0014, 0019, 0020, 0021, 0022, 0027, 0028, 0030, 0042, 0051, 0075, dan 0077. */
+/** Matriks hak akses. Sinkron dengan policy RLS di supabase/migrations/0006_login_peran.sql, 0007, 0009, 0011, 0014, 0019, 0020, 0021, 0022, 0027, 0028, 0030, 0042, 0051, 0075, 0077, dan 0078. */
 export type Peran = 'admin' | 'konsultan' | 'tim_kinra' | 'pembaca' | 'auditor'
 
 export const LABEL_PERAN: Record<Peran, string> = { admin: 'Admin', konsultan: 'Konsultan', tim_kinra: 'Tim KINRA', pembaca: 'Pembaca', auditor: 'Auditor' }
@@ -6,7 +6,7 @@ export const LABEL_PERAN: Record<Peran, string> = { admin: 'Admin', konsultan: '
 /** Uraian singkat tiap peran (halaman Panduan & lembar cetak hak akses). */
 export const KET_PERAN: Record<Peran, string> = {
   admin: 'Pengelola aplikasi: semua tindakan, termasuk menghapus data dan mengelola akun pengguna.',
-  konsultan: 'Pendamping ISO 50001: menyusun EnPI dan sasaran baru, menyetujui dokumen, mencatat dan menutup temuan.',
+  konsultan: 'Pendamping ISO 50001: semua yang dapat dilakukan Tim KINRA atas data dan dokumen, ditambah menyusun EnPI dan sasaran baru, menyetujui dokumen, mencatat dan menutup temuan.',
   tim_kinra: 'Pelaksana SMEn: melengkapi dokumen dan evidence, input data energi dan variabel, mengubah EnPI/baseline dan sasaran, menindaklanjuti temuan.',
   pembaca: 'Akun bersama untuk seluruh bagian atau direksi: melihat semua halaman dan mengunduh CSV tanpa mengubah data. Sandi diatur oleh admin dan tidak bisa diganti dari akun ini.',
   auditor: 'Akun auditor (internal maupun lembaga sertifikasi): hanya membuka Kesiapan Audit (termasuk detail dokumen & evidence) serta Komitmen & Kebijakan, tanpa mengubah data.',
@@ -23,10 +23,10 @@ export const AKSES = {
   'dokumen.ubah': SEMUA,
   'dokumen.status': SEMUA,                      // status Belum ada / Draft / Final (migrasi 0019)
   'dokumen.setujui': ['admin', 'konsultan'],   // status Disetujui
-  'dokumen.hapus': ['admin', 'tim_kinra'],      // migrasi 0020
-  'energi.ubah': ['admin', 'tim_kinra'],        // termasuk data bulanan variabel relevan
+  'dokumen.hapus': SEMUA,                       // migrasi 0020, konsultan sejak 0078
+  'energi.ubah': SEMUA,                         // termasuk data bulanan variabel relevan & jam operasi pompa (0078)
   'aset.ubah': SEMUA,                           // aset, meter & bacaan stand (migrasi 0022)
-  'aset.hapus': ['admin', 'tim_kinra'],
+  'aset.hapus': SEMUA,                          // konsultan sejak 0078
   'seu.ubah': SEMUA,                            // usulkan kandidat SEU & isi detail (migrasi 0027)
   'seu.tetapkan': ['admin', 'konsultan'],       // tetapkan/cabut SEU, setujui tinjauan energi
   'seu.hapus': ['admin'],
@@ -41,7 +41,7 @@ export const AKSES = {
   'sasaran.ubah': SEMUA,
   'aksi.ubah': SEMUA,
   'sasaran.hapus': ['admin'],                   // sasaran & rencana aksi
-  'bukti.unggah': ['admin', 'tim_kinra'],      // bukti pelaksanaan sasaran & aksi (migrasi 0051)
+  'bukti.unggah': SEMUA,                        // bukti pelaksanaan sasaran & aksi (migrasi 0051, konsultan sejak 0078)
   'bukti.hapus': ['admin'],
   'kegiatan.ubah': SEMUA,
   'register.ubah': SEMUA,
@@ -53,7 +53,7 @@ export const AKSES = {
   'temuan.hapus': ['admin'],
   'formulir.isi': SEMUA,                        // buat, isi, ajukan formulir
   'formulir.setujui': ['admin', 'konsultan'],   // setujui / buka kembali formulir
-  'formulir.hapus': ['admin', 'tim_kinra'],     // migrasi 0014
+  'formulir.hapus': SEMUA,                      // migrasi 0014/0045, konsultan sejak 0078
   'simulasi.simpan': SEMUA,                     // riwayat simulasi audit (migrasi 0042)
   'sandi.ganti': [...SEMUA, 'auditor'],         // akun pembaca dipakai bersama: sandi hanya diatur ulang admin (migrasi 0042)
   'pengguna.kelola': ['admin'],
