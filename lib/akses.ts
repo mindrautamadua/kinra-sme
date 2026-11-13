@@ -43,6 +43,7 @@ export const AKSES = {
   'sasaran.hapus': SEMUA,                       // sasaran & rencana aksi (migrasi 0079)
   'bukti.unggah': SEMUA,                        // bukti pelaksanaan sasaran & aksi (migrasi 0051, konsultan sejak 0078)
   'bukti.hapus': SEMUA,                         // migrasi 0079
+  'catatan.lihat': SEMUA,                       // kolom Keterangan Kesiapan (catatan kerja internal); pembaca & auditor tidak melihat
   'kegiatan.ubah': SEMUA,
   'register.ubah': SEMUA,
   'register.hapus': SEMUA,                      // migrasi 0079
@@ -72,7 +73,7 @@ export const LABEL_AKSI: Record<Aksi, string> = {
   'parameter.ubah': 'Ubah tarif & faktor emisi',
   'seu.ubah': 'Usulkan & isi SEU', 'seu.tetapkan': 'Tetapkan SEU & setujui tinjauan energi', 'seu.hapus': 'Hapus SEU',
   'enpi.tambah': 'Tambah EnPI & variabel relevan', 'enpi.ubah': 'Ubah EnPI, baseline & variabel', 'enpi.hapus': 'Hapus EnPI & variabel',
-  'sasaran.tambah': 'Tambah sasaran energi', 'sasaran.ubah': 'Ubah sasaran energi', 'aksi.ubah': 'Isi rencana aksi', 'sasaran.hapus': 'Hapus sasaran & aksi', 'bukti.unggah': 'Unggah bukti pelaksanaan sasaran & aksi', 'bukti.hapus': 'Hapus bukti pelaksanaan', 'kegiatan.ubah': 'Tandai kegiatan timeline',
+  'sasaran.tambah': 'Tambah sasaran energi', 'sasaran.ubah': 'Ubah sasaran energi', 'aksi.ubah': 'Isi rencana aksi', 'sasaran.hapus': 'Hapus sasaran & aksi', 'bukti.unggah': 'Unggah bukti pelaksanaan sasaran & aksi', 'bukti.hapus': 'Hapus bukti pelaksanaan', 'catatan.lihat': 'Lihat keterangan internal Kesiapan Audit', 'kegiatan.ubah': 'Tandai kegiatan timeline',
   'register.ubah': 'Isi isu & peluang', 'register.hapus': 'Hapus isu', 'register.sinkron': 'Sinkron register dari formulir upload', 'temuan.tambah': 'Catat temuan',
   'temuan.ubah': 'Tindak lanjut temuan', 'temuan.tutup': 'Tutup temuan', 'temuan.hapus': 'Hapus temuan',
   'formulir.isi': 'Isi & ajukan formulir', 'formulir.setujui': 'Setujui formulir', 'formulir.hapus': 'Hapus isian formulir',

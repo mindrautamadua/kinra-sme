@@ -61,7 +61,8 @@ export function CatatanDokumen({ d, bisaUbah }: { d: Dokumen; bisaUbah: boolean 
         {d.posisi_draf && <span className="ks-posisi">Draf di: <b>{d.posisi_draf}</b></span>}
         {d.keterangan && <span className="ks-ket">{d.keterangan}</span>}
         {kosong && <span className="muted">–</span>}
-        {d.catatan_at && <span className="upd">{d.catatan_oleh ?? 'Seseorang'} · {waktu(d.catatan_at)}</span>}
+        {/* Tanpa nama pengubah (mis. diisi lewat SQL Editor) tidak ditampilkan: jejak tanpa orang tidak bisa dipertanggungjawabkan */}
+        {d.catatan_at && d.catatan_oleh && <span className="upd">{d.catatan_oleh} · {waktu(d.catatan_at)}</span>}
       </div>
       {bisaUbah && (
         <button type="button" className="btn btn-ikon kecil" onClick={buka} aria-label={`Ubah keterangan ${d.kode}`} title="Ubah posisi draf & keterangan">

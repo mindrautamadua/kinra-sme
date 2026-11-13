@@ -51,7 +51,7 @@ export function FormDokumen({ dokumen, klausul }: { dokumen: Dokumen | null; kla
           <input type="checkbox" name="wajib_iso" defaultChecked={d?.wajib_iso ?? false} disabled={!bisa('dokumen.wajib')} style={{ width: 18, height: 18 }} />
           <span style={{ textTransform: 'none', letterSpacing: 0 }}>Informasi terdokumentasi wajib ISO 50001:2018{!bisa('dokumen.wajib') && ' (diubah oleh admin atau konsultan)'}</span>
         </label>
-        <label className="field full"><span>Keterangan</span><textarea name="keterangan" defaultValue={d?.keterangan ?? ''} /></label>
+        {bisa('catatan.lihat') && <label className="field full"><span>Keterangan</span><textarea name="keterangan" defaultValue={d?.keterangan ?? ''} /></label>}
       </div>
       </fieldset>
       {!bisaUbah && <p className="pesan" style={{ marginTop: 16 }}>Peran Anda hanya dapat melihat dokumen ini.</p>}

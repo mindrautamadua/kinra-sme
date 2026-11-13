@@ -42,6 +42,8 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal }: {
   const bisaUnggah = bisa('dokumen.ubah')
   const bisaStatus = bisa('dokumen.status')
   const bisaHapus = bisa('dokumen.hapus')
+  const lihatCatatan = bisa('catatan.lihat')
+  const nKolom = lihatCatatan ? 7 : 6
   const [hapus, setHapus] = useState<Dokumen | null>(null)
   // Saran isian PIC dari nilai yang sudah dipakai dokumen lain
   const saranPic = useMemo(() => [...new Set(rows.map((d) => d.pic?.trim()).filter((p): p is string => !!p))].sort(), [rows])
@@ -94,9 +96,9 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal }: {
   }
 
   function unduhCsv() {
-    const kolom = ['Kode', 'Klausul', 'Kelompok', 'Nama', 'Wajib ISO 50001', 'Status', 'Nomor dokumen', 'PIC', 'Tenggat', 'Berkas evidence', 'Berkas versi sah', 'Siap audit', 'Draf ada di', 'Keterangan', 'Catatan diubah oleh', 'Catatan diubah pada']
+    const kolom = ['Kode', 'Klausul', 'Kelompok', 'Nama', 'Wajib ISO 50001', 'Status', 'Nomor dokumen', 'PIC', 'Tenggat', 'Berkas evidence', 'Berkas versi sah', 'Siap audit', ...(lihatCatatan ? ['Draf ada di', 'Keterangan', 'Catatan diubah oleh', 'Catatan diubah pada'] : [])]
     const esc = (v: unknown) => `"${String(v ?? '').replace(/"/g, '""')}"`
-    const isi = tersaring.map((d) => [d.kode, d.klausul_kode, KELOMPOK[d.kelompok], d.nama, d.wajib_iso ? 'Ya' : 'Tidak', STATUS_DOKUMEN[d.status]?.label ?? d.status, d.nomor_dokumen, d.pic, d.tenggat, d.jumlah_berkas ?? 0, d.jumlah_sah ?? 0, siapAudit(d) ? 'Ya' : 'Tidak', d.posisi_draf, d.keterangan, d.catatan_oleh, d.catatan_at].map(esc).join(','))
+    const isi = tersaring.map((d) => [d.kode, d.klausul_kode, KELOMPOK[d.kelompok], d.nama, d.wajib_iso ? 'Ya' : 'Tidak', STATUS_DOKUMEN[d.status]?.label ?? d.status, d.nomor_dokumen, d.pic, d.tenggat, d.jumlah_berkas ?? 0, d.jumlah_sah ?? 0, siapAudit(d) ? 'Ya' : 'Tidak', ...(lihatCatatan ? [d.posisi_draf, d.keterangan, d.catatan_oleh, d.catatan_oleh ? d.catatan_at : null] : [])].map(esc).join(','))
     const blob = new Blob(['﻿' + [kolom.map(esc).join(','), ...isi].join('\n')], { type: 'text/csv;charset=utf-8' })
     const a = document.createElement('a')
     a.href = URL.createObjectURL(blob)
@@ -180,11 +182,11 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal }: {
           <table className="tbl">
             <thead>
               <tr>
-                <th>Kode</th><th>Dokumen / rekaman</th><th>Status</th><th>Keterangan</th><th>PIC</th><th>Tenggat</th><th className="num">Evidence</th>
+                <th>Kode</th><th>Dokumen / rekaman</th><th>Status</th>{lihatCatatan && <th>Keterangan</th>}<th>PIC</th><th>Tenggat</th><th className="num">Evidence</th>
               </tr>
             </thead>
             <tbody>
-              {tersaring.length === 0 && <tr className="kosong"><td colSpan={7}>Tidak ada dokumen yang cocok.</td></tr>}
+              {tersaring.length === 0 && <tr className="kosong"><td colSpan={nKolom}>Tidak ada dokumen yang cocok.</td></tr>}
               {tersaring.map((d) => {
                 const grup = d.klausul_kode !== klausulTerakhir
                 klausulTerakhir = d.klausul_kode
@@ -195,7 +197,7 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal }: {
                 return [
                   grup && (
                     <tr key={`g-${d.klausul_kode}`} className="grup">
-                      <td colSpan={7}>
+                      <td colSpan={nKolom}>
                         <span className="ks-grup">
                           <span>{d.klausul_kode === 'P' ? 'Persiapan awal' : `Klausul ${d.klausul_kode}`} · {k?.judul}</span>
                           <span className="ks-grup-bar" aria-hidden="true"><i style={{ width: `${pk}%` }} /></span>
@@ -212,7 +214,7 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal }: {
                       <span className="upd">{KELOMPOK[d.kelompok]}{d.nomor_dokumen && ` · ${d.nomor_dokumen}`}</span>
                     </td>
                     <td className="small"><StatusDokumenSel key={`${d.id}-${d.status}`} d={d} bisaUbah={bisaStatus} /></td>
-                    <td className="small ks-kol-catatan"><CatatanDokumen d={d} bisaUbah={bisaUnggah} /></td>
+                    {lihatCatatan && <td className="small ks-kol-catatan"><CatatanDokumen d={d} bisaUbah={bisaUnggah} /></td>}
                     <td className="small"><PicDokumen key={`${d.id}-${d.pic ?? ''}`} d={d} bisaUbah={bisaUnggah} saran={saranPic} /></td>
                     <td className="small tnum" style={{ whiteSpace: 'nowrap' }}>
                       {tanggal(d.tenggat)}
@@ -244,7 +246,7 @@ export function TabelKesiapan({ dokumen, klausul, kini, klausulAwal }: {
               })}
             </tbody>
             <tfoot>
-              <tr><td colSpan={7}>{tersaring.length} dari {rows.length} dokumen · kesiapan tampilan ini {Math.round(kesiapan(tersaring))}% · Sumber: Checklist Monev, Dokumen Implementasi SMEn, Timeline Rev.3</td></tr>
+              <tr><td colSpan={nKolom}>{tersaring.length} dari {rows.length} dokumen · kesiapan tampilan ini {Math.round(kesiapan(tersaring))}% · Sumber: Checklist Monev, Dokumen Implementasi SMEn, Timeline Rev.3</td></tr>
             </tfoot>
           </table>
         </div>

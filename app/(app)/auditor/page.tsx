@@ -1,4 +1,6 @@
 import { SectionHead } from '@/components/SectionHead'
+import { boleh } from '@/lib/akses'
+import { penggunaSaya } from '@/lib/sesi'
 import { ambilDaftarBerkas, ambilDokumen, ambilKlausul, ambilTemuan } from '@/lib/data'
 import { DEPENDENSI } from '@/lib/dependensi'
 import { hariIni, tanggal } from '@/lib/format'
@@ -8,7 +10,8 @@ import { RuangAuditor, type KlausulAuditor } from './RuangAuditor'
 export const dynamic = 'force-dynamic'
 
 export default async function Auditor() {
-  const [dokumen, klausul, berkas, temuan] = await Promise.all([ambilDokumen(), ambilKlausul(), ambilDaftarBerkas(), ambilTemuan()])
+  const [dokumen, klausul, berkas, temuan, saya] = await Promise.all([ambilDokumen(), ambilKlausul(), ambilDaftarBerkas(), ambilTemuan(), penggunaSaya()])
+  const lihatCatatan = boleh(saya?.peran, 'catatan.lihat')
   const kodeAda = new Set(dokumen.map((d) => d.kode))
   const masukan = (kode: string) => DEPENDENSI.filter(([a, b]) => b === kode && kodeAda.has(a)).map(([a]) => a)
 
@@ -17,7 +20,7 @@ export default async function Auditor() {
       .filter((d) => d.klausul_kode === k.kode)
       .sort((a, b) => Number(!!b.wajib_iso) - Number(!!a.wajib_iso) || a.kode.localeCompare(b.kode))
       .map((d) => ({
-        id: d.id, kode: d.kode, nama: d.nama, kelompok: d.kelompok, nomor: d.nomor_dokumen, pic: d.pic, keterangan: d.keterangan,
+        id: d.id, kode: d.kode, nama: d.nama, kelompok: d.kelompok, nomor: d.nomor_dokumen, pic: d.pic, keterangan: lihatCatatan ? d.keterangan : null,
         wajib: !!d.wajib_iso, bukti: adaBukti(d), siap: siapAudit(d), masukan: masukan(d.kode),
         berkas: berkas.filter((b) => b.dokumen_id === d.id).sort((a, b) => Number(!!b.sah) - Number(!!a.sah)).map((b) => ({ id: b.id, nama: b.nama_file, mime: b.mime, ukuran: b.ukuran, at: b.diunggah_at, oleh: b.diunggah_oleh, sah: !!b.sah })),
       }))
