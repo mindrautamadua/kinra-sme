@@ -233,7 +233,7 @@ export function DaftarSasaran({ sasaran, aksi, capaian, enpi, peluang, kini, tar
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         {sasaran.length === 0 && (
-          <div className="card"><p className="muted">Belum ada sasaran. Contoh: &ldquo;Menurunkan konsumsi listrik kawasan ternormalisasi 3% pada 2026 dibanding baseline 2025&rdquo; dengan EnPI-02 dan target 3%.</p></div>
+          <div className="card"><p className="muted">Belum ada sasaran. Contoh: &ldquo;Menurunkan intensitas energi WTP I (kWh per m³ air diolah) 5% dibanding baseline 2025&rdquo; dengan ENPI-05 dan target 5%. Pakai EnPI lingkup KINRA, bukan EnPI kawasan.</p></div>
         )}
         {grupBagian.length > 0 && (
           <div className="card" id="sasaran-bagian">

@@ -6,7 +6,7 @@ import { konsumsiBacaan } from './enpi'
 import { KWH_PER_LITER, type Konversi, nilaiEnergi } from './konversi'
 import type { Aset, EnergiBulanan, MeterEnergi, PembacaanMeter, VariabelBulanan } from './types'
 
-export type BagianEnergi = { id: string; nama: string; kwh: number; porsi: number; kelompok: 'air' | 'gedung' | 'bbm' }
+export type BagianEnergi = { id: string; nama: string; kwh: number; porsi: number; kelompok: 'air' | 'gedung' | 'fasilitas' | 'bbm' }
 
 export type CeritaEnergi = {
   periode: { mulai: string; selesai: string; bulan: number }
@@ -22,7 +22,7 @@ const kunci = (t: number, b: number) => t * 12 + b - 1
 const BULAN = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des']
 const label = (k: number) => `${BULAN[k % 12]} ${Math.floor(k / 12)}`
 
-const NAMA_ASET: Record<string, string> = { 'KINRA-MTR-005': 'Pengolahan air bersih (WTP I + intake)', 'KINRA-MTR-004': 'Pengolahan air limbah (WWTP)', 'KINRA-MTR-009': 'Tank Farm (kawasan)' }
+const NAMA_ASET: Record<string, string> = { 'KINRA-MTR-005': 'Pengolahan air bersih (WTP I + intake)', 'KINRA-MTR-004': 'Pengolahan air limbah (WWTP)', 'KINRA-MTR-009': 'Tank Farm (tangki timbun)' }
 /** Meter intake (terpisah sejak migrasi 0043) digabung ke bagian WTP I. */
 const WTP = 'KINRA-MTR-005', INTAKE = 'KINRA-MTR-008'
 
@@ -51,7 +51,7 @@ export function susunCerita(o: { meter: MeterEnergi[]; bacaan: PembacaanMeter[];
 
   const bagianMentah: Omit<BagianEnergi, 'porsi'>[] = meterKwh.filter((m) => m.kode !== INTAKE).map((m) => {
     const aset = o.aset.find((a) => a.kode === m.aset_kode)
-    return { id: m.kode, nama: NAMA_ASET[m.kode] ?? aset?.nama ?? m.lokasi ?? m.kode, kwh: perMeter.get(m.kode) ?? 0, kelompok: m.kode === 'KINRA-MTR-005' || m.kode === 'KINRA-MTR-004' ? 'air' : 'gedung' }
+    return { id: m.kode, nama: NAMA_ASET[m.kode] ?? aset?.nama ?? m.lokasi ?? m.kode, kwh: perMeter.get(m.kode) ?? 0, kelompok: m.kode === 'KINRA-MTR-005' || m.kode === 'KINRA-MTR-004' ? 'air' : m.kode === 'KINRA-MTR-009' ? 'fasilitas' : 'gedung' }
   })
   let rupiah = 0, kg = 0
   for (const m of meterKwh) { const n = nilaiEnergi(o.kv, perMeter.get(m.kode) ?? 0, 'kWh'); rupiah += n.rupiah; kg += n.kgCo2 }

@@ -110,7 +110,7 @@ export default async function Energi({ searchParams }: { searchParams: Promise<{
     <>
       <section>
         <div className="ks-kepala">
-          <SectionHead hero eyebrow="Data energi kawasan KEK Sei Mangkei · termasuk tenant"
+          <SectionHead hero eyebrow="Data energi kawasan KEK Sei Mangkei · termasuk tenant · Klausul 6.3"
             judul={<>{tahun}: <span className="ks-sorot">{energiListrik(kwhTahun)}</span> listrik dalam {blnAkhir} bulan, {delta(naik)} dibanding {tahun - 1}</>}>
             <p className="muted">Angka kawasan mencakup listrik tenant, sehingga tidak menjadi dasar klaim kinerja SMEn KINRA; lihat pemisahan lingkup di bawah. Energi terbarukan (PLTBG + PLTS) menyumbang {persen(pangsaEbt)} listrik. Rata-rata {energiListrik(rata)} per bulan. Konversi: 1 kWh = 3,6 × 10⁻⁶ TJ.</p>
           </SectionHead>

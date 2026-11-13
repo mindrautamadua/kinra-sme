@@ -47,7 +47,7 @@ export const TANYA_MRTI: TanyaMr[] = [
       'Kontribusi bagian: memastikan risiko SMEn terkelola, menyediakan sistem informasi dan data energi yang andal, mengendalikan dokumen SMEn, serta memakai energi secara hemat di area kerja sendiri (perangkat TI, AC, penerangan).',
     ],
     bukti: 'Kebijakan SMEn bertanda tangan, daftar hadir sosialisasi personel bagian.',
-    halaman: [{ href: '/kesiapan', label: 'Kesiapan Audit (5.2)' }],
+    halaman: [{ href: '/komitmen', label: 'Komitmen & Kebijakan' }, { href: '/kesiapan', label: 'Kesiapan Audit (5.2)' }],
     hindari: 'Staf bagian tidak tahu kebijakan energi sama sekali. Auditor sering bertanya ke staf, bukan hanya ke kepala bagian.' },
   { id: 'R2', fungsi: 'umum', klausul: ['5.3'], stage: 'Stage 1 & 2',
     tanya: 'Siapa dari bagian Anda yang terlibat dalam tim SMEn, dan apa perannya?',

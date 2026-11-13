@@ -104,7 +104,7 @@ export function susunPeta(m: Masukan): Tahap[] {
       tergantung: [], memengaruhi: [3, 4],
     },
     {
-      no: 2, fase: 'Plan', nama: 'Kepemimpinan & kebijakan energi', klausul: '5.1–5.3', href: '/kesiapan',
+      no: 2, fase: 'Plan', nama: 'Kepemimpinan & kebijakan energi', klausul: '5.1–5.3', href: '/komitmen',
       artinya: 'Direksi berkomitmen, menetapkan kebijakan energi, dan menunjuk tim energi beserta wewenangnya.',
       status: d5.status, diKinra: d5.teks,
       auditor: 'Bagaimana direksi menunjukkan komitmen, dan siapa tim energi Anda?',
@@ -146,7 +146,7 @@ export function susunPeta(m: Masukan): Tahap[] {
       status: s6,
       diKinra: `${sasAktif.length} sasaran aktif (${sasKinra.length} terhubung EnPI lingkup KINRA); ${aksi.length} rencana aksi, ${aksiJalan.length} berjalan/selesai.`,
       auditor: 'Apa target energi Anda dan siapa melakukan apa untuk mencapainya?',
-      langkah: sasKinra.length ? null : 'Hubungkan sasaran ke EnPI lingkup KINRA (EnPI-04/05), bukan EnPI kawasan.',
+      langkah: sasKinra.length ? null : 'Hubungkan sasaran ke EnPI lingkup KINRA (EnPI-01, 04, 05, 06, 07), bukan EnPI kawasan.',
       tergantung: [3, 4, 5], memengaruhi: [8],
     },
     {

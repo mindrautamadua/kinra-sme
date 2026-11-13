@@ -86,7 +86,7 @@ export default async function AsetPage({ searchParams }: { searchParams: Promise
 
   // Catatan analis
   const catatan: { kode: 'crit' | 'warn' | 'info'; teks: string }[] = []
-  if (meter.length && terbaca.length < meter.length) catatan.push({ kode: terbaca.length ? 'warn' : 'crit', teks: `${terbaca.length} dari ${meter.length} meter sudah terbaca untuk ${BULAN_PANJANG[lalu.b - 1]} ${lalu.t}. Bacaan bulanan adalah satu-satunya sumber EnPI lingkup KINRA (EnPI-04, EnPI-05).` })
+  if (meter.length && terbaca.length < meter.length) catatan.push({ kode: terbaca.length ? 'warn' : 'crit', teks: `${terbaca.length} dari ${meter.length} meter sudah terbaca untuk ${BULAN_PANJANG[lalu.b - 1]} ${lalu.t}. Bacaan bulanan adalah satu-satunya sumber EnPI meter lingkup KINRA (EnPI-04 s.d. EnPI-07).` })
   if (kwhDiketahui && kwhBermeter / kwhDiketahui > 0.95 && tanpaData.length) catatan.push({ kode: 'info', teks: `Meter yang ada sudah mencakup ${persen((kwhBermeter / kwhDiketahui) * 100, 0)} konsumsi yang diketahui, tetapi ${tanpaData.length} aset (${angka(luasTanpa, 0)} m²) belum punya data energi sama sekali. Prioritaskan ${[...tanpaData].sort((a, b) => (b.luas_m2 ?? 0) - (a.luas_m2 ?? 0)).slice(0, 3).map((a) => a.nama.trim()).join(', ')}.` })
   if (tanpaKalibrasi.length) catatan.push({ kode: 'warn', teks: `${tanpaKalibrasi.length} dari ${meter.length} meter belum punya data kalibrasi/verifikasi. Auditor akan meminta bukti akurasi peralatan ukur (klausul 7.1.5 dan 9.1).` })
   if (kalibrasiLewat.length) catatan.push({ kode: 'crit', teks: `${kalibrasiLewat.length} meter melewati jadwal kalibrasi: ${kalibrasiLewat.map((x) => x.kode).join(', ')}.` })

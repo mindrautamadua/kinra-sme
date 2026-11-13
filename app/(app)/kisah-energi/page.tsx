@@ -280,7 +280,7 @@ export default async function KisahEnergi() {
             <Tanya q="(kepada karyawan) Anda tahu kebijakan energi perusahaan?">Ya, intinya perusahaan berkomitmen terus memperbaiki pemakaian energi. Di bagian saya, itu berarti … (sebutkan contoh: mematikan AC saat ruang kosong, melaporkan pompa yang berjalan di luar jadwal).</Tanya>
             <Tanya q="Siapa yang berwenang menetapkan SEU?">Penetapan dan pencabutan SEU serta persetujuan tinjauan energi dilakukan Admin dan Konsultan berdasarkan rapat Tim Energi. Tim KINRA mengusulkan dan melengkapi datanya.</Tanya>
           </Kotak>
-          <Kotak jenis="bukti"><p>Kebijakan energi bertanda tangan, SK Tim SMEn, struktur organisasi, Formulir Komitmen Manajemen, daftar hadir dan foto sosialisasi kebijakan. Aplikasi: Ringkasan Direksi.</p><p className="kb-status">Dokumen klausul 5: {k.k5.siap} dari {k.k5.n} siap audit, {k.k5.bukti} sudah ada evidence.</p></Kotak>
+          <Kotak jenis="bukti"><p>Kebijakan energi bertanda tangan, SK Tim SMEn, struktur organisasi, Formulir Komitmen Manajemen, daftar hadir dan foto sosialisasi kebijakan. Aplikasi: Komitmen & Kebijakan, Ringkasan Direksi.</p><p className="kb-status">Dokumen klausul 5: {k.k5.siap} dari {k.k5.n} siap audit, {k.k5.bukti} sudah ada evidence.</p></Kotak>
           <DaftarPr items={k.pr.b3} />
         </Bab>
 
@@ -423,7 +423,7 @@ export default async function KisahEnergi() {
             <p><b>Kalibrasi</b> adalah pemeriksaan bahwa meter masih mengukur dengan benar, dibuktikan sertifikat yang masih berlaku.</p>
           </Kotak>
           <h3 className="lp-h3">Rencana: dari satu meter per instalasi ke submeter per peralatan</h3>
-          <p className="lp-p">Saat ini satu meter mengukur seluruh WTP atau WWTP, sehingga kita tahu totalnya tetapi tidak tahu pompa mana yang boros. Rencana submeter bertahap: panel pompa distribusi dan air baku, flow meter, dan pengukur tekanan header di WTP; panel blower/aerator, flow meter influent, dan sensor oksigen terlarut di WWTP; lalu pompa backwash, pompa lumpur, dan beban penunjang. Auditor menerima rencana yang jelas walaupun belum semua meter terpasang, asalkan ada PIC, tanggal target, dan frekuensi pembacaan.</p>
+          <p className="lp-p">Saat ini WTP punya dua meter (proses WTP dan pompa intake) dan WWTP satu meter, sehingga kita tahu totalnya tetapi belum tahu pompa mana yang boros. Rencana submeter bertahap: panel pompa distribusi dan pengukur tekanan header di WTP (air baku sudah terukur); panel blower/aerator, flow meter influent, dan sensor oksigen terlarut di WWTP; lalu pompa backwash, pompa lumpur, dan beban penunjang. Auditor menerima rencana yang jelas walaupun belum semua meter terpasang, asalkan ada PIC, tanggal target, dan frekuensi pembacaan.</p>
           <Kotak jenis="auditor">
             <Tanya q="Bagaimana Anda memastikan data meter akurat?">Pembacaan bulanan dicatat di aplikasi dengan faktor kali yang sudah dikonfirmasi M/E. Angka yang janggal kami telusuri ke sumbernya, seperti koreksi Graha April 2025. Jadwal kalibrasi meter tercatat di register meter.</Tanya>
             <Tanya q="Tunjukkan sertifikat kalibrasi meter WTP.">(Siapkan sertifikatnya. Bila meter milik PLN, siapkan bukti dari PLN atau berita acara tera.)</Tanya>
@@ -553,12 +553,12 @@ export default async function KisahEnergi() {
             <tbody>
               {[
                 ['4.1–4.2', 'Apa konteks dan siapa yang berkepentingan?', 'Formulir isu, pihak berkepentingan, daftar persyaratan hukum', 'Isu & Peluang'],
-                ['4.3', 'Di mana pagarnya?', 'F-4.3-01 Ruang Lingkup & Batasan', 'Aset & Meter, Peta SMEn'],
-                ['5.1–5.3', 'Apakah pimpinan terlibat dan peran jelas?', 'Kebijakan energi, SK Tim SMEn, struktur organisasi, komitmen manajemen', 'Ringkasan Direksi'],
+                ['4.3', 'Di mana pagarnya?', 'F-4.3-01 Ruang Lingkup & Batasan', 'Aset & Meter, Alur Pasokan Listrik, Peta SMEn'],
+                ['5.1–5.3', 'Apakah pimpinan terlibat dan peran jelas?', 'Kebijakan energi, SK Tim SMEn, struktur organisasi, komitmen manajemen', 'Komitmen & Kebijakan, Ringkasan Direksi'],
                 ['6.1', 'Apa risiko dan peluangnya?', 'Formulir risiko, formulir peluang', 'Isu & Peluang'],
                 ['6.2', 'Apa janjinya dan bagaimana dicapai?', 'Formulir tujuan, target, rencana tindakan', 'Sasaran & Aksi'],
                 ['6.3', 'Ke mana energi pergi?', 'Laporan tinjauan energi, formulir SEU', 'Tinjauan Energi & SEU'],
-                ['6.4–6.5', 'Apa penggaris dan titik nolnya? Apakah kinerja membaik?', 'Formulir EnPI & baseline, catatan penyesuaian', 'Kinerja Energi, Lab EnPI'],
+                ['6.4–6.5', 'Apa penggaris dan titik nolnya? Apakah kinerja membaik?', 'Formulir EnPI & baseline, catatan penyesuaian', 'Kinerja Energi, Laboratorium EnPI'],
                 ['6.6', 'Data apa dikumpulkan, oleh siapa?', 'Rencana pengumpulan data, jadwal kalibrasi', 'Aset & Meter, Data Energi'],
                 ['7.1–7.4', 'Apakah orang siap dan paham?', 'Formulir kompetensi, pelatihan, kesadaran, komunikasi', 'Kesiapan Audit'],
                 ['7.5', 'Apakah dokumen terkendali?', 'Daftar Induk Dokumen, log distribusi dan perubahan', 'Kesiapan Audit, Peta Evidence'],

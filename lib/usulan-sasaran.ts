@@ -45,12 +45,12 @@ export function susunUsulan(d: { hasil: HasilEnpi[]; pakai: PenggunaEnergi[]; pe
   })
   if (e05) s.push({ dipakai: dipakaiS('ENPI-05', 'Menurunkan intensitas energi WTP I (kWh per m³ air diolah)'),
     uraian: 'Menurunkan intensitas energi WTP I (kWh per m³ air diolah)', enpi_kode: 'ENPI-05', target_persen: 5, tahun_target: thTarget(e05),
-    pic: 'Bagian M/E', catatan: 'SEU-01. VSD pompa distribusi sudah termasuk baseline; dicapai melalui set point tekanan, penjadwalan pompa, pompa intake, dan standardisasi pola operasi efisien Feb–Jun 2026.',
+    pic: 'Bagian M/E', catatan: 'SEU-01. VSD pompa distribusi sudah termasuk baseline; dicapai melalui set point tekanan, penjadwalan pompa, dan pompa intake (diganti 110 kW → 37 kW pada Okt 2026).',
     alasan: 'WTP adalah pengguna energi terbesar; EnPI rasio sudah ditetapkan.',
   })
   if (e06) s.push({ dipakai: dipakaiS('ENPI-06', 'Menurunkan konsumsi listrik WWTP dengan mutu effluent tetap memenuhi baku mutu'),
     uraian: 'Menurunkan konsumsi listrik WWTP dengan mutu effluent tetap memenuhi baku mutu', enpi_kode: 'ENPI-06', target_persen: 5, tahun_target: thTarget(e06),
-    pic: 'Bagian M/E', catatan: 'SEU-02. EnPI masih absolut; tinjau ulang target setelah debit influent tersedia dan EnPI diganti ke kWh/m³ air limbah diolah.',
+    pic: 'Bagian M/E', catatan: 'SEU-02. ENPI-06 berupa kWh per m³ inlet IPAL I. Sebagian besar beban (aerator) tetap, jadi rasio turun bila inlet naik; pertimbangkan regresi setelah data cukup.',
     alasan: 'WWTP menyerap sekitar 45% listrik KINRA dan belum punya sasaran.',
   })
   if (e01) s.push({ dipakai: dipakaiS('ENPI-01', 'Mengendalikan konsumsi BBM kendaraan operasional'),
@@ -62,19 +62,11 @@ export function susunUsulan(d: { hasil: HasilEnpi[]; pakai: PenggunaEnergi[]; pe
   const a: Omit<UsulanAksi, 'dipakai'>[] = []
   const wtp = kwhTahun(/^WTP$/i, 'SEU-01'), wwtp = kwhTahun(/^WWTP$/i, 'SEU-02'), gedung = kwhTahun(/kantor kawasan|pusat inovasi/i)
   a.push({
-    kunci: 'submeter-wtp', uraian: 'Pasang submeter tahap 1 WTP: pompa distribusi, pompa intake, flow meter air baku, pengukur tekanan header',
+    kunci: 'submeter-wtp', uraian: 'Pasang submeter tahap 1 WTP: pompa distribusi dan pengukur tekanan header',
     peluang_kode: ada('P-04') ? 'P-04' : null, pic: 'Bagian M/E', sumber_daya: 'Anggaran pengadaan power meter kelas 0,5S/1 + CT, teknisi listrik',
     mulai: kini, tenggat: tambahBulan(kini, 2), estimasi_hemat_kwh: null,
     metode_verifikasi: 'Bacaan submeter bulanan tercatat dan terekonsiliasi dengan meter utama WTP', catatan: 'Prasyarat EnPI per proses (lihat rencana submeter di Tinjauan Energi).',
     alasan: 'Tanpa submeter, penghematan WTP tidak dapat dibuktikan.', enpi: 'ENPI-05',
-  })
-  if (e05) a.push({
-    kunci: 'deviasi-wtp-2026', uraian: 'Selidiki penurunan intensitas WTP I Feb–Jun 2026 dan bakukan pola operasi efisiennya dalam SOP',
-    peluang_kode: ada('P-03') ? 'P-03' : null, pic: 'Manajer Energi', sumber_daya: 'Log operasi pompa (jam operasi, frekuensi VSD, tekanan header), data air baku dan tagihan BTM',
-    mulai: kini, tenggat: tambahBulan(kini, 1), estimasi_hemat_kwh: null,
-    metode_verifikasi: 'Penyebab tercatat di register deviasi; bila operasional, kWh/m³ WTP I (EnPI-05) setelah SOP berlaku dibanding baseline',
-    catatan: 'Intensitas turun sekitar 13% lalu kembali ke level baseline Agu–Okt 2026. Bila penyebabnya pola operasi, ini peluang hemat tanpa investasi.',
-    alasan: 'Kinerja lebih baik yang pernah tercapai adalah peluang termurah untuk diulang.', enpi: 'ENPI-05',
   })
   if (wtp) a.push({
     kunci: 'tekanan-pompa-wtp', uraian: 'Optimasi set point tekanan header dan penjadwalan pompa distribusi WTP I (VSD terpasang)',
@@ -89,7 +81,7 @@ export function susunUsulan(d: { hasil: HasilEnpi[]; pakai: PenggunaEnergi[]; pe
     peluang_kode: ada('P-03') ? 'P-03' : null, pic: 'Bagian M/E', sumber_daya: 'Bacaan meter intake KINRA-MTR-008, uji debit-tekanan pompa, kalkulator Pompa VSD',
     mulai: tambahBulan(kini, 2), tenggat: tambahBulan(kini, 5), estimasi_hemat_kwh: null,
     metode_verifikasi: 'kWh intake (KINRA-MTR-008) per m³ air baku sebelum dan sesudah tindakan',
-    catatan: 'Pompa intake belum ber-VSD dan baru diukur terpisah mulai Nov 2026. Konfirmasi faktor kali meter intake sebelum menghitung baseline.',
+    catatan: 'Pompa intake terukur terpisah di KINRA-MTR-008 sejak Jan 2024 (faktor kali ×1, dikonfirmasi M/E 7 Nov 2026) dan belum ber-VSD. Pompa 110 kW diganti 37 kW pada Okt 2026; verifikasi penghematannya dari kWh MTR-008 per m³ air baku sebelum dan sesudah penggantian.',
     alasan: 'Satu-satunya beban besar WTP yang belum dioptimasi.', enpi: 'ENPI-05',
   })
   if (wwtp) a.push({
@@ -97,7 +89,7 @@ export function susunUsulan(d: { hasil: HasilEnpi[]; pakai: PenggunaEnergi[]; pe
     peluang_kode: ada('P-04') ? 'P-04' : null, pic: 'Bagian M/E', sumber_daya: 'Flow meter influent, power meter kelas 0,5S/1 + CT untuk panel blower, teknisi listrik',
     mulai: kini, tenggat: tambahBulan(kini, 3), estimasi_hemat_kwh: null,
     metode_verifikasi: 'Debit influent dan kWh blower tercatat bulanan dan terekonsiliasi dengan meter utama WWTP (KINRA-MTR-004)',
-    catatan: 'Prasyarat mengganti ENPI-06 dari absolut ke kWh/m³ air limbah diolah dan membuktikan hasil kontrol DO.',
+    catatan: 'ENPI-06 sudah kWh/m³ inlet IPAL I; flow meter memastikan angka inlet terukur, bukan estimasi, dan submeter blower membuktikan hasil kontrol DO.',
     alasan: 'Tanpa debit influent, penghematan WWTP tidak dapat dipisahkan dari perubahan beban limbah.', enpi: 'ENPI-06',
   })
   if (wwtp) a.push({

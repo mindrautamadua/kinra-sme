@@ -62,7 +62,7 @@ export default async function RingkasanDireksi() {
     nilai(th, bl, 'dexlite') && nilai(th - 1, bl, 'dexlite')
       ? { judul: 'BBM kendaraan operasional KINRA', kini: nilai(th, bl, 'dexlite')!, lalu: nilai(th - 1, bl, 'dexlite')!, satuan: 'liter', makna: 'Lingkup KINRA: perlu penjelasan penyebab (armada, jam operasi, pencatatan).' } : null,
     variabel(th, bl, 'air_wtp1') && variabel(th - 1, bl, 'air_wtp1')
-      ? { judul: 'Air diolah WTP I (tanpa BTM)', kini: variabel(th, bl, 'air_wtp1')!, lalu: variabel(th - 1, bl, 'air_wtp1')!, satuan: 'm³', makna: 'Beban WTP (SEU-01) ikut naik; pantau kWh per m³ setelah meter terbaca.' } : null,
+      ? { judul: 'Air diolah WTP I (tanpa BTM)', kini: variabel(th, bl, 'air_wtp1')!, lalu: variabel(th - 1, bl, 'air_wtp1')!, satuan: 'm³', makna: 'Beban WTP (SEU-01) ikut naik; pantau kWh per m³ di ENPI-05.' } : null,
     nilai(th, bl, 'pltbg') && nilai(th - 1, bl, 'pltbg')
       ? { judul: 'Pasokan PLTBG (biogas)', kini: nilai(th, bl, 'pltbg')!, lalu: nilai(th - 1, bl, 'pltbg')!, satuan: 'kWh', makna: 'Memengaruhi bauran energi terbarukan kawasan.' } : null,
   ]

@@ -9,7 +9,10 @@ import { FITUR_FORMULIR } from '@/lib/fitur'
 type ItemMenu = { href: string; label: string; ikon: typeof LayoutDashboard }
 type GrupMenu = { kode: string; judul: string | null; ket?: string; item: ItemMenu[] }
 
-/** Menu dikelompokkan mengikuti siklus PDCA ISO 50001, sama dengan Peta SMEn. */
+/**
+ * Menu dikelompokkan mengikuti siklus PDCA ISO 50001 menurut tempat halaman dipakai sehari-hari.
+ * Tidak identik dengan 12 langkah Peta SMEn: mis. Kinerja Energi di sini di Check (pemantauan), di Peta di Plan (penetapan EnPI).
+ */
 export const GRUP_MENU: GrupMenu[] = [
   { kode: 'mulai', judul: null, item: [
     { href: '/', label: 'Ringkasan', ikon: LayoutDashboard },
@@ -62,7 +65,7 @@ export const MENU_ADMIN = { href: '/pengguna', label: 'Pengguna', ikon: Users }
 /** Hanya admin & Tim KINRA (akses 'ruangmr.lihat'). */
 export const MENU_MR = { href: '/ruang-mr', label: 'Ruang MR', ikon: BadgeCheck }
 /** Hanya admin & Tim KINRA (akses 'ruangmrti.lihat'). */
-export const MENU_MRTI = { href: '/ruang-mrti', label: 'Ruang Risiko & TI', ikon: ShieldCheck }
+export const MENU_MRTI = { href: '/ruang-mrti', label: 'Ruang Manajemen Risiko & TI', ikon: ShieldCheck }
 
 function aktif(path: string, href: string) {
   return href === '/' ? path === '/' : path === href || path.startsWith(`${href}/`) ||
