@@ -60,7 +60,7 @@ export function TabelVariabel({ tahun, variabel, data }: { tahun: number; variab
           </tbody>
         </table>
       </div>
-      {!bisaUbah && <p className="pesan" style={{ marginTop: 12 }}>Hanya admin dan Tim KINRA yang dapat mengisi data variabel.</p>}
+      {!bisaUbah && <p className="pesan" style={{ marginTop: 12 }}>Hanya admin, konsultan, dan Tim KINRA yang dapat mengisi data variabel.</p>}
       <p className="sumber">Isi dari catatan operasional yang dapat ditelusuri (log WTP, daftar tenant, dsb.). Format angka Indonesia: titik ribuan, koma desimal. Hijau = tersimpan, merah = gagal.</p>
     </div>
   )

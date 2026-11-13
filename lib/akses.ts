@@ -1,11 +1,11 @@
-/** Matriks hak akses. Sinkron dengan policy RLS di supabase/migrations/0006_login_peran.sql, 0007, 0009, 0011, 0014, 0019, 0020, 0021, 0022, 0027, 0028, 0030, 0042, 0051, 0075, 0077, dan 0078. */
+/** Matriks hak akses. Sinkron dengan policy RLS di supabase/migrations/0006_login_peran.sql, 0007, 0009, 0011, 0014, 0019, 0020, 0021, 0022, 0027, 0028, 0030, 0042, 0051, 0075, 0077, 0078, dan 0079. */
 export type Peran = 'admin' | 'konsultan' | 'tim_kinra' | 'pembaca' | 'auditor'
 
 export const LABEL_PERAN: Record<Peran, string> = { admin: 'Admin', konsultan: 'Konsultan', tim_kinra: 'Tim KINRA', pembaca: 'Pembaca', auditor: 'Auditor' }
 
 /** Uraian singkat tiap peran (halaman Panduan & lembar cetak hak akses). */
 export const KET_PERAN: Record<Peran, string> = {
-  admin: 'Pengelola aplikasi: semua tindakan, termasuk menghapus data dan mengelola akun pengguna.',
+  admin: 'Pengelola aplikasi: semua tindakan, termasuk mengelola akun pengguna dan sinkron register dari formulir upload.',
   konsultan: 'Pendamping ISO 50001: semua yang dapat dilakukan Tim KINRA atas data dan dokumen, ditambah menyusun EnPI dan sasaran baru, menyetujui dokumen, mencatat dan menutup temuan.',
   tim_kinra: 'Pelaksana SMEn: melengkapi dokumen dan evidence, input data energi dan variabel, mengubah EnPI/baseline dan sasaran, menindaklanjuti temuan.',
   pembaca: 'Akun bersama untuk seluruh bagian atau direksi: melihat semua halaman dan mengunduh CSV tanpa mengubah data. Sandi diatur oleh admin dan tidak bisa diganti dari akun ini.',
@@ -29,28 +29,28 @@ export const AKSES = {
   'aset.hapus': SEMUA,                          // konsultan sejak 0078
   'seu.ubah': SEMUA,                            // usulkan kandidat SEU & isi detail (migrasi 0027)
   'seu.tetapkan': ['admin', 'konsultan'],       // tetapkan/cabut SEU, setujui tinjauan energi
-  'seu.hapus': ['admin'],
+  'seu.hapus': SEMUA,                           // migrasi 0079
   'deviasi.ubah': SEMUA,                        // selidiki & tanggapi deviasi signifikan (migrasi 0028)
   'deviasi.tutup': ['admin', 'konsultan'],      // verifikasi: tutup / bukan deviasi
   'penyelidikan.kelola': SEMUA,                 // lembar penyelidikan deviasi & tautan PIC (migrasi 0075)
   'parameter.ubah': ['admin', 'konsultan'],     // tarif & faktor emisi (migrasi 0030)
   'enpi.tambah': ['admin', 'konsultan'],        // definisi variabel relevan & EnPI baru
   'enpi.ubah': SEMUA,                           // ubah variabel relevan, EnPI & baseline
-  'enpi.hapus': ['admin'],
+  'enpi.hapus': SEMUA,                          // migrasi 0079
   'sasaran.tambah': ['admin', 'konsultan'],
   'sasaran.ubah': SEMUA,
   'aksi.ubah': SEMUA,
-  'sasaran.hapus': ['admin'],                   // sasaran & rencana aksi
+  'sasaran.hapus': SEMUA,                       // sasaran & rencana aksi (migrasi 0079)
   'bukti.unggah': SEMUA,                        // bukti pelaksanaan sasaran & aksi (migrasi 0051, konsultan sejak 0078)
-  'bukti.hapus': ['admin'],
+  'bukti.hapus': SEMUA,                         // migrasi 0079
   'kegiatan.ubah': SEMUA,
   'register.ubah': SEMUA,
-  'register.hapus': ['admin'],
+  'register.hapus': SEMUA,                      // migrasi 0079
   'register.sinkron': ['admin'],               // sinkron isu & peluang dari formulir upload (bisa menghapus baris)
   'temuan.tambah': ['admin', 'konsultan'],
   'temuan.ubah': SEMUA,
   'temuan.tutup': ['admin', 'konsultan'],
-  'temuan.hapus': ['admin'],
+  'temuan.hapus': SEMUA,                        // migrasi 0079
   'formulir.isi': SEMUA,                        // buat, isi, ajukan formulir
   'formulir.setujui': ['admin', 'konsultan'],   // setujui / buka kembali formulir
   'formulir.hapus': SEMUA,                      // migrasi 0014/0045, konsultan sejak 0078

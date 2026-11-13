@@ -69,7 +69,7 @@ export function TabelEnergi({ tahun, sumber, data }: { tahun: number; sumber: Su
           </tfoot>
         </table>
       </div>
-      {!bisaUbah && <p className="pesan" style={{ marginTop: 12 }}>Hanya admin dan Tim KINRA yang dapat mengubah data energi.</p>}
+      {!bisaUbah && <p className="pesan" style={{ marginTop: 12 }}>Hanya admin, konsultan, dan Tim KINRA yang dapat mengubah data energi.</p>}
       <p className="sumber">Format angka Indonesia: titik pemisah ribuan, koma desimal (mis. 3.470.845,34). Hijau = tersimpan, merah = gagal/angka tidak valid.</p>
     </div>
   )

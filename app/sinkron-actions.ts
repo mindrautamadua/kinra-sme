@@ -12,7 +12,7 @@ export async function pratinjauSinkron(): Promise<{ ok: true; data: Pratinjau } 
   catch (e) { return { ok: false, pesan: (e as Error).message } }
 }
 
-/** Tulis sumber yang dipilih ke register. Admin saja karena bisa menghapus baris (RLS isu/peluang delete = admin). */
+/** Tulis sumber yang dipilih ke register. Admin saja karena bisa menghapus banyak baris sekaligus (dijaga di aplikasi; RLS delete isu/peluang sejak 0079 juga mengizinkan konsultan & Tim KINRA). */
 export async function terapkanSinkron(kunci: string[]): Promise<{ ok: true; ringkas: string } | { ok: false; pesan: string }> {
   const t = await cekAkses('register.sinkron')
   if (t) return { ok: false, pesan: t }
