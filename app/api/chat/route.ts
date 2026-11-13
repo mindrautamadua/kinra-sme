@@ -16,6 +16,7 @@ type Pesan = { peran: 'user' | 'model'; teks: string }
 export async function POST(req: Request) {
   const saya = await penggunaSaya()
   if (!saya) return Response.json({ pesan: 'Sesi berakhir. Silakan masuk kembali.' }, { status: 401 })
+  if (saya.peran === 'auditor') return Response.json({ pesan: 'Asisten tidak tersedia untuk akun auditor.' }, { status: 403 })
   if (!KEY) return Response.json({ pesan: 'GEMINI_API_KEY belum diisi di .env.local.' }, { status: 500 })
 
   const body = await req.json().catch(() => null) as { pesan?: Pesan[] } | null

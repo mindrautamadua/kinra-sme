@@ -1,11 +1,20 @@
-/** Matriks hak akses. Sinkron dengan policy RLS di supabase/migrations/0006_login_peran.sql, 0007, 0009, 0011, 0014, 0019, 0020, 0021, 0022, 0027, 0028, 0030, 0042, 0051, dan 0075. */
-export type Peran = 'admin' | 'konsultan' | 'tim_kinra' | 'pembaca'
+/** Matriks hak akses. Sinkron dengan policy RLS di supabase/migrations/0006_login_peran.sql, 0007, 0009, 0011, 0014, 0019, 0020, 0021, 0022, 0027, 0028, 0030, 0042, 0051, 0075, dan 0077. */
+export type Peran = 'admin' | 'konsultan' | 'tim_kinra' | 'pembaca' | 'auditor'
 
-export const LABEL_PERAN: Record<Peran, string> = { admin: 'Admin', konsultan: 'Konsultan', tim_kinra: 'Tim KINRA', pembaca: 'Pembaca' }
+export const LABEL_PERAN: Record<Peran, string> = { admin: 'Admin', konsultan: 'Konsultan', tim_kinra: 'Tim KINRA', pembaca: 'Pembaca', auditor: 'Auditor' }
 
-export const DAFTAR_PERAN: Peran[] = ['admin', 'konsultan', 'tim_kinra', 'pembaca']
+/** Uraian singkat tiap peran (halaman Panduan & lembar cetak hak akses). */
+export const KET_PERAN: Record<Peran, string> = {
+  admin: 'Pengelola aplikasi: semua tindakan, termasuk menghapus data dan mengelola akun pengguna.',
+  konsultan: 'Pendamping ISO 50001: menyusun EnPI dan sasaran baru, menyetujui dokumen, mencatat dan menutup temuan.',
+  tim_kinra: 'Pelaksana SMEn: melengkapi dokumen dan evidence, input data energi dan variabel, mengubah EnPI/baseline dan sasaran, menindaklanjuti temuan.',
+  pembaca: 'Akun bersama untuk seluruh bagian atau direksi: melihat semua halaman dan mengunduh CSV tanpa mengubah data. Sandi diatur oleh admin dan tidak bisa diganti dari akun ini.',
+  auditor: 'Akun auditor (internal maupun lembaga sertifikasi): hanya membuka Kesiapan Audit (termasuk detail dokumen & evidence) serta Komitmen & Kebijakan, tanpa mengubah data.',
+}
 
-/** Semua peran yang boleh menulis. Pembaca hanya melihat. */
+export const DAFTAR_PERAN: Peran[] = ['admin', 'konsultan', 'tim_kinra', 'pembaca', 'auditor']
+
+/** Semua peran yang boleh menulis. Pembaca dan auditor hanya melihat. */
 const SEMUA: Peran[] = ['admin', 'konsultan', 'tim_kinra']
 
 export const AKSES = {
@@ -46,7 +55,7 @@ export const AKSES = {
   'formulir.setujui': ['admin', 'konsultan'],   // setujui / buka kembali formulir
   'formulir.hapus': ['admin', 'tim_kinra'],     // migrasi 0014
   'simulasi.simpan': SEMUA,                     // riwayat simulasi audit (migrasi 0042)
-  'sandi.ganti': SEMUA,                         // akun pembaca dipakai bersama: sandi hanya diatur ulang admin (migrasi 0042)
+  'sandi.ganti': [...SEMUA, 'auditor'],         // akun pembaca dipakai bersama: sandi hanya diatur ulang admin (migrasi 0042)
   'pengguna.kelola': ['admin'],
   'ruangmr.lihat': ['admin', 'tim_kinra'],     // menu Ruang MR (persiapan audit MR)
   'ruangmrti.lihat': ['admin', 'tim_kinra'],   // menu Ruang Manajemen Risiko & TI (auditee)
@@ -75,4 +84,15 @@ export const LABEL_AKSI: Record<Aksi, string> = {
 
 export function boleh(peran: Peran | null | undefined, aksi: Aksi): boolean {
   return !!peran && (AKSES[aksi] as Peran[]).includes(peran)
+}
+
+/**
+ * Halaman yang boleh dibuka auditor (hanya baca). Peran lain tidak dibatasi per halaman.
+ * /dokumen ikut karena detail dokumen & evidence dibuka dari tabel Kesiapan Audit.
+ */
+export const HALAMAN_AUDITOR = ['/kesiapan', '/dokumen', '/komitmen'] as const
+
+export function bolehHalaman(peran: Peran | null | undefined, path: string): boolean {
+  if (peran !== 'auditor') return !!peran
+  return HALAMAN_AUDITOR.some((h) => path === h || path.startsWith(`${h}/`))
 }

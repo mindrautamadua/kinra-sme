@@ -13,7 +13,7 @@ import { PeranProvider } from '@/components/Peran'
 import { SidebarToggle } from '@/components/SidebarToggle'
 import { TemaToggle } from '@/components/TemaToggle'
 import { Ungkap } from '@/components/Ungkap'
-import { boleh, LABEL_PERAN } from '@/lib/akses'
+import { boleh, HALAMAN_AUDITOR, LABEL_PERAN } from '@/lib/akses'
 import { hariIni, selisihHari, tanggal } from '@/lib/format'
 import { penggunaSaya } from '@/lib/sesi'
 import { ambilKegiatan } from '@/lib/data'
@@ -24,6 +24,8 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
   const saya = await penggunaSaya()
   if (!saya) redirect('/masuk')
   if (saya.wajib_ganti_sandi) redirect('/ganti-sandi')
+  // Auditor hanya melihat Kesiapan Audit & Komitmen; penjagaan halaman ada di proxy.ts
+  const auditor = saya.peran === 'auditor'
 
   const ciut = (await cookies()).get('kinra_sidebar')?.value === 'ciut'
   const kini = hariIni()
@@ -47,7 +49,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
             <b>KINRA</b>
             <span className="brand-sub">Sistem Manajemen Energi</span>
           </div>
-          <Navigasi varian="sidebar" admin={boleh(saya.peran, 'pengguna.kelola')} ruangMr={boleh(saya.peran, 'ruangmr.lihat')} ruangMrti={boleh(saya.peran, 'ruangmrti.lihat')} />
+          <Navigasi varian="sidebar" admin={boleh(saya.peran, 'pengguna.kelola')} ruangMr={boleh(saya.peran, 'ruangmr.lihat')} ruangMrti={boleh(saya.peran, 'ruangmrti.lihat')} hanya={auditor ? [...HALAMAN_AUDITOR] : undefined} />
           <div className="side-card">
             <span className="eyebrow">Standar</span>
             <b>ISO 50001:2018</b>
@@ -73,7 +75,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
             </div>
             <TemaToggle />
           </header>
-          <Navigasi varian="mobile" admin={boleh(saya.peran, 'pengguna.kelola')} ruangMr={boleh(saya.peran, 'ruangmr.lihat')} ruangMrti={boleh(saya.peran, 'ruangmrti.lihat')} />
+          <Navigasi varian="mobile" admin={boleh(saya.peran, 'pengguna.kelola')} ruangMr={boleh(saya.peran, 'ruangmr.lihat')} ruangMrti={boleh(saya.peran, 'ruangmrti.lihat')} hanya={auditor ? [...HALAMAN_AUDITOR] : undefined} />
           <main className="konten">
             {galatDb ? (
               <section className="card" style={{ maxWidth: 760 }}>
@@ -91,7 +93,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
         </div>
       </div>
       <Ungkap />
-      {!galatDb && <Chatbot />}
+      {!galatDb && !auditor && <Chatbot />}
     </KonfirmasiHapusProvider>
     </PeranProvider>
   )

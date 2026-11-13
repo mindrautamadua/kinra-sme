@@ -1,6 +1,7 @@
 'use client'
 
-import { KeyRound, Pencil, Plus, X } from 'lucide-react'
+import { KeyRound, Pencil, Plus, Printer, X } from 'lucide-react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useRef, useState, useTransition } from 'react'
 import { aturUlangSandi, tambahPengguna, ubahPengguna } from '@/app/actions'
@@ -41,7 +42,7 @@ export function KelolaPengguna({ daftar, sayaId }: { daftar: BarisPengguna[]; sa
               {daftar.map((p) => (
                 <tr key={p.id}>
                   <td><b>{p.nama}</b>{p.id === sayaId && <span className="muted small"> (Anda)</span>}<span className="upd">{p.email}</span></td>
-                  <td><Chip kode={p.peran === 'admin' ? 'warn' : p.peran === 'konsultan' ? 'info' : p.peran === 'tim_kinra' ? 'good' : 'na'} label={LABEL_PERAN[p.peran]} /></td>
+                  <td><Chip kode={p.peran === 'admin' ? 'warn' : p.peran === 'konsultan' ? 'info' : p.peran === 'tim_kinra' ? 'good' : p.peran === 'auditor' ? 'info' : 'na'} label={LABEL_PERAN[p.peran]} /></td>
                   <td>
                     {!p.aktif ? <Chip kode="crit" label="Nonaktif" />
                       : p.terkunci_sampai && p.terkunci_sampai > new Date().toISOString() ? <Chip kode="serious" label="Terkunci sementara" />
@@ -69,7 +70,10 @@ export function KelolaPengguna({ daftar, sayaId }: { daftar: BarisPengguna[]; sa
       </div>
 
       <div className="card">
-        <h3 style={{ marginBottom: 12 }}>Hak akses per peran</h3>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
+          <h3 style={{ flex: 1 }}>Hak akses per peran</h3>
+          <Link href="/pengguna/cetak" className="btn"><Printer aria-hidden="true" /><span className="teks">Cetak PDF</span></Link>
+        </div>
         <div className="table-wrap">
           <table className="tbl">
             <thead><tr><th>Tindakan</th>{PERAN.map((p) => <th key={p} style={{ textAlign: 'center' }}>{LABEL_PERAN[p]}</th>)}</tr></thead>
@@ -80,7 +84,7 @@ export function KelolaPengguna({ daftar, sayaId }: { daftar: BarisPengguna[]; sa
                   {PERAN.map((p) => <td key={p} style={{ textAlign: 'center' }}>{(ps as Peran[]).includes(p) ? <Chip kode="good" label="Ya" /> : <span className="muted">–</span>}</td>)}
                 </tr>
               ))}
-              <tr><td>Melihat semua data</td>{PERAN.map((p) => <td key={p} style={{ textAlign: 'center' }}><Chip kode="good" label="Ya" /></td>)}</tr>
+              <tr><td>Melihat semua halaman</td>{PERAN.map((p) => <td key={p} style={{ textAlign: 'center' }}>{p === 'auditor' ? <Chip kode="info" label="Kesiapan & Komitmen" /> : <Chip kode="good" label="Ya" />}</td>)}</tr>
             </tbody>
           </table>
         </div>

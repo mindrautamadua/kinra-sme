@@ -73,12 +73,15 @@ function aktif(path: string, href: string) {
     (href === '/kesiapan' && path.startsWith('/dokumen'))
 }
 
-export function Navigasi({ varian, admin, ruangMr, ruangMrti }: { varian: 'sidebar' | 'mobile'; admin: boolean; ruangMr: boolean; ruangMrti: boolean }) {
+/** `hanya`: bila diisi, menu disaring ke href ini saja (peran auditor). */
+export function Navigasi({ varian, admin, ruangMr, ruangMrti, hanya }: { varian: 'sidebar' | 'mobile'; admin: boolean; ruangMr: boolean; ruangMrti: boolean; hanya?: string[] }) {
   const path = usePathname()
   const grup = GRUP_MENU.map((g) =>
     g.kode === 'bantuan' && admin ? { ...g, item: [...g.item, MENU_ADMIN] }
       : g.kode === 'audit' ? { ...g, item: [...g.item, ...(ruangMr ? [MENU_MR] : []), ...(ruangMrti ? [MENU_MRTI] : [])] }
         : g)
+    .map((g) => (hanya ? { ...g, item: g.item.filter((m) => hanya.includes(m.href)) } : g))
+    .filter((g) => g.item.length)
   if (varian === 'mobile') {
     return (
       <nav className="mobile-nav" aria-label="Navigasi utama">

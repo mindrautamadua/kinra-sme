@@ -1216,6 +1216,24 @@ a.insight:hover h3 { color: var(--brand); }
   .lp-bagian-kepala, .lp-h3 { break-after: avoid; }
 }
 
+/* ── Lembar Matriks Hak Akses (/pengguna/cetak, A4 tegak) ─────
+   Memakai palet & tabel .lp; halaman bernama sendiri agar kepala/kaki halaman sesuai. */
+.lp.lp-akses { page: akses; }
+.lp-akses-judul { font-size: 20pt; line-height: 1.15; letter-spacing: -0.02em; margin: 2mm 0 1.5mm; color: var(--p-ink); }
+.lp-akses-meta { color: var(--p-ink-2); font-size: 9pt; }
+.lp-matriks-akses th:not(:first-child), .lp-matriks-akses td:not(:first-child) { text-align: center; width: 12%; }
+.lp-matriks-akses td.ya { color: var(--p-hijau); font-weight: 700; }
+.lp-matriks-akses td.tidak { color: var(--p-line-2); }
+.lp-matriks-akses tbody tr:nth-child(even) td { background: var(--p-fill); }
+@page akses {
+  size: A4 portrait;
+  margin: 16mm 15mm 18mm;
+  @top-left { content: "PT Kawasan Industri Nusantara (KINRA)"; font-size: 7pt; color: #5f7375; }
+  @top-right { content: "Matriks Hak Akses Peran SMEn · Terbatas"; font-size: 7pt; color: #5f7375; }
+  @bottom-left { content: "Dibangkitkan dari aplikasi SMEn KINRA"; font-size: 7pt; color: #5f7375; }
+  @bottom-right { content: "Halaman " counter(page) " dari " counter(pages); font-size: 7pt; color: #5f7375; }
+}
+
 /* ── Buku Kisah Energi KINRA (/kisah-energi, A4 tegak) ─────────
    Memakai palet & tabel .lp; halaman bernama sendiri agar kepala/kaki halaman sesuai buku. */
 .kb { page: kisah; }

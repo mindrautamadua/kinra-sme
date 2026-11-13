@@ -3,7 +3,7 @@ import { FITUR_FORMULIR } from '@/lib/fitur'
 import Link from 'next/link'
 import { Chip } from '@/components/Chip'
 import { SectionHead } from '@/components/SectionHead'
-import { AKSES, type Aksi, boleh, DAFTAR_PERAN, LABEL_AKSI, LABEL_PERAN, type Peran } from '@/lib/akses'
+import { AKSES, type Aksi, boleh, DAFTAR_PERAN, KET_PERAN, LABEL_AKSI, LABEL_PERAN, type Peran } from '@/lib/akses'
 import { tanggal } from '@/lib/format'
 import { penggunaSaya } from '@/lib/sesi'
 import { GLOSARIUM } from '@/lib/glosarium'
@@ -136,12 +136,7 @@ export default async function Panduan() {
           <p className="muted">Akun dibuat oleh admin di menu Pengguna. Tabel di bawah dibaca langsung dari aturan akses aplikasi, jadi selalu sesuai dengan yang berlaku.</p>
         </SectionHead>
         <div className="pd-peran">
-          {[
-            { p: 'admin', ket: 'Pengelola aplikasi: semua tindakan, termasuk menghapus data dan mengelola akun pengguna.' },
-            { p: 'konsultan', ket: 'Pendamping ISO 50001: menyusun EnPI dan sasaran baru, menyetujui dokumen, mencatat dan menutup temuan.' },
-            { p: 'tim_kinra', ket: 'Pelaksana SMEn: melengkapi dokumen dan evidence, input data energi dan variabel, mengubah EnPI/baseline dan sasaran, menindaklanjuti temuan.' },
-            { p: 'pembaca', ket: 'Akun bersama untuk seluruh bagian, direksi, atau auditor: melihat semua halaman dan mengunduh CSV tanpa mengubah data. Sandi diatur oleh admin dan tidak bisa diganti dari akun ini.' },
-          ].map((x, i) => (
+          {DAFTAR_PERAN.map((p) => ({ p, ket: KET_PERAN[p] })).map((x, i) => (
             <div key={x.p} className={`pd-peran-item${x.p === peran ? ' saya' : ''}`} style={{ '--i': i } as React.CSSProperties}>
               <Users aria-hidden="true" />
               <b>{LABEL_PERAN[x.p as Peran]}{x.p === peran && <span className="muted small"> · Anda</span>}</b>
@@ -170,7 +165,7 @@ export default async function Panduan() {
               </tbody>
             </table>
           </div>
-          <p className="sumber">Semua peran yang login dapat melihat seluruh halaman. Aturan ini juga dikunci di database, jadi tidak bisa dilewati dari luar aplikasi.</p>
+          <p className="sumber">Semua peran yang login dapat melihat seluruh halaman, kecuali auditor yang hanya membuka Kesiapan Audit serta Komitmen & Kebijakan. Aturan ini juga dikunci di database, jadi tidak bisa dilewati dari luar aplikasi.</p>
         </div>
       </section>
 
