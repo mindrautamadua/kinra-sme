@@ -1,6 +1,6 @@
 'use client'
 
-import { Activity, Waves, Zap, HeartHandshake, BadgeCheck, ShieldCheck, Droplets, Presentation, BookA, BookHeart, Building2, Clapperboard, Crosshair, Fan, FlaskConical, Map as IkonPeta, BookOpen, MessagesSquare, CalendarRange, ClipboardCheck, FileText, Gauge, LayoutDashboard, Network, ScanSearch, SearchCheck, ShieldAlert, Target, Users, Waypoints } from 'lucide-react'
+import { Activity, Waves, Zap, HeartHandshake, BadgeCheck, ShieldCheck, Droplets, Presentation, BookA, BookHeart, Building2, Clapperboard, Crosshair, Fan, FlaskConical, Map as IkonPeta, BookOpen, MessagesSquare, CalendarRange, ClipboardCheck, FileSearch, FileText, Gauge, LayoutDashboard, Network, ScanSearch, SearchCheck, ShieldAlert, Target, Users, Waypoints } from 'lucide-react'
 import Link from 'next/link'
 import { Fragment } from 'react'
 import { usePathname } from 'next/navigation'
@@ -46,6 +46,7 @@ export const GRUP_MENU: GrupMenu[] = [
   ] },
   { kode: 'act', judul: 'Act · Perbaiki', ket: 'Tindak lanjut temuan', item: [
     { href: '/temuan', label: 'Temuan Audit', ikon: SearchCheck },
+    { href: '/penyelidikan', label: 'Penyelidikan Deviasi', ikon: FileSearch },
   ] },
   { kode: 'bantuan', judul: 'Bantuan', item: [
     { href: '/panduan', label: 'Panduan', ikon: BookOpen },

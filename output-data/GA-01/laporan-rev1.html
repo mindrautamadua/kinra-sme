@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="id"><head><meta charset="utf-8"><title>Laporan Gap Analysis dan Penutupan Gap ISO 50001:2018 – PT KINRA</title>
+<style>@font-face { font-family: 'Nunito Sans'; src: url('file:///Users/muhammadindrautama/Aplikasi/dashboard-sistem-manajemen-energi/app/fonts/nunito-sans-latin.woff2') format('woff2'); font-weight: 400 700; }
+@font-face { font-family: 'Plex Mono'; src: url('file:///Users/muhammadindrautama/Aplikasi/dashboard-sistem-manajemen-energi/app/fonts/ibm-plex-mono-500.woff2') format('woff2'); font-weight: 500; }
+@page { size: A4; margin: 18mm 16mm 18mm 16mm;
+  @top-right { content: "PT Kawasan Industri Nusantara · KINRA Sei Mangkei"; font: 600 7.5pt 'Nunito Sans'; color: #008187; }
+  @bottom-left { content: "Laporan Gap Analysis dan Penutupan Gap ISO 50001:2018 · Draf untuk pengesahan"; font: 7.5pt 'Nunito Sans'; color: #6d7a7b; }
+  @bottom-right { content: "Halaman " counter(page) " dari " counter(pages); font: 7.5pt 'Nunito Sans'; color: #6b7c7d; } }
+@page :first { margin: 0; @top-right { content: none } @bottom-left { content: none } @bottom-right { content: none } }
+:root { /* Kinra Brand Identity Guideline 2022 + panduan-ui-ux-kinra.md */
+  --tosca: #008187; --tosca-d: #00666b; --merah: #f15a22; --jingga: #fcaf17; --biru: #32a3dc; --abu: #4d4d4f;
+  --ink: #0f2629; --ink2: #4d4d4f; --muted: #6d7a7b; --rule: #dbe4e4; --soft: #eef5f5;
+  --s1: #2a96d0; --s3: #7d8f91; --ok: #0e9258; --mid: #b77b06; --low: #d92d20; }
+* { box-sizing: border-box; }
+html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { margin: 0; font: 9.6pt/1.5 'Nunito Sans', sans-serif; color: var(--abu); }
+b, strong { color: var(--ink); }
+h1, h2, h3 { margin: 0; line-height: 1.2; }
+h2 { font-size: 17pt; font-weight: 700; color: var(--ink); margin: 0 0 4pt; letter-spacing: -.01em; }
+h3 { color: var(--tosca-d); }
+h3 { font-size: 11pt; font-weight: 700; margin: 14pt 0 5pt; }
+p { margin: 0 0 7pt; }
+.eyebrow { font: 500 7.5pt 'Plex Mono', monospace; letter-spacing: .14em; text-transform: uppercase; color: var(--tosca); margin-bottom: 8pt; padding-top: 7pt; background: linear-gradient(90deg, var(--merah) 0 14pt, var(--jingga) 14pt 28pt, var(--biru) 28pt 42pt, transparent 42pt) top left / 100% 2.4pt no-repeat; }
+.lead { font-size: 11pt; line-height: 1.5; color: var(--ink2); margin-bottom: 12pt; }
+.muted { color: var(--muted); }
+section { break-before: page; }
+.nobreak { break-inside: avoid; }
+
+/* Sampul: logo di atas putih, blok Tosca, motif lingkaran bertumpuk */
+.cover { height: 297mm; width: 210mm; position: relative; background: #fff; overflow: hidden; }
+.cover .logo { position: absolute; left: 20mm; top: 20mm; width: 58mm; }
+.cover .doc { position: absolute; right: 20mm; top: 24mm; text-align: right; font: 500 7.5pt 'Plex Mono', monospace; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); line-height: 1.7; }
+.cover .blok { position: absolute; left: 0; right: 0; top: 70mm; bottom: 0; background: var(--tosca); color: #fff; padding: 30mm 20mm 0; }
+.cover .motif { position: absolute; right: -62mm; top: 26mm; width: 150mm; height: 150mm; }
+.cover .motif i { position: absolute; border-radius: 50%; }
+.cover .motif .m1 { width: 92mm; height: 92mm; left: 0; top: 18mm; background: var(--jingga); }
+.cover .motif .m2 { width: 92mm; height: 92mm; left: 40mm; top: 0; background: var(--merah); opacity: .92; }
+.cover .motif .m3 { width: 92mm; height: 92mm; left: 30mm; top: 52mm; background: var(--biru); opacity: .9; }
+.cover .eyebrow-c { font: 500 8pt 'Plex Mono', monospace; letter-spacing: .18em; text-transform: uppercase; color: #bfe3e4; position: relative; }
+.cover h1 { font-size: 30pt; font-weight: 700; margin: 6mm 0 7mm; line-height: 1.1; max-width: 108mm; color: #fff; letter-spacing: -.02em; position: relative; }
+.cover .sub { font-size: 12pt; color: #d9eeee; max-width: 100mm; position: relative; }
+.cover .verdict { position: absolute; left: 20mm; right: 20mm; bottom: 52mm; font-size: 12pt; color: #fff; border-left: 3pt solid var(--jingga); padding-left: 10pt; max-width: 98mm; }
+.cover .verdict span { color: var(--jingga); font-weight: 700; }
+.cover .meta { position: absolute; left: 20mm; right: 20mm; bottom: 18mm; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8mm; font-size: 8.5pt; border-top: .6pt solid rgba(255,255,255,.35); padding-top: 6mm; color: #fff; }
+.cover .meta b { display: block; font: 500 7pt 'Plex Mono', monospace; letter-spacing: .14em; text-transform: uppercase; color: #bfe3e4; margin-bottom: 3pt; font-weight: 500; }
+
+/* Ringkasan */
+.kpis { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 8pt; margin: 4pt 0 12pt; }
+.kpi { border: 1px solid var(--rule); border-radius: 6pt; padding: 9pt 11pt; }
+.kpi .n { font-size: 22pt; font-weight: 700; line-height: 1.05; }
+.kpi .l { font-size: 8pt; color: var(--muted); }
+.kpi.main { background: var(--tosca); border-color: var(--tosca); } .kpi.main .l { color: #d9eeee; }
+.kpi.main .n { color: #fff; font-size: 19pt; white-space: nowrap; }
+.verdict-box { border-left: 3pt solid var(--merah); background: var(--soft); padding: 10pt 13pt; margin: 0 0 12pt; font-size: 10.5pt; }
+.verdict-box b { color: var(--tosca-d); }
+ol.top { padding-left: 15pt; margin: 0 0 8pt; }
+ol.top li { margin-bottom: 5pt; }
+.keputusan { display: grid; grid-template-columns: 1fr 1fr; gap: 8pt; margin-top: 6pt; }
+.keputusan div { border: 1px solid var(--rule); border-radius: 6pt; padding: 8pt 10pt; font-size: 9pt; }
+.keputusan b { display: block; font-size: 9.5pt; margin-bottom: 2pt; }
+
+/* Grafik */
+.chart { width: 100%; height: auto; display: block; margin: 4pt 0 6pt; font-family: 'Nunito Sans'; }
+.chart .ct { font-size: 12px; font-weight: 700; fill: var(--ink); }
+.chart .cs, .chart .ax, .chart .mini, .chart .cnt { font-size: 9.5px; fill: var(--muted); }
+.chart .lab { font-size: 11px; fill: var(--ink); }
+.chart .lab.bold { font-weight: 700; }
+.chart .labno { font-weight: 700; fill: var(--ink); }
+.chart .val { font-size: 10.5px; font-weight: 700; fill: var(--ink); }
+.chart .grid { stroke: var(--rule); stroke-width: .7; }
+.chart .ref { stroke: var(--ink2); stroke-width: 1; stroke-dasharray: 3 3; }
+.chart .refl { font-size: 9px; fill: var(--ink2); }
+.chart .track { fill: var(--soft); }
+.chart .bar-ok { fill: var(--ok); }
+.chart .bar-mid { fill: #e0a83a; }
+.chart .bar-low { fill: var(--low); }
+.chart .span { fill: var(--s1); fill-opacity: .2; stroke: var(--s1); stroke-width: 1; }
+.chart .ms { fill: var(--s1); }
+.chart .gate { fill: var(--merah); }
+.caption { font-size: 7.5pt; color: var(--muted); margin: 0 0 10pt; }
+
+/* Peta status */
+.hm { display: flex; flex-direction: column; gap: 4pt; margin: 6pt 0 4pt; }
+.hm-row { display: flex; gap: 6pt; align-items: stretch; }
+.hm-k { width: 22pt; font-weight: 700; color: var(--tosca-d); font-size: 11pt; padding-top: 6pt; }
+.hm-cells { flex: 1; display: grid; grid-template-columns: repeat(6, 1fr); gap: 4pt; }
+.hm-c { border-radius: 4pt; padding: 5pt 6pt; font-size: 7.6pt; line-height: 1.25; min-height: 34pt; }
+.hm-c b { display: block; font-size: 8.5pt; }
+.hm-c.st-T { background: #e3f1ea; color: #1d5a3a; }
+.hm-c.st-S { background: #fbefd5; color: #6f4b05; }
+.hm-c.st-B { background: #f8ddd6; color: #7d2513; }
+.legend { display: flex; gap: 12pt; font-size: 8pt; color: var(--muted); margin: 2pt 0 12pt 28pt; }
+.legend i { display: inline-block; width: 9pt; height: 9pt; border-radius: 2pt; margin-right: 4pt; vertical-align: -1pt; }
+
+/* Tabel */
+table { width: 100%; border-collapse: collapse; font-size: 8.2pt; line-height: 1.38; }
+thead { display: table-header-group; }
+th { text-align: left; font: 500 7pt 'Plex Mono', monospace; letter-spacing: .1em; text-transform: uppercase; color: #fff; background: var(--tosca); padding: 5pt 5pt; }
+td { border-bottom: .6pt solid var(--rule); padding: 6pt 5pt; vertical-align: top; }
+tr { break-inside: avoid; }
+td.kk { font-weight: 700; color: var(--tosca-d); }
+td.kk .kj { font-weight: 400; color: var(--ink2); white-space: normal; font-size: 7.6pt; }
+td.nw { white-space: nowrap; }
+.chip, .pri { display: inline-block; font-size: 7.2pt; font-weight: 700; padding: 1pt 6pt; border-radius: 8pt; white-space: nowrap; margin-bottom: 2pt; }
+.chip.st-T { background: #e3f1ea; color: #1d5a3a; }
+.chip.st-S { background: #fbefd5; color: #6f4b05; }
+.chip.st-B { background: #f8ddd6; color: #7d2513; }
+.pri { border: .8pt solid currentColor; background: none; }
+.pri.p-K { color: var(--low); } .pri.p-M { color: #a06c08; } .pri.p-R { color: var(--muted); }
+.tbl-detail { table-layout: fixed; } .tbl-detail th:nth-child(1) { width: 15%; } .tbl-detail th:nth-child(2) { width: 24%; } .tbl-detail th:nth-child(3) { width: 25%; } .tbl-detail th:nth-child(4) { width: 36%; }
+.tbl-aksi { table-layout: fixed; } .tbl-aksi th:nth-child(1) { width: 7%; } .tbl-aksi th:nth-child(2) { width: 11%; } .tbl-aksi th:nth-child(3) { width: 31%; } .tbl-aksi th:nth-child(4) { width: 26%; } .tbl-aksi th:nth-child(5) { width: 12%; } .tbl-aksi th:nth-child(6) { width: 13%; }
+
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 12pt; }
+.box { border: 1px solid var(--rule); border-radius: 6pt; padding: 9pt 11pt; break-inside: avoid; }
+.box h3 { margin-top: 0; }
+ul.tight { padding-left: 13pt; margin: 0; } ul.tight li { margin-bottom: 3pt; }
+.kv { display: grid; grid-template-columns: 34mm 1fr; gap: 3pt 10pt; font-size: 9pt; margin: 4pt 0 10pt; }
+.kv dt { color: var(--muted); } .kv dd { margin: 0; }
+.ttd { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10pt; margin-top: 14pt; }
+.ttd div { border-top: .8pt solid var(--tosca); padding-top: 4pt; font-size: 8.5pt; height: 34mm; display: flex; flex-direction: column; justify-content: flex-end; }
+.ttd b { font-size: 9pt; }
+.skala td:first-child { width: 22%; }
+.chart .db-line { stroke-width: 3; stroke-linecap: round; }
+.chart .db-line.ok { stroke: var(--ok); stroke-opacity: .4; } .chart .db-line.mid { stroke: var(--jingga); stroke-opacity: .55; } .chart .db-line.low { stroke: var(--low); stroke-opacity: .5; }
+.chart .db-awal { fill: #fff; stroke: var(--muted); stroke-width: 1.4; }
+.chart .db-kini.ok { fill: var(--ok); } .chart .db-kini.mid { fill: var(--jingga); } .chart .db-kini.low { fill: var(--low); }
+.chart .prog { fill: none; stroke: var(--s1); stroke-width: 2.2; }
+.chart .prog-dot { fill: var(--s1); }
+.chart .gate-span { fill: var(--merah); fill-opacity: .25; stroke: var(--merah); }
+.integritas { border: 1px solid #f0c9bd; background: #fdf3ef; border-radius: 6pt; padding: 9pt 12pt; break-inside: avoid; }
+.integritas h3 { margin-top: 0; color: #9a3412; }
+.chart .mini, .chart .val { paint-order: stroke; stroke: #fff; stroke-width: 3px; stroke-linejoin: round; }
+</style></head><body>
+
+<div class="cover">
+  <img class="logo" src="file:///Users/muhammadindrautama/Aplikasi/dashboard-sistem-manajemen-energi/public/logo-kinra.png" alt="KINRA Sei Mangkei">
+  <div class="doc">GA-01 · Revisi 1<br>13 November 2026</div>
+  <div class="blok">
+    <div class="motif"><i class="m1"></i><i class="m2"></i><i class="m3"></i></div>
+    <div class="eyebrow-c">Sistem Manajemen Energi · ISO 50001:2018</div>
+    <h1>Laporan Gap Analysis dan Penutupan Gap</h1>
+    <div class="sub">Kondisi awal 20 Oktober 2026, kondisi per 13 November 2026 setelah audit internal, dan rencana penutupan menuju audit sertifikasi</div>
+    <div class="verdict">Pemenuhan naik dari <span>11%</span> menjadi <span>76%</span>. Tidak ada lagi sub-klausul berstatus Belum. 4 gap kritis tersisa, tiga di antaranya harus ditutup sebelum Stage 1 pada 20 November 2026.</div>
+    <div class="meta">
+      <div><b>Organisasi</b>PT Kawasan Industri Nusantara (KINRA)</div>
+      <div><b>Status</b>Draf untuk pengesahan</div>
+      <div><b>Menggantikan</b>GA-01 Revisi 0 (11 November 2026)</div>
+    </div>
+  </div>
+</div>
+
+<section style="break-before: auto">
+  <div class="eyebrow">01 · Ringkasan eksekutif</div>
+  <h2>Target energi sudah ditetapkan; yang tersisa adalah bukti</h2>
+  <p class="lead">Dalam 24 hari KINRA membangun SMEn dari nol menjadi 76% pemenuhan terhadap 27 sub-klausul ISO 50001:2018. Sejak Revisi 0, audit internal pertama selesai, 45 dokumen Rev.1 disahkan, target energi kuantitatif ditetapkan, dan tinjauan manajemen pertama berlangsung. Yang tersisa adalah bukti: kalibrasi meter, penyelidikan deviasi, notulen tinjauan manajemen, dan penghematan yang terverifikasi.</p>
+
+  <div class="kpis">
+    <div class="kpi main"><div class="n">11% → 76%</div><div class="l">Skor pemenuhan, 20 Okt → 13 Nov 2026</div></div>
+    <div class="kpi"><div class="n">+7 poin</div><div class="l">Sejak Revisi 0 (69%, 11 Nov)</div></div>
+    <div class="kpi"><div class="n">14/13/0</div><div class="l">Terpenuhi / Sebagian / Belum</div></div>
+    <div class="kpi"><div class="n">4</div><div class="l">Gap kritis yang masih terbuka</div></div>
+  </div>
+
+  <div class="verdict-box"><b>Kesimpulan.</b> KINRA layak melanjutkan ke Stage 1 pada 20 November 2026 <b>dengan syarat</b> tiga gap kritis ditutup lebih dulu: bukti kalibrasi 9 meter (6.6), penyelidikan deviasi ENPI-04, ENPI-06, dan BBM (9.1.1), serta notulen tinjauan manajemen bertanda tangan (9.3). Gap kritis keempat, penghematan terverifikasi (10.2), menjadi syarat untuk Stage 2.</div>
+
+  <h3>Gap kritis</h3>
+  <ol class="top"><li><b>6.6 Perencanaan pengumpulan data.</b> Belum ada bukti akurasi dan kalibrasi untuk 9 meter; variabel inlet IPAL I belum diukur langsung. <span class="muted">Tenggat 18 Nov 2026 · Bagian M/E.</span></li><li><b>9.1.1 Pemantauan, pengukuran, analisis.</b> Deviasi signifikan belum diselidiki dan ditanggapi. <span class="muted">Tenggat 19 Nov 2026 · Manajer Energi.</span></li><li><b>9.3 Tinjauan manajemen.</b> Keluaran wajib 9.3 belum terekam: notulen bertanda tangan dengan keputusan dan tindakan. <span class="muted">Tenggat 19 Nov 2026 · Management Representative.</span></li><li><b>10.2 Peningkatan berkelanjutan.</b> Belum ada penghematan yang diverifikasi terhadap EnB dengan metode M&amp;V. <span class="muted">Tenggat 5 Des 2026 · Koordinator SMEn + Bagian M/E.</span></li></ol>
+
+  <h3>Yang harus tercatat di notulen tinjauan manajemen 13 November</h3>
+  <div class="keputusan">
+    <div><b>Target dan rencana SEU</b>Konfirmasi empat target 2027 (BA 001 butir C) dan rencana tindakan RT-08 s.d. RT-11 sebagai keluaran 9.3.</div>
+    <div><b>Sumber daya</b>Keputusan anggaran dan jadwal flow meter influent serta submeter blower IPAL I (RT-10) dan kalibrasi meter.</div>
+    <div><b>Deviasi kinerja</b>Tanggapan atas deviasi ENPI-04, ENPI-06, dan BBM di atas ambang 10%, beserta PIC penyelidikan.</div>
+    <div><b>Hasil audit internal</b>Status 13 temuan AI-001 s.d. AI-013 dan kecukupan tindakan korektifnya.</div>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow">02 · Tujuan, ruang lingkup, dan metode</div>
+  <h2>Penilaian berbasis bukti bertanggal</h2>
+  <p class="lead">Laporan ini membandingkan kondisi SMEn KINRA terhadap ISO 50001:2018 pada dua titik waktu, lalu menetapkan rencana penutupan gap yang tersisa. Revisi 1 memasukkan hasil audit internal 10, 12, dan 13 November serta dokumen Rev.1 yang disahkan 13 November.</p>
+  <dl class="kv">
+    <dt>Tujuan</dt><dd>Menilai kesiapan sertifikasi, menunjukkan kemajuan sejak awal pendampingan, dan menetapkan prioritas sebelum Stage 1.</dd>
+    <dt>Ruang lingkup</dt><dd>Fasilitas dalam kendali operasional KINRA di KEK Sei Mangkei: 40 aset dan 9 meter listrik (KINRA-MTR-001 s.d. 009, termasuk Intake dan Tank Farm), ditambah BBM kendaraan dan genset. Di luar lingkup: listrik tenant, PLTBG dan PLTS (dikelola pihak ketiga), WTP II/BTM, dan IPAL II.</dd>
+    <dt>Acuan</dt><dd>SNI ISO 50001:2018; ISO 50003 untuk persyaratan audit sertifikasi; PP 33/2023 tentang Konservasi Energi.</dd>
+    <dt>Kondisi awal</dt><dd>20 Oktober 2026, direkonstruksi dari rekaman yang bertanggal pada waktu itu. Penilaiannya dilakukan pada 11 November 2026 dan tidak diubah di Revisi 1.</dd>
+    <dt>Kondisi kini</dt><dd>13 November 2026.</dd>
+  </dl>
+
+  <h3>Sumber bukti</h3>
+  <table>
+    <thead><tr><th>Tanggal</th><th>Rekaman</th><th>Dipakai untuk</th></tr></thead>
+    <tbody>
+      <tr><td class="nw">19 Okt 2026</td><td>Timeline Pendampingan SMEn Rev.3 dan rekaman meeting persiapan awal</td><td>Rencana dan daftar dokumen yang perlu disiapkan</td></tr>
+      <tr><td class="nw">20 Okt 2026</td><td>Checklist Monev Implementasi ISO 50001 – Persiapan Awal</td><td>Kondisi awal</td></tr>
+      <tr><td class="nw">26 Okt 2026</td><td>Register dokumen awal aplikasi SMEn (79 item)</td><td>Kondisi awal</td></tr>
+      <tr><td class="nw">1 Nov 2026</td><td>Daftar Dokumen KINRA Rev.4</td><td>Kemajuan</td></tr>
+      <tr><td class="nw">10 Nov 2026</td><td>Daftar Dokumen KINRA Rev.8</td><td>Kemajuan</td></tr>
+      <tr><td class="nw">13 Nov 2026</td><td>Rekapitulasi Temuan dan Tindakan Korektif Audit Internal (R-10.1-01), temuan AI-001 s.d. AI-013</td><td>Kondisi kini</td></tr>
+      <tr><td class="nw">13 Nov 2026</td><td>Berita Acara Pengesahan Revisi Dokumen SMEn No. 001/BA/KINRA/SMEn/XI/2026 (45 dokumen Rev.1, target EnPI 2027)</td><td>Kondisi kini</td></tr>
+      <tr><td class="nw">13 Nov 2026</td><td>Audit Isi Dokumen Evidence terhadap Data Aplikasi SMEn (194 berkas, 108 dokumen)</td><td>Kondisi kini</td></tr>
+      <tr><td class="nw">13 Nov 2026</td><td>Data meter, EnPI, sasaran, rencana aksi, peluang, dan register Kesiapan Audit di aplikasi SMEn</td><td>Kondisi kini</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Skala penilaian</h3>
+  <table class="skala">
+    <thead><tr><th>Status</th><th>Arti</th><th>Nilai</th></tr></thead>
+    <tbody>
+      <tr><td><span class="chip st-T">Terpenuhi</span></td><td>Dokumen tersedia dan disahkan, serta ada rekaman penerapan.</td><td>100</td></tr>
+      <tr><td><span class="chip st-S">Sebagian</span></td><td>Dokumen tersedia, tetapi penerapan, bukti, atau efektivitasnya belum lengkap.</td><td>50</td></tr>
+      <tr><td><span class="chip st-B">Belum</span></td><td>Belum ada dokumen atau penerapan.</td><td>0</td></tr>
+    </tbody>
+  </table>
+  <p class="muted" style="margin-top:8pt">Skor klausul adalah rata-rata sub-klausulnya. Prioritas gap: <b>Kritis</b> berpotensi menjadi ketidaksesuaian mayor atau menghambat sertifikasi; <b>Menengah</b> berpotensi menjadi ketidaksesuaian minor; <b>Rendah</b> berupa observasi.</p>
+  <p class="muted"><b>Batasan.</b> Penilaian berupa telaah dokumen, data aplikasi, dan hasil audit internal. Wawancara dan observasi lapangan oleh penyusun laporan belum dilakukan. Isi notulen tinjauan manajemen 13 November belum dapat dinilai karena belum ditandatangani.</p>
+</section>
+
+<section>
+  <div class="eyebrow">03 · Perubahan sejak Revisi 0</div>
+  <h2>6 sub-klausul naik, 2 turun setelah audit internal</h2>
+  <p class="lead">Skor naik dari 69% menjadi 76% dalam dua hari. Dua sub-klausul turun karena audit internal menemukan bukti yang dinilai terlalu tinggi di Revisi 0: templat dan draf yang bertanda sah. Penurunan ini membuat penilaian lebih jujur, bukan kemunduran sistem.</p>
+  <table>
+    <thead><tr><th>Klausul</th><th>Rev.0 → Rev.1</th><th>Dasar perubahan</th></tr></thead>
+    <tbody><tr><td class="kk">5.1<br><span class="kj">Kepemimpinan &amp; komitmen</span></td><td class="nw"><span class="chip st-S">Sebagian</span> → <span class="chip st-T">Terpenuhi</span></td><td>Target energi kuantitatif disetujui Plt. Direktur melalui BA 001 (13 Nov).</td></tr><tr><td class="kk">6.1<br><span class="kj">Risiko &amp; peluang</span></td><td class="nw"><span class="chip st-T">Terpenuhi</span> → <span class="chip st-S">Sebagian</span></td><td>Turun. Audit internal (AI-011) menemukan baris contoh templat dan risiko SEU yang belum dinilai; Rev.0 menilainya terlalu tinggi.</td></tr><tr><td class="kk">6.2<br><span class="kj">Tujuan, target energi &amp; rencana</span></td><td class="nw"><span class="chip st-S">Sebagian</span> → <span class="chip st-T">Terpenuhi</span></td><td>Empat target EnPI 2027 dan rencana tindakan SEU RT-08 s.d. RT-11 ditetapkan; pencapaian November yang diisi di muka dikosongkan.</td></tr><tr><td class="kk">6.5<br><span class="kj">Baseline energi (EnB)</span></td><td class="nw"><span class="chip st-S">Sebagian</span> → <span class="chip st-T">Terpenuhi</span></td><td>EnB 12 bulan 2025 dan log perubahan EnB tercatat di R-6.5-01 Rev.1; EnPI target kini berlingkup KINRA sehingga perubahan tenant tidak memengaruhinya.</td></tr><tr><td class="kk">7.5<br><span class="kj">Informasi terdokumentasi</span></td><td class="nw"><span class="chip st-T">Terpenuhi</span> → <span class="chip st-S">Sebagian</span></td><td>Turun. Audit internal (AI-006) menemukan templat dan draf bertanda sah serta nomor dokumen tidak sesuai Daftar Induk; log revisi Rev.1 belum lengkap.</td></tr><tr><td class="kk">9.2<br><span class="kj">Audit internal</span></td><td class="nw"><span class="chip st-S">Sebagian</span> → <span class="chip st-S">Sebagian</span></td><td>Tetap Sebagian, tetapi siklus audit sudah terlaksana (10, 12, 13 Nov); tinggal rekaman laporan dan checklist.</td></tr><tr><td class="kk">9.3<br><span class="kj">Tinjauan manajemen</span></td><td class="nw"><span class="chip st-B">Belum</span> → <span class="chip st-S">Sebagian</span></td><td>Tinjauan manajemen berlangsung 13 Nov; notulen belum ditandatangani.</td></tr><tr><td class="kk">10.1<br><span class="kj">Ketidaksesuaian &amp; tindakan korektif</span></td><td class="nw"><span class="chip st-B">Belum</span> → <span class="chip st-S">Sebagian</span></td><td>Rekapitulasi 13 temuan dengan akar masalah dan tindakan korektif ditandatangani.</td></tr><tr><td class="kk">10.2<br><span class="kj">Peningkatan berkelanjutan</span></td><td class="nw"><span class="chip st-B">Belum</span> → <span class="chip st-S">Sebagian</span></td><td>Bukti peningkatan Rev.1 tersusun; penghematan terverifikasi belum ada.</td></tr></tbody>
+  </table>
+</section>
+
+<section>
+  <div class="eyebrow">04 · Kondisi awal dan kemajuan</div>
+  <h2>Dari 11% menjadi 76% dalam 24 hari</h2>
+  <p class="lead">Pada 20 Oktober belum ada satu pun dokumen SMEn. Kekuatan awal KINRA berasal dari sistem ISO 9001, 14001, 45001, dan 37001 yang sudah bersertifikat, serta pencatatan konsumsi energi bulanan oleh Bagian M/E.</p>
+  <svg viewBox="0 0 660 210" class="chart" role="img" aria-label="Ketersediaan dokumen SMEn"><text x="0" y="18" class="ct">Ketersediaan dokumen SMEn naik dari nol menjadi 95,6% dalam 21 hari</text><text x="0" y="36" class="cs">% item daftar dokumen berstatus tersedia, menurut rekaman bertanggal</text><line x1="40" x2="640" y1="168.0" y2="168.0" class="grid"/><text x="34" y="171.0" class="ax" text-anchor="end">0</text><line x1="40" x2="640" y1="113.0" y2="113.0" class="grid"/><text x="34" y="116.0" class="ax" text-anchor="end">50</text><line x1="40" x2="640" y1="58.0" y2="58.0" class="grid"/><text x="34" y="61.0" class="ax" text-anchor="end">100</text><polyline points="88.0,168.0 376.0,118.6 592.0,62.9" class="prog"/><circle cx="88.0" cy="168.0" r="5" class="prog-dot"/><text x="98.0" y="158.0" class="val" text-anchor="start">0 dokumen</text><text x="88.0" y="184" class="mini" text-anchor="middle">20 Okt · Checklist Monev</text><circle cx="376.0" cy="118.6" r="5" class="prog-dot"/><text x="386.0" y="108.6" class="val" text-anchor="start">40/89 = 44,9%</text><text x="376.0" y="184" class="mini" text-anchor="middle">1 Nov · Daftar Dokumen Rev.4</text><circle cx="592.0" cy="62.9" r="5" class="prog-dot"/><text x="582.0" y="52.9" class="val" text-anchor="end">108/113 = 95,6%</text><text x="592.0" y="184" class="mini" text-anchor="middle">10 Nov · Daftar Dokumen Rev.8</text></svg>
+  <p class="caption">Sumber: Checklist Monev (20 Okt), Daftar Dokumen Rev.4 (1 Nov) dan Rev.8 (10 Nov). Jumlah item berbeda karena daftar diperluas selama pendampingan. Setelah itu, 45 dokumen direvisi menjadi Rev.1 dan disahkan 13 November melalui BA 001/BA/KINRA/SMEn/XI/2026.</p>
+  <svg viewBox="0 0 660 328" class="chart" role="img" aria-label="Skor pemenuhan per klausul, awal dan kini"><text x="0" y="18" class="ct">Semua klausul naik; klausul 10 paling rendah (50%)</text><text x="0" y="36" class="cs">Skor pemenuhan per klausul, %. Titik kosong: 20 Okt 2026 · titik penuh: 13 Nov 2026</text><line x1="180.0" x2="180.0" y1="62" y2="298" class="grid"/><text x="180.0" y="314" class="ax" text-anchor="middle">0</text><line x1="280.0" x2="280.0" y1="62" y2="298" class="grid"/><text x="280.0" y="314" class="ax" text-anchor="middle">25</text><line x1="380.0" x2="380.0" y1="62" y2="298" class="grid"/><text x="380.0" y="314" class="ax" text-anchor="middle">50</text><line x1="480.0" x2="480.0" y1="62" y2="298" class="grid"/><text x="480.0" y="314" class="ax" text-anchor="middle">75</text><line x1="580.0" x2="580.0" y1="62" y2="298" class="grid"/><text x="580.0" y="314" class="ax" text-anchor="middle">100</text><line x1="500.0" x2="500.0" y1="56" y2="298" class="ref"/><text x="504.0" y="54" class="refl">ambang siap Stage 2: 80%</text><text x="0" y="84" class="lab"><tspan class="labno">4</tspan>  Konteks organisasi</text><line x1="230.0" x2="530.0" y1="80" y2="80" class="db-line ok"/><circle cx="230.0" cy="80" r="5" class="db-awal"/><circle cx="530.0" cy="80" r="6" class="db-kini ok"/><text x="541.0" y="84" class="val">88%</text><text x="221.0" y="84" class="mini" text-anchor="end">12</text><text x="0" y="116" class="lab"><tspan class="labno">5</tspan>  Kepemimpinan</text><line x1="313.3" x2="580.0" y1="112" y2="112" class="db-line ok"/><circle cx="313.3" cy="112" r="5" class="db-awal"/><circle cx="580.0" cy="112" r="6" class="db-kini ok"/><text x="591.0" y="116" class="val">100%</text><text x="304.3" y="116" class="mini" text-anchor="end">33</text><text x="0" y="148" class="lab"><tspan class="labno">6</tspan>  Perencanaan</text><line x1="213.3" x2="480.0" y1="144" y2="144" class="db-line mid"/><circle cx="213.3" cy="144" r="5" class="db-awal"/><circle cx="480.0" cy="144" r="6" class="db-kini mid"/><text x="491.0" y="148" class="val">75%</text><text x="204.3" y="148" class="mini" text-anchor="end">8</text><text x="0" y="180" class="lab"><tspan class="labno">7</tspan>  Dukungan</text><line x1="220.0" x2="500.0" y1="176" y2="176" class="db-line ok"/><circle cx="220.0" cy="176" r="5" class="db-awal"/><circle cx="500.0" cy="176" r="6" class="db-kini ok"/><text x="511.0" y="180" class="val">80%</text><text x="211.0" y="180" class="mini" text-anchor="end">10</text><text x="0" y="212" class="lab"><tspan class="labno">8</tspan>  Operasi</text><line x1="180.0" x2="446.7" y1="208" y2="208" class="db-line mid"/><circle cx="180.0" cy="208" r="5" class="db-awal"/><circle cx="446.7" cy="208" r="6" class="db-kini mid"/><text x="457.7" y="212" class="val">67%</text><text x="0" y="244" class="lab"><tspan class="labno">9</tspan>  Evaluasi kinerja</text><line x1="230.0" x2="430.0" y1="240" y2="240" class="db-line mid"/><circle cx="230.0" cy="240" r="5" class="db-awal"/><circle cx="430.0" cy="240" r="6" class="db-kini mid"/><text x="441.0" y="244" class="val">62%</text><text x="221.0" y="244" class="mini" text-anchor="end">12</text><text x="0" y="276" class="lab"><tspan class="labno">10</tspan>  Peningkatan</text><line x1="180.0" x2="380.0" y1="272" y2="272" class="db-line low"/><circle cx="180.0" cy="272" r="5" class="db-awal"/><circle cx="380.0" cy="272" r="6" class="db-kini low"/><text x="391.0" y="276" class="val">50%</text></svg>
+  <p class="caption">Sumber: penilaian 27 sub-klausul pada bagian 06. Ambang 80% adalah sasaran internal kesiapan Stage 2, bukan persyaratan standar.</p>
+</section>
+
+<section>
+  <div class="eyebrow">05 · Peta status sub-klausul</div>
+  <h2>Merah sudah hilang; kuning tinggal di bukti penerapan</h2>
+  <h3>Kondisi awal · 20 Oktober 2026 · 0 terpenuhi, 6 sebagian, 21 belum</h3>
+  <div class="hm"><div class="hm-row"><div class="hm-k">4</div><div class="hm-cells"><div class="hm-c st-B"><b>4.1</b><span>Isu internal &amp; eksternal</span></div><div class="hm-c st-B"><b>4.2</b><span>Pihak berkepentingan</span></div><div class="hm-c st-B"><b>4.3</b><span>Ruang lingkup &amp; batas</span></div><div class="hm-c st-S"><b>4.4</b><span>Sistem Manajemen Energi</span></div></div></div><div class="hm-row"><div class="hm-k">5</div><div class="hm-cells"><div class="hm-c st-S"><b>5.1</b><span>Kepemimpinan &amp; komitmen</span></div><div class="hm-c st-B"><b>5.2</b><span>Kebijakan energi</span></div><div class="hm-c st-S"><b>5.3</b><span>Peran, tanggung jawab, wewenang</span></div></div></div><div class="hm-row"><div class="hm-k">6</div><div class="hm-cells"><div class="hm-c st-B"><b>6.1</b><span>Risiko &amp; peluang</span></div><div class="hm-c st-B"><b>6.2</b><span>Tujuan, target energi &amp; rencana</span></div><div class="hm-c st-S"><b>6.3</b><span>Tinjauan energi</span></div><div class="hm-c st-B"><b>6.4</b><span>Indikator kinerja energi (EnPI)</span></div><div class="hm-c st-B"><b>6.5</b><span>Baseline energi (EnB)</span></div><div class="hm-c st-B"><b>6.6</b><span>Perencanaan pengumpulan data</span></div></div></div><div class="hm-row"><div class="hm-k">7</div><div class="hm-cells"><div class="hm-c st-B"><b>7.1</b><span>Sumber daya</span></div><div class="hm-c st-B"><b>7.2</b><span>Kompetensi</span></div><div class="hm-c st-B"><b>7.3</b><span>Kepedulian</span></div><div class="hm-c st-B"><b>7.4</b><span>Komunikasi</span></div><div class="hm-c st-S"><b>7.5</b><span>Informasi terdokumentasi</span></div></div></div><div class="hm-row"><div class="hm-k">8</div><div class="hm-cells"><div class="hm-c st-B"><b>8.1</b><span>Perencanaan &amp; pengendalian operasi</span></div><div class="hm-c st-B"><b>8.2</b><span>Desain</span></div><div class="hm-c st-B"><b>8.3</b><span>Pengadaan</span></div></div></div><div class="hm-row"><div class="hm-k">9</div><div class="hm-cells"><div class="hm-c st-S"><b>9.1.1</b><span>Pemantauan, pengukuran, analisis</span></div><div class="hm-c st-B"><b>9.1.2</b><span>Evaluasi kepatuhan</span></div><div class="hm-c st-B"><b>9.2</b><span>Audit internal</span></div><div class="hm-c st-B"><b>9.3</b><span>Tinjauan manajemen</span></div></div></div><div class="hm-row"><div class="hm-k">10</div><div class="hm-cells"><div class="hm-c st-B"><b>10.1</b><span>Ketidaksesuaian &amp; tindakan korektif</span></div><div class="hm-c st-B"><b>10.2</b><span>Peningkatan berkelanjutan</span></div></div></div></div>
+  <h3>Kondisi kini · 13 November 2026 · 14 terpenuhi, 13 sebagian, 0 belum</h3>
+  <div class="hm"><div class="hm-row"><div class="hm-k">4</div><div class="hm-cells"><div class="hm-c st-T"><b>4.1</b><span>Isu internal &amp; eksternal</span></div><div class="hm-c st-T"><b>4.2</b><span>Pihak berkepentingan</span></div><div class="hm-c st-S"><b>4.3</b><span>Ruang lingkup &amp; batas</span></div><div class="hm-c st-T"><b>4.4</b><span>Sistem Manajemen Energi</span></div></div></div><div class="hm-row"><div class="hm-k">5</div><div class="hm-cells"><div class="hm-c st-T"><b>5.1</b><span>Kepemimpinan &amp; komitmen</span></div><div class="hm-c st-T"><b>5.2</b><span>Kebijakan energi</span></div><div class="hm-c st-T"><b>5.3</b><span>Peran, tanggung jawab, wewenang</span></div></div></div><div class="hm-row"><div class="hm-k">6</div><div class="hm-cells"><div class="hm-c st-S"><b>6.1</b><span>Risiko &amp; peluang</span></div><div class="hm-c st-T"><b>6.2</b><span>Tujuan, target energi &amp; rencana</span></div><div class="hm-c st-S"><b>6.3</b><span>Tinjauan energi</span></div><div class="hm-c st-T"><b>6.4</b><span>Indikator kinerja energi (EnPI)</span></div><div class="hm-c st-T"><b>6.5</b><span>Baseline energi (EnB)</span></div><div class="hm-c st-S"><b>6.6</b><span>Perencanaan pengumpulan data</span></div></div></div><div class="hm-row"><div class="hm-k">7</div><div class="hm-cells"><div class="hm-c st-T"><b>7.1</b><span>Sumber daya</span></div><div class="hm-c st-S"><b>7.2</b><span>Kompetensi</span></div><div class="hm-c st-T"><b>7.3</b><span>Kepedulian</span></div><div class="hm-c st-T"><b>7.4</b><span>Komunikasi</span></div><div class="hm-c st-S"><b>7.5</b><span>Informasi terdokumentasi</span></div></div></div><div class="hm-row"><div class="hm-k">8</div><div class="hm-cells"><div class="hm-c st-S"><b>8.1</b><span>Perencanaan &amp; pengendalian operasi</span></div><div class="hm-c st-T"><b>8.2</b><span>Desain</span></div><div class="hm-c st-S"><b>8.3</b><span>Pengadaan</span></div></div></div><div class="hm-row"><div class="hm-k">9</div><div class="hm-cells"><div class="hm-c st-S"><b>9.1.1</b><span>Pemantauan, pengukuran, analisis</span></div><div class="hm-c st-T"><b>9.1.2</b><span>Evaluasi kepatuhan</span></div><div class="hm-c st-S"><b>9.2</b><span>Audit internal</span></div><div class="hm-c st-S"><b>9.3</b><span>Tinjauan manajemen</span></div></div></div><div class="hm-row"><div class="hm-k">10</div><div class="hm-cells"><div class="hm-c st-S"><b>10.1</b><span>Ketidaksesuaian &amp; tindakan korektif</span></div><div class="hm-c st-S"><b>10.2</b><span>Peningkatan berkelanjutan</span></div></div></div></div>
+  <div class="legend"><span><i style="background:#e3f1ea"></i>Terpenuhi</span><span><i style="background:#fbefd5"></i>Sebagian</span><span><i style="background:#f8ddd6"></i>Belum</span></div>
+
+  <h3>Kegiatan yang membentuk perubahan</h3>
+  <table>
+    <thead><tr><th>Tanggal</th><th>Kegiatan</th><th>Status</th></tr></thead>
+    <tbody><tr><td class="nw">19 Okt 2026</td><td>Meeting persiapan awal</td><td>Terlaksana</td></tr><tr><td class="nw">20 Okt 2026</td><td>Checklist Monev: kondisi awal</td><td>Terlaksana</td></tr><tr><td class="nw">22 Okt 2026</td><td>Formulir SMEn mulai berlaku</td><td>Terlaksana</td></tr><tr><td class="nw">26 Okt 2026</td><td>Sosialisasi Kebijakan Energi dan pelatihan pemahaman ISO 50001</td><td>Terlaksana</td></tr><tr><td class="nw">2 Nov 2026</td><td>Sosialisasi SOP 003–015</td><td>Terlaksana</td></tr><tr><td class="nw">5 Nov 2026</td><td>Sosialisasi SOP 016–025</td><td>Terlaksana</td></tr><tr><td class="nw">10 Nov 2026</td><td>Daftar Dokumen Rev.8: 108 dari 113 tersedia · audit internal hari 1</td><td>Terlaksana</td></tr><tr><td class="nw">11 Nov 2026</td><td>Laporan Gap Analysis Rev.0</td><td>Terlaksana</td></tr><tr><td class="nw">12 Nov 2026</td><td>Audit internal hari 2</td><td>Terlaksana</td></tr><tr><td class="nw">13 Nov 2026</td><td>Audit internal hari 3 · BA pengesahan 45 dokumen Rev.1 · tinjauan manajemen</td><td>Terlaksana</td></tr><tr><td class="nw">19 Nov 2026</td><td>Tenggat notulen RTM dan penyelidikan deviasi</td><td>Rencana</td></tr><tr><td class="nw">20 Nov 2026</td><td>Stage 1 TÜV</td><td>Rencana</td></tr><tr><td class="nw">10 Des 2026</td><td>Stage 2 TÜV</td><td>Rencana</td></tr></tbody>
+  </table>
+</section>
+
+<section>
+  <div class="eyebrow">06 · Penilaian rinci per sub-klausul</div>
+  <h2>27 sub-klausul: kondisi awal dan kondisi kini</h2>
+  <table class="tbl-detail">
+    <thead><tr><th>Klausul</th><th>Persyaratan</th><th>Kondisi awal · 20 Okt</th><th>Kondisi kini · 13 Nov</th></tr></thead>
+    <tbody><tr>
+<td class="kk">4.1<br><span class="kj">Isu internal &amp; eksternal</span></td>
+<td>Menentukan isu internal dan eksternal yang memengaruhi hasil SMEn dan kinerja energi.</td>
+<td><span class="chip st-B">Belum</span><br>Belum ada analisis isu untuk SMEn; masuk daftar dokumen yang perlu disiapkan.</td>
+<td><span class="chip st-T">Terpenuhi</span><br>Formulir Isu Internal Eksternal 001/SOP-003 bertanda tangan (28 Okt). 18 risiko konteks dari formulir sudah masuk register isu aplikasi (13 Nov).</td></tr><tr>
+<td class="kk">4.2<br><span class="kj">Pihak berkepentingan</span></td>
+<td>Menentukan pihak berkepentingan, kebutuhannya, dan persyaratan hukum terkait energi.</td>
+<td><span class="chip st-B">Belum</span><br>Belum ada register pihak berkepentingan dan persyaratan hukum energi.</td>
+<td><span class="chip st-T">Terpenuhi</span><br>Formulir Pihak Berkepentingan 002/SOP-003 dan Daftar Persyaratan Hukum 002/SOP-020 bertanda tangan.</td></tr><tr>
+<td class="kk">4.3<br><span class="kj">Ruang lingkup &amp; batas</span></td>
+<td>Menetapkan ruang lingkup dan batas SMEn; tidak mengecualikan sumber energi dalam batas.</td>
+<td><span class="chip st-B">Belum</span><br>Ruang lingkup dan batas SMEn belum ditetapkan.</td>
+<td><span class="chip st-S">Sebagian</span> <span class="pri p-M">Menengah</span><br>F-4.3-01 Rev.1 (BA 001/BA/KINRA/SMEn/XI/2026): 9 meter KINRA, 40 aset, SEU-01/SEU-02, dan tabel pengecualian beralasan (listrik tenant, PLTBG dan PLTS pihak ketiga, WTP II/BTM, IPAL II). Temuan AI-001 menunggu verifikasi. Kepemilikan dan bahan bakar Ruang Boiler Tank Farm belum dikonfirmasi.</td></tr><tr>
+<td class="kk">4.4<br><span class="kj">Sistem Manajemen Energi</span></td>
+<td>Menetapkan, menerapkan, memelihara SMEn termasuk proses yang diperlukan.</td>
+<td><span class="chip st-S">Sebagian</span><br>Proses bisnis tersedia (kajian Provalindo, Final 20 Okt); Manual SMEn masih draf.</td>
+<td><span class="chip st-T">Terpenuhi</span><br>Manual SMEn 002/MN dan peta proses bisnis tersedia, bertanda tangan (9 Nov).</td></tr><tr>
+<td class="kk">5.1<br><span class="kj">Kepemimpinan &amp; komitmen</span></td>
+<td>Manajemen puncak memastikan tujuan, target energi, EnPI, dan sumber daya ditetapkan dan ditinjau.</td>
+<td><span class="chip st-S">Sebagian</span><br>Komitmen ditunjukkan lewat penunjukan konsultan dan kickoff; belum ada formulir komitmen.</td>
+<td><span class="chip st-T">Terpenuhi</span><br>Target energi kuantitatif per EnPI ditetapkan melalui BA 001/BA/KINRA/SMEn/XI/2026 (13 Nov) yang disetujui Plt. Direktur dan diketahui SEVP Operation. Tinjauan manajemen pertama berlangsung 13 Nov.</td></tr><tr>
+<td class="kk">5.2<br><span class="kj">Kebijakan energi</span></td>
+<td>Kebijakan energi ditetapkan, dikomunikasikan, dan tersedia sebagai informasi terdokumentasi.</td>
+<td><span class="chip st-B">Belum</span><br>Kebijakan energi masih draf, belum ditandatangani dan belum disosialisasikan.</td>
+<td><span class="chip st-T">Terpenuhi</span><br>Kebijakan SMEn 001/PO bertanda tangan (3 Nov); disosialisasikan dalam pelatihan 26 Okt.</td></tr><tr>
+<td class="kk">5.3<br><span class="kj">Peran, tanggung jawab, wewenang</span></td>
+<td>Peran SMEn ditetapkan dan dikomunikasikan, termasuk tim manajemen energi.</td>
+<td><span class="chip st-S">Sebagian</span><br>Struktur organisasi 2026 Final; SK Tim SMEn dan Internal Auditor masih draf.</td>
+<td><span class="chip st-T">Terpenuhi</span><br>SK Tim SMEn dan Internal Auditor (SKPTS/47/2026); Formulir Tim Energi dan Sumber Daya Rev.1 memuat 15 anggota tim.</td></tr><tr>
+<td class="kk">6.1<br><span class="kj">Risiko &amp; peluang</span></td>
+<td>Menentukan risiko dan peluang SMEn serta merencanakan tindakannya.</td>
+<td><span class="chip st-B">Belum</span><br>Belum ada identifikasi risiko dan peluang SMEn.</td>
+<td><span class="chip st-S">Sebagian</span> <span class="pri p-R">Rendah</span><br>Formulir Risiko Keberhasilan Rev.1 untuk korporasi dan 9 bagian; baris contoh templat dihapus. Tiga risiko SEU-01, SEU-02, dan Tank Farm baru berupa usulan; skornya belum dinilai pemilik risiko (observasi AI-011).</td></tr><tr>
+<td class="kk">6.2<br><span class="kj">Tujuan, target energi &amp; rencana</span></td>
+<td>Tujuan dan target energi terukur, mempertimbangkan SEU, dipantau, dan punya rencana aksi dengan cara verifikasi hasil.</td>
+<td><span class="chip st-B">Belum</span><br>Belum ada tujuan dan target energi; program efisiensi 3 tahun terakhir tercatat Belum Tersedia.</td>
+<td><span class="chip st-T">Terpenuhi</span><br>Empat target 2027 terhadap EnB 2025 ditetapkan melalui BA 001 butir C: ENPI-04 −3%, ENPI-05 (SEU-01) −5%, ENPI-06 (SEU-02) −5%, ENPI-01 BBM −5% (sasaran SE-01 s.d. SE-04). Rencana tindakan SEU RT-08 s.d. RT-11 memuat PIC, jadwal, dan metode verifikasi. Isian pencapaian November dikosongkan sampai periodenya berakhir. Catatan: F-6.2-02 Rev.1 menulis estimasi RT-11 10%, sedangkan target ENPI-06 5%.</td></tr><tr>
+<td class="kk">6.3<br><span class="kj">Tinjauan energi</span></td>
+<td>Menganalisis penggunaan dan konsumsi energi, menetapkan SEU, variabel relevan, kinerja saat ini, dan peluang terprioritas.</td>
+<td><span class="chip st-S">Sebagian</span><br>Data konsumsi energi 2024–2026 (TJ) tersedia dalam tinjauan; SEU belum ditetapkan.</td>
+<td><span class="chip st-S">Sebagian</span> <span class="pri p-M">Menengah</span><br>F-6.3-01 Rev.1 menetapkan SEU dari bacaan 9 meter: SEU-01 WTP I (MTR-005 + MTR-008, 54,8% listrik KINRA 2025) dan SEU-02 WWTP IPAL I (MTR-004, 38,7%). Register memuat 13 peluang, semuanya belum diberi skor energi dan ROI.</td></tr><tr>
+<td class="kk">6.4<br><span class="kj">Indikator kinerja energi (EnPI)</span></td>
+<td>EnPI sesuai untuk mengukur dan memantau kinerja energi, dengan metode ditetapkan.</td>
+<td><span class="chip st-B">Belum</span><br>Belum ada EnPI.</td>
+<td><span class="chip st-T">Terpenuhi</span><br>F-6.4-01 Rev.1: 8 EnPI aktif dengan baseline 2025 dan nilai 2026. EnPI SEU: ENPI-05 (kWh/m³ air diolah WTP I) dan ENPI-06 (kWh/m³ inlet IPAL I).</td></tr><tr>
+<td class="kk">6.5<br><span class="kj">Baseline energi (EnB)</span></td>
+<td>EnB ditetapkan dengan periode representatif; kondisi revisi baseline ditetapkan.</td>
+<td><span class="chip st-B">Belum</span><br>Belum ada baseline energi.</td>
+<td><span class="chip st-T">Terpenuhi</span><br>EnB Jan–Des 2025 (12 bulan) per EnPI; R-6.5-01 Rev.1 memuat nilai bulanan dan log perubahan EnB. Penambahan meter MTR-008 dan MTR-009 sudah dicatat sebagai penyesuaian batas ENPI-04.</td></tr><tr>
+<td class="kk">6.6<br><span class="kj">Perencanaan pengumpulan data</span></td>
+<td>Karakteristik kunci diukur; peralatan ukur akurat dan dapat diulang; rencana pengumpulan data ditetapkan.</td>
+<td><span class="chip st-B">Belum</span><br>Belum ada rencana pengumpulan data dan register meter.</td>
+<td><span class="chip st-S">Sebagian</span> <span class="pri p-K">Kritis</span><br>F-6.6-01 Rev.1 memuat rencana per titik data (9 meter, variabel EnPI, BBM, jam pompa, kalibrasi). Kolom tanggal kalibrasi di register meter aplikasi masih kosong; rekaman kalibrasi meter (R-9.1-05) belum tersedia. Volume inlet IPAL I masih estimasi sampai flow meter terpasang (RT-10).</td></tr><tr>
+<td class="kk">7.1<br><span class="kj">Sumber daya</span></td>
+<td>Sumber daya untuk SMEn ditentukan dan disediakan.</td>
+<td><span class="chip st-B">Belum</span><br>Daftar aset dan meter energi belum ada.</td>
+<td><span class="chip st-T">Terpenuhi</span><br>Daftar Aset dan Meter Energi Rev.1 (40 aset, 9 meter); Formulir Tim Energi dan Sumber Daya Rev.1.</td></tr><tr>
+<td class="kk">7.2<br><span class="kj">Kompetensi</span></td>
+<td>Personel yang memengaruhi kinerja energi kompeten; efektivitas tindakan dievaluasi.</td>
+<td><span class="chip st-B">Belum</span><br>Belum ada matriks kompetensi dan pelatihan SMEn.</td>
+<td><span class="chip st-S">Sebagian</span> <span class="pri p-M">Menengah</span><br>Matriks Kompetensi Rev.1: kolom Actual dikosongkan sampai asesmen, personel SEU (operator WTP I dan IPAL I) ditambahkan (observasi AI-010). Asesmen kompetensi dan rekap nilai tes pelatihan belum ada.</td></tr><tr>
+<td class="kk">7.3<br><span class="kj">Kepedulian</span></td>
+<td>Personel peduli terhadap kebijakan, kontribusinya, dan dampak ketidaksesuaian.</td>
+<td><span class="chip st-B">Belum</span><br>Belum ada program kepedulian energi.</td>
+<td><span class="chip st-T">Terpenuhi</span><br>Formulir Kesadaran dan Komunikasi 001/SOP-016 bertanda tangan; sosialisasi kebijakan 26 Okt dan SOP 2 dan 5 Nov. Materi kick-off Rev.1 mengoreksi angka konsumsi KINRA 2025 (AI-012).</td></tr><tr>
+<td class="kk">7.4<br><span class="kj">Komunikasi</span></td>
+<td>Komunikasi internal dan eksternal ditetapkan.</td>
+<td><span class="chip st-B">Belum</span><br>Belum ada prosedur komunikasi SMEn.</td>
+<td><span class="chip st-T">Terpenuhi</span><br>Formulir Komunikasi, Log dan Rekaman Komunikasi Eksternal 001–003/SOP-017 bertanda tangan.</td></tr><tr>
+<td class="kk">7.5<br><span class="kj">Informasi terdokumentasi</span></td>
+<td>Dokumen dikendalikan: identifikasi, persetujuan, distribusi, perubahan.</td>
+<td><span class="chip st-S">Sebagian</span><br>Pengendalian dokumen sudah berjalan di sistem ISO 9001 bersertifikat; dokumen SMEn belum ada.</td>
+<td><span class="chip st-S">Sebagian</span> <span class="pri p-M">Menengah</span><br>45 dokumen Rev.1 disahkan melalui BA 001 (13 Nov); Rev.0 ditarik; tanda sah dicabut dari 22 berkas templat atau salah unggah; nomor 43 dokumen disamakan dengan Daftar Induk. Belum selesai (AI-006): SOP Baseline 011/MN belum diunggah, dan revisi Rev.1 belum dicatat di Log Perubahan, Log Penarikan, Log Distribusi, dan Daftar Induk.</td></tr><tr>
+<td class="kk">8.1<br><span class="kj">Perencanaan &amp; pengendalian operasi</span></td>
+<td>Kriteria operasi dan pemeliharaan SEU ditetapkan dan dikomunikasikan.</td>
+<td><span class="chip st-B">Belum</span><br>Belum ada kriteria pengendalian operasi untuk SEU.</td>
+<td><span class="chip st-S">Sebagian</span> <span class="pri p-M">Menengah</span><br>R-8.1-01 Rev.1 memuat kriteria operasi SEU-01 dan SEU-02 per peralatan utama. F-8.1-01 Rev.1 merekam perubahan pompa intake 110 → 37 kW dan penambahan meter MTR-008/009 (AI-007). Bukti komunikasi kriteria ke operator WTP I dan IPAL I belum ada.</td></tr><tr>
+<td class="kk">8.2<br><span class="kj">Desain</span></td>
+<td>Peluang kinerja energi dipertimbangkan dalam desain fasilitas baru atau modifikasi.</td>
+<td><span class="chip st-B">Belum</span><br>Belum ada pertimbangan energi dalam desain.</td>
+<td><span class="chip st-T">Terpenuhi</span><br>R-8.2-01 Rev.1 bertanda tangan; mencakup penggantian pompa intake WTP I.</td></tr><tr>
+<td class="kk">8.3<br><span class="kj">Pengadaan</span></td>
+<td>Kriteria kinerja energi dalam pengadaan peralatan berdampak signifikan; pemasok diberi tahu.</td>
+<td><span class="chip st-B">Belum</span><br>Belum ada kriteria energi dalam pengadaan.</td>
+<td><span class="chip st-S">Sebagian</span> <span class="pri p-R">Rendah</span><br>Formulir Pertimbangan Energi dalam Pengadaan 001/SOP-019 bertanda tangan. Kriteria evaluasi pemasok berbasis energi belum ada di dokumen pengadaan, padahal pengadaan flow meter dan submeter blower (RT-10) segera berjalan.</td></tr><tr>
+<td class="kk">9.1.1<br><span class="kj">Pemantauan, pengukuran, analisis</span></td>
+<td>EnPI dipantau terhadap EnB; deviasi signifikan diselidiki dan ditanggapi.</td>
+<td><span class="chip st-S">Sebagian</span><br>Konsumsi listrik dan BBM dicatat bulanan oleh M/E; belum dianalisis terhadap EnPI.</td>
+<td><span class="chip st-S">Sebagian</span> <span class="pri p-K">Kritis</span><br>R-9.1-01 Rev.1: EnPI aktual Jan–Okt 2026 dibandingkan EnB per EnPI dengan ambang penyimpangan 10%. ENPI-04, ENPI-06, dan BBM menyimpang lebih dari 10% tetapi belum diselidiki dan belum tercatat di register deviasi (observasi AI-009, terbuka).</td></tr><tr>
+<td class="kk">9.1.2<br><span class="kj">Evaluasi kepatuhan</span></td>
+<td>Kepatuhan terhadap persyaratan hukum dievaluasi secara terencana.</td>
+<td><span class="chip st-B">Belum</span><br>Belum ada evaluasi kepatuhan persyaratan hukum energi.</td>
+<td><span class="chip st-T">Terpenuhi</span><br>Daftar Persyaratan Hukum 002/SOP-020 dan Evaluasi Peraturan 003/SOP-020 bertanda tangan (9 Nov).</td></tr><tr>
+<td class="kk">9.2<br><span class="kj">Audit internal</span></td>
+<td>Audit internal terencana mencakup seluruh SMEn; hasil dilaporkan; tindakan diambil.</td>
+<td><span class="chip st-B">Belum</span><br>Belum ada program audit internal SMEn; auditor internal belum ditetapkan.</td>
+<td><span class="chip st-S">Sebagian</span> <span class="pri p-M">Menengah</span><br>Audit internal dilaksanakan 10, 12, dan 13 Nov oleh tim 4 auditor (Lead Auditor Lidwina Vidya). 13 temuan (8 minor, 5 observasi) direkap di R-10.1-01. Laporan dan checklist hasil audit belum diunggah ke rekaman 9.2.</td></tr><tr>
+<td class="kk">9.3<br><span class="kj">Tinjauan manajemen</span></td>
+<td>Manajemen puncak meninjau SMEn dengan seluruh masukan wajib dan menghasilkan keputusan.</td>
+<td><span class="chip st-B">Belum</span><br>Belum ada tinjauan manajemen SMEn.</td>
+<td><span class="chip st-S">Sebagian</span> <span class="pri p-K">Kritis</span><br>Tinjauan manajemen berlangsung 13 Nov 2026 dengan bahan R-9.3-01 Rev.1 yang diisi data aplikasi. Notulen yang memuat keputusan belum ditandatangani (observasi AI-013).</td></tr><tr>
+<td class="kk">10.1<br><span class="kj">Ketidaksesuaian &amp; tindakan korektif</span></td>
+<td>Ketidaksesuaian ditanggapi, akar penyebab dianalisis, efektivitas tindakan ditinjau.</td>
+<td><span class="chip st-B">Belum</span><br>Belum ada proses tindakan korektif SMEn.</td>
+<td><span class="chip st-S">Sebagian</span> <span class="pri p-M">Menengah</span><br>Rekapitulasi Temuan dan Tindakan Korektif R-10.1-01 bertanda tangan: 13 temuan dengan akar masalah, tindakan, PIC, dan tenggat. 8 temuan berstatus Verifikasi, 4 Proses, 1 Terbuka. Efektivitas tindakan belum diverifikasi Lead Auditor; AI-007 menunggu data MTR-008 Okt–Des 2026.</td></tr><tr>
+<td class="kk">10.2<br><span class="kj">Peningkatan berkelanjutan</span></td>
+<td>Organisasi menunjukkan peningkatan berkelanjutan kinerja energi dan SMEn.</td>
+<td><span class="chip st-B">Belum</span><br>Belum ada bukti peningkatan kinerja energi yang terdokumentasi.</td>
+<td><span class="chip st-S">Sebagian</span> <span class="pri p-K">Kritis</span><br>R-10.2-01 Rev.1 memuat perbandingan EnPI 2025–2026. ENPI-05 membaik dari 0,888 menjadi 0,870 kWh/m³. Intensitas pompa intake turun dari 0,259 (Jan–Sep 2026) menjadi 0,182 kWh/m³ air baku pada Okt 2026 setelah penggantian pompa, baru satu bulan data. Penghematan terverifikasi: 0 kWh.</td></tr></tbody>
+  </table>
+</section>
+
+<section>
+  <div class="eyebrow">07 · Gap terbuka dan rencana tindakan</div>
+  <h2>13 gap terbuka, 4 di antaranya kritis</h2>
+  <p class="lead">Diurutkan menurut prioritas. Setiap tindakan punya PIC dan tenggat; statusnya dipantau di aplikasi SMEn. Gap yang berasal dari temuan audit internal ditindaklanjuti melalui R-10.1-01, bukan dicatat dua kali.</p>
+  <table class="tbl-aksi">
+    <thead><tr><th>Klausul</th><th>Prioritas</th><th>Gap dan risiko audit</th><th>Tindakan</th><th>PIC</th><th>Tenggat</th></tr></thead>
+    <tbody><tr><td class="kk">6.6</td><td><span class="pri p-K">Kritis</span></td><td><b>Belum ada bukti akurasi dan kalibrasi untuk 9 meter; variabel inlet IPAL I belum diukur langsung.</b><br><span class="muted">Temuan klasik audit ISO 50001. Tanpa bukti akurasi, keandalan ENPI-04 s.d. ENPI-06 dan target 2027 dapat dipersoalkan.</span></td>
+<td>Kumpulkan sertifikat tera atau berita acara PLN untuk 9 meter; isi tanggal kalibrasi di register meter; unggah ke R-9.1-05; mulai RT-10.</td><td>Bagian M/E</td><td class="nw">18 Nov 2026</td></tr><tr><td class="kk">9.1.1</td><td><span class="pri p-K">Kritis</span></td><td><b>Deviasi signifikan belum diselidiki dan ditanggapi.</b><br><span class="muted">9.1.1 mewajibkan penyelidikan dan tanggapan atas deviasi signifikan; auditor mengambil sampel deviasi.</span></td>
+<td>Selidiki penyebab deviasi ENPI-04, ENPI-06, dan BBM; catat penyebab dan tanggapan di register deviasi aplikasi.</td><td>Manajer Energi</td><td class="nw">19 Nov 2026</td></tr><tr><td class="kk">9.3</td><td><span class="pri p-K">Kritis</span></td><td><b>Keluaran wajib 9.3 belum terekam: notulen bertanda tangan dengan keputusan dan tindakan.</b><br><span class="muted">Tanpa notulen, auditor tidak dapat memverifikasi keluaran 9.3 (peluang perbaikan, kebijakan, EnPI, target, sumber daya).</span></td>
+<td>Susun notulen bertanggal 13 Nov yang mencakup seluruh masukan 9.3 dan keputusannya; tanda tangani setelah isinya disepakati; unggah ke R-9.3-01.</td><td>Management Representative</td><td class="nw">19 Nov 2026</td></tr><tr><td class="kk">10.2</td><td><span class="pri p-K">Kritis</span></td><td><b>Belum ada penghematan yang diverifikasi terhadap EnB dengan metode M&amp;V.</b><br><span class="muted">ISO 50003 meminta lembaga sertifikasi menilai bukti peningkatan kinerja energi sebelum keputusan sertifikasi awal.</span></td>
+<td>Kumpulkan data MTR-008 Nov–Des 2026 untuk verifikasi pompa intake (RT-09); siapkan kasus bukti ENPI-05 terhadap EnB 2025 yang dinormalisasi volume air.</td><td>Koordinator SMEn + Bagian M/E</td><td class="nw">5 Des 2026</td></tr><tr><td class="kk">4.3</td><td><span class="pri p-M">Menengah</span></td><td><b>Status Ruang Boiler Tank Farm (pemilik dan jenis bahan bakar) belum dipastikan masuk atau di luar batas.</b><br><span class="muted">Sumber energi dalam batas yang tidak tercatat dapat dianggap pengecualian tidak sah.</span></td>
+<td>Konfirmasi kepemilikan dan bahan bakar boiler; bila milik KINRA, tambahkan ke daftar aset dan rencana pengumpulan data; bila bukan, catat di tabel pengecualian F-4.3-01.</td><td>Bagian M/E + Produksi Kawasan</td><td class="nw">18 Nov 2026</td></tr><tr><td class="kk">6.3</td><td><span class="pri p-M">Menengah</span></td><td><b>Peluang belum diprioritaskan; matriks prioritas di aplikasi masih kosong.</b><br><span class="muted">6.3 c) mensyaratkan peluang yang diprioritaskan. Auditor meminta jejak dari SEU ke peluang ke rencana tindakan.</span></td>
+<td>Tim Energi memberi skor energi dan ROI (skala 1–5, bobot 50:50 sesuai formulir 002/SOP-007) untuk 13 peluang, mulai dari yang terkait SEU; ubah status menjadi Dinilai.</td><td>Tim Energi</td><td class="nw">18 Nov 2026</td></tr><tr><td class="kk">7.2</td><td><span class="pri p-M">Menengah</span></td><td><b>Kompetensi personel SEU belum dinilai; efektivitas pelatihan belum terbukti.</b><br><span class="muted">Auditor Stage 2 mewawancarai operator SEU dan menguji efektivitas pelatihan, bukan kehadiran.</span></td>
+<td>Lakukan asesmen kompetensi personel SEU dan isi kolom Actual; kumpulkan rekap nilai pre/post-test per bagian.</td><td>Bagian SDM + Kepala Bagian</td><td class="nw">30 Nov 2026</td></tr><tr><td class="kk">7.5</td><td><span class="pri p-M">Menengah</span></td><td><b>Pengendalian perubahan Rev.1 belum terekam lengkap di log F-7.5.</b><br><span class="muted">Auditor menelusuri satu dokumen dari BA ke log perubahan dan distribusi; jejak yang terputus menjadi temuan 7.5.3.</span></td>
+<td>Unggah SOP Baseline 011/MN ke SOP-010; catat 45 dokumen Rev.1 di Log Perubahan, Log Penarikan, Log Distribusi, dan Daftar Induk.</td><td>Dokumen Kontrol</td><td class="nw">20 Nov 2026</td></tr><tr><td class="kk">8.1</td><td><span class="pri p-M">Menengah</span></td><td><b>Kriteria operasi SEU belum dikomunikasikan ke operator dan belum menjadi instruksi kerja di lapangan.</b><br><span class="muted">Auditor Stage 2 mewawancarai operator WTP I dan IPAL I; operator yang tidak mengetahui kriteria menjadi temuan.</span></td>
+<td>Turunkan kriteria R-8.1-01 menjadi instruksi kerja singkat per SEU (parameter, batas, tindakan saat deviasi); briefing operator dengan daftar hadir.</td><td>Bagian M/E + Produksi Kawasan</td><td class="nw">5 Des 2026</td></tr><tr><td class="kk">9.2</td><td><span class="pri p-M">Menengah</span></td><td><b>Laporan audit dan checklist terisi belum tersedia sebagai rekaman.</b><br><span class="muted">Stage 1 memeriksa rekaman siklus audit lengkap: program, rencana, checklist terisi, laporan, dan tindak lanjut.</span></td>
+<td>Unggah laporan audit internal dan checklist terisi ke R-9.2-02, R-9.2-04, dan R-9.2-06.</td><td>Ketua Auditor Internal (SPI)</td><td class="nw">17 Nov 2026</td></tr><tr><td class="kk">10.1</td><td><span class="pri p-M">Menengah</span></td><td><b>Efektivitas tindakan korektif belum diverifikasi dan belum ada temuan yang ditutup.</b><br><span class="muted">Auditor Stage 1 memeriksa penutupan temuan internal; temuan tanpa verifikasi efektivitas dianggap masih terbuka.</span></td>
+<td>Lead Auditor memverifikasi efektivitas 8 temuan berstatus Verifikasi dan menutupnya di R-10.1-01; pantau 5 temuan lainnya sampai tenggat.</td><td>Lead Auditor + Koordinator SMEn</td><td class="nw">19 Nov 2026</td></tr><tr><td class="kk">6.1</td><td><span class="pri p-R">Rendah</span></td><td><b>Risiko yang melekat pada SEU belum dinilai dan belum punya tindakan yang disetujui pemilik risiko.</b><br><span class="muted">Auditor menelusuri risiko dari SEU; risiko SEU tanpa skor dan tindakan melemahkan 6.1 dan 8.1.</span></td>
+<td>Pemilik risiko Produksi Kawasan menilai dampak dan kemungkinan tiga risiko SEU, menetapkan tindakan, dan memperbarui register isu.</td><td>Manajemen Risiko &amp; TI + Produksi Kawasan</td><td class="nw">19 Nov 2026</td></tr><tr><td class="kk">8.3</td><td><span class="pri p-R">Rendah</span></td><td><b>Belum ada kriteria kinerja energi pada dokumen pengadaan peralatan SEU.</b><br><span class="muted">Temuan minor bila pengadaan RT-10 atau penggantian pompa berjalan tanpa kriteria energi.</span></td>
+<td>Tambahkan klausul kriteria energi (kelas akurasi meter, efisiensi motor IE3/IE4, efisiensi pompa) pada template KAK/RKS; terapkan pertama kali pada RT-10.</td><td>SDM, Umum &amp; Pengadaan</td><td class="nw">5 Des 2026</td></tr></tbody>
+  </table>
+</section>
+
+<section>
+  <div class="eyebrow">08 · Observasi lintas klausul</div>
+  <h2>Integritas rekaman menentukan kepercayaan auditor</h2>
+  <p class="lead">Tiga masalah integritas rekaman di Revisi 0 sudah ditangani. Yang tersisa adalah menjaga agar jejak revisi dan rekaman berikutnya tidak mengulang pola yang sama.</p>
+  <div class="integritas">
+    <h3>Status observasi Revisi 0</h3>
+    <ul class="tight">
+      <li><b>Lembar capaian November sasaran 6.2.</b> Ditangani. Isian "Tercapai" yang diisi sebelum periode berakhir dikosongkan di F-6.2-01 Rev.1 dan di aplikasi. Isi kembali setelah 30 November dengan bukti.</li>
+      <li><b>Notulen tinjauan manajemen.</b> Sebagian. Rapat sudah berlangsung 13 November. Notulen harus bertanggal 13 November, memuat keputusan nyata, dan ditandatangani setelah isinya disepakati.</li>
+      <li><b>Nomor dokumen.</b> Ditangani. Nomor 43 dokumen di register disamakan dengan Daftar Induk Dokumen 001/SOP-013 (AI-006).</li>
+    </ul>
+    <h3>Perlu dijaga</h3>
+    <ul class="tight">
+      <li><b>Jejak revisi Rev.1.</b> 45 dokumen Rev.1 sudah sah, tetapi Log Perubahan, Log Penarikan, Log Distribusi, dan Daftar Induk belum mencatatnya.</li>
+      <li><b>Konsistensi angka antardokumen.</b> F-6.2-02 Rev.1 menulis estimasi penghematan RT-11 sebesar 10%, sedangkan target ENPI-06 dan aplikasi memakai 5%. Koreksi pada revisi berikutnya.</li>
+      <li><b>Tanda versi sah.</b> Tandai sah hanya setelah isi berkas diperiksa; 22 berkas templat atau salah unggah sempat bertanda sah.</li>
+    </ul>
+  </div>
+  <div class="two" style="margin-top:12pt">
+    <div class="box"><h3>Kinerja energi</h3><ul class="tight">
+      <li>Listrik KINRA 2025 (9 meter): 5.168.211 kWh. WTP I memakai 54,8% dan WWTP IPAL I 38,7%; keduanya ditetapkan sebagai SEU (93,5%).</li>
+      <li>Target 2027: ENPI-04 −3%, ENPI-05 dan ENPI-06 −5%, BBM −5% terhadap EnB 2025.</li>
+      <li>ENPI-05 membaik dari 0,888 menjadi 0,870 kWh/m³. ENPI-04, ENPI-06, dan BBM menyimpang lebih dari 10% terhadap EnB dan belum diselidiki.</li>
+      <li>Pompa intake 110 → 37 kW (Okt 2026): 0,259 → 0,182 kWh/m³ air baku, baru satu bulan data. Penghematan terverifikasi: 0 kWh.</li>
+    </ul></div>
+    <div class="box"><h3>Data dan pengukuran</h3><ul class="tight">
+      <li>9 meter terdaftar, termasuk MTR-008 Intake dan MTR-009 Tank Farm; tanggal kalibrasi belum tercatat.</li>
+      <li>Volume inlet IPAL I masih estimasi; flow meter influent dan submeter blower dijadwalkan di RT-10 (13 Nov 2026 – 28 Feb 2027).</li>
+      <li>13 peluang di register belum diberi skor energi dan ROI, sehingga matriks prioritas masih kosong.</li>
+      <li>Kepemilikan dan bahan bakar Ruang Boiler Tank Farm belum dikonfirmasi.</li>
+    </ul></div>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow">09 · Peta jalan</div>
+  <h2>Tujuh hari menuju Stage 1</h2>
+  <svg viewBox="0 0 680 334" class="chart" role="img" aria-label="Peta jalan penutupan gap"><text x="0" y="18" class="ct">Tiga dari 4 gap kritis ditutup sebelum Stage 1 pada 20 November</text><text x="0" y="36" class="cs">Peta jalan 12 November – 14 Desember 2026</text><line x1="275.0" x2="275.0" y1="60" y2="326" class="grid"/><text x="275.0" y="54" class="ax" text-anchor="middle">16 Nov</text><line x1="371.2" x2="371.2" y1="60" y2="326" class="grid"/><text x="371.2" y="54" class="ax" text-anchor="middle">23 Nov</text><line x1="467.5" x2="467.5" y1="60" y2="326" class="grid"/><text x="467.5" y="54" class="ax" text-anchor="middle">30 Nov</text><line x1="563.8" x2="563.8" y1="60" y2="326" class="grid"/><text x="563.8" y="54" class="ax" text-anchor="middle">7 Des</text><line x1="660.0" x2="660.0" y1="60" y2="326" class="grid"/><text x="660.0" y="54" class="ax" text-anchor="middle">14 Des</text><line x1="330.0" x2="330.0" y1="64" y2="326" class="ref"/><line x1="605.0" x2="605.0" y1="64" y2="326" class="ref"/><text x="0" y="84" class="lab">Kalibrasi meter, skor peluang</text><text x="0" y="98" class="mini">9 meter, 13 peluang, boiler (6.6, 6.3, 4.3)</text><rect x="247.5" y="75" width="59.0" height="13" rx="6.5" class="span"/><text x="316.5" y="86" class="mini" text-anchor="start">14 Nov – 18 Nov</text><text x="0" y="120" class="lab">Notulen RTM, deviasi, temuan</text><text x="0" y="134" class="mini">9.3, 9.1.1, 10.1, 9.2, 6.1</text><rect x="247.5" y="111" width="72.8" height="13" rx="6.5" class="span"/><text x="330.2" y="122" class="mini" text-anchor="start">14 Nov – 19 Nov</text><text x="0" y="156" class="lab">Log revisi Rev.1</text><text x="0" y="170" class="mini">Log perubahan, penarikan, distribusi (7.5)</text><rect x="247.5" y="147" width="86.5" height="13" rx="6.5" class="span"/><text x="344.0" y="158" class="mini" text-anchor="start">14 Nov – 20 Nov</text><text x="0" y="192" class="lab bold">Audit Stage 1 TÜV</text><text x="0" y="206" class="mini">Kesiapan dokumen dan sistem</text><path d="M330.0 181l8 8l-8 8l-8 -8z" class="gate"/><text x="344.0" y="194" class="mini" text-anchor="start">20 Nov</text><text x="0" y="228" class="lab">Kompetensi personel SEU</text><text x="0" y="242" class="mini">Asesmen operator WTP I dan IPAL I (7.2)</text><rect x="275.0" y="219" width="196.5" height="13" rx="6.5" class="span"/><text x="481.5" y="230" class="mini" text-anchor="start">16 Nov – 30 Nov</text><text x="0" y="264" class="lab">Tutup temuan Stage 1</text><text x="0" y="278" class="mini">Ditambah 8.1, 8.3, bukti peningkatan 10.2</text><rect x="343.8" y="255" width="196.5" height="13" rx="6.5" class="span"/><text x="550.2" y="266" class="mini" text-anchor="start">21 Nov – 5 Des</text><text x="0" y="300" class="lab bold">Audit Stage 2 TÜV</text><text x="0" y="314" class="mini">Penerapan dan efektivitas</text><rect x="605.0" y="291" width="17.8" height="13" rx="6.5" class="span gate-span"/><text x="593.0" y="302" class="mini" text-anchor="end">10 Des – 11 Des</text></svg>
+  <p class="caption">Tanggal audit sesuai Timeline Pendampingan dan jadwal di aplikasi SMEn. Garis putus-putus: Stage 1 dan Stage 2.</p>
+  <h3>Prinsip penutupan</h3>
+  <ul class="tight">
+    <li><b>Bukti mengikuti peristiwa.</b> Rekaman ditandatangani dan diberi tanggal setelah kegiatannya terjadi.</li>
+    <li><b>Satu bukti, satu tempat.</b> Setiap bukti diunggah ke aplikasi SMEn pada sasaran, rencana aksi, temuan, atau rekaman Kesiapan Audit yang dibuktikannya.</li>
+    <li><b>Kinerja di atas kelengkapan.</b> Stage 2 menilai efektivitas. Satu aksi selesai dengan penghematan terverifikasi lebih kuat daripada sepuluh formulir tambahan.</li>
+  </ul>
+</section>
+
+<section>
+  <div class="eyebrow">10 · Kesimpulan dan pengesahan</div>
+  <h2>Lanjut ke Stage 1, dengan tiga syarat</h2>
+  <p class="lead">KINRA telah membangun kerangka SMEn yang lengkap dan menjalankan satu siklus audit internal serta tinjauan manajemen. Tidak ada sub-klausul berstatus Belum; 14 terpenuhi dan 13 sebagian. Kesiapan sertifikasi kini ditentukan oleh bukti penerapan dan kinerja.</p>
+  <h3>Rekomendasi</h3>
+  <ol class="top">
+    <li>Tutup gap kritis 6.6, 9.1.1, dan 9.3 sebelum 20 November 2026 dan unggah buktinya ke aplikasi SMEn.</li>
+    <li>Pastikan notulen tinjauan manajemen 13 November memuat empat keputusan pada bagian 01 dan ditandatangani setelah isinya disepakati.</li>
+    <li>Lead Auditor memverifikasi efektivitas tindakan korektif dan menutup temuan di R-10.1-01 sebelum Stage 1.</li>
+    <li>Siapkan kasus peningkatan kinerja energi untuk Stage 2: tren ENPI-05 terhadap EnB 2025 dan verifikasi pompa intake dengan data MTR-008 Okt–Des 2026.</li>
+    <li>Perbarui laporan ini setelah Stage 1 sebagai Revisi 2.</li>
+  </ol>
+  <div class="ttd">
+    <div><span>Disusun oleh</span><b>Koordinator SMEn</b><span class="muted">Tanggal:</span></div>
+    <div><span>Diperiksa oleh</span><b>Konsultan pendamping</b><span class="muted">Tanggal:</span></div>
+    <div><span>Disetujui oleh</span><b>Management Representative</b><span class="muted">Tanggal:</span></div>
+  </div>
+  <p class="muted" style="margin-top:12pt">Disusun dengan bantuan aplikasi SMEn KINRA dari data per 13 November 2026. Angka konsumsi berasal dari kWh tagihan 9 meter aset (Data Konsumsi Energi 004/SOP-008 Rev.1). Revisi 1 menggantikan Revisi 0 tanggal 11 November 2026.</p>
+</section>
+</body></html>

@@ -3,6 +3,7 @@ import { hitungEnpi } from './enpi'
 import { BUCKET_BUKTI } from './status'
 import { BAWAAN, type ParameterEnergi } from './konversi'
 import { db } from './supabase'
+import type { Lembar } from './penyelidikan'
 import type { Deviasi, JamOperasiPompa, Pompa, Seu, TinjauanEnergi, Aset, MeterEnergi, PembacaanMeter, Berkas, BerkasTampil, BuktiTerkait, Dokumen, EnergiBulanan, Enpi, Isu, JejakBukti, Kegiatan, Klausul, Peluang, RencanaAksi, Sasaran, SumberEnergi, Temuan, VariabelBulanan, VariabelRelevan } from './types'
 
 /** Tabel belum ada (PGRST205) dianggap kosong; layout menampilkan panduan migrasi. Galat lain dilempar. */
@@ -290,4 +291,12 @@ export async function ambilKinerja() {
   const [{ sumber, data: energi }, { variabel, data: dataVariabel }, enpi, { meter, bacaan }] = await Promise.all([ambilEnergi(), ambilVariabel(), ambilEnpi(), ambilAsetMeter()])
   const hasil = enpi.map((e) => hitungEnpi(e, sumber, energi, variabel, dataVariabel, { meter, bacaan }))
   return { sumber, energi, variabel, dataVariabel, enpi, hasil, meter, bacaan }
+}
+
+// ---------- Lembar penyelidikan deviasi (migrasi 0075) ----------
+
+export async function ambilLembar(): Promise<{ lembar: Lembar[]; siap: boolean }> {
+  const r = await (await db()).from('lembar_penyelidikan').select('*').order('kode')
+  if (r.error?.code === 'PGRST205' || r.error?.code === '42P01') return { lembar: [], siap: false }
+  return { lembar: cek<Lembar[]>(r, 'lembar_penyelidikan'), siap: true }
 }

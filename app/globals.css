@@ -2419,3 +2419,33 @@ dialog.sf-dlg { max-width: min(860px, calc(100vw - 32px)); max-height: calc(100d
 .km-aksi .btn svg { width: 16px; height: 16px; }
 .km-gambar { display: block; width: 100%; height: auto; border-radius: var(--radius-sm); background: #fff; box-shadow: 0 20px 40px -24px rgba(var(--shadow-rgb), calc(0.8 * var(--shadow-k))); }
 @media (max-width: 1100px) { .km-dok { grid-template-columns: 1fr; } .km-lembar { max-width: 820px; margin: 0 auto; width: 100%; } }
+
+/* ---------- Lembar penyelidikan publik (/f/[token], migrasi 0075) ---------- */
+.lembar-publik { max-width: 820px; margin: 0 auto; padding: 24px 16px 48px; display: flex; flex-direction: column; gap: 16px; }
+.lembar-kop { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 4px 2px; }
+.lembar-head h1 { font-size: 22px; line-height: 1.25; margin: 8px 0 6px; }
+.lembar-head .kode { font-family: var(--font-mono), monospace; font-size: 12px; color: var(--muted); letter-spacing: 0.06em; }
+.lembar-head .row { margin-bottom: 0; }
+.lembar-blok { margin-top: 12px; padding: 12px 14px; border-radius: var(--radius-sm); background: var(--surface-2); border: 1px solid var(--line); font-size: 14px; }
+.lembar-blok p { margin: 6px 0 0; line-height: 1.55; }
+.lembar-form h2 { font-size: 16px; margin: 6px 0 12px; }
+.lembar-form fieldset { border: 0; padding: 0; margin: 0; min-width: 0; display: flex; flex-direction: column; gap: 14px; }
+.lembar-butir { display: flex; flex-direction: column; gap: 8px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+.lembar-tanya { display: flex; gap: 10px; align-items: flex-start; }
+.lembar-tanya > div { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.lembar-tanya .no { flex: none; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 700; background: color-mix(in srgb, var(--brand) 18%, transparent); color: var(--brand); }
+.lembar-opsi { display: flex; flex-direction: column; gap: 6px; padding-left: 34px; }
+.lembar-opsi label { display: flex; gap: 8px; align-items: center; font-size: 14px; cursor: pointer; }
+.lembar-opsi input { height: auto; }
+.lembar-butir > textarea, .lembar-butir > input { margin-left: 34px; width: calc(100% - 34px); }
+.lembar-pesan { margin: 0; padding: 10px 12px; border-radius: 10px; font-size: 14px; }
+.lembar-pesan.ok { background: color-mix(in srgb, var(--good) 14%, transparent); }
+.lembar-pesan.galat { background: color-mix(in srgb, var(--crit) 14%, transparent); }
+@media (max-width: 560px) {
+  .lembar-opsi { padding-left: 0; }
+  .lembar-butir > textarea, .lembar-butir > input { margin-left: 0; width: 100%; }
+  .lembar-publik .form-grid { grid-template-columns: 1fr; }
+}
+.jawaban-lembar { display: flex; flex-direction: column; gap: 10px; font-size: 13.5px; }
+.jawaban-lembar dt { font-weight: 600; }
+.jawaban-lembar dd { margin: 2px 0 0; white-space: pre-wrap; }

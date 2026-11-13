@@ -1,6 +1,6 @@
 import html, sys, os, datetime as dt
 sys.path.insert(0, os.path.dirname(__file__))
-from data import ITEMS, KLAUSUL, NILAI, AWAL, KEMAJUAN, PERISTIWA
+from data import ITEMS, KLAUSUL, NILAI, AWAL, KEMAJUAN, PERISTIWA, REV0, PERUBAHAN, REVISI, TGL_KINI, TGL_REV0
 
 FONT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'app', 'fonts'))
 e = html.escape
@@ -12,14 +12,14 @@ tgl = lambda s: f"{int(s[8:])} {BLN[int(s[5:7]) - 1]}"
 fmt = lambda v: f"{v:.0f}"
 
 items = [dict(zip(["k", "judul", "syarat", "kondisi", "st", "gap", "risiko", "aksi", "pic", "tenggat", "pri"], r)) for r in ITEMS]
-for i in items: i["st0"], i["awal"] = AWAL[i["k"]]
+for i in items: i["st0"], i["awal"] = AWAL[i["k"]]; i["strev0"] = REV0[i["k"]]
 utama = lambda k: k.split('.')[0]
 skor = lambda xs, f: sum(NILAI[x[f]] for x in xs) / len(xs)
 klausul = []
 for no, nama in KLAUSUL:
     xs = [i for i in items if utama(i["k"]) == no]
     klausul.append(dict(no=no, nama=nama, awal=skor(xs, "st0"), kini=skor(xs, "st"), n=len(xs)))
-total0, total = skor(items, "st0"), skor(items, "st")
+total0, total, totalrev0 = skor(items, "st0"), skor(items, "st"), skor(items, "strev0")
 hit = lambda f, s: sum(i[f] == s for i in items)
 kritis = sorted([i for i in items if i["pri"] == "K"], key=lambda i: [int(x) for x in i["k"].split('.')])
 gaps = sorted([i for i in items if i["st"] != "T"], key=lambda i: ("KMR".index(i["pri"]), [int(x) for x in i["k"].split('.')]))
@@ -27,12 +27,13 @@ naik = sum(i["st"] != i["st0"] for i in items)
 
 # ---------- Grafik 1: dumbbell kondisi awal → kini per klausul ----------
 def grafik_klausul():
+    rendah = min(klausul, key=lambda k: k["kini"])
     W, x0, bw, rh, y0 = 660, 180, 400, 32, 70
     H = y0 + rh * len(klausul) + 34
     X = lambda v: x0 + bw * v / 100
     s = [f'<svg viewBox="0 0 {W} {H}" class="chart" role="img" aria-label="Skor pemenuhan per klausul, awal dan kini">',
-         f'<text x="0" y="18" class="ct">Enam dari tujuh klausul naik; klausul 10 belum bergerak dan klausul 9 baru 50%</text>',
-         f'<text x="0" y="36" class="cs">Skor pemenuhan per klausul, %. Titik kosong: 20 Okt 2026 · titik penuh: 11 Nov 2026</text>']
+         f'<text x="0" y="18" class="ct">Semua klausul naik; klausul {rendah["no"]} paling rendah ({fmt(rendah["kini"])}%)</text>',
+         f'<text x="0" y="36" class="cs">Skor pemenuhan per klausul, %. Titik kosong: 20 Okt 2026 · titik penuh: {tgl(TGL_KINI)} 2026</text>']
     for t in (0, 25, 50, 75, 100):
         s.append(f'<line x1="{X(t)}" x2="{X(t)}" y1="{y0-8}" y2="{H-30}" class="grid"/><text x="{X(t)}" y="{H-14}" class="ax" text-anchor="middle">{t}</text>')
     s.append(f'<line x1="{X(80)}" x2="{X(80)}" y1="{y0-14}" y2="{H-30}" class="ref"/><text x="{X(80)+4}" y="{y0-16}" class="refl">ambang siap Stage 2: 80%</text>')
@@ -84,23 +85,23 @@ def peta_status(f):
 
 # ---------- Grafik 3: peta jalan ----------
 def peta_jalan():
-    d0, d1 = D("2026-11-09"), D("2026-12-14")
+    d0, d1 = D("2026-11-12"), D("2026-12-14")
     W, x0, x1 = 680, 220, 660
     X = lambda d: x0 + (d - d0).days / (d1 - d0).days * (x1 - x0)
     rows = [
-        ("Tutup siklus audit internal", "2026-11-11", "2026-11-14", "Laporan, rekap, PTP (9.2, 10.1)", False),
-        ("Tinjauan manajemen", "2026-11-13", "2026-11-13", "Target kuantitatif, kriteria EnB, sumber daya", False),
-        ("Akurasi meter & penetapan SEU", "2026-11-12", "2026-11-18", "Kalibrasi 8 meter, SEU, peluang (6.3, 6.6)", False),
-        ("Batas, kompetensi, deviasi", "2026-11-12", "2026-11-19", "4.3, 7.2, 9.1.1", False),
+        ("Kalibrasi meter, skor peluang", "2026-11-14", "2026-11-18", "9 meter, 13 peluang, boiler (6.6, 6.3, 4.3)", False),
+        ("Notulen RTM, deviasi, temuan", "2026-11-14", "2026-11-19", "9.3, 9.1.1, 10.1, 9.2, 6.1", False),
+        ("Log revisi Rev.1", "2026-11-14", "2026-11-20", "Log perubahan, penarikan, distribusi (7.5)", False),
         ("Audit Stage 1 TÜV", "2026-11-20", "2026-11-20", "Kesiapan dokumen dan sistem", True),
+        ("Kompetensi personel SEU", "2026-11-16", "2026-11-30", "Asesmen operator WTP I dan IPAL I (7.2)", False),
         ("Tutup temuan Stage 1", "2026-11-21", "2026-12-05", "Ditambah 8.1, 8.3, bukti peningkatan 10.2", False),
         ("Audit Stage 2 TÜV", "2026-12-10", "2026-12-11", "Penerapan dan efektivitas", True),
     ]
     rh, y0 = 36, 72
     H = y0 + rh * len(rows) + 10
     s = [f'<svg viewBox="0 0 {W} {H}" class="chart" role="img" aria-label="Peta jalan penutupan gap">',
-         '<text x="0" y="18" class="ct">Lima gap kritis ditutup sebelum Stage 1 pada 20 November</text>',
-         '<text x="0" y="36" class="cs">Peta jalan 9 November – 14 Desember 2026</text>']
+         f'<text x="0" y="18" class="ct">Tiga dari {len(kritis)} gap kritis ditutup sebelum Stage 1 pada 20 November</text>',
+         '<text x="0" y="36" class="cs">Peta jalan 12 November – 14 Desember 2026</text>']
     d = d0
     while d <= d1:
         if d.weekday() == 0:
@@ -134,7 +135,13 @@ aksi = ''.join(f'''<tr><td class="kk">{i['k']}</td><td>{pchip(i['pri'])}</td><td
 <td>{e(i['aksi'])}</td><td>{e(i['pic'])}</td><td class="nw">{e(i['tenggat'])}</td></tr>''' for i in gaps)
 
 top5 = ''.join(f'<li><b>{i["k"]} {e(i["judul"])}.</b> {e(i["gap"])} <span class="muted">Tenggat {e(i["tenggat"])} · {e(i["pic"])}.</span></li>' for i in kritis)
-peristiwa = ''.join(f'<tr><td class="nw">{tgl(d)} 2026</td><td>{e(t)}</td><td>{"Rencana" if D(d) > D("2026-11-11") else "Terlaksana"}</td></tr>' for d, t in PERISTIWA)
+peristiwa = ''.join(f'<tr><td class="nw">{tgl(d)} 2026</td><td>{e(t)}</td><td>{"Rencana" if D(d) > D(TGL_KINI) else "Terlaksana"}</td></tr>' for d, t in PERISTIWA)
+
+ubah = ''.join(f'<tr><td class="kk">{i["k"]}<br><span class="kj">{e(i["judul"])}</span></td><td class="nw">{chip(i["strev0"])} → {chip(i["st"])}</td><td>{e(PERUBAHAN[i["k"]])}</td></tr>'
+               for i in items if i["k"] in PERUBAHAN)
+naik_rev0 = sum(NILAI[i["st"]] > NILAI[i["strev0"]] for i in items)
+turun_rev0 = sum(NILAI[i["st"]] < NILAI[i["strev0"]] for i in items)
+TGLK = f"{int(TGL_KINI[8:])} {['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][int(TGL_KINI[5:7])-1]} {TGL_KINI[:4]}"
 
 css = open(os.path.join(os.path.dirname(__file__), 'gaya.css')).read().replace('{FONT}', FONT)
 tpl = open(os.path.join(os.path.dirname(__file__), 'isi.html')).read()
@@ -144,7 +151,8 @@ ganti = {
  '{CSS}': css, '{TOTAL0}': fmt(total0), '{TOTAL}': fmt(total), '{NI}': str(len(items)), '{NAIK}': str(naik),
  '{NT}': str(hit("st", "T")), '{NS}': str(hit("st", "S")), '{NB}': str(hit("st", "B")),
  '{NT0}': str(hit("st0", "T")), '{NS0}': str(hit("st0", "S")), '{NB0}': str(hit("st0", "B")),
- '{NK}': str(len(kritis)), '{NGAP}': str(len(gaps)), '{TOP5}': top5,
+ '{NK}': str(len(kritis)), '{TOTALREV0}': fmt(totalrev0), '{SELISIH}': str(round(total) - round(totalrev0)), '{UBAH}': ubah, '{NAIKREV0}': str(naik_rev0), '{TURUNREV0}': str(turun_rev0),
+ '{REVISI}': REVISI, '{TGLK}': TGLK, '{TGLKS}': tgl(TGL_KINI), '{NGAP}': str(len(gaps)), '{TOP5}': top5,
  '{G_KLAUSUL}': grafik_klausul(), '{G_DOKUMEN}': grafik_dokumen(), '{PETA0}': peta_status("st0"), '{PETA}': peta_status("st"),
  '{JALAN}': peta_jalan(), '{DETAIL}': detail, '{AKSI}': aksi, '{PERISTIWA}': peristiwa,
 }
@@ -152,4 +160,4 @@ out = tpl
 for k, v in ganti.items(): out = out.replace(k, v)
 assert '{' not in out.split('<style>')[0] and not any(k in out for k in ganti), 'placeholder tersisa'
 open(sys.argv[1], 'w').write(out)
-print('awal', round(total0, 1), 'kini', round(total, 1), [(k["no"], round(k["awal"]), round(k["kini"])) for k in klausul])
+print('awal', round(total0, 1), 'rev0', round(totalrev0, 1), 'kini', round(total, 1), [(k["no"], round(k["awal"]), round(k["kini"])) for k in klausul])

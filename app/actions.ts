@@ -1036,3 +1036,35 @@ export async function aturUlangSandi(id: string, sandi: string): Promise<Hasil> 
   const { error } = await (await db()).rpc('atur_ulang_sandi', { p_id: id, p_sandi: sandi })
   return gagal(error)
 }
+
+// ---------- Lembar penyelidikan deviasi (migrasi 0075) ----------
+
+function gagalLembar(e: { message: string; code?: string } | null): Hasil {
+  if (e?.code === 'PGRST205' || e?.code === '42P01') return { ok: false, pesan: 'Tabel lembar penyelidikan belum ada. Jalankan migrasi 0075_lembar_penyelidikan.sql di Supabase.' }
+  return gagal(e)
+}
+
+/** Ubah PIC, tenggat, status tinjauan, catatan peninjau, atau status aktif tautan. */
+export async function ubahLembar(id: number, f: FormData): Promise<Hasil> {
+  const t = await tolak('penyelidikan.kelola'); if (t) return t
+  const status = teks(f, 'status')
+  if (status && !['Belum diisi', 'Draf', 'Dijawab', 'Ditinjau'].includes(status)) return { ok: false, pesan: 'Status tidak dikenal.' }
+  const data: Record<string, unknown> = {
+    pic_bagian: teks(f, 'pic_bagian'), pic_nama: teks(f, 'pic_nama'), tenggat: teks(f, 'tenggat'),
+    catatan_tinjauan: teks(f, 'catatan_tinjauan'), aktif: f.get('aktif') === 'on',
+  }
+  if (!data.pic_bagian) return { ok: false, pesan: 'Bagian PIC wajib diisi.' }
+  if (status) data.status = status
+  const { error } = await (await db()).from('lembar_penyelidikan').update(data).eq('id', id)
+  revalidatePath('/penyelidikan')
+  return gagalLembar(error)
+}
+
+/** Buat tautan baru; tautan lama langsung tidak berlaku. */
+export async function buatUlangTautan(id: number): Promise<Hasil> {
+  const t = await tolak('penyelidikan.kelola'); if (t) return t
+  const { randomBytes } = await import('node:crypto')
+  const { error } = await (await db()).from('lembar_penyelidikan').update({ token: randomBytes(32).toString('hex') }).eq('id', id)
+  revalidatePath('/penyelidikan')
+  return gagalLembar(error)
+}

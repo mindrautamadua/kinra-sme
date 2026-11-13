@@ -29,7 +29,7 @@ export type TahapWtp = {
 }
 
 export const TAHAP_WTP: TahapWtp[] = [
-  { no: 1, id: 'intake', nama: 'Intake air baku', ringkas: 'Dua sumber paralel ke settling pit: 2 pompa di Sungai Bah Tongguran langsung ke pit (water meter FM1b), dan 2 pompa dari kolam Water Intake (water meter FM1a). Dulu air sungai masuk ke kolam Water Intake; sekarang langsung ke settling pit. Register mencatat 4 pompa submersible di lokasi ini.',
+  { no: 1, id: 'intake', nama: 'Intake air baku', ringkas: 'Dua sumber paralel ke settling pit: 2 pompa di Sungai Bah Bolon langsung ke pit (water meter FM1b), dan 2 pompa dari kolam Water Intake (water meter FM1a). Dulu air sungai masuk ke kolam Water Intake; sekarang langsung ke settling pit. Register mencatat 4 pompa submersible di lokasi ini.',
     lokasiPompa: ['Water Intake'], beban: 'Ikut volume air baku dan muka air sungai', meter: { label: 'MTR-008 (sungai + kolam intake)', status: 'pasti' },
     dataAir: 'Air Baku I (air_baku1) = FM1a + FM1b', sifat: 'volume' },
   { no: 2, id: 'settling', nama: 'Water Settling Pit', ringkas: 'Bak pengendap 1.650 m³, 5 kompartemen, titik injeksi kimia. Menerima air backwash dari lamella dan filter melalui pipa back wash. Di bawahnya 2 pompa pengisian mobil damkar.',

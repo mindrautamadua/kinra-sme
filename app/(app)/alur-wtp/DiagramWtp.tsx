@@ -31,7 +31,7 @@ export function DiagramWtp({ tahap }: { tahap: HasilTahap[] }) {
 
       {/* Sungai dan intake */}
       <path className="aw-sungai" d="M70,40 C40,90 100,130 70,180 C40,230 100,270 72,320 C44,370 100,410 70,460 C40,510 90,560 60,620" />
-      <text className="aw-lbl kecil" x="18" y="632">Sungai Bah Tongguran</text>
+      <text className="aw-lbl kecil" x="18" y="632">Sungai Bah Bolon</text>
       <Pompa x={104} y={395} jenis="baku" /><Pompa x={104} y={420} jenis="baku" />
       <path className="aw-pipa baku" d="M126,407 H136 V585 H430 V564" markerEnd="url(#aw-panah-baku)" />
       <Fm x={262} y={585} label="FM1b" />

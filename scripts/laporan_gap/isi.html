@@ -4,57 +4,57 @@
 
 <div class="cover">
   <img class="logo" src="file://{LOGO}" alt="KINRA Sei Mangkei">
-  <div class="doc">GA-01 · Revisi 0<br>11 November 2026</div>
+  <div class="doc">GA-01 · Revisi {REVISI}<br>{TGLK}</div>
   <div class="blok">
     <div class="motif"><i class="m1"></i><i class="m2"></i><i class="m3"></i></div>
     <div class="eyebrow-c">Sistem Manajemen Energi · ISO 50001:2018</div>
     <h1>Laporan Gap Analysis dan Penutupan Gap</h1>
-    <div class="sub">Kondisi awal 20 Oktober 2026, kondisi per 11 November 2026, dan rencana penutupan menuju audit sertifikasi</div>
-    <div class="verdict">Pemenuhan naik dari <span>{TOTAL0}%</span> menjadi <span>{TOTAL}%</span>. {NK} gap kritis perlu ditutup sebelum Stage 1 pada 20 November 2026.</div>
+    <div class="sub">Kondisi awal 20 Oktober 2026, kondisi per {TGLK} setelah audit internal, dan rencana penutupan menuju audit sertifikasi</div>
+    <div class="verdict">Pemenuhan naik dari <span>{TOTAL0}%</span> menjadi <span>{TOTAL}%</span>. Tidak ada lagi sub-klausul berstatus Belum. {NK} gap kritis tersisa, tiga di antaranya harus ditutup sebelum Stage 1 pada 20 November 2026.</div>
     <div class="meta">
       <div><b>Organisasi</b>PT Kawasan Industri Nusantara (KINRA)</div>
       <div><b>Status</b>Draf untuk pengesahan</div>
-      <div><b>Kode register</b>GA-01 · Kesiapan Audit</div>
+      <div><b>Menggantikan</b>GA-01 Revisi 0 (11 November 2026)</div>
     </div>
   </div>
 </div>
 
 <section style="break-before: auto">
   <div class="eyebrow">01 · Ringkasan eksekutif</div>
-  <h2>Sistem sudah terbentuk; buktinya belum lengkap</h2>
-  <p class="lead">Dalam 22 hari KINRA membangun SMEn dari nol menjadi {TOTAL}% pemenuhan terhadap 27 sub-klausul ISO 50001:2018. Dokumen nyaris lengkap. Yang tersisa adalah bukti penerapan: target energi terukur, akurasi meter, dan siklus audit internal serta tinjauan manajemen yang tertutup.</p>
+  <h2>Target energi sudah ditetapkan; yang tersisa adalah bukti</h2>
+  <p class="lead">Dalam 24 hari KINRA membangun SMEn dari nol menjadi {TOTAL}% pemenuhan terhadap 27 sub-klausul ISO 50001:2018. Sejak Revisi 0, audit internal pertama selesai, 45 dokumen Rev.1 disahkan, target energi kuantitatif ditetapkan, dan tinjauan manajemen pertama berlangsung. Yang tersisa adalah bukti: kalibrasi meter, penyelidikan deviasi, notulen tinjauan manajemen, dan penghematan yang terverifikasi.</p>
 
   <div class="kpis">
-    <div class="kpi main"><div class="n">{TOTAL0}% → {TOTAL}%</div><div class="l">Skor pemenuhan, 20 Okt → 11 Nov 2026</div></div>
-    <div class="kpi"><div class="n">95,6%</div><div class="l">Dokumen tersedia (108 dari 113, Rev.8)</div></div>
-    <div class="kpi"><div class="n">{NAIK}/{NI}</div><div class="l">Sub-klausul yang statusnya naik</div></div>
+    <div class="kpi main"><div class="n">{TOTAL0}% → {TOTAL}%</div><div class="l">Skor pemenuhan, 20 Okt → {TGLKS} 2026</div></div>
+    <div class="kpi"><div class="n">+{SELISIH} poin</div><div class="l">Sejak Revisi 0 ({TOTALREV0}%, 11 Nov)</div></div>
+    <div class="kpi"><div class="n">{NT}/{NS}/{NB}</div><div class="l">Terpenuhi / Sebagian / Belum</div></div>
     <div class="kpi"><div class="n">{NK}</div><div class="l">Gap kritis yang masih terbuka</div></div>
   </div>
 
-  <div class="verdict-box"><b>Kesimpulan.</b> KINRA layak melanjutkan ke Stage 1 pada 20 November 2026 <b>dengan syarat</b> lima gap kritis di bawah ditutup terlebih dahulu. Tanpa itu, risiko ketidaksesuaian mayor tertinggi ada pada klausul 6.2 dan 10.2: konsumsi listrik KINRA Januari–Oktober 2026 naik 19% dibanding periode yang sama 2025, sementara belum ada target energi kuantitatif sebagai pembanding.</div>
+  <div class="verdict-box"><b>Kesimpulan.</b> KINRA layak melanjutkan ke Stage 1 pada 20 November 2026 <b>dengan syarat</b> tiga gap kritis ditutup lebih dulu: bukti kalibrasi 9 meter (6.6), penyelidikan deviasi ENPI-04, ENPI-06, dan BBM (9.1.1), serta notulen tinjauan manajemen bertanda tangan (9.3). Gap kritis keempat, penghematan terverifikasi (10.2), menjadi syarat untuk Stage 2.</div>
 
-  <h3>Lima gap kritis</h3>
+  <h3>Gap kritis</h3>
   <ol class="top">{TOP5}</ol>
 
-  <h3>Keputusan yang diminta dari tinjauan manajemen 13 November</h3>
+  <h3>Yang harus tercatat di notulen tinjauan manajemen 13 November</h3>
   <div class="keputusan">
-    <div><b>Target energi kuantitatif</b>Sahkan minimal satu target per SEU yang terhubung ke EnPI, misalnya EnPI-05 turun 3% pada 2027 terhadap EnB 2025.</div>
-    <div><b>Kriteria revisi baseline</b>Tetapkan ambang perubahan variabel statis (jumlah tenant) yang memicu penyesuaian EnB.</div>
-    <div><b>Anggaran submeter SEU</b>Setujui pengadaan submeter tahap 1 untuk WTP dan WWTP beserta jadwalnya.</div>
-    <div><b>Penetapan SEU</b>Sahkan SEU-01 (WTP dan intake, 56% listrik KINRA 2025) dan SEU-02 (WWTP, 40%).</div>
+    <div><b>Target dan rencana SEU</b>Konfirmasi empat target 2027 (BA 001 butir C) dan rencana tindakan RT-08 s.d. RT-11 sebagai keluaran 9.3.</div>
+    <div><b>Sumber daya</b>Keputusan anggaran dan jadwal flow meter influent serta submeter blower IPAL I (RT-10) dan kalibrasi meter.</div>
+    <div><b>Deviasi kinerja</b>Tanggapan atas deviasi ENPI-04, ENPI-06, dan BBM di atas ambang 10%, beserta PIC penyelidikan.</div>
+    <div><b>Hasil audit internal</b>Status 13 temuan AI-001 s.d. AI-013 dan kecukupan tindakan korektifnya.</div>
   </div>
 </section>
 
 <section>
   <div class="eyebrow">02 · Tujuan, ruang lingkup, dan metode</div>
   <h2>Penilaian berbasis bukti bertanggal</h2>
-  <p class="lead">Laporan ini membandingkan kondisi SMEn KINRA terhadap ISO 50001:2018 pada dua titik waktu, lalu menetapkan rencana penutupan gap yang tersisa.</p>
+  <p class="lead">Laporan ini membandingkan kondisi SMEn KINRA terhadap ISO 50001:2018 pada dua titik waktu, lalu menetapkan rencana penutupan gap yang tersisa. Revisi 1 memasukkan hasil audit internal 10, 12, dan 13 November serta dokumen Rev.1 yang disahkan 13 November.</p>
   <dl class="kv">
     <dt>Tujuan</dt><dd>Menilai kesiapan sertifikasi, menunjukkan kemajuan sejak awal pendampingan, dan menetapkan prioritas sebelum Stage 1.</dd>
-    <dt>Ruang lingkup</dt><dd>Fasilitas dalam kendali operasional KINRA di KEK Sei Mangkei: 40 aset dan 8 meter listrik. Konsumsi tenant di luar lingkup.</dd>
+    <dt>Ruang lingkup</dt><dd>Fasilitas dalam kendali operasional KINRA di KEK Sei Mangkei: 40 aset dan 9 meter listrik (KINRA-MTR-001 s.d. 009, termasuk Intake dan Tank Farm), ditambah BBM kendaraan dan genset. Di luar lingkup: listrik tenant, PLTBG dan PLTS (dikelola pihak ketiga), WTP II/BTM, dan IPAL II.</dd>
     <dt>Acuan</dt><dd>SNI ISO 50001:2018; ISO 50003 untuk persyaratan audit sertifikasi; PP 33/2023 tentang Konservasi Energi.</dd>
-    <dt>Kondisi awal</dt><dd>20 Oktober 2026, direkonstruksi dari rekaman yang bertanggal pada waktu itu. Penilaiannya dilakukan pada 11 November 2026.</dd>
-    <dt>Kondisi kini</dt><dd>11 November 2026.</dd>
+    <dt>Kondisi awal</dt><dd>20 Oktober 2026, direkonstruksi dari rekaman yang bertanggal pada waktu itu. Penilaiannya dilakukan pada 11 November 2026 dan tidak diubah di Revisi 1.</dd>
+    <dt>Kondisi kini</dt><dd>{TGLK}.</dd>
   </dl>
 
   <h3>Sumber bukti</h3>
@@ -65,8 +65,11 @@
       <tr><td class="nw">20 Okt 2026</td><td>Checklist Monev Implementasi ISO 50001 – Persiapan Awal</td><td>Kondisi awal</td></tr>
       <tr><td class="nw">26 Okt 2026</td><td>Register dokumen awal aplikasi SMEn (79 item)</td><td>Kondisi awal</td></tr>
       <tr><td class="nw">1 Nov 2026</td><td>Daftar Dokumen KINRA Rev.4</td><td>Kemajuan</td></tr>
-      <tr><td class="nw">10 Nov 2026</td><td>Daftar Dokumen KINRA Rev.8</td><td>Kondisi kini</td></tr>
-      <tr><td class="nw">11 Nov 2026</td><td>Formulir per klausul di folder OneDrive ISO 50001; data meter, EnPI, sasaran, dan bukti di aplikasi SMEn</td><td>Kondisi kini</td></tr>
+      <tr><td class="nw">10 Nov 2026</td><td>Daftar Dokumen KINRA Rev.8</td><td>Kemajuan</td></tr>
+      <tr><td class="nw">13 Nov 2026</td><td>Rekapitulasi Temuan dan Tindakan Korektif Audit Internal (R-10.1-01), temuan AI-001 s.d. AI-013</td><td>Kondisi kini</td></tr>
+      <tr><td class="nw">13 Nov 2026</td><td>Berita Acara Pengesahan Revisi Dokumen SMEn No. 001/BA/KINRA/SMEn/XI/2026 (45 dokumen Rev.1, target EnPI 2027)</td><td>Kondisi kini</td></tr>
+      <tr><td class="nw">13 Nov 2026</td><td>Audit Isi Dokumen Evidence terhadap Data Aplikasi SMEn (194 berkas, 108 dokumen)</td><td>Kondisi kini</td></tr>
+      <tr><td class="nw">13 Nov 2026</td><td>Data meter, EnPI, sasaran, rencana aksi, peluang, dan register Kesiapan Audit di aplikasi SMEn</td><td>Kondisi kini</td></tr>
     </tbody>
   </table>
 
@@ -79,26 +82,36 @@
       <tr><td><span class="chip st-B">Belum</span></td><td>Belum ada dokumen atau penerapan.</td><td>0</td></tr>
     </tbody>
   </table>
-  <p class="muted" style="margin-top:8pt">Skor klausul adalah rata-rata sub-klausulnya. Prioritas gap: <b>Kritis</b> berpotensi menjadi ketidaksesuaian mayor atau menghambat Stage 1; <b>Menengah</b> berpotensi menjadi ketidaksesuaian minor; <b>Rendah</b> berupa observasi.</p>
-  <p class="muted"><b>Batasan.</b> Penilaian berupa telaah dokumen dan data. Wawancara dan observasi lapangan belum dilakukan; temuan audit internal 5–12 November belum masuk karena laporannya belum terbit.</p>
+  <p class="muted" style="margin-top:8pt">Skor klausul adalah rata-rata sub-klausulnya. Prioritas gap: <b>Kritis</b> berpotensi menjadi ketidaksesuaian mayor atau menghambat sertifikasi; <b>Menengah</b> berpotensi menjadi ketidaksesuaian minor; <b>Rendah</b> berupa observasi.</p>
+  <p class="muted"><b>Batasan.</b> Penilaian berupa telaah dokumen, data aplikasi, dan hasil audit internal. Wawancara dan observasi lapangan oleh penyusun laporan belum dilakukan. Isi notulen tinjauan manajemen 13 November belum dapat dinilai karena belum ditandatangani.</p>
 </section>
 
 <section>
-  <div class="eyebrow">03 · Kondisi awal dan kemajuan</div>
-  <h2>Dari {TOTAL0}% menjadi {TOTAL}% dalam 22 hari</h2>
+  <div class="eyebrow">03 · Perubahan sejak Revisi 0</div>
+  <h2>{NAIKREV0} sub-klausul naik, {TURUNREV0} turun setelah audit internal</h2>
+  <p class="lead">Skor naik dari {TOTALREV0}% menjadi {TOTAL}% dalam dua hari. Dua sub-klausul turun karena audit internal menemukan bukti yang dinilai terlalu tinggi di Revisi 0: templat dan draf yang bertanda sah. Penurunan ini membuat penilaian lebih jujur, bukan kemunduran sistem.</p>
+  <table>
+    <thead><tr><th>Klausul</th><th>Rev.0 → Rev.1</th><th>Dasar perubahan</th></tr></thead>
+    <tbody>{UBAH}</tbody>
+  </table>
+</section>
+
+<section>
+  <div class="eyebrow">04 · Kondisi awal dan kemajuan</div>
+  <h2>Dari {TOTAL0}% menjadi {TOTAL}% dalam 24 hari</h2>
   <p class="lead">Pada 20 Oktober belum ada satu pun dokumen SMEn. Kekuatan awal KINRA berasal dari sistem ISO 9001, 14001, 45001, dan 37001 yang sudah bersertifikat, serta pencatatan konsumsi energi bulanan oleh Bagian M/E.</p>
   {G_DOKUMEN}
-  <p class="caption">Sumber: Checklist Monev (20 Okt), Daftar Dokumen Rev.4 (1 Nov) dan Rev.8 (10 Nov). Jumlah item berbeda karena daftar diperluas selama pendampingan. Lembar Rev.8 mencetak 94,58%; hitungan 108/113 adalah 95,6%.</p>
+  <p class="caption">Sumber: Checklist Monev (20 Okt), Daftar Dokumen Rev.4 (1 Nov) dan Rev.8 (10 Nov). Jumlah item berbeda karena daftar diperluas selama pendampingan. Setelah itu, 45 dokumen direvisi menjadi Rev.1 dan disahkan 13 November melalui BA 001/BA/KINRA/SMEn/XI/2026.</p>
   {G_KLAUSUL}
-  <p class="caption">Sumber: penilaian 27 sub-klausul pada bagian 05. Ambang 80% adalah sasaran internal kesiapan Stage 2, bukan persyaratan standar.</p>
+  <p class="caption">Sumber: penilaian 27 sub-klausul pada bagian 06. Ambang 80% adalah sasaran internal kesiapan Stage 2, bukan persyaratan standar.</p>
 </section>
 
 <section>
-  <div class="eyebrow">04 · Peta status sub-klausul</div>
-  <h2>Hijau menyebar; merah tinggal di klausul 9.3 dan 10</h2>
+  <div class="eyebrow">05 · Peta status sub-klausul</div>
+  <h2>Merah sudah hilang; kuning tinggal di bukti penerapan</h2>
   <h3>Kondisi awal · 20 Oktober 2026 · {NT0} terpenuhi, {NS0} sebagian, {NB0} belum</h3>
   {PETA0}
-  <h3>Kondisi kini · 11 November 2026 · {NT} terpenuhi, {NS} sebagian, {NB} belum</h3>
+  <h3>Kondisi kini · {TGLK} · {NT} terpenuhi, {NS} sebagian, {NB} belum</h3>
   {PETA}
   <div class="legend"><span><i style="background:#e3f1ea"></i>Terpenuhi</span><span><i style="background:#fbefd5"></i>Sebagian</span><span><i style="background:#f8ddd6"></i>Belum</span></div>
 
@@ -110,18 +123,18 @@
 </section>
 
 <section>
-  <div class="eyebrow">05 · Penilaian rinci per sub-klausul</div>
+  <div class="eyebrow">06 · Penilaian rinci per sub-klausul</div>
   <h2>27 sub-klausul: kondisi awal dan kondisi kini</h2>
   <table class="tbl-detail">
-    <thead><tr><th>Klausul</th><th>Persyaratan</th><th>Kondisi awal · 20 Okt</th><th>Kondisi kini · 11 Nov</th></tr></thead>
+    <thead><tr><th>Klausul</th><th>Persyaratan</th><th>Kondisi awal · 20 Okt</th><th>Kondisi kini · {TGLKS}</th></tr></thead>
     <tbody>{DETAIL}</tbody>
   </table>
 </section>
 
 <section>
-  <div class="eyebrow">06 · Gap terbuka dan rencana tindakan</div>
+  <div class="eyebrow">07 · Gap terbuka dan rencana tindakan</div>
   <h2>{NGAP} gap terbuka, {NK} di antaranya kritis</h2>
-  <p class="lead">Diurutkan menurut prioritas. Setiap tindakan punya PIC dan tenggat; statusnya dipantau di aplikasi SMEn.</p>
+  <p class="lead">Diurutkan menurut prioritas. Setiap tindakan punya PIC dan tenggat; statusnya dipantau di aplikasi SMEn. Gap yang berasal dari temuan audit internal ditindaklanjuti melalui R-10.1-01, bukan dicatat dua kali.</p>
   <table class="tbl-aksi">
     <thead><tr><th>Klausul</th><th>Prioritas</th><th>Gap dan risiko audit</th><th>Tindakan</th><th>PIC</th><th>Tenggat</th></tr></thead>
     <tbody>{AKSI}</tbody>
@@ -129,63 +142,69 @@
 </section>
 
 <section>
-  <div class="eyebrow">07 · Observasi lintas klausul</div>
+  <div class="eyebrow">08 · Observasi lintas klausul</div>
   <h2>Integritas rekaman menentukan kepercayaan auditor</h2>
-  <p class="lead">Tiga temuan berikut tidak terikat pada satu klausul, tetapi dapat melemahkan seluruh bukti bila tidak diperbaiki sebelum Stage 1.</p>
+  <p class="lead">Tiga masalah integritas rekaman di Revisi 0 sudah ditangani. Yang tersisa adalah menjaga agar jejak revisi dan rekaman berikutnya tidak mengulang pola yang sama.</p>
   <div class="integritas">
-    <h3>Rekaman yang mendahului peristiwanya</h3>
+    <h3>Status observasi Revisi 0</h3>
     <ul class="tight">
-      <li><b>Lembar capaian November sasaran 6.2.</b> Lembar capaian November di 10 formulir bertanggal 30 November dan sudah berisi "Tercapai" untuk 29 sasaran, sementara rekap nilai tes sebagai ukuran target belum ada. Kosongkan sampai tanggalnya tiba dan buktinya lengkap.</li>
-      <li><b>Notulen tinjauan manajemen.</b> Daftar Dokumen mencatat notulen RTM "Sudah Tanda Tangan" per 9 November, padahal rapat dijadwalkan 13 November dan templat notulen bertanggal 19 November. Tanda tangani notulen hanya setelah rapat, dengan tanggal yang sebenarnya.</li>
-      <li><b>Nomor dokumen lembar capaian.</b> Lembar September, Oktober, dan November seharusnya bernomor IX, X, dan XI. Yang menyimpang: Akuntansi & Keuangan (semua X), Pemasaran & Penjualan (Oktober IX), serta ME, Fasilitas & Pengamanan (Oktober dan November IX).</li>
+      <li><b>Lembar capaian November sasaran 6.2.</b> Ditangani. Isian "Tercapai" yang diisi sebelum periode berakhir dikosongkan di F-6.2-01 Rev.1 dan di aplikasi. Isi kembali setelah 30 November dengan bukti.</li>
+      <li><b>Notulen tinjauan manajemen.</b> Sebagian. Rapat sudah berlangsung 13 November. Notulen harus bertanggal 13 November, memuat keputusan nyata, dan ditandatangani setelah isinya disepakati.</li>
+      <li><b>Nomor dokumen.</b> Ditangani. Nomor 43 dokumen di register disamakan dengan Daftar Induk Dokumen 001/SOP-013 (AI-006).</li>
+    </ul>
+    <h3>Perlu dijaga</h3>
+    <ul class="tight">
+      <li><b>Jejak revisi Rev.1.</b> 45 dokumen Rev.1 sudah sah, tetapi Log Perubahan, Log Penarikan, Log Distribusi, dan Daftar Induk belum mencatatnya.</li>
+      <li><b>Konsistensi angka antardokumen.</b> F-6.2-02 Rev.1 menulis estimasi penghematan RT-11 sebesar 10%, sedangkan target ENPI-06 dan aplikasi memakai 5%. Koreksi pada revisi berikutnya.</li>
+      <li><b>Tanda versi sah.</b> Tandai sah hanya setelah isi berkas diperiksa; 22 berkas templat atau salah unggah sempat bertanda sah.</li>
     </ul>
   </div>
   <div class="two" style="margin-top:12pt">
     <div class="box"><h3>Kinerja energi</h3><ul class="tight">
-      <li>Listrik KINRA Jan–Okt 2026: 4,82 GWh, naik 19% dari 4,04 GWh pada periode yang sama 2025.</li>
-      <li>WTP dan intake memakai 56% listrik KINRA 2025; WWTP 40%.</li>
-      <li>Intensitas WTP 1 (EnPI-05) membaik 3,4%–6,5% pada Februari–Juni 2026 setelah dinormalisasi terhadap volume air.</li>
-      <li>Penghematan terverifikasi: 0 MWh. Belum ada rencana aksi selesai dengan M&amp;V.</li>
+      <li>Listrik KINRA 2025 (9 meter): 5.168.211 kWh. WTP I memakai 54,8% dan WWTP IPAL I 38,7%; keduanya ditetapkan sebagai SEU (93,5%).</li>
+      <li>Target 2027: ENPI-04 −3%, ENPI-05 dan ENPI-06 −5%, BBM −5% terhadap EnB 2025.</li>
+      <li>ENPI-05 membaik dari 0,888 menjadi 0,870 kWh/m³. ENPI-04, ENPI-06, dan BBM menyimpang lebih dari 10% terhadap EnB dan belum diselidiki.</li>
+      <li>Pompa intake 110 → 37 kW (Okt 2026): 0,259 → 0,182 kWh/m³ air baku, baru satu bulan data. Penghematan terverifikasi: 0 kWh.</li>
     </ul></div>
     <div class="box"><h3>Data dan pengukuran</h3><ul class="tight">
-      <li>8 meter terdaftar, tanpa catatan kelas akurasi atau tanggal kalibrasi.</li>
-      <li>Belum ada submeter di dalam SEU; rencana tahap 1–3 sudah disusun tetapi belum masuk formulir 6.6.</li>
-      <li>EnPI-01 (BBM) memunculkan 9 deviasi bulanan +20% s.d. +82% yang belum diselidiki.</li>
-      <li>Status PLTBG, PLTS, dan Ruang Boiler Tank Farm terhadap batas SMEn belum dipastikan.</li>
+      <li>9 meter terdaftar, termasuk MTR-008 Intake dan MTR-009 Tank Farm; tanggal kalibrasi belum tercatat.</li>
+      <li>Volume inlet IPAL I masih estimasi; flow meter influent dan submeter blower dijadwalkan di RT-10 (13 Nov 2026 – 28 Feb 2027).</li>
+      <li>13 peluang di register belum diberi skor energi dan ROI, sehingga matriks prioritas masih kosong.</li>
+      <li>Kepemilikan dan bahan bakar Ruang Boiler Tank Farm belum dikonfirmasi.</li>
     </ul></div>
   </div>
 </section>
 
 <section>
-  <div class="eyebrow">08 · Peta jalan</div>
-  <h2>Sembilan hari menuju Stage 1</h2>
+  <div class="eyebrow">09 · Peta jalan</div>
+  <h2>Tujuh hari menuju Stage 1</h2>
   {JALAN}
   <p class="caption">Tanggal audit sesuai Timeline Pendampingan dan jadwal di aplikasi SMEn. Garis putus-putus: Stage 1 dan Stage 2.</p>
   <h3>Prinsip penutupan</h3>
   <ul class="tight">
     <li><b>Bukti mengikuti peristiwa.</b> Rekaman ditandatangani dan diberi tanggal setelah kegiatannya terjadi.</li>
-    <li><b>Satu bukti, satu tempat.</b> Setiap bukti diunggah ke aplikasi SMEn pada sasaran, rencana aksi, atau rekaman Kesiapan Audit yang dibuktikannya.</li>
+    <li><b>Satu bukti, satu tempat.</b> Setiap bukti diunggah ke aplikasi SMEn pada sasaran, rencana aksi, temuan, atau rekaman Kesiapan Audit yang dibuktikannya.</li>
     <li><b>Kinerja di atas kelengkapan.</b> Stage 2 menilai efektivitas. Satu aksi selesai dengan penghematan terverifikasi lebih kuat daripada sepuluh formulir tambahan.</li>
   </ul>
 </section>
 
 <section>
-  <div class="eyebrow">09 · Kesimpulan dan pengesahan</div>
-  <h2>Lanjut ke Stage 1, dengan lima syarat</h2>
-  <p class="lead">KINRA telah membangun kerangka SMEn yang lengkap dalam waktu singkat. Status Terpenuhi naik dari {NT0} menjadi {NT} sub-klausul, dan dokumen tersedia 95,6%. Kesiapan sertifikasi kini ditentukan oleh bukti penerapan, bukan dokumen.</p>
+  <div class="eyebrow">10 · Kesimpulan dan pengesahan</div>
+  <h2>Lanjut ke Stage 1, dengan tiga syarat</h2>
+  <p class="lead">KINRA telah membangun kerangka SMEn yang lengkap dan menjalankan satu siklus audit internal serta tinjauan manajemen. Tidak ada sub-klausul berstatus Belum; {NT} terpenuhi dan {NS} sebagian. Kesiapan sertifikasi kini ditentukan oleh bukti penerapan dan kinerja.</p>
   <h3>Rekomendasi</h3>
   <ol class="top">
-    <li>Tutup lima gap kritis sebelum 20 November 2026 dan unggah buktinya ke aplikasi SMEn.</li>
-    <li>Gunakan tinjauan manajemen 13 November untuk empat keputusan pada bagian 01, lalu catat keputusannya di notulen yang ditandatangani setelah rapat.</li>
-    <li>Perbaiki tiga observasi integritas rekaman pada bagian 07 sebelum dokumen diserahkan ke TÜV.</li>
-    <li>Siapkan kasus peningkatan kinerja energi untuk Stage 2: tren EnPI-05 terhadap EnB 2025 dan satu aksi selesai dengan M&amp;V.</li>
-    <li>Perbarui laporan ini setelah audit internal dan RTM, lalu setelah Stage 1, sebagai Revisi 1 dan 2.</li>
+    <li>Tutup gap kritis 6.6, 9.1.1, dan 9.3 sebelum 20 November 2026 dan unggah buktinya ke aplikasi SMEn.</li>
+    <li>Pastikan notulen tinjauan manajemen 13 November memuat empat keputusan pada bagian 01 dan ditandatangani setelah isinya disepakati.</li>
+    <li>Lead Auditor memverifikasi efektivitas tindakan korektif dan menutup temuan di R-10.1-01 sebelum Stage 1.</li>
+    <li>Siapkan kasus peningkatan kinerja energi untuk Stage 2: tren ENPI-05 terhadap EnB 2025 dan verifikasi pompa intake dengan data MTR-008 Okt–Des 2026.</li>
+    <li>Perbarui laporan ini setelah Stage 1 sebagai Revisi 2.</li>
   </ol>
   <div class="ttd">
     <div><span>Disusun oleh</span><b>Koordinator SMEn</b><span class="muted">Tanggal:</span></div>
     <div><span>Diperiksa oleh</span><b>Konsultan pendamping</b><span class="muted">Tanggal:</span></div>
     <div><span>Disetujui oleh</span><b>Management Representative</b><span class="muted">Tanggal:</span></div>
   </div>
-  <p class="muted" style="margin-top:12pt">Disusun dengan bantuan aplikasi SMEn KINRA dari data per 11 November 2026. Angka konsumsi berasal dari kWh tagihan 8 meter aset (Pelacak Konsumsi Energi, dok. 004/SOP-008).</p>
+  <p class="muted" style="margin-top:12pt">Disusun dengan bantuan aplikasi SMEn KINRA dari data per {TGLK}. Angka konsumsi berasal dari kWh tagihan 9 meter aset (Data Konsumsi Energi 004/SOP-008 Rev.1). Revisi 1 menggantikan Revisi 0 tanggal 11 November 2026.</p>
 </section>
 </body></html>
