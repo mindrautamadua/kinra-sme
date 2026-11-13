@@ -36,6 +36,9 @@ const STATUS_A: StatusAksi[] = ['Rencana', 'Berjalan', 'Selesai', 'Ditunda', 'Ba
 const CHIP_S: Record<StatusSasaran, KodeChip> = { Draft: 'na', Aktif: 'info', Tercapai: 'good', 'Tidak tercapai': 'crit' }
 const CHIP_A: Record<StatusAksi, KodeChip> = { Rencana: 'na', Berjalan: 'info', Selesai: 'good', Ditunda: 'warn', Batal: 'na' }
 
+/** EnPI agregat → EnPI penyusun yang aksinya ikut mencapai target agregat. ENPI-04 = 9 meter KINRA (WTP I, WWTP IPAL I, Tank Farm, gedung). */
+const KONTRIBUSI_ENPI: Record<string, string[]> = { 'ENPI-04': ['ENPI-05', 'ENPI-06', 'ENPI-07'] }
+
 const STATUS_BUKTI: StatusBukti[] = ['Lengkap', 'Sebagian', 'Belum']
 const CHIP_BUKTI: Record<StatusBukti, KodeChip> = { Lengkap: 'good', Sebagian: 'warn', Belum: 'crit' }
 const KET_BUKTI: Record<StatusBukti, string> = {
@@ -76,9 +79,13 @@ export function DaftarSasaran({ sasaran, aksi, capaian, enpi, peluang, kini, tar
   )
 
   const tanpaSasaran = aksi.filter((a) => a.sasaran_id === null || !sasaran.some((s) => s.id === a.sasaran_id))
+  // Aksi yang ditautkan ke sasaran per bagian (RT-01..07, migrasi 0057): tampil sebagai aksi pendukung di lapis 1
+  const idBagian = new Set(sasaran.filter((s) => s.bagian).map((s) => s.id))
+  const aksiPendukung = aksi.filter((a) => a.sasaran_id !== null && idBagian.has(a.sasaran_id))
+  const kodeSasaran = (id: number | null) => sasaran.find((s) => s.id === id)?.kode ?? '–'
   // Sasaran per bagian dari Formulir Objective dan Target (6.2) ditampilkan sebagai tabel; sasaran lain (EnPI) sebagai kartu
   const sasaranBagian = sasaran.filter((s) => s.bagian)
-  const sasaranKartu = sasaran.filter((s) => !s.bagian)
+  const sasaranKartu = sasaran.filter((s) => !s.bagian).sort((a, b) => (a.kode ?? '').localeCompare(b.kode ?? ''))
   const grupBagian = [...new Set(sasaranBagian.map((s) => s.bagian!))].map((b) => ({ bagian: b, daftar: sasaranBagian.filter((s) => s.bagian === b) }))
   const perBagian = sasaranBagian.find((s) => s.pencapaian_per)?.pencapaian_per ?? null
   const diperiksa = sasaranBagian.reduce<string | null>((m, s) => (s.bukti_diperiksa && (!m || s.bukti_diperiksa > m) ? s.bukti_diperiksa : m), null)
@@ -209,9 +216,9 @@ export function DaftarSasaran({ sasaran, aksi, capaian, enpi, peluang, kini, tar
       {(sasaran.length > 0 || aksi.length > 0) && (
         <>
       <div className="tiles" style={{ marginBottom: 16 }}>
-        <div className="tile"><div className="tile-head"><span className="label">Sasaran aktif</span></div>
-          <div className="nilai tnum">{sasaran.filter((s) => s.status === 'Aktif').length}<small>dari {sasaran.length}</small></div>
-          <div className="meta">{sasaran.filter((s) => s.status === 'Tercapai').length} tercapai</div></div>
+        <div className="tile"><div className="tile-head"><span className="label">Target kinerja energi</span></div>
+          <div className="nilai tnum">{sasaranKartu.filter((s) => s.status === 'Aktif').length}<small>aktif dari {sasaranKartu.length}</small></div>
+          <div className="meta">{sasaranKartu.filter((s) => s.status === 'Tercapai').length} tercapai · ditambah {sasaranBagian.length} sasaran pendukung per bagian</div></div>
         <div className="tile"><div className="tile-head"><span className="label">Rencana aksi</span></div>
           <div className="nilai tnum">{hidup.filter((a) => a.status === 'Selesai').length}<small>selesai dari {hidup.length}</small></div>
           <div className="meta">{hidup.filter((a) => a.status === 'Berjalan').length} berjalan · {aksi.filter(lewat).length} lewat tenggat</div></div>
@@ -235,13 +242,130 @@ export function DaftarSasaran({ sasaran, aksi, capaian, enpi, peluang, kini, tar
         {sasaran.length === 0 && (
           <div className="card"><p className="muted">Belum ada sasaran. Contoh: &ldquo;Menurunkan intensitas energi WTP I (kWh per m³ air diolah) 5% dibanding baseline 2025&rdquo; dengan ENPI-05 dan target 5%. Pakai EnPI lingkup KINRA, bukan EnPI kawasan.</p></div>
         )}
+        {(sasaranKartu.length > 0 || tanpaSasaran.length > 0) && (
+          <div className="ss-lapis" id="lapis-energi"><span className="no">1</span><div><b>Target kinerja energi dan rencana aksi</b><span className="muted small">Inti klausul 6.2: target terukur yang terhubung ke EnPI lingkup KINRA dan SEU, masing-masing dengan rencana aksi, sumber daya, tenggat, dan cara verifikasi hasil.</span></div></div>
+        )}
+        {sasaranKartu.map((s) => {
+          const c = capaian[s.id]
+          const daftar = aksi.filter((a) => a.sasaran_id === s.id)
+          return (
+            <div key={s.id} id={`sasaran-${s.kode}`} className="card">
+              <div className="row">
+                <div>
+                  <span className="eyebrow">{s.kode}{s.pic && ` · PIC ${s.pic}`}</span>
+                  <h3>{s.uraian}</h3>
+                  <p className="muted small">
+                    {s.enpi_kode && s.target_persen !== null
+                      ? `Target: perbaikan ${angka(s.target_persen, 1)}% pada ${s.enpi_kode}${c ? ` (${c.enpi})` : ''}, tahun ${s.tahun_target}`
+                      : 'Belum terhubung ke EnPI dengan target terukur'}
+                  </p>
+                </div>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                  <Chip kode={CHIP_S[s.status]} label={s.status} />
+                  {tombolBukti({ jenis: 'sasaran', id: s.id, kode: s.kode, judul: s.uraian, status: s.status, rekaman: s.dokumen_kode }, s.jumlah_bukti, s.jumlah_bukti_rekaman)}
+                  {bisa('sasaran.ubah') && <button type="button" className="btn btn-ikon" aria-label={`Ubah ${s.kode}`} onClick={() => bukaS(s)}><Pencil aria-hidden="true" /></button>}
+                </div>
+              </div>
+
+              {c && (
+                <div style={{ marginBottom: 16 }}>
+                  {c.galat ? <p className="pesan galat">{c.galat}</p> : c.bulan === 0 ? (
+                    <p className="pesan">Belum ada data {s.tahun_target} setelah periode baseline untuk {s.enpi_kode}.</p>
+                  ) : (
+                    <>
+                      <div className="mini-stats" style={{ justifyContent: 'flex-start', marginBottom: 8 }}>
+                        <div style={{ alignItems: 'flex-start' }}><span>Perbaikan {s.tahun_target}</span><b className={`tnum ${(c.perbaikan ?? 0) >= 0 ? 'txt-good' : 'txt-bad'}`}>{c.perbaikan === null ? '–' : `${c.perbaikan < 0 ? '−' : ''}${angka(Math.abs(c.perbaikan), 1)}%`}</b></div>
+                        <div style={{ alignItems: 'flex-start' }}><span>Target</span><b className="tnum">{angka(s.target_persen, 1)}%</b></div>
+                        <div style={{ alignItems: 'flex-start' }}><span>Hemat ({c.satuan})</span><b className="tnum">{angka(c.hemat, c.satuan === 'TJ' ? 2 : 0)}</b></div>
+                        <div style={{ alignItems: 'flex-start' }}><span>Data</span><b className="tnum">{c.bulan} bulan</b></div>
+                        {c.persenTarget !== null && <Chip capaian={c.persenTarget} />}
+                      </div>
+                      {c.persenTarget !== null && (
+                        <div className="pg" role="img" aria-label={`Capaian ${Math.round(c.persenTarget)}% dari target`}>
+                          <div className={`track${c.persenTarget >= 100 ? ' over' : ''}`}><b style={{ width: `${Math.min(100, Math.max(0, c.persenTarget))}%` }} /></div>
+                        </div>
+                      )}
+                    </>
+                  )}
+                  {c.proyeksi && s.status === 'Aktif' && <BlokProyeksi p={c.proyeksi} rupiah={c.rupiahKurang} kode={s.kode} />}
+                </div>
+              )}
+
+              {daftar.length > 0 ? tabelAksi(daftar) : (() => {
+                // ENPI agregat (mis. ENPI-04 = 9 meter) dicapai lewat aksi pada sasaran EnPI penyusunnya
+                const penyusun = s.enpi_kode ? (KONTRIBUSI_ENPI[s.enpi_kode] ?? []) : []
+                const dariLain = penyusun.length ? hidup.filter((a) => sasaran.some((x) => x.id === a.sasaran_id && x.enpi_kode && penyusun.includes(x.enpi_kode))) : []
+                if (dariLain.length) return (
+                  <div className="ss-aksi-kosong info">
+                    <p className="small"><b>Tidak ada aksi khusus; target ini dicapai lewat aksi pada EnPI penyusunnya.</b> {s.enpi_kode} menjumlahkan listrik 9 meter KINRA, dan SEU-01 WTP I serta SEU-02 WWTP IPAL I menyerap 93,5% di antaranya. Jumlah estimasi aksi berikut: <b>{angka(dariLain.reduce((t, a) => t + (a.estimasi_hemat_kwh ?? 0), 0))} kWh/tahun</b>.</p>
+                    <ul className="small">{dariLain.map((a) => <li key={a.id}><a href={`#aksi-${a.kode}`}><b className="mono">{a.kode}</b></a> {a.uraian} <span className="muted">· {kodeSasaran(a.sasaran_id)}{a.estimasi_hemat_kwh ? ` · ±${angka(a.estimasi_hemat_kwh)} kWh/thn` : ''}</span></li>)}</ul>
+                  </div>
+                )
+                return (
+                  <div className="ss-aksi-kosong">
+                    <p className="small"><b>Belum ada rencana aksi untuk target ini.</b> Klausul 6.2 mewajibkan setiap target energi punya rencana aksi: apa yang dilakukan, sumber daya, PIC, tenggat, dan cara verifikasi hasil. Formulir Rencana Tindakan F-6.2-02 Rev.1 belum memuatnya; tetapkan aksinya di notulen tinjauan manajemen atau revisi F-6.2-02, lalu catat di sini.</p>
+                    {s.enpi_kode === 'ENPI-01' && <p className="small">Penyebab kenaikan BBM 2026 belum diketahui. Susun aksi setelah jawaban <a href="/penyelidikan">lembar penyelidikan PD-04 dan PD-05</a> masuk.</p>}
+                  </div>
+                )
+              })()}
+              {bisa('aksi.ubah') && (
+                <div className="toolbar" style={{ marginTop: 12, marginBottom: 0 }}>
+                  <button type="button" className="btn kecil" onClick={() => bukaA({ sasaran_id: s.id })}><Plus aria-hidden="true" />Aksi untuk {s.kode}</button>
+                </div>
+              )}
+            </div>
+          )
+        })}
+
+        {aksiPendukung.length > 0 && (
+          <div className="card" id="aksi-pendukung">
+            <div className="row"><div>
+              <h3>Rencana aksi pendukung · {aksiPendukung.length} aksi</h3>
+              <p className="muted small">Dari F-6.2-02 Rev.1, ditautkan ke sasaran per bagian ({[...new Set(aksiPendukung.map((a) => `${a.kode} → ${kodeSasaran(a.sasaran_id)}`))].join(', ')}). Aksi ini tidak menyentuh SEU secara langsung (pencahayaan, peralatan kantor, pemantauan, kampanye perilaku); penghematannya diverifikasi terpisah.</p>
+            </div></div>
+            {tabelAksi(aksiPendukung)}
+          </div>
+        )}
+        {tanpaSasaran.length > 0 && (
+          <div className="card">
+            <div className="row">
+              <div><h3>Aksi belum terhubung ke sasaran</h3><p className="muted small">Hubungkan agar kontribusinya terhadap target terlihat.{pasanganOtomatis.length > 0 && ` Dari usulan: ${pasanganOtomatis.map((p) => `${p.aksi} → ${p.sasaran}`).join(', ')}.`}</p></div>
+              {pasanganOtomatis.length > 0 && bisa('aksi.ubah') && (
+                <button type="button" className="btn kecil" disabled={menunggu} onClick={hubungkanOtomatis}>Hubungkan {pasanganOtomatis.length} aksi ke sasarannya</button>
+              )}
+            </div>
+            {tabelAksi(tanpaSasaran)}
+          </div>
+        )}
+
+        {peluangSiap.length > 0 && (
+          <div className="card">
+            <div className="row"><div><h3>Peluang disetujui yang belum punya rencana aksi</h3><p className="muted small">Dari register peluang peningkatan kinerja energi (6.1).</p></div></div>
+            <div className="list">
+              {peluangSiap.map((p) => (
+                <div key={p.kode}>
+                  <span className="kode mono small">{p.kode}</span>
+                  <div className="grow"><b>{p.uraian}</b><span className="muted small">{p.pemilik ?? 'Tanpa pemilik'}{p.estimasi_kwh !== null && ` · estimasi ${angka(p.estimasi_kwh)} kWh/tahun`}</span></div>
+                  {bisa('aksi.ubah') && (
+                    <button type="button" className="btn kecil" onClick={() => bukaA({ peluang_kode: p.kode, uraian: p.uraian, pic: p.pemilik, estimasi_hemat_kwh: p.estimasi_kwh })}>
+                      Jadikan aksi<ArrowRight aria-hidden="true" />
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        {grupBagian.length > 0 && (
+          <div className="ss-lapis" id="lapis-pendukung"><span className="no">2</span><div><b>Sasaran pendukung per bagian</b><span className="muted small">Kepedulian dan kompetensi personel (7.2, 7.3) dari formulir 001/SOP-008. Mendukung tercapainya target energi; bukti diukur per lembar pencapaian bulanan.</span></div></div>
+        )}
         {grupBagian.length > 0 && (
           <div className="card" id="sasaran-bagian">
             <div className="row">
               <div>
                 <span className="eyebrow">Formulir Objective dan Target Manajemen · 001/SOP-008/KINRA/SMEn/X/2026</span>
-                <h3>Sasaran & target per bagian · {sasaranBagian.length} sasaran di {grupBagian.length} bagian</h3>
-                <p className="muted small">{sasaranBagian.filter((s) => s.status === 'Tercapai').length} tercapai{perBagian ? ` menurut lembar pencapaian per ${tanggal(perBagian)}` : ''} · <b>{sasaranBagian.filter((s) => s.jumlah_bukti || s.jumlah_bukti_rekaman).length} dari {sasaranBagian.length}</b> sudah punya berkas bukti di aplikasi (khusus atau bersama). Sasaran ini berupa target perilaku dan kepatuhan, belum terhubung ke EnPI.</p>
+                <h3>Sasaran pendukung per bagian · {sasaranBagian.length} sasaran di {grupBagian.length} bagian</h3>
+                <p className="muted small">{sasaranBagian.filter((s) => s.status === 'Tercapai').length} tercapai{perBagian ? ` menurut lembar pencapaian per ${tanggal(perBagian)}` : ''} · <b>{sasaranBagian.filter((s) => s.jumlah_bukti || s.jumlah_bukti_rekaman).length} dari {sasaranBagian.length}</b> sudah punya berkas bukti di aplikasi (khusus atau bersama). Sasaran ini berupa target perilaku dan kepatuhan (kepedulian 7.3, kompetensi 7.2) yang mendukung target energi di atas; tidak diukur dengan EnPI.</p>
                 {sasaranBagian.some((s) => s.bukti_status) && (
                   <p className="small ss-ringkas-bukti">
                     Penilaian tim atas kelengkapan bukti terhadap ukuran target{diperiksa ? ` (diperiksa ${tanggal(diperiksa)})` : ''}, terpisah dari jumlah berkas di aplikasi:{' '}
@@ -306,92 +430,6 @@ export function DaftarSasaran({ sasaran, aksi, capaian, enpi, peluang, kini, tar
                   </tbody>
                 ))}
               </table>
-            </div>
-          </div>
-        )}
-        {sasaranKartu.map((s) => {
-          const c = capaian[s.id]
-          const daftar = aksi.filter((a) => a.sasaran_id === s.id)
-          return (
-            <div key={s.id} id={`sasaran-${s.kode}`} className="card">
-              <div className="row">
-                <div>
-                  <span className="eyebrow">{s.kode}{s.pic && ` · PIC ${s.pic}`}</span>
-                  <h3>{s.uraian}</h3>
-                  <p className="muted small">
-                    {s.enpi_kode && s.target_persen !== null
-                      ? `Target: perbaikan ${angka(s.target_persen, 1)}% pada ${s.enpi_kode}${c ? ` (${c.enpi})` : ''}, tahun ${s.tahun_target}`
-                      : 'Belum terhubung ke EnPI dengan target terukur'}
-                  </p>
-                </div>
-                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                  <Chip kode={CHIP_S[s.status]} label={s.status} />
-                  {tombolBukti({ jenis: 'sasaran', id: s.id, kode: s.kode, judul: s.uraian, status: s.status, rekaman: s.dokumen_kode }, s.jumlah_bukti, s.jumlah_bukti_rekaman)}
-                  {bisa('sasaran.ubah') && <button type="button" className="btn btn-ikon" aria-label={`Ubah ${s.kode}`} onClick={() => bukaS(s)}><Pencil aria-hidden="true" /></button>}
-                </div>
-              </div>
-
-              {c && (
-                <div style={{ marginBottom: 16 }}>
-                  {c.galat ? <p className="pesan galat">{c.galat}</p> : c.bulan === 0 ? (
-                    <p className="pesan">Belum ada data {s.tahun_target} setelah periode baseline untuk {s.enpi_kode}.</p>
-                  ) : (
-                    <>
-                      <div className="mini-stats" style={{ justifyContent: 'flex-start', marginBottom: 8 }}>
-                        <div style={{ alignItems: 'flex-start' }}><span>Perbaikan {s.tahun_target}</span><b className={`tnum ${(c.perbaikan ?? 0) >= 0 ? 'txt-good' : 'txt-bad'}`}>{c.perbaikan === null ? '–' : `${c.perbaikan < 0 ? '−' : ''}${angka(Math.abs(c.perbaikan), 1)}%`}</b></div>
-                        <div style={{ alignItems: 'flex-start' }}><span>Target</span><b className="tnum">{angka(s.target_persen, 1)}%</b></div>
-                        <div style={{ alignItems: 'flex-start' }}><span>Hemat ({c.satuan})</span><b className="tnum">{angka(c.hemat, c.satuan === 'TJ' ? 2 : 0)}</b></div>
-                        <div style={{ alignItems: 'flex-start' }}><span>Data</span><b className="tnum">{c.bulan} bulan</b></div>
-                        {c.persenTarget !== null && <Chip capaian={c.persenTarget} />}
-                      </div>
-                      {c.persenTarget !== null && (
-                        <div className="pg" role="img" aria-label={`Capaian ${Math.round(c.persenTarget)}% dari target`}>
-                          <div className={`track${c.persenTarget >= 100 ? ' over' : ''}`}><b style={{ width: `${Math.min(100, Math.max(0, c.persenTarget))}%` }} /></div>
-                        </div>
-                      )}
-                    </>
-                  )}
-                  {c.proyeksi && s.status === 'Aktif' && <BlokProyeksi p={c.proyeksi} rupiah={c.rupiahKurang} kode={s.kode} />}
-                </div>
-              )}
-
-              {tabelAksi(daftar)}
-              {bisa('aksi.ubah') && (
-                <div className="toolbar" style={{ marginTop: 12, marginBottom: 0 }}>
-                  <button type="button" className="btn kecil" onClick={() => bukaA({ sasaran_id: s.id })}><Plus aria-hidden="true" />Aksi untuk {s.kode}</button>
-                </div>
-              )}
-            </div>
-          )
-        })}
-
-        {tanpaSasaran.length > 0 && (
-          <div className="card">
-            <div className="row">
-              <div><h3>Aksi belum terhubung ke sasaran</h3><p className="muted small">Hubungkan agar kontribusinya terhadap target terlihat.{pasanganOtomatis.length > 0 && ` Dari usulan: ${pasanganOtomatis.map((p) => `${p.aksi} → ${p.sasaran}`).join(', ')}.`}</p></div>
-              {pasanganOtomatis.length > 0 && bisa('aksi.ubah') && (
-                <button type="button" className="btn kecil" disabled={menunggu} onClick={hubungkanOtomatis}>Hubungkan {pasanganOtomatis.length} aksi ke sasarannya</button>
-              )}
-            </div>
-            {tabelAksi(tanpaSasaran)}
-          </div>
-        )}
-
-        {peluangSiap.length > 0 && (
-          <div className="card">
-            <div className="row"><div><h3>Peluang disetujui yang belum punya rencana aksi</h3><p className="muted small">Dari register peluang peningkatan kinerja energi (6.1).</p></div></div>
-            <div className="list">
-              {peluangSiap.map((p) => (
-                <div key={p.kode}>
-                  <span className="kode mono small">{p.kode}</span>
-                  <div className="grow"><b>{p.uraian}</b><span className="muted small">{p.pemilik ?? 'Tanpa pemilik'}{p.estimasi_kwh !== null && ` · estimasi ${angka(p.estimasi_kwh)} kWh/tahun`}</span></div>
-                  {bisa('aksi.ubah') && (
-                    <button type="button" className="btn kecil" onClick={() => bukaA({ peluang_kode: p.kode, uraian: p.uraian, pic: p.pemilik, estimasi_hemat_kwh: p.estimasi_kwh })}>
-                      Jadikan aksi<ArrowRight aria-hidden="true" />
-                    </button>
-                  )}
-                </div>
-              ))}
             </div>
           </div>
         )}

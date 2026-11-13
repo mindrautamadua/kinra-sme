@@ -146,8 +146,8 @@ export default async function SasaranPage() {
       )}
 
       <section id="sasaran">
-        <SectionHead no={berjadwal.length ? '02' : '01'} eyebrow="Sasaran, target & rencana aksi" judul={aktif.length ? `${aktif.length} sasaran aktif` : 'Mulai dari usulan di bawah'}>
-          <p className="muted">Capaian dihitung dari perbaikan EnPI pada tahun target dibanding target perbaikan sasaran.</p>
+        <SectionHead no={berjadwal.length ? '02' : '01'} eyebrow="Sasaran, target & rencana aksi" judul={aktif.length ? `${aktif.filter((s) => !s.bagian).length} target kinerja energi · ${aktif.filter((s) => s.bagian).length} sasaran pendukung per bagian` : 'Mulai dari usulan di bawah'}>
+          <p className="muted">Disusun dua lapis: (1) target kinerja energi yang terhubung ke EnPI beserta rencana aksinya, inti klausul 6.2; (2) sasaran pendukung per bagian dari formulir 001/SOP-008 untuk kepedulian dan kompetensi. Capaian target energi dihitung dari perbaikan EnPI pada tahun target dibanding target perbaikan.</p>
         </SectionHead>
         <DaftarSasaran sasaran={sasaran} aksi={aksi} capaian={capaian} kini={kini} tarif={kv.tarifListrik} ef={kv.efListrik}
           enpi={hasil.map((h) => ({ kode: h.enpi.kode, nama: h.enpi.nama }))}

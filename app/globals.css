@@ -2449,3 +2449,13 @@ dialog.sf-dlg { max-width: min(860px, calc(100vw - 32px)); max-height: calc(100d
 .jawaban-lembar { display: flex; flex-direction: column; gap: 10px; font-size: 13.5px; }
 .jawaban-lembar dt { font-weight: 600; }
 .jawaban-lembar dd { margin: 2px 0 0; white-space: pre-wrap; }
+
+/* Lapisan halaman Sasaran: target energi (1) di atas sasaran pendukung per bagian (2) */
+.ss-lapis { display: flex; gap: 12px; align-items: flex-start; margin: 10px 2px -4px; }
+.ss-lapis > div { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.ss-lapis b { font-size: 15px; }
+.ss-lapis .no { flex: none; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font-family: var(--font-mono), monospace; font-size: 12px; font-weight: 600; background: color-mix(in srgb, var(--brand) 18%, transparent); color: var(--brand); }
+.ss-aksi-kosong { padding: 12px 14px; border-radius: var(--radius-sm); border: 1px dashed color-mix(in srgb, var(--crit) 55%, transparent); background: color-mix(in srgb, var(--crit) 7%, transparent); }
+.ss-aksi-kosong.info { border-color: var(--line-2); background: var(--surface-2); }
+.ss-aksi-kosong p { margin: 0 0 6px; } .ss-aksi-kosong p:last-child { margin-bottom: 0; }
+.ss-aksi-kosong ul { margin: 6px 0 0; padding-left: 18px; display: flex; flex-direction: column; gap: 3px; }
