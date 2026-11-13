@@ -50,7 +50,7 @@ export async function konteksDashboard({ tanyaJawab = true }: { tanyaJawab?: boo
   const kv = susunKonversi(param)
   b.push(`\n## Konversi rupiah & emisi\nTarif listrik Rp${angka(kv.tarifListrik, 2)}/kWh; faktor emisi listrik ${angka(kv.efListrik, 2)} kg CO2/kWh; Dexlite Rp${angka(kv.hargaDexlite, 0)}/liter, ${angka(kv.efDexlite, 2)} kg CO2/liter; bensin Rp${angka(kv.hargaBensin, 0)}/liter, ${angka(kv.efBensin, 2)} kg CO2/liter.${kv.asumsi.length ? ` Masih asumsi (sebutkan bila mengutip): ${kv.asumsi.join(', ')}.` : ''}`)
   b.push('\n## EnPI')
-  b.push('Batas lingkup: data PLN di energi bulanan adalah total kawasan TERMASUK listrik tenant (di luar lingkup SMEn). Kinerja SMEn KINRA hanya diklaim dari EnPI lingkup KINRA (bacaan meter aset KINRA, BBM kendaraan). EnPI lingkup kawasan hanya konteks.')
+  b.push('Batas lingkup: data PLN di energi bulanan adalah total kawasan TERMASUK listrik tenant (di luar lingkup SMEn). Kinerja SMEn KINRA hanya diklaim dari EnPI lingkup KINRA (bacaan meter aset KINRA, BBM kendaraan). EnPI lingkup kawasan hanya konteks. PLTBG dan PLTS dikelola pihak ketiga, bukan KINRA: di luar lingkup SMEn, hanya pasokan kawasan.')
   for (const h of kinerja.hasil) {
     const r = ringkas(h.laporan)
     const model = h.model ? `R² ${angka(h.model.r2, 3)}, CV(RMSE) ${persen(h.model.cvrmse)}` : (h.galat ?? 'model belum terbentuk')

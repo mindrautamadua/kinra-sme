@@ -48,7 +48,7 @@ export const PERTANYAAN_LISTRIK = [
   'Penyulang hitam berhenti di Gardu Distribusi: apakah ini penyulang cadangan, atau melayani beban lain yang tidak digambar?',
   'kWh meter di Gardu Transaksi: berapa ID pelanggan, nomor meter, dan faktor kalinya? Apakah angka "Listrik PLN kawasan" di aplikasi berasal dari meter ini?',
   'Meter aset KINRA (MTR-001 s.d. 009) tersambung dari gardu mana? Apakah meter itu meter pelanggan PLN tersendiri atau submeter di jaringan kawasan?',
-  'Di titik mana PLTBG dan PLTS masuk ke jaringan kawasan?',
+  'PLTBG dan PLTS dikelola pihak ketiga: di titik mana listriknya masuk ke jaringan kawasan, dan apakah ikut tercatat di kWh meter transaksi atau diukur terpisah?',
   'Apakah ada catatan faktor daya, beban puncak (kVA), dan susut jaringan dari Gardu Transaksi ke beban?',
 ]
 

@@ -143,7 +143,7 @@ export default async function Energi({ searchParams }: { searchParams: Promise<{
             {acuan.sumberKinra === 'meter'
               ? `Pemakaian sendiri dari bacaan ${acuan.terbaca} dari ${jumlahMeter} meter PLN aset KINRA (${persen(porsiKinra)} dari PLN kawasan).`
               : `Belum ada bacaan stand meter; pemakaian sendiri diperkirakan dari data inventaris aset (${persen(porsiKinra)} dari PLN kawasan ${BULAN_PANJANG[acuan.bulan - 1] ?? ''} ${acuan.tahun}). Isi bacaan bulanan di halaman Aset & Meter.`}
-            {' '}PLTBG dan PLTS dicatat sebagai pasokan kawasan; kepemilikan dan alokasinya perlu ditetapkan dalam tinjauan energi.
+            {' '}PLTBG dan PLTS dikelola pihak ketiga, bukan KINRA, sehingga di luar lingkup SMEn; keduanya dicatat hanya sebagai pasokan kawasan.
           </p>
         </div>
 

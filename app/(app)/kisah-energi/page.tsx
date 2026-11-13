@@ -259,7 +259,7 @@ export default async function KisahEnergi() {
           </ul>
           <Kotak jenis="auditor">
             <Tanya q="Apa batas SMEn KINRA? Apakah tenant termasuk?">Batasnya adalah aset yang dioperasikan KINRA dan diukur {nMeter} meter: {namaBatas}. Tenant di luar batas karena kami tidak mengendalikan peralatannya. Data kawasan tetap kami pantau sebagai informasi.</Tanya>
-            <Tanya q="Bagaimana dengan pembangkit di kawasan (PLTBG, PLTS)?">Dicatat sebagai pasokan kawasan. Bila ada aset yang terbukti dioperasikan KINRA, batas dan tinjauan energi kami perbarui.</Tanya>
+            <Tanya q="Bagaimana dengan pembangkit di kawasan (PLTBG, PLTS)?">Keduanya dikelola pihak ketiga, bukan KINRA, jadi berada di luar lingkup SMEn. Listriknya dicatat sebagai pasokan kawasan, sama seperti PLN.</Tanya>
           </Kotak>
           <Kotak jenis="bukti"><p>Formulir Ruang Lingkup & Batasan SMEn (F-4.3-01), Formulir Isu Internal Eksternal, Formulir Pihak Berkepentingan. Aplikasi: Aset & Meter, Isu & Peluang, Peta SMEn.</p><p className="kb-status">Dokumen klausul 4: {k.k4.siap} dari {k.k4.n} siap audit, {k.k4.bukti} sudah ada evidence.</p></Kotak>
           <DaftarPr items={k.pr.b2} />

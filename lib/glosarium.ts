@@ -84,9 +84,9 @@ export const GLOSARIUM: Istilah[] = [
   { istilah: 'TJ', asli: 'Terajoule', kategori: 'analisis',
     arti: 'Satuan energi (10¹² joule) untuk menjumlahkan sumber berbeda. 1 TJ ≈ 277.778 kWh.', href: '/energi' },
   { istilah: 'PLTBG', asli: 'Pembangkit Listrik Tenaga Biogas', kategori: 'analisis',
-    arti: 'Sumber listrik dari biogas limbah sawit (POME), termasuk energi terbarukan.', href: '/energi' },
+    arti: 'Sumber listrik dari biogas limbah sawit (POME), termasuk energi terbarukan. Dikelola pihak ketiga, bukan KINRA, sehingga di luar lingkup SMEn; dicatat hanya sebagai pasokan listrik kawasan.', href: '/energi' },
   { istilah: 'PLTS', asli: 'Pembangkit Listrik Tenaga Surya', kategori: 'analisis',
-    arti: 'Sumber listrik dari panel surya, termasuk energi terbarukan.', href: '/energi' },
+    arti: 'Sumber listrik dari panel surya, termasuk energi terbarukan. Dikelola pihak ketiga, bukan KINRA, sehingga di luar lingkup SMEn; dicatat hanya sebagai pasokan listrik kawasan.', href: '/energi' },
   { istilah: 'Pengukuran & verifikasi', asli: 'M&V', kategori: 'analisis', klausul: '9.1',
     arti: 'Cara membuktikan penghematan nyata dengan membandingkan konsumsi aktual terhadap baseline yang ternormalisasi.' },
 
